@@ -15,17 +15,20 @@
 ### 🎯 学习路径
 
 #### 初学者路径
+
 1. [控制流详解](./02-control-flow/README.md) - 基础语法和控制结构
 2. [类型系统详解](./01-type-system/README.md) - 基础类型和接口
 3. [数据流详解](./03-data-flow/README.md) - 变量和内存管理
 4. [并发编程详解](./04-concurrency/README.md) - Goroutines和Channels基础
 
 #### 进阶者路径
+
 1. [类型系统详解](./01-type-system/README.md) - 泛型和反射
 2. [并发编程详解](./04-concurrency/README.md) - 并发模式和Context
 3. [内存模型详解](./05-memory-model/README.md) - 内存模型和原子操作
 
 #### 专家级路径
+
 1. [内存模型详解](./05-memory-model/README.md) - 高级内存模型
 2. [并发编程详解](./04-concurrency/README.md) - 无锁数据结构和性能优化
 3. [类型系统详解](./01-type-system/README.md) - unsafe包和底层编程
@@ -46,6 +49,7 @@
 #### 按主题查找
 
 **并发编程**
+
 - [Goroutines基础](./04-concurrency/README.md#goroutines)
 - [Channels通信](./04-concurrency/README.md#channels)
 - [Select语句](./04-concurrency/README.md#select语句)
@@ -54,6 +58,7 @@
 - [并发模式](./04-concurrency/README.md#并发模式)
 
 **类型系统**
+
 - [基础类型](./01-type-system/README.md#基础类型)
 - [接口系统](./01-type-system/README.md#接口系统)
 - [泛型支持](./01-type-system/README.md#泛型支持)
@@ -61,6 +66,7 @@
 - [类型断言](./01-type-system/README.md#类型断言)
 
 **控制流**
+
 - [条件语句](./02-control-flow/README.md#条件语句)
 - [循环语句](./02-control-flow/README.md#循环语句)
 - [Switch语句](./02-control-flow/README.md#switch语句)
@@ -68,6 +74,7 @@
 - [Panic/Recovery](./02-control-flow/README.md#panicrecovery机制)
 
 **内存模型**
+
 - [Happens-before关系](./05-memory-model/README.md#happens-before关系)
 - [内存屏障](./05-memory-model/README.md#内存屏障)
 - [原子操作](./05-memory-model/README.md#原子操作)
@@ -76,14 +83,17 @@
 #### 按难度查找
 
 **入门级**
+
 - [控制流基础](./02-control-flow/README.md)
 - [类型系统基础](./01-type-system/README.md)
 
 **进阶级**
+
 - [并发编程](./04-concurrency/README.md)
 - [数据流管理](./03-data-flow/README.md)
 
 **专家级**
+
 - [内存模型](./05-memory-model/README.md)
 - [高级并发模式](./04-concurrency/README.md#并发模式)
 
@@ -114,4 +124,4 @@
 ---
 
 *最后更新时间: 2025年1月*
-*文档版本: v1.0* 
+*文档版本: v1.0*
