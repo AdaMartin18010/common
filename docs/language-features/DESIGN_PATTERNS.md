@@ -8,7 +8,7 @@
 
 ### 1. 分层架构模式 (Layered Architecture)
 
-```
+```text
 📚 Golang语言特性文档体系
 ├── 🎯 表现层 (Presentation Layer)
 │   ├── 快速导航 (INDEX.md)
