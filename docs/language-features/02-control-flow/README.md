@@ -1,5 +1,43 @@
 # Golang 控制流特性详解
 
+## 目录
+
+- [概述](#概述)
+- [核心特性](#核心特性)
+  - [1. 条件语句 (if/else)](#1-条件语句-ifelse)
+    - [基本语法](#基本语法)
+    - [初始化语句](#初始化语句)
+    - [最佳实践](#最佳实践)
+  - [2. 循环语句 (for)](#2-循环语句-for)
+    - [基本语法](#基本语法-1)
+    - [循环控制](#循环控制)
+    - [for-range详解](#for-range详解)
+    - [性能考虑](#性能考虑)
+  - [3. Switch语句](#3-switch语句)
+    - [基本语法](#基本语法-2)
+    - [多值匹配](#多值匹配)
+    - [表达式switch](#表达式switch)
+    - [类型switch](#类型switch)
+    - [Fallthrough](#fallthrough)
+  - [4. Defer语句](#4-defer语句)
+    - [基本用法](#基本用法)
+    - [常见应用场景](#常见应用场景)
+    - [Defer的注意事项](#defer的注意事项)
+  - [5. Panic和Recovery机制](#5-panic和recovery机制)
+    - [Panic](#panic)
+    - [Recovery](#recovery)
+    - [最佳实践](#最佳实践-1)
+- [2025年改进](#2025年改进)
+  - [1. 更智能的错误处理](#1-更智能的错误处理)
+  - [2. 改进的控制流分析](#2-改进的控制流分析)
+  - [3. 更好的性能优化](#3-更好的性能优化)
+- [实用示例和练习](#实用示例和练习)
+  - [综合示例：简单的计算器](#综合示例：简单的计算器)
+  - [练习：文件处理器](#练习：文件处理器)
+  - [练习：并发任务管理器](#练习：并发任务管理器)
+  - [练习题目](#练习题目)
+- [总结](#总结)
+
 ## 概述
 
 控制流是编程语言的核心特性，决定了程序执行的顺序和逻辑分支。Golang的控制流设计简洁而强大，体现了"简单即是美"的设计哲学。
@@ -581,6 +619,219 @@ case 1, 2, 3:
     // 编译器可以生成跳转表
 }
 ```
+
+## 实用示例和练习
+
+### 综合示例：简单的计算器
+
+```go
+package main
+
+import (
+    "fmt"
+    "strconv"
+)
+
+func calculator() {
+    defer func() {
+        if r := recover(); r != nil {
+            fmt.Printf("计算器发生错误: %v\n", r)
+        }
+    }()
+
+    for {
+        fmt.Println("\n简单计算器")
+        fmt.Println("1. 加法")
+        fmt.Println("2. 减法")
+        fmt.Println("3. 乘法")
+        fmt.Println("4. 除法")
+        fmt.Println("5. 退出")
+        
+        var choice string
+        fmt.Print("请选择操作 (1-5): ")
+        fmt.Scanln(&choice)
+        
+        switch choice {
+        case "5":
+            fmt.Println("再见!")
+            return
+        case "1", "2", "3", "4":
+            var a, b float64
+            fmt.Print("请输入第一个数字: ")
+            fmt.Scanln(&a)
+            fmt.Print("请输入第二个数字: ")
+            fmt.Scanln(&b)
+            
+            result := performOperation(choice, a, b)
+            fmt.Printf("结果: %.2f\n", result)
+        default:
+            fmt.Println("无效选择，请重试")
+        }
+    }
+}
+
+func performOperation(op string, a, b float64) float64 {
+    switch op {
+    case "1":
+        return a + b
+    case "2":
+        return a - b
+    case "3":
+        return a * b
+    case "4":
+        if b == 0 {
+            panic("除数不能为零")
+        }
+        return a / b
+    default:
+        panic("未知操作")
+    }
+}
+```
+
+### 练习：文件处理器
+
+```go
+package main
+
+import (
+    "bufio"
+    "fmt"
+    "os"
+    "strings"
+)
+
+func fileProcessor() {
+    // 使用defer确保资源清理
+    defer func() {
+        if r := recover(); r != nil {
+            fmt.Printf("文件处理错误: %v\n", r)
+        }
+    }()
+
+    // 打开输入文件
+    inputFile, err := os.Open("input.txt")
+    if err != nil {
+        panic(fmt.Sprintf("无法打开输入文件: %v", err))
+    }
+    defer inputFile.Close()
+
+    // 创建输出文件
+    outputFile, err := os.Create("output.txt")
+    if err != nil {
+        panic(fmt.Sprintf("无法创建输出文件: %v", err))
+    }
+    defer outputFile.Close()
+
+    scanner := bufio.NewScanner(inputFile)
+    lineCount := 0
+    wordCount := 0
+
+    // 逐行处理
+    for scanner.Scan() {
+        line := scanner.Text()
+        lineCount++
+        
+        // 统计单词数
+        words := strings.Fields(line)
+        wordCount += len(words)
+        
+        // 处理每一行（这里简单转换为大写）
+        processedLine := strings.ToUpper(line)
+        
+        // 写入输出文件
+        if _, err := fmt.Fprintln(outputFile, processedLine); err != nil {
+            panic(fmt.Sprintf("写入文件错误: %v", err))
+        }
+    }
+
+    if err := scanner.Err(); err != nil {
+        panic(fmt.Sprintf("读取文件错误: %v", err))
+    }
+
+    fmt.Printf("处理完成！共处理 %d 行，%d 个单词\n", lineCount, wordCount)
+}
+```
+
+### 练习：并发任务管理器
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+type Task struct {
+    ID       int
+    Name     string
+    Duration time.Duration
+}
+
+func taskManager() {
+    tasks := []Task{
+        {ID: 1, Name: "任务A", Duration: 2 * time.Second},
+        {ID: 2, Name: "任务B", Duration: 1 * time.Second},
+        {ID: 3, Name: "任务C", Duration: 3 * time.Second},
+        {ID: 4, Name: "任务D", Duration: 1 * time.Second},
+    }
+
+    var wg sync.WaitGroup
+    results := make(chan string, len(tasks))
+
+    // 启动所有任务
+    for _, task := range tasks {
+        wg.Add(1)
+        go func(t Task) {
+            defer wg.Done()
+            defer func() {
+                if r := recover(); r != nil {
+                    results <- fmt.Sprintf("任务 %s 发生panic: %v", t.Name, r)
+                }
+            }()
+
+            // 模拟任务执行
+            time.Sleep(t.Duration)
+            results <- fmt.Sprintf("任务 %s 完成", t.Name)
+        }(task)
+    }
+
+    // 等待所有任务完成
+    go func() {
+        wg.Wait()
+        close(results)
+    }()
+
+    // 收集结果
+    for result := range results {
+        fmt.Println(result)
+    }
+}
+```
+
+### 练习题目
+
+1. **条件语句练习**
+   - 编写一个函数，判断一个年份是否为闰年
+   - 使用if语句的初始化特性处理错误
+
+2. **循环练习**
+   - 实现一个函数，找出数组中的最大值和最小值
+   - 使用for-range遍历不同类型的集合
+
+3. **Switch练习**
+   - 实现一个简单的状态机，使用switch语句处理不同状态
+   - 使用类型switch处理不同类型的接口
+
+4. **Defer练习**
+   - 实现一个资源管理器，确保资源正确释放
+   - 使用defer记录函数执行时间
+
+5. **Panic/Recovery练习**
+   - 实现一个安全的API调用函数
+   - 在goroutine中使用recover处理panic
 
 ## 总结
 
