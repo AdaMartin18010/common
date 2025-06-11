@@ -11,6 +11,9 @@
 | 📊 **数据流** | 变量作用域、内存管理、垃圾回收 | [数据流详解](./03-data-flow/README.md) | ✅ 完成 |
 | ⚡ **并发编程** | Goroutines、Channels、Select、同步原语 | [并发编程详解](./04-concurrency/README.md) | ✅ 完成 |
 | 🧠 **内存模型** | Happens-before、内存屏障、原子操作 | [内存模型详解](./05-memory-model/README.md) | ✅ 完成 |
+| 🎨 **设计模式** | 创建型、结构型、行为型、Go特有模式 | [设计模式详解](./06-design-patterns/README.md) | ✅ 完成 |
+| 🚀 **性能优化** | 性能分析、内存优化、CPU优化、并发优化 | [性能优化详解](./07-performance/README.md) | ✅ 完成 |
+| 🔧 **工具链** | 开发工具、构建工具、测试工具、部署工具 | [工具链详解](./08-tooling/README.md) | ✅ 完成 |
 
 ### 🎯 学习路径
 
@@ -26,12 +29,15 @@
 1. [类型系统详解](./01-type-system/README.md) - 泛型和反射
 2. [并发编程详解](./04-concurrency/README.md) - 并发模式和Context
 3. [内存模型详解](./05-memory-model/README.md) - 内存模型和原子操作
+4. [设计模式详解](./06-design-patterns/README.md) - 常见设计模式
 
 #### 专家级路径
 
 1. [内存模型详解](./05-memory-model/README.md) - 高级内存模型
 2. [并发编程详解](./04-concurrency/README.md) - 无锁数据结构和性能优化
 3. [类型系统详解](./01-type-system/README.md) - unsafe包和底层编程
+4. [性能优化详解](./07-performance/README.md) - 高级性能优化技巧
+5. [工具链详解](./08-tooling/README.md) - 开发工具和最佳实践
 
 ### 📋 文档特性
 
@@ -80,6 +86,27 @@
 - [原子操作](./05-memory-model/README.md#原子操作)
 - [缓存一致性](./05-memory-model/README.md#缓存一致性)
 
+**设计模式**
+
+- [创建型模式](./06-design-patterns/README.md#创建型模式)
+- [结构型模式](./06-design-patterns/README.md#结构型模式)
+- [行为型模式](./06-design-patterns/README.md#行为型模式)
+- [Go特有模式](./06-design-patterns/README.md#go特有模式)
+
+**性能优化**
+
+- [性能分析工具](./07-performance/README.md#性能分析工具)
+- [内存优化](./07-performance/README.md#内存优化)
+- [CPU优化](./07-performance/README.md#cpu优化)
+- [并发优化](./07-performance/README.md#并发优化)
+
+**工具链**
+
+- [开发工具](./08-tooling/README.md#开发工具)
+- [构建工具](./08-tooling/README.md#构建和部署工具)
+- [测试工具](./08-tooling/README.md#性能分析工具)
+- [部署工具](./08-tooling/README.md#构建和部署工具)
+
 #### 按难度查找
 
 **入门级**
@@ -91,11 +118,14 @@
 
 - [并发编程](./04-concurrency/README.md)
 - [数据流管理](./03-data-flow/README.md)
+- [设计模式](./06-design-patterns/README.md)
 
 **专家级**
 
 - [内存模型](./05-memory-model/README.md)
 - [高级并发模式](./04-concurrency/README.md#并发模式)
+- [性能优化](./07-performance/README.md)
+- [工具链](./08-tooling/README.md)
 
 ### 📈 学习建议
 

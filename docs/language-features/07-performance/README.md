@@ -963,4 +963,4 @@ func (ac *AdaptiveCache) adjustStrategy() {
 ---
 
 *最后更新时间: 2025年1月*
-*文档版本: v1.0* 
+*文档版本: v1.0*
