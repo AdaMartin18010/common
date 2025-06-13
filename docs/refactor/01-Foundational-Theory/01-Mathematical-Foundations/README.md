@@ -83,6 +83,7 @@ $$R \subseteq A \times B$$
 
 **定义 1.3** (等价关系)
 关系 $R \subseteq A \times A$ 是等价关系，当且仅当：
+
 1. **自反性**: $\forall a \in A: (a, a) \in R$
 2. **对称性**: $\forall a, b \in A: (a, b) \in R \Rightarrow (b, a) \in R$
 3. **传递性**: $\forall a, b, c \in A: (a, b) \in R \land (b, c) \in R \Rightarrow (a, c) \in R$
@@ -226,6 +227,7 @@ func Compose[A, B, C comparable](f *Function[B, C], g *Function[A, B]) *Function
 $$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
 
 **证明**:
+
 1. 设 $x \in A \cap (B \cup C)$
 2. 则 $x \in A$ 且 $x \in (B \cup C)$
 3. 由并集定义，$x \in B$ 或 $x \in C$
