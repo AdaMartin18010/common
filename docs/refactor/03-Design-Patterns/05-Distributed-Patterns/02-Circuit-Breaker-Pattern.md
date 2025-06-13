@@ -13,6 +13,7 @@
 $$CB = (S, T, F, \tau, \lambda, \mu)$$
 
 其中：
+
 - $S = \{CLOSED, OPEN, HALF_OPEN\}$ 为状态集合
 - $F: T \rightarrow \{0, 1\}$ 为故障函数，$F(t) = 1$ 表示故障
 - $\tau$ 为超时阈值
@@ -809,4 +810,4 @@ func (m *CircuitBreakerMonitor) RecordRequest(state State, success bool, latency
 4. **灵活配置**: 支持多种配置策略
 5. **监控友好**: 提供丰富的监控指标
 
-通过合理使用熔断器模式，可以显著提高系统的可用性和稳定性。 
+通过合理使用熔断器模式，可以显著提高系统的可用性和稳定性。

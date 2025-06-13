@@ -13,6 +13,7 @@
 $$SD = (S, I, N, R, D)$$
 
 其中：
+
 - $R: S \rightarrow 2^I$ 为注册函数，将服务映射到其实例集合
 - $D: S \rightarrow 2^I$ 为发现函数，返回服务的可用实例集合
 
@@ -599,6 +600,7 @@ func (p *ServiceDiscoveryProxy) forwardData(dst net.Conn, src net.Conn) {
 ### 4.3 一致性分析
 
 **CAP定理权衡**:
+
 - **一致性 (Consistency)**: 最终一致性
 - **可用性 (Availability)**: 高可用性
 - **分区容错性 (Partition tolerance)**: 支持网络分区
