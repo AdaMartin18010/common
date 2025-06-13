@@ -1,97 +1,231 @@
 # 04-生产者-消费者模式 (Producer-Consumer Pattern)
 
-## 1. 形式化定义
+## 目录
 
-### 1.1 数学定义
+- [04-生产者-消费者模式 (Producer-Consumer Pattern)](#04-生产者-消费者模式-producer-consumer-pattern)
+  - [目录](#目录)
+  - [1. 概述](#1-概述)
+  - [2. 形式化定义](#2-形式化定义)
+  - [3. 数学基础](#3-数学基础)
+  - [4. 模式结构](#4-模式结构)
+  - [5. Go语言实现](#5-go语言实现)
+  - [6. 性能分析](#6-性能分析)
+  - [7. 应用场景](#7-应用场景)
+  - [8. 优缺点分析](#8-优缺点分析)
+  - [9. 相关模式](#9-相关模式)
+  - [10. 总结](#10-总结)
 
-设 $P$ 为生产者集合，$C$ 为消费者集合，$B$ 为缓冲区，$Q$ 为队列，生产者-消费者模式满足以下公理：
+---
 
-**生产者-消费者公理**：
-- **生产者约束**: $\forall p \in P: \text{produce}(p, item) \Rightarrow \text{enqueue}(item, Q)$
-- **消费者约束**: $\forall c \in C: \text{consume}(c) \Rightarrow \text{dequeue}(item, Q)$
-- **缓冲区约束**: $0 \leq |Q| \leq \text{capacity}(B)$
-- **同步约束**: $\text{empty}(Q) \Rightarrow \text{block}(C) \land \text{full}(Q) \Rightarrow \text{block}(P)$
+## 1. 概述
 
-**形式化约束**：
-- **互斥访问**: $\text{access}(Q) \Rightarrow \text{mutex\_protected}$
-- **条件同步**: $\text{not\_empty}(Q) \Rightarrow \text{wakeup}(C) \land \text{not\_full}(Q) \Rightarrow \text{wakeup}(P)$
-- **数据完整性**: $\text{produce}(item) \land \text{consume}(item) \Rightarrow \text{data\_preserved}(item)$
+### 1.1 定义
 
-### 1.2 类型理论定义
+生产者-消费者模式 (Producer-Consumer Pattern) 是一种并发设计模式，它通过共享的缓冲区来协调生产者和消费者之间的数据交换。生产者负责生成数据并放入缓冲区，消费者从缓冲区中取出数据进行处理。
 
-```go
-// 生产者接口定义
-type Producer interface {
-    Produce(ctx context.Context) (interface{}, error)
-    GetID() string
-    GetRate() int // 生产速率
-}
+### 1.2 核心思想
 
-// 消费者接口定义
-type Consumer interface {
-    Consume(ctx context.Context, item interface{}) error
-    GetID() string
-    GetRate() int // 消费速率
-}
+生产者-消费者模式的核心思想是：
+- **解耦**: 生产者和消费者通过缓冲区解耦，互不直接依赖
+- **缓冲**: 使用缓冲区平衡生产和消费速度的差异
+- **同步**: 通过同步机制确保线程安全
+- **流控**: 控制生产速度避免缓冲区溢出
 
-// 缓冲区接口定义
-type Buffer interface {
-    Put(item interface{}) error
-    Get() (interface{}, error)
-    Size() int
-    Capacity() int
-    IsEmpty() bool
-    IsFull() bool
-}
+### 1.3 设计目标
 
-// 数据项定义
-type DataItem struct {
-    ID        string
-    Data      interface{}
-    Timestamp time.Time
-    Priority  int
-}
-```
+1. **解耦**: 分离生产和消费逻辑
+2. **缓冲**: 平衡生产和消费速度差异
+3. **并发**: 支持多个生产者和消费者
+4. **安全**: 保证线程安全和数据一致性
+5. **效率**: 最大化系统吞吐量
 
-## 2. 实现原理
+---
 
-### 2.1 生产者-消费者状态机
+## 2. 形式化定义
+
+### 2.1 基本概念
+
+设 $P$ 为生产者集合，$C$ 为消费者集合，$B$ 为缓冲区集合，$D$ 为数据集合。
+
+**定义 2.1** (生产者)
+生产者是一个三元组 $(p, buffer, rate)$，其中：
+- $p \in P$ 是生产者实例
+- $buffer \in B$ 是目标缓冲区
+- $rate$ 是生产速率
+
+**定义 2.2** (消费者)
+消费者是一个三元组 $(c, buffer, rate)$，其中：
+- $c \in C$ 是消费者实例
+- $buffer \in B$ 是源缓冲区
+- $rate$ 是消费速率
+
+**定义 2.3** (缓冲区)
+缓冲区是一个四元组 $(b, capacity, items, mutex)$，其中：
+- $b \in B$ 是缓冲区实例
+- $capacity$ 是缓冲区容量
+- $items \subseteq D$ 是缓冲区中的数据项
+- $mutex$ 是互斥锁
+
+### 2.2 操作语义
+
+**公理 2.1** (生产操作)
+对于生产者 $p$ 和数据项 $d$：
+$$produce(p, d) = \begin{cases}
+enqueue(buffer, d) & \text{if } |items| < capacity \\
+block(p) & \text{otherwise}
+\end{cases}$$
+
+**公理 2.2** (消费操作)
+对于消费者 $c$：
+$$consume(c) = \begin{cases}
+dequeue(buffer) & \text{if } |items| > 0 \\
+block(c) & \text{otherwise}
+\end{cases}$$
+
+**公理 2.3** (缓冲区操作)
+对于缓冲区 $b$ 和数据项 $d$：
+$$enqueue(b, d) = acquire(mutex) \land add(items, d) \land release(mutex)$$
+$$dequeue(b) = acquire(mutex) \land remove(items) \land release(mutex)$$
+
+### 2.3 同步约束
+
+**定义 2.4** (满缓冲区)
+缓冲区满的条件：
+$$full(buffer) \Leftrightarrow |items| = capacity$$
+
+**定义 2.5** (空缓冲区)
+缓冲区空的条件：
+$$empty(buffer) \Leftrightarrow |items| = 0$$
+
+**定理 2.1** (线程安全)
+生产者-消费者模式保证线程安全，当且仅当：
+$$\forall p_1, p_2 \in P, \forall c_1, c_2 \in C: \text{所有操作都通过互斥锁保护}$$
+
+---
+
+## 3. 数学基础
+
+### 3.1 队列理论
+
+生产者-消费者模式可以建模为M/M/1/K队列系统：
+
+**定义 3.1** (M/M/1/K队列)
+- 到达服从泊松分布，到达率为 $\lambda$ (生产速率)
+- 服务时间服从指数分布，服务率为 $\mu$ (消费速率)
+- 系统容量为 $K$ (缓冲区大小)
+- 单服务窗口
+
+**定理 3.1** (系统利用率)
+系统利用率：
+$$\rho = \frac{\lambda}{\mu}$$
+
+**定理 3.2** (阻塞概率)
+当 $\rho \neq 1$ 时，阻塞概率：
+$$P_B = \frac{(1-\rho)\rho^K}{1-\rho^{K+1}}$$
+
+**定理 3.3** (平均队列长度)
+平均队列长度：
+$$L = \frac{\rho}{1-\rho} - \frac{(K+1)\rho^{K+1}}{1-\rho^{K+1}}$$
+
+### 3.2 性能分析
+
+**定义 3.2** (吞吐量)
+系统吞吐量：
+$$Throughput = \lambda(1-P_B)$$
+
+**定义 3.3** (平均等待时间)
+平均等待时间：
+$$W = \frac{L}{\lambda(1-P_B)}$$
+
+**定理 3.4** (最优缓冲区大小)
+对于给定的 $\lambda$ 和 $\mu$，最优缓冲区大小：
+$$K_{opt} = \log_{\rho}(\frac{1}{P_{target}})$$
+
+---
+
+## 4. 模式结构
+
+### 4.1 类图
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Running
-    Running --> ProducerBlocked : Buffer Full
-    Running --> ConsumerBlocked : Buffer Empty
-    ProducerBlocked --> Running : Buffer Not Full
-    ConsumerBlocked --> Running : Buffer Not Empty
-    Running --> [*] : Shutdown
-    
-    state Running {
-        [*] --> Producing
-        Producing --> Consuming : Item Produced
-        Consuming --> Producing : Item Consumed
+classDiagram
+    class Producer {
+        -id: string
+        -buffer: Buffer
+        -rate: int
+        +Produce(data)
+        +Run()
+        +Stop()
     }
+    
+    class Consumer {
+        -id: string
+        -buffer: Buffer
+        -rate: int
+        +Consume()
+        +Run()
+        +Stop()
+    }
+    
+    class Buffer {
+        -capacity: int
+        -items: []interface{}
+        -mutex: sync.Mutex
+        -notEmpty: *sync.Cond
+        -notFull: *sync.Cond
+        +Put(item)
+        +Get()
+        +Size()
+        +IsEmpty()
+        +IsFull()
+    }
+    
+    class DataItem {
+        -id: string
+        -value: interface{}
+        -timestamp: time.Time
+        +GetID()
+        +GetValue()
+        +GetTimestamp()
+    }
+    
+    Producer --> Buffer
+    Consumer --> Buffer
+    Buffer --> DataItem
 ```
 
-### 2.2 同步机制分析
+### 4.2 时序图
 
-**定理**: 生产者-消费者模式保证数据完整性和系统稳定性。
+```mermaid
+sequenceDiagram
+    participant P as Producer
+    participant B as Buffer
+    participant C as Consumer
+    
+    P->>B: Put(item)
+    alt Buffer not full
+        B->>B: enqueue(item)
+        B->>C: signal notEmpty
+        B->>P: return success
+    else Buffer full
+        B->>P: block until notFull
+    end
+    
+    C->>B: Get()
+    alt Buffer not empty
+        B->>B: dequeue(item)
+        B->>P: signal notFull
+        B->>C: return item
+    else Buffer empty
+        B->>C: block until notEmpty
+    end
+```
 
-**证明**:
+---
 
-1. **数据完整性证明**:
-   - 使用互斥锁保护缓冲区访问
-   - 条件变量确保正确的同步
-   - 原子操作保证数据一致性
+## 5. Go语言实现
 
-2. **死锁避免证明**:
-   - 生产者等待缓冲区非满
-   - 消费者等待缓冲区非空
-   - 条件变量避免虚假唤醒
-
-## 3. Go语言实现
-
-### 3.1 基础生产者-消费者实现
+### 5.1 基础实现
 
 ```go
 package producerconsumer
@@ -99,6 +233,7 @@ package producerconsumer
 import (
     "context"
     "fmt"
+    "log"
     "sync"
     "time"
 )
@@ -106,659 +241,938 @@ import (
 // DataItem 数据项
 type DataItem struct {
     ID        string
-    Data      interface{}
+    Value     interface{}
     Timestamp time.Time
-    Priority  int
 }
 
-// Buffer 缓冲区实现
+// NewDataItem 创建数据项
+func NewDataItem(id string, value interface{}) *DataItem {
+    return &DataItem{
+        ID:        id,
+        Value:     value,
+        Timestamp: time.Now(),
+    }
+}
+
+// GetID 获取ID
+func (d *DataItem) GetID() string {
+    return d.ID
+}
+
+// GetValue 获取值
+func (d *DataItem) GetValue() interface{} {
+    return d.Value
+}
+
+// GetTimestamp 获取时间戳
+func (d *DataItem) GetTimestamp() time.Time {
+    return d.Timestamp
+}
+
+// Buffer 缓冲区
 type Buffer struct {
-    items    []interface{}
     capacity int
-    size     int
-    in       int
-    out      int
+    items    []*DataItem
     mutex    sync.Mutex
     notEmpty *sync.Cond
     notFull  *sync.Cond
 }
 
-// NewBuffer 创建新的缓冲区
+// NewBuffer 创建缓冲区
 func NewBuffer(capacity int) *Buffer {
-    if capacity <= 0 {
-        capacity = 10
-    }
-    
     buffer := &Buffer{
-        items:    make([]interface{}, capacity),
         capacity: capacity,
+        items:    make([]*DataItem, 0, capacity),
     }
-    
     buffer.notEmpty = sync.NewCond(&buffer.mutex)
     buffer.notFull = sync.NewCond(&buffer.mutex)
-    
     return buffer
 }
 
 // Put 放入数据项
-func (b *Buffer) Put(item interface{}) error {
+func (b *Buffer) Put(item *DataItem) {
     b.mutex.Lock()
     defer b.mutex.Unlock()
     
-    // 等待缓冲区非满
-    for b.size >= b.capacity {
+    // 等待缓冲区有空间
+    for len(b.items) >= b.capacity {
         b.notFull.Wait()
     }
     
-    // 放入数据项
-    b.items[b.in] = item
-    b.in = (b.in + 1) % b.capacity
-    b.size++
-    
-    // 通知消费者
+    b.items = append(b.items, item)
     b.notEmpty.Signal()
+}
+
+// PutWithTimeout 带超时的放入
+func (b *Buffer) PutWithTimeout(item *DataItem, timeout time.Duration) error {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
     
-    return nil
+    // 等待缓冲区有空间，带超时
+    done := make(chan struct{})
+    go func() {
+        for len(b.items) >= b.capacity {
+            b.notFull.Wait()
+        }
+        close(done)
+    }()
+    
+    select {
+    case <-done:
+        b.items = append(b.items, item)
+        b.notEmpty.Signal()
+        return nil
+    case <-time.After(timeout):
+        return context.DeadlineExceeded
+    }
 }
 
 // Get 获取数据项
-func (b *Buffer) Get() (interface{}, error) {
+func (b *Buffer) Get() *DataItem {
     b.mutex.Lock()
     defer b.mutex.Unlock()
     
-    // 等待缓冲区非空
-    for b.size <= 0 {
+    // 等待缓冲区有数据
+    for len(b.items) == 0 {
         b.notEmpty.Wait()
     }
     
-    // 获取数据项
-    item := b.items[b.out]
-    b.out = (b.out + 1) % b.capacity
-    b.size--
-    
-    // 通知生产者
+    item := b.items[0]
+    b.items = b.items[1:]
     b.notFull.Signal()
-    
-    return item, nil
+    return item
 }
 
-// Size 获取当前大小
+// GetWithTimeout 带超时的获取
+func (b *Buffer) GetWithTimeout(timeout time.Duration) (*DataItem, error) {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    
+    // 等待缓冲区有数据，带超时
+    done := make(chan struct{})
+    go func() {
+        for len(b.items) == 0 {
+            b.notEmpty.Wait()
+        }
+        close(done)
+    }()
+    
+    select {
+    case <-done:
+        item := b.items[0]
+        b.items = b.items[1:]
+        b.notFull.Signal()
+        return item, nil
+    case <-time.After(timeout):
+        var zero *DataItem
+        return zero, context.DeadlineExceeded
+    }
+}
+
+// Size 获取缓冲区大小
 func (b *Buffer) Size() int {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    return b.size
-}
-
-// Capacity 获取容量
-func (b *Buffer) Capacity() int {
-    return b.capacity
+    return len(b.items)
 }
 
 // IsEmpty 检查是否为空
 func (b *Buffer) IsEmpty() bool {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    return b.size == 0
+    return len(b.items) == 0
 }
 
 // IsFull 检查是否已满
 func (b *Buffer) IsFull() bool {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    return b.size >= b.capacity
+    return len(b.items) >= b.capacity
 }
 
-// Producer 生产者实现
+// Producer 生产者
 type Producer struct {
-    ID       string
-    Rate     int // 每秒生产数量
-    Buffer   *Buffer
-    ctx      context.Context
-    cancel   context.CancelFunc
-    wg       *sync.WaitGroup
+    id       string
+    buffer   *Buffer
+    rate     time.Duration
+    stopChan chan struct{}
+    wg       sync.WaitGroup
 }
 
-// NewProducer 创建新的生产者
-func NewProducer(id string, rate int, buffer *Buffer) *Producer {
-    ctx, cancel := context.WithCancel(context.Background())
+// NewProducer 创建生产者
+func NewProducer(id string, buffer *Buffer, rate time.Duration) *Producer {
     return &Producer{
-        ID:     id,
-        Rate:   rate,
-        Buffer: buffer,
-        ctx:    ctx,
-        cancel: cancel,
+        id:       id,
+        buffer:   buffer,
+        rate:     rate,
+        stopChan: make(chan struct{}),
     }
 }
 
 // Start 启动生产者
-func (p *Producer) Start(wg *sync.WaitGroup) {
-    p.wg = wg
+func (p *Producer) Start() {
     p.wg.Add(1)
-    
-    go func() {
-        defer p.wg.Done()
-        
-        interval := time.Duration(1000/p.Rate) * time.Millisecond
-        ticker := time.NewTicker(interval)
-        defer ticker.Stop()
-        
-        for {
-            select {
-            case <-p.ctx.Done():
-                fmt.Printf("Producer %s stopped\n", p.ID)
-                return
-            case <-ticker.C:
-                if err := p.produce(); err != nil {
-                    fmt.Printf("Producer %s error: %v\n", p.ID, err)
-                }
-            }
-        }
-    }()
-}
-
-// produce 生产数据项
-func (p *Producer) produce() error {
-    item := &DataItem{
-        ID:        fmt.Sprintf("%s-%d", p.ID, time.Now().UnixNano()),
-        Data:      fmt.Sprintf("Data from %s", p.ID),
-        Timestamp: time.Now(),
-        Priority:  int(time.Now().UnixNano() % 10),
-    }
-    
-    if err := p.Buffer.Put(item); err != nil {
-        return fmt.Errorf("failed to put item: %w", err)
-    }
-    
-    fmt.Printf("Producer %s produced: %s\n", p.ID, item.ID)
-    return nil
+    go p.run()
 }
 
 // Stop 停止生产者
 func (p *Producer) Stop() {
-    p.cancel()
+    close(p.stopChan)
+    p.wg.Wait()
 }
 
-// Consumer 消费者实现
+// run 运行循环
+func (p *Producer) run() {
+    defer p.wg.Done()
+    
+    counter := 0
+    ticker := time.NewTicker(p.rate)
+    defer ticker.Stop()
+    
+    for {
+        select {
+        case <-p.stopChan:
+            return
+        case <-ticker.C:
+            item := NewDataItem(fmt.Sprintf("%s-%d", p.id, counter), counter)
+            p.buffer.Put(item)
+            log.Printf("Producer %s produced: %s", p.id, item.GetID())
+            counter++
+        }
+    }
+}
+
+// Produce 生产单个数据项
+func (p *Producer) Produce(item *DataItem) {
+    p.buffer.Put(item)
+    log.Printf("Producer %s produced: %s", p.id, item.GetID())
+}
+
+// Consumer 消费者
 type Consumer struct {
-    ID       string
-    Rate     int // 每秒消费数量
-    Buffer   *Buffer
-    ctx      context.Context
-    cancel   context.CancelFunc
-    wg       *sync.WaitGroup
+    id       string
+    buffer   *Buffer
+    rate     time.Duration
+    stopChan chan struct{}
+    wg       sync.WaitGroup
 }
 
-// NewConsumer 创建新的消费者
-func NewConsumer(id string, rate int, buffer *Buffer) *Consumer {
-    ctx, cancel := context.WithCancel(context.Background())
+// NewConsumer 创建消费者
+func NewConsumer(id string, buffer *Buffer, rate time.Duration) *Consumer {
     return &Consumer{
-        ID:     id,
-        Rate:   rate,
-        Buffer: buffer,
-        ctx:    ctx,
-        cancel: cancel,
+        id:       id,
+        buffer:   buffer,
+        rate:     rate,
+        stopChan: make(chan struct{}),
     }
 }
 
 // Start 启动消费者
-func (c *Consumer) Start(wg *sync.WaitGroup) {
-    c.wg = wg
+func (c *Consumer) Start() {
     c.wg.Add(1)
-    
-    go func() {
-        defer c.wg.Done()
-        
-        interval := time.Duration(1000/c.Rate) * time.Millisecond
-        ticker := time.NewTicker(interval)
-        defer ticker.Stop()
-        
-        for {
-            select {
-            case <-c.ctx.Done():
-                fmt.Printf("Consumer %s stopped\n", c.ID)
-                return
-            case <-ticker.C:
-                if err := c.consume(); err != nil {
-                    fmt.Printf("Consumer %s error: %v\n", c.ID, err)
-                }
-            }
-        }
-    }()
-}
-
-// consume 消费数据项
-func (c *Consumer) consume() error {
-    item, err := c.Buffer.Get()
-    if err != nil {
-        return fmt.Errorf("failed to get item: %w", err)
-    }
-    
-    dataItem := item.(*DataItem)
-    fmt.Printf("Consumer %s consumed: %s\n", c.ID, dataItem.ID)
-    
-    // 模拟处理时间
-    time.Sleep(50 * time.Millisecond)
-    
-    return nil
+    go c.run()
 }
 
 // Stop 停止消费者
 func (c *Consumer) Stop() {
-    c.cancel()
-}
-```
-
-### 3.2 高级生产者-消费者实现（带优先级和监控）
-
-```go
-// PriorityBuffer 优先级缓冲区
-type PriorityBuffer struct {
-    buffers map[int]*Buffer
-    priorities []int
-    mutex sync.RWMutex
+    close(c.stopChan)
+    c.wg.Wait()
 }
 
-// NewPriorityBuffer 创建优先级缓冲区
-func NewPriorityBuffer(capacity int, priorities []int) *PriorityBuffer {
-    pb := &PriorityBuffer{
-        buffers: make(map[int]*Buffer),
-        priorities: priorities,
-    }
+// run 运行循环
+func (c *Consumer) run() {
+    defer c.wg.Done()
     
-    for _, priority := range priorities {
-        pb.buffers[priority] = NewBuffer(capacity)
-    }
+    ticker := time.NewTicker(c.rate)
+    defer ticker.Stop()
     
-    return pb
-}
-
-// Put 放入优先级数据项
-func (pb *PriorityBuffer) Put(item *DataItem) error {
-    pb.mutex.RLock()
-    buffer, exists := pb.buffers[item.Priority]
-    pb.mutex.RUnlock()
-    
-    if !exists {
-        return fmt.Errorf("invalid priority: %d", item.Priority)
-    }
-    
-    return buffer.Put(item)
-}
-
-// Get 获取最高优先级数据项
-func (pb *PriorityBuffer) Get() (interface{}, error) {
-    pb.mutex.RLock()
-    defer pb.mutex.RUnlock()
-    
-    // 按优先级顺序查找
-    for _, priority := range pb.priorities {
-        buffer := pb.buffers[priority]
-        if !buffer.IsEmpty() {
-            return buffer.Get()
+    for {
+        select {
+        case <-c.stopChan:
+            return
+        case <-ticker.C:
+            item := c.buffer.Get()
+            c.processItem(item)
         }
     }
-    
-    // 所有缓冲区都为空，等待
-    return pb.buffers[pb.priorities[0]].Get()
 }
 
-// ProducerConsumerSystem 生产者-消费者系统
-type ProducerConsumerSystem struct {
-    Buffer     Buffer
-    Producers  []*Producer
-    Consumers  []*Consumer
-    ctx        context.Context
-    cancel     context.CancelFunc
-    wg         sync.WaitGroup
-    metrics    *SystemMetrics
+// processItem 处理数据项
+func (c *Consumer) processItem(item *DataItem) {
+    log.Printf("Consumer %s consumed: %s, value: %v", c.id, item.GetID(), item.GetValue())
+    // 模拟处理时间
+    time.Sleep(50 * time.Millisecond)
 }
 
-// SystemMetrics 系统指标
-type SystemMetrics struct {
-    ProducedItems int64
-    ConsumedItems int64
-    BufferSize    int
-    ActiveProducers int
-    ActiveConsumers int
-    mutex         sync.RWMutex
-}
-
-// NewProducerConsumerSystem 创建生产者-消费者系统
-func NewProducerConsumerSystem(bufferSize, producerCount, consumerCount int) *ProducerConsumerSystem {
-    ctx, cancel := context.WithCancel(context.Background())
-    
-    return &ProducerConsumerSystem{
-        Buffer:  *NewBuffer(bufferSize),
-        ctx:     ctx,
-        cancel:  cancel,
-        metrics: &SystemMetrics{},
-    }
-}
-
-// AddProducer 添加生产者
-func (pcs *ProducerConsumerSystem) AddProducer(id string, rate int) {
-    producer := NewProducer(id, rate, &pcs.Buffer)
-    pcs.Producers = append(pcs.Producers, producer)
-    producer.Start(&pcs.wg)
-}
-
-// AddConsumer 添加消费者
-func (pcs *ProducerConsumerSystem) AddConsumer(id string, rate int) {
-    consumer := NewConsumer(id, rate, &pcs.Buffer)
-    pcs.Consumers = append(pcs.Consumers, consumer)
-    consumer.Start(&pcs.wg)
-}
-
-// Start 启动系统
-func (pcs *ProducerConsumerSystem) Start() {
-    fmt.Printf("Starting Producer-Consumer System\n")
-    fmt.Printf("Buffer capacity: %d\n", pcs.Buffer.Capacity())
-    fmt.Printf("Producers: %d\n", len(pcs.Producers))
-    fmt.Printf("Consumers: %d\n", len(pcs.Consumers))
-}
-
-// Stop 停止系统
-func (pcs *ProducerConsumerSystem) Stop() {
-    fmt.Printf("Stopping Producer-Consumer System\n")
-    
-    pcs.cancel()
-    
-    // 停止所有生产者
-    for _, producer := range pcs.Producers {
-        producer.Stop()
-    }
-    
-    // 停止所有消费者
-    for _, consumer := range pcs.Consumers {
-        consumer.Stop()
-    }
-    
-    // 等待所有goroutine完成
-    pcs.wg.Wait()
-    
-    fmt.Printf("Producer-Consumer System stopped\n")
-}
-
-// GetMetrics 获取系统指标
-func (pcs *ProducerConsumerSystem) GetMetrics() SystemMetrics {
-    pcs.metrics.mutex.RLock()
-    defer pcs.metrics.mutex.RUnlock()
-    
-    metrics := *pcs.metrics
-    metrics.BufferSize = pcs.Buffer.Size()
-    metrics.ActiveProducers = len(pcs.Producers)
-    metrics.ActiveConsumers = len(pcs.Consumers)
-    
-    return metrics
+// Consume 消费单个数据项
+func (c *Consumer) Consume() *DataItem {
+    return c.buffer.Get()
 }
 ```
 
-## 4. 使用示例
+### 5.2 泛型实现
 
-### 4.1 基础使用
+```go
+package producerconsumer
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "sync"
+    "time"
+)
+
+// GenericDataItem 泛型数据项
+type GenericDataItem[T any] struct {
+    ID        string
+    Value     T
+    Timestamp time.Time
+}
+
+// NewGenericDataItem 创建泛型数据项
+func NewGenericDataItem[T any](id string, value T) *GenericDataItem[T] {
+    return &GenericDataItem[T]{
+        ID:        id,
+        Value:     value,
+        Timestamp: time.Now(),
+    }
+}
+
+// GetID 获取ID
+func (d *GenericDataItem[T]) GetID() string {
+    return d.ID
+}
+
+// GetValue 获取值
+func (d *GenericDataItem[T]) GetValue() T {
+    return d.Value
+}
+
+// GetTimestamp 获取时间戳
+func (d *GenericDataItem[T]) GetTimestamp() time.Time {
+    return d.Timestamp
+}
+
+// GenericBuffer 泛型缓冲区
+type GenericBuffer[T any] struct {
+    capacity int
+    items    []*GenericDataItem[T]
+    mutex    sync.Mutex
+    notEmpty *sync.Cond
+    notFull  *sync.Cond
+}
+
+// NewGenericBuffer 创建泛型缓冲区
+func NewGenericBuffer[T any](capacity int) *GenericBuffer[T] {
+    buffer := &GenericBuffer[T]{
+        capacity: capacity,
+        items:    make([]*GenericDataItem[T], 0, capacity),
+    }
+    buffer.notEmpty = sync.NewCond(&buffer.mutex)
+    buffer.notFull = sync.NewCond(&buffer.mutex)
+    return buffer
+}
+
+// Put 放入数据项
+func (b *GenericBuffer[T]) Put(item *GenericDataItem[T]) {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    
+    // 等待缓冲区有空间
+    for len(b.items) >= b.capacity {
+        b.notFull.Wait()
+    }
+    
+    b.items = append(b.items, item)
+    b.notEmpty.Signal()
+}
+
+// PutWithTimeout 带超时的放入
+func (b *GenericBuffer[T]) PutWithTimeout(item *GenericDataItem[T], timeout time.Duration) error {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    
+    // 等待缓冲区有空间，带超时
+    done := make(chan struct{})
+    go func() {
+        for len(b.items) >= b.capacity {
+            b.notFull.Wait()
+        }
+        close(done)
+    }()
+    
+    select {
+    case <-done:
+        b.items = append(b.items, item)
+        b.notEmpty.Signal()
+        return nil
+    case <-time.After(timeout):
+        return context.DeadlineExceeded
+    }
+}
+
+// Get 获取数据项
+func (b *GenericBuffer[T]) Get() *GenericDataItem[T] {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    
+    // 等待缓冲区有数据
+    for len(b.items) == 0 {
+        b.notEmpty.Wait()
+    }
+    
+    item := b.items[0]
+    b.items = b.items[1:]
+    b.notFull.Signal()
+    return item
+}
+
+// GetWithTimeout 带超时的获取
+func (b *GenericBuffer[T]) GetWithTimeout(timeout time.Duration) (*GenericDataItem[T], error) {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    
+    // 等待缓冲区有数据，带超时
+    done := make(chan struct{})
+    go func() {
+        for len(b.items) == 0 {
+            b.notEmpty.Wait()
+        }
+        close(done)
+    }()
+    
+    select {
+    case <-done:
+        item := b.items[0]
+        b.items = b.items[1:]
+        b.notFull.Signal()
+        return item, nil
+    case <-time.After(timeout):
+        var zero *GenericDataItem[T]
+        return zero, context.DeadlineExceeded
+    }
+}
+
+// Size 获取缓冲区大小
+func (b *GenericBuffer[T]) Size() int {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    return len(b.items)
+}
+
+// IsEmpty 检查是否为空
+func (b *GenericBuffer[T]) IsEmpty() bool {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    return len(b.items) == 0
+}
+
+// IsFull 检查是否已满
+func (b *GenericBuffer[T]) IsFull() bool {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    return len(b.items) >= b.capacity
+}
+
+// GenericProducer 泛型生产者
+type GenericProducer[T any] struct {
+    id       string
+    buffer   *GenericBuffer[T]
+    rate     time.Duration
+    generator func(int) T
+    stopChan chan struct{}
+    wg       sync.WaitGroup
+}
+
+// NewGenericProducer 创建泛型生产者
+func NewGenericProducer[T any](id string, buffer *GenericBuffer[T], rate time.Duration, generator func(int) T) *GenericProducer[T] {
+    return &GenericProducer[T]{
+        id:        id,
+        buffer:    buffer,
+        rate:      rate,
+        generator: generator,
+        stopChan:  make(chan struct{}),
+    }
+}
+
+// Start 启动生产者
+func (p *GenericProducer[T]) Start() {
+    p.wg.Add(1)
+    go p.run()
+}
+
+// Stop 停止生产者
+func (p *GenericProducer[T]) Stop() {
+    close(p.stopChan)
+    p.wg.Wait()
+}
+
+// run 运行循环
+func (p *GenericProducer[T]) run() {
+    defer p.wg.Done()
+    
+    counter := 0
+    ticker := time.NewTicker(p.rate)
+    defer ticker.Stop()
+    
+    for {
+        select {
+        case <-p.stopChan:
+            return
+        case <-ticker.C:
+            value := p.generator(counter)
+            item := NewGenericDataItem[T](fmt.Sprintf("%s-%d", p.id, counter), value)
+            p.buffer.Put(item)
+            log.Printf("Producer %s produced: %s", p.id, item.GetID())
+            counter++
+        }
+    }
+}
+
+// Produce 生产单个数据项
+func (p *GenericProducer[T]) Produce(item *GenericDataItem[T]) {
+    p.buffer.Put(item)
+    log.Printf("Producer %s produced: %s", p.id, item.GetID())
+}
+
+// GenericConsumer 泛型消费者
+type GenericConsumer[T any] struct {
+    id       string
+    buffer   *GenericBuffer[T]
+    rate     time.Duration
+    processor func(*GenericDataItem[T])
+    stopChan chan struct{}
+    wg       sync.WaitGroup
+}
+
+// NewGenericConsumer 创建泛型消费者
+func NewGenericConsumer[T any](id string, buffer *GenericBuffer[T], rate time.Duration, processor func(*GenericDataItem[T])) *GenericConsumer[T] {
+    return &GenericConsumer[T]{
+        id:        id,
+        buffer:    buffer,
+        rate:      rate,
+        processor: processor,
+        stopChan:  make(chan struct{}),
+    }
+}
+
+// Start 启动消费者
+func (c *GenericConsumer[T]) Start() {
+    c.wg.Add(1)
+    go c.run()
+}
+
+// Stop 停止消费者
+func (c *GenericConsumer[T]) Stop() {
+    close(c.stopChan)
+    c.wg.Wait()
+}
+
+// run 运行循环
+func (c *GenericConsumer[T]) run() {
+    defer c.wg.Done()
+    
+    ticker := time.NewTicker(c.rate)
+    defer ticker.Stop()
+    
+    for {
+        select {
+        case <-c.stopChan:
+            return
+        case <-ticker.C:
+            item := c.buffer.Get()
+            c.processor(item)
+        }
+    }
+}
+
+// Consume 消费单个数据项
+func (c *GenericConsumer[T]) Consume() *GenericDataItem[T] {
+    return c.buffer.Get()
+}
+```
+
+### 5.3 实际应用示例
 
 ```go
 package main
 
 import (
     "fmt"
+    "log"
+    "math/rand"
     "sync"
     "time"
     
     "github.com/your-project/producerconsumer"
 )
 
+// LogProcessor 日志处理器
+type LogProcessor struct {
+    buffer   *producerconsumer.Buffer
+    producer *producerconsumer.Producer
+    consumer *producerconsumer.Consumer
+}
+
+// NewLogProcessor 创建日志处理器
+func NewLogProcessor() *LogProcessor {
+    buffer := producerconsumer.NewBuffer(100)
+    producer := producerconsumer.NewProducer("log-producer", buffer, 100*time.Millisecond)
+    consumer := producerconsumer.NewConsumer("log-consumer", buffer, 200*time.Millisecond)
+    
+    return &LogProcessor{
+        buffer:   buffer,
+        producer: producer,
+        consumer: consumer,
+    }
+}
+
+// Start 启动日志处理器
+func (lp *LogProcessor) Start() {
+    lp.producer.Start()
+    lp.consumer.Start()
+}
+
+// Stop 停止日志处理器
+func (lp *LogProcessor) Stop() {
+    lp.producer.Stop()
+    lp.consumer.Stop()
+}
+
+// AddLog 添加日志
+func (lp *LogProcessor) AddLog(message string) {
+    item := producerconsumer.NewDataItem(fmt.Sprintf("log-%d", rand.Int63()), message)
+    lp.producer.Produce(item)
+}
+
+// ImageProcessor 图像处理器
+type ImageProcessor struct {
+    buffer   *producerconsumer.GenericBuffer[string]
+    producer *producerconsumer.GenericProducer[string]
+    consumer *producerconsumer.GenericConsumer[string]
+}
+
+// NewImageProcessor 创建图像处理器
+func NewImageProcessor() *ImageProcessor {
+    buffer := producerconsumer.NewGenericBuffer[string](50)
+    
+    // 生产者生成图像文件名
+    producer := producerconsumer.NewGenericProducer[string](
+        "image-producer",
+        buffer,
+        150*time.Millisecond,
+        func(id int) string {
+            return fmt.Sprintf("image_%d.jpg", id)
+        },
+    )
+    
+    // 消费者处理图像
+    consumer := producerconsumer.NewGenericConsumer[string](
+        "image-consumer",
+        buffer,
+        300*time.Millisecond,
+        func(item *producerconsumer.GenericDataItem[string]) {
+            log.Printf("Processing image: %s", item.GetValue())
+            // 模拟图像处理
+            time.Sleep(100 * time.Millisecond)
+        },
+    )
+    
+    return &ImageProcessor{
+        buffer:   buffer,
+        producer: producer,
+        consumer: consumer,
+    }
+}
+
+// Start 启动图像处理器
+func (ip *ImageProcessor) Start() {
+    ip.producer.Start()
+    ip.consumer.Start()
+}
+
+// Stop 停止图像处理器
+func (ip *ImageProcessor) Stop() {
+    ip.producer.Stop()
+    ip.consumer.Stop()
+}
+
+// AddImage 添加图像
+func (ip *ImageProcessor) AddImage(filename string) {
+    item := producerconsumer.NewGenericDataItem[string](fmt.Sprintf("img-%d", rand.Int63()), filename)
+    ip.producer.Produce(item)
+}
+
+// DataStreamProcessor 数据流处理器
+type DataStreamProcessor struct {
+    buffer   *producerconsumer.GenericBuffer[int]
+    producer *producerconsumer.GenericProducer[int]
+    consumer *producerconsumer.GenericConsumer[int]
+}
+
+// NewDataStreamProcessor 创建数据流处理器
+func NewDataStreamProcessor() *DataStreamProcessor {
+    buffer := producerconsumer.NewGenericBuffer[int](200)
+    
+    // 生产者生成数据
+    producer := producerconsumer.NewGenericProducer[int](
+        "data-producer",
+        buffer,
+        50*time.Millisecond,
+        func(id int) int {
+            return rand.Intn(1000)
+        },
+    )
+    
+    // 消费者处理数据
+    consumer := producerconsumer.NewGenericConsumer[int](
+        "data-consumer",
+        buffer,
+        100*time.Millisecond,
+        func(item *producerconsumer.GenericDataItem[int]) {
+            value := item.GetValue()
+            result := value * value // 模拟数据处理
+            log.Printf("Processed data: %d -> %d", value, result)
+        },
+    )
+    
+    return &DataStreamProcessor{
+        buffer:   buffer,
+        producer: producer,
+        consumer: consumer,
+    }
+}
+
+// Start 启动数据流处理器
+func (dsp *DataStreamProcessor) Start() {
+    dsp.producer.Start()
+    dsp.consumer.Start()
+}
+
+// Stop 停止数据流处理器
+func (dsp *DataStreamProcessor) Stop() {
+    dsp.producer.Stop()
+    dsp.consumer.Stop()
+}
+
+// AddData 添加数据
+func (dsp *DataStreamProcessor) AddData(value int) {
+    item := producerconsumer.NewGenericDataItem[int](fmt.Sprintf("data-%d", rand.Int63()), value)
+    dsp.producer.Produce(item)
+}
+
 func main() {
-    // 创建生产者-消费者系统
-    system := producerconsumer.NewProducerConsumerSystem(10, 3, 2)
+    // 示例1: 日志处理
+    fmt.Println("=== 日志处理示例 ===")
+    logProcessor := NewLogProcessor()
+    logProcessor.Start()
     
-    // 添加生产者
-    system.AddProducer("producer-1", 5)  // 每秒5个
-    system.AddProducer("producer-2", 3)  // 每秒3个
-    system.AddProducer("producer-3", 2)  // 每秒2个
-    
-    // 添加消费者
-    system.AddConsumer("consumer-1", 4)  // 每秒4个
-    system.AddConsumer("consumer-2", 6)  // 每秒6个
-    
-    // 启动系统
-    system.Start()
-    
-    // 运行一段时间
-    time.Sleep(10 * time.Second)
-    
-    // 停止系统
-    system.Stop()
-    
-    // 打印最终指标
-    metrics := system.GetMetrics()
-    fmt.Printf("Final metrics: %+v\n", metrics)
-}
-```
-
-### 4.2 优先级处理
-
-```go
-// 优先级生产者-消费者示例
-func priorityExample() {
-    // 创建优先级缓冲区
-    priorities := []int{1, 2, 3} // 1=高优先级, 2=中优先级, 3=低优先级
-    buffer := producerconsumer.NewPriorityBuffer(20, priorities)
-    
-    var wg sync.WaitGroup
-    
-    // 启动生产者
-    for i := 0; i < 3; i++ {
-        wg.Add(1)
-        go func(id int) {
-            defer wg.Done()
-            
-            for j := 0; j < 10; j++ {
-                priority := (j % 3) + 1
-                item := &producerconsumer.DataItem{
-                    ID:        fmt.Sprintf("item-%d-%d", id, j),
-                    Data:      fmt.Sprintf("Data from producer %d", id),
-                    Timestamp: time.Now(),
-                    Priority:  priority,
-                }
-                
-                if err := buffer.Put(item); err != nil {
-                    fmt.Printf("Failed to put item: %v\n", err)
-                }
-                
-                time.Sleep(100 * time.Millisecond)
-            }
-        }(i)
+    // 添加一些日志
+    for i := 0; i < 10; i++ {
+        logProcessor.AddLog(fmt.Sprintf("Log message %d", i))
+        time.Sleep(50 * time.Millisecond)
     }
     
-    // 启动消费者
-    for i := 0; i < 2; i++ {
-        wg.Add(1)
-        go func(id int) {
-            defer wg.Done()
-            
-            for j := 0; j < 15; j++ {
-                item, err := buffer.Get()
-                if err != nil {
-                    fmt.Printf("Failed to get item: %v\n", err)
-                    continue
-                }
-                
-                dataItem := item.(*producerconsumer.DataItem)
-                fmt.Printf("Consumer %d consumed priority %d item: %s\n", 
-                    id, dataItem.Priority, dataItem.ID)
-                
-                time.Sleep(50 * time.Millisecond)
-            }
-        }(i)
+    time.Sleep(2 * time.Second)
+    logProcessor.Stop()
+    fmt.Println("日志处理完成")
+    
+    // 示例2: 图像处理
+    fmt.Println("\n=== 图像处理示例 ===")
+    imageProcessor := NewImageProcessor()
+    imageProcessor.Start()
+    
+    // 添加一些图像
+    for i := 0; i < 5; i++ {
+        imageProcessor.AddImage(fmt.Sprintf("user_upload_%d.jpg", i))
+        time.Sleep(100 * time.Millisecond)
     }
     
-    wg.Wait()
-}
-```
-
-### 4.3 带监控的系统
-
-```go
-// 带监控的生产者-消费者系统
-func monitoredExample() {
-    system := producerconsumer.NewProducerConsumerSystem(15, 2, 3)
+    time.Sleep(3 * time.Second)
+    imageProcessor.Stop()
+    fmt.Println("图像处理完成")
     
-    // 添加生产者和消费者
-    system.AddProducer("fast-producer", 10)
-    system.AddProducer("slow-producer", 2)
-    system.AddConsumer("fast-consumer", 8)
-    system.AddConsumer("medium-consumer", 3)
-    system.AddConsumer("slow-consumer", 1)
+    // 示例3: 数据流处理
+    fmt.Println("\n=== 数据流处理示例 ===")
+    dataProcessor := NewDataStreamProcessor()
+    dataProcessor.Start()
     
-    system.Start()
-    
-    // 监控系统
-    go func() {
-        ticker := time.NewTicker(1 * time.Second)
-        defer ticker.Stop()
-        
-        for {
-            select {
-            case <-ticker.C:
-                metrics := system.GetMetrics()
-                fmt.Printf("Metrics: Buffer=%d/%d, Produced=%d, Consumed=%d\n",
-                    metrics.BufferSize, system.Buffer.Capacity(),
-                    metrics.ProducedItems, metrics.ConsumedItems)
-            }
-        }
-    }()
-    
-    time.Sleep(15 * time.Second)
-    system.Stop()
-}
-```
-
-## 5. 性能分析
-
-### 5.1 时间复杂度
-
-| 操作 | 时间复杂度 | 说明 |
-|------|------------|------|
-| 生产 | O(1) | 直接入队 |
-| 消费 | O(1) | 直接出队 |
-| 优先级查找 | O(p) | p为优先级数量 |
-| 系统启动 | O(n+m) | n个生产者，m个消费者 |
-
-### 5.2 空间复杂度
-
-- **基础缓冲区**: O(capacity)
-- **优先级缓冲区**: O(capacity × priorityLevels)
-- **系统开销**: O(producers + consumers)
-
-### 5.3 吞吐量分析
-
-```mermaid
-graph TD
-    A[生产者速率] --> B[缓冲区容量]
-    B --> C[消费者速率]
-    C --> D[系统吞吐量]
-    
-    E[缓冲区满] --> F[生产者阻塞]
-    F --> G[吞吐量下降]
-    
-    H[缓冲区空] --> I[消费者阻塞]
-    I --> J[资源浪费]
-```
-
-## 6. 最佳实践
-
-### 6.1 缓冲区大小配置
-
-```go
-// 缓冲区大小计算
-func calculateBufferSize(producerRate, consumerRate, targetLatency int) int {
-    // 基于Little's Law: L = λW
-    // L = 缓冲区大小, λ = 到达率, W = 等待时间
-    arrivalRate := producerRate
-    serviceRate := consumerRate
-    
-    if arrivalRate >= serviceRate {
-        // 系统不稳定，需要更大的缓冲区
-        return arrivalRate * targetLatency / 1000
+    // 添加一些数据
+    for i := 0; i < 20; i++ {
+        dataProcessor.AddData(rand.Intn(100))
+        time.Sleep(30 * time.Millisecond)
     }
     
-    // 系统稳定，缓冲区可以较小
-    return max(10, arrivalRate/10)
+    time.Sleep(4 * time.Second)
+    dataProcessor.Stop()
+    fmt.Println("数据流处理完成")
+    
+    // 监控缓冲区状态
+    fmt.Printf("\n=== 缓冲区状态 ===\n")
+    fmt.Printf("日志处理器缓冲区大小: %d\n", logProcessor.buffer.Size())
+    fmt.Printf("图像处理器缓冲区大小: %d\n", imageProcessor.buffer.Size())
+    fmt.Printf("数据流处理器缓冲区大小: %d\n", dataProcessor.buffer.Size())
 }
 ```
 
-### 6.2 背压处理
+---
+
+## 6. 性能分析
+
+### 6.1 时间复杂度
+
+- **生产操作**: $O(1)$
+- **消费操作**: $O(1)$
+- **缓冲区操作**: $O(1)$
+- **同步操作**: $O(1)$
+
+### 6.2 空间复杂度
+
+- **缓冲区**: $O(capacity)$
+- **生产者**: $O(1)$ 每个生产者
+- **消费者**: $O(1)$ 每个消费者
+
+### 6.3 性能优化建议
+
+1. **缓冲区大小调优**: 根据生产和消费速率调整
+2. **多生产者/消费者**: 提高并发处理能力
+3. **批量处理**: 支持批量生产和消费
+4. **优先级队列**: 实现优先级处理
+5. **背压控制**: 实现流控机制
+
+---
+
+## 7. 应用场景
+
+### 7.1 适用场景
+
+1. **日志处理**: 异步日志收集和处理
+2. **图像处理**: 批量图像处理管道
+3. **数据流处理**: 实时数据处理
+4. **消息队列**: 分布式消息传递
+5. **事件处理**: 异步事件处理系统
+
+### 7.2 使用示例
 
 ```go
-// 背压处理策略
-type BackpressureStrategy interface {
-    HandleBackpressure(producer *Producer) error
+// 文件上传处理
+type FileUploadProcessor struct {
+    buffer   *producerconsumer.Buffer
+    producer *producerconsumer.Producer
+    consumer *producerconsumer.Consumer
 }
 
-// 丢弃策略
-type DropStrategy struct{}
-
-func (d *DropStrategy) HandleBackpressure(producer *Producer) error {
-    // 丢弃新数据项
-    return fmt.Errorf("buffer full, dropping item")
+func (fup *FileUploadProcessor) HandleUpload(file *File) {
+    item := producerconsumer.NewDataItem(file.Name, file)
+    fup.producer.Produce(item)
 }
 
-// 阻塞策略
-type BlockStrategy struct{}
+// 数据库写入
+type DatabaseWriter struct {
+    buffer   *producerconsumer.GenericBuffer[*Record]
+    producer *producerconsumer.GenericProducer[*Record]
+    consumer *producerconsumer.GenericConsumer[*Record]
+}
 
-func (b *BlockStrategy) HandleBackpressure(producer *Producer) error {
-    // 阻塞生产者
-    return producer.Buffer.Put(nil) // 会阻塞直到有空间
+func (dw *DatabaseWriter) WriteRecord(record *Record) {
+    item := producerconsumer.NewGenericDataItem[*Record](record.ID, record)
+    dw.producer.Produce(item)
 }
 ```
 
-### 6.3 错误恢复
+---
+
+## 8. 优缺点分析
+
+### 8.1 优点
+
+1. **解耦**: 生产和消费逻辑分离
+2. **缓冲**: 平衡速度差异
+3. **并发**: 支持多生产者/消费者
+4. **安全**: 线程安全保证
+5. **可扩展**: 易于扩展和修改
+
+### 8.2 缺点
+
+1. **内存开销**: 需要缓冲区存储
+2. **延迟**: 可能增加处理延迟
+3. **复杂性**: 增加系统复杂度
+4. **死锁风险**: 不当使用可能导致死锁
+5. **资源竞争**: 可能产生竞争条件
+
+### 8.3 权衡考虑
+
+| 方面 | 直接调用 | 生产者-消费者模式 |
+|------|----------|-------------------|
+| 解耦 | 低 | 高 |
+| 性能 | 高 | 中等 |
+| 内存 | 低 | 高 |
+| 复杂度 | 低 | 高 |
+| 可扩展性 | 低 | 高 |
+
+---
+
+## 9. 相关模式
+
+### 9.1 模式关系
+
+- **线程池模式**: 可以用于生产者或消费者
+- **管道模式**: 多个生产者-消费者串联
+- **发布-订阅模式**: 一对多的生产者-消费者
+- **工作窃取模式**: 可以优化任务分配
+
+### 9.2 模式组合
 
 ```go
-// 错误恢复机制
-func (p *Producer) produceWithRecovery() error {
-    defer func() {
-        if r := recover(); r != nil {
-            fmt.Printf("Producer %s recovered from panic: %v\n", p.ID, r)
-        }
-    }()
-    
-    return p.produce()
+// 管道模式
+type Pipeline struct {
+    stages []*producerconsumer.Buffer
+    // ...
 }
 
-func (c *Consumer) consumeWithRecovery() error {
-    defer func() {
-        if r := recover(); r != nil {
-            fmt.Printf("Consumer %s recovered from panic: %v\n", c.ID, r)
-        }
-    }()
-    
-    return c.consume()
+// 发布-订阅模式
+type PubSub struct {
+    publishers  []*producerconsumer.Producer
+    subscribers []*producerconsumer.Consumer
+    // ...
 }
 ```
 
-## 7. 与其他模式的比较
+---
 
-| 模式 | 适用场景 | 复杂度 | 性能 |
-|------|----------|--------|------|
-| 生产者-消费者 | 异步处理 | 中等 | 高 |
-| 发布-订阅 | 一对多通信 | 高 | 中等 |
-| 消息队列 | 分布式系统 | 高 | 中等 |
-| 管道 | 流式处理 | 低 | 高 |
+## 10. 总结
 
-## 8. 总结
+生产者-消费者模式是一种重要的并发设计模式，通过缓冲区解耦生产和消费逻辑，提供高效的异步处理能力。在Go语言中，该模式可以很好地利用goroutine和channel的特性。
 
-生产者-消费者模式是并发编程中的基础模式，通过缓冲区和同步机制实现了高效的数据处理流水线。在Go语言中，我们可以使用channel和goroutine来优雅地实现这个模式。
+### 10.1 关键要点
 
-**关键优势**:
-- 解耦生产者和消费者
-- 控制并发度
-- 提供缓冲能力
-- 支持优先级处理
+1. **解耦**: 分离生产和消费逻辑
+2. **缓冲**: 使用缓冲区平衡速度差异
+3. **同步**: 通过条件变量实现同步
+4. **并发**: 支持多生产者/消费者
 
-**适用场景**:
-- 数据处理流水线
-- 日志处理系统
-- 图像/视频处理
+### 10.2 最佳实践
+
+1. **合理设置缓冲区大小**: 根据负载调整
+2. **监控性能指标**: 定期监控缓冲区状态
+3. **错误处理**: 正确处理超时和异常
+4. **资源管理**: 正确关闭生产者和消费者
+5. **负载测试**: 进行充分的负载测试
+
+### 10.3 未来发展方向
+
+1. **智能缓冲**: 动态调整缓冲区大小
+2. **优先级支持**: 实现优先级处理
+3. **分布式扩展**: 支持分布式生产者-消费者
+4. **流控机制**: 实现背压控制
+5. **监控集成**: 与监控系统集成
+
+---
+
+**参考文献**:
+1. Goetz, B. (2006). Java Concurrency in Practice
+2. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency
+3. Producer-Consumer Pattern: https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem
+4. Go sync package: https://golang.org/pkg/sync/ 
 - 实时数据流处理 
