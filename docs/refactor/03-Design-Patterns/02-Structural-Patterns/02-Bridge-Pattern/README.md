@@ -31,6 +31,7 @@ $$B: A \times I \rightarrow \text{System}$$
 $$\text{BridgePattern} = \langle A, I, B \rangle$$
 
 其中：
+
 - $A$: 抽象集合
 - $I$: 实现集合
 - $B$: 桥接函数
@@ -47,6 +48,7 @@ $$\forall a \in A, \forall i \in I: \text{change}(a) \not\Rightarrow \text{chang
 $$A \perp I$$
 
 **证明**:
+
 1. 抽象层只依赖抽象接口
 2. 实现层只依赖具体实现
 3. 两者通过桥接接口连接
@@ -58,6 +60,7 @@ $$A \perp I$$
 $$\forall a \in A, \forall i \in I: B(a, i) \text{ is valid}$$
 
 **证明**:
+
 1. 抽象和实现通过接口连接
 2. 任何抽象都可以与任何实现组合
 3. 组合结果满足系统规范
@@ -528,21 +531,25 @@ func TestDatabaseBridge(t *testing.T) {
 ## 最佳实践
 
 ### 1. 接口设计
+
 - 保持抽象接口简洁
 - 实现接口职责单一
 - 避免接口污染
 
 ### 2. 实现选择
+
 - 根据具体需求选择合适的实现
 - 考虑性能和可维护性
 - 支持运行时切换实现
 
 ### 3. 扩展性
+
 - 支持新的抽象类型
 - 支持新的实现类型
 - 保持向后兼容性
 
 ### 4. 错误处理
+
 - 实现层处理具体错误
 - 抽象层提供统一错误接口
 - 提供有意义的错误信息
@@ -553,4 +560,4 @@ func TestDatabaseBridge(t *testing.T) {
 **最后更新**: 2024-01-06  
 **版本**: v1.0.0  
 
-<(￣︶￣)↗[GO!] 桥接模式，解耦之基！ 
+<(￣︶￣)↗[GO!] 桥接模式，解耦之基！

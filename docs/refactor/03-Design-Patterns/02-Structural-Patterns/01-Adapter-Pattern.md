@@ -8,19 +8,34 @@
 
 ### 数学定义
 
-设 $I_{\text{target}}$ 为目标接口，$I_{\text{source}}$ 为源接口，适配器 $A$ 定义为：
+设 $T$ 为目标接口，$A$ 为适配器，$S$ 为源对象，适配器模式满足以下公理：
 
-$$A: I_{\text{source}} \rightarrow I_{\text{target}}$$
+$$\forall s \in S, \exists a \in A: \text{adapt}(s) \rightarrow T$$
 
-对于任意 $x \in I_{\text{source}}$，有 $A(x) \in I_{\text{target}}$。
+**形式化约束**：
+
+- **接口转换**: $\forall t \in T: \exists s \in S: \text{map}(s, t)$
+- **功能保持**: $\text{function}(s) \iff \text{function}(\text{adapt}(s))$
+- **透明性**: $\text{client}(t) \land \text{use}(a) \implies \text{unaware}(s)$
 
 ### 类型理论定义
 
-在类型理论中，适配器模式可以表示为：
+```go
+// 目标接口
+type Target interface {
+    Request() string
+}
 
-$$\frac{\Gamma \vdash e : S \quad \Gamma \vdash A : S \rightarrow T}{\Gamma \vdash A(e) : T}$$
+// 源对象
+type Adaptee struct {
+    SpecificRequest() string
+}
 
-其中 $S$ 是源类型，$T$ 是目标类型，$A$ 是适配器函数。
+// 适配器
+type Adapter struct {
+    adaptee *Adaptee
+}
+```
 
 ## Go语言实现
 
