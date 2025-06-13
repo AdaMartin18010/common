@@ -5,15 +5,35 @@
 - [01-活动对象模式 (Active Object Pattern)](#01-活动对象模式-active-object-pattern)
   - [目录](#目录)
   - [1. 概述](#1-概述)
-  - [2. 形式化定义](#2-形式化定义)
-  - [3. 数学基础](#3-数学基础)
-  - [4. 模式结构](#4-模式结构)
-  - [5. Go语言实现](#5-go语言实现)
-  - [6. 性能分析](#6-性能分析)
-  - [7. 应用场景](#7-应用场景)
-  - [8. 优缺点分析](#8-优缺点分析)
-  - [9. 相关模式](#9-相关模式)
-  - [10. 总结](#10-总结)
+    - [1.1 定义](#11-定义)
+    - [1.2 形式化定义](#12-形式化定义)
+    - [1.3 数学性质](#13-数学性质)
+    - [1.4 设计目标](#14-设计目标)
+  - [2. 模式结构](#2-模式结构)
+    - [2.1 核心组件](#21-核心组件)
+    - [2.2 组件职责](#22-组件职责)
+  - [3. Go语言实现](#3-go语言实现)
+    - [3.1 基础实现](#31-基础实现)
+    - [3.2 泛型实现](#32-泛型实现)
+    - [3.3 函数式实现](#33-函数式实现)
+  - [4. 性能分析](#4-性能分析)
+    - [4.1 时间复杂度](#41-时间复杂度)
+    - [4.2 空间复杂度](#42-空间复杂度)
+    - [4.3 并发性能](#43-并发性能)
+  - [5. 应用场景](#5-应用场景)
+    - [5.1 适用场景](#51-适用场景)
+    - [5.2 实际应用示例](#52-实际应用示例)
+  - [6. 优缺点分析](#6-优缺点分析)
+    - [6.1 优点](#61-优点)
+    - [6.2 缺点](#62-缺点)
+    - [6.3 权衡考虑](#63-权衡考虑)
+  - [7. 相关模式](#7-相关模式)
+    - [7.1 模式关系](#71-模式关系)
+    - [7.2 模式组合](#72-模式组合)
+  - [8. 总结](#8-总结)
+    - [8.1 关键要点](#81-关键要点)
+    - [8.2 最佳实践](#82-最佳实践)
+    - [8.3 未来发展方向](#83-未来发展方向)
 
 ---
 
@@ -30,6 +50,7 @@
 $$\text{ActiveObject} = (O, M, Q, \text{execute}, \text{schedule})$$
 
 其中：
+
 - $\text{execute}: Q \times M \rightarrow \text{Future}[T]$ 为执行函数
 - $\text{schedule}: M \times \text{Args} \rightarrow \text{Message}$ 为调度函数
 
@@ -582,7 +603,8 @@ type CommandActiveObject struct {
 ---
 
 **参考文献**:
+
 1. Schmidt, D., Stal, M., Rohnert, H., & Buschmann, F. (2000). Pattern-Oriented Software Architecture, Volume 2: Patterns for Concurrent and Networked Objects
 2. Goetz, B. (2006). Java Concurrency in Practice
-3. Go Language Specification: https://golang.org/ref/spec
-4. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency 
+3. Go Language Specification: <https://golang.org/ref/spec>
+4. Go Concurrency Patterns: <https://golang.org/doc/effective_go.html#concurrency>

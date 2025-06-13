@@ -100,26 +100,38 @@
 ### 2.2 操作语义
 
 **公理 2.1** (读锁获取)
+
+```latex
 对于读者 $r$ 和读写锁 $l$：
 $$read\_lock(l, r) = \begin{cases}
 acquire(mutex) \land add(readers, r) \land release(mutex) & \text{if } |writers| = 0 \\
 block(r) & \text{otherwise}
 \end{cases}$$
+```
 
 **公理 2.2** (读锁释放)
+
+```latex
 对于读者 $r$ 和读写锁 $l$：
 $$read\_unlock(l, r) = acquire(mutex) \land remove(readers, r) \land signal(writers) \land release(mutex)$$
+```
 
 **公理 2.3** (写锁获取)
+
+```latex
 对于写者 $w$ 和读写锁 $l$：
 $$write\_lock(l, w) = \begin{cases}
 acquire(mutex) \land add(writers, w) \land release(mutex) & \text{if } |readers| = 0 \land |writers| = 0 \\
 block(w) & \text{otherwise}
 \end{cases}$$
+```
 
 **公理 2.4** (写锁释放)
+
+```latex
 对于写者 $w$ 和读写锁 $l$：
 $$write\_unlock(l, w) = acquire(mutex) \land remove(writers, w) \land broadcast(readers) \land release(mutex)$$
+```
 
 ### 2.3 一致性约束
 
@@ -136,6 +148,7 @@ $$\forall w \in writers: \text{独占访问，排斥所有其他操作}$$
 $$\text{写者执行时，没有读者或其他写者同时执行}$$
 
 **证明**:
+
 1. 写锁获取时检查 $|readers| = 0 \land |writers| = 0$
 2. 读锁获取时检查 $|writers| = 0$
 3. 因此保证了安全性
@@ -1112,7 +1125,8 @@ type MonitorReadWriteLock struct {
 ---
 
 **参考文献**:
+
 1. Goetz, B. (2006). Java Concurrency in Practice
-2. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency
-3. Go sync package: https://golang.org/pkg/sync/
-4. Readers-Writer Lock: https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock
+2. Go Concurrency Patterns: <https://golang.org/doc/effective_go.html#concurrency>
+3. Go sync package: <https://golang.org/pkg/sync/>
+4. Readers-Writer Lock: <https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock>

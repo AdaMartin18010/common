@@ -91,38 +91,53 @@
 - $args$ 是函数参数
 
 **定义 2.3** (工作线程)
+
+```latex
 工作线程是一个三元组 $(t, pool, state)$，其中：
 
 - $t \in T$ 是线程实例
 - $pool \in P$ 是所属线程池
 - $state \in \{idle, busy, terminated\}$ 是线程状态
+```
 
 ### 2.2 操作语义
 
 **公理 2.1** (任务提交)
+
+```latex
 对于线程池 $p$ 和任务 $j$：
 $$submit(p, j) = enqueue(queue, j)$$
+```
 
 **公理 2.2** (任务执行)
+
+```latex
 对于工作线程 $t$ 和任务 $j$：
 $$execute(t, j) = \begin{cases}
 function(args) & \text{if } state(t) = idle \\
 block(t) & \text{otherwise}
 \end{cases}$$
+```
 
 **公理 2.3** (线程创建)
+
+```latex
 对于线程池 $p$：
 $$create\_worker(p) = \begin{cases}
 new\_thread() & \text{if } |workers| < max\_size \\
 null & \text{otherwise}
 \end{cases}$$
+```
 
 **公理 2.4** (线程销毁)
+
+```latex
 对于工作线程 $t$：
 $$destroy\_worker(t) = \begin{cases}
 terminate(t) & \text{if } |workers| > min\_size \\
 null & \text{otherwise}
 \end{cases}$$
+```
 
 ### 2.3 线程池策略
 
@@ -147,15 +162,18 @@ $$queue\_capacity = |queue|$$
 线程池可以建模为M/M/c队列系统：
 
 **定义 3.1** (M/M/c队列)
+
 - 任务到达服从泊松分布，到达率为 $\lambda$
 - 服务时间服从指数分布，服务率为 $\mu$
 - 有 $c$ 个服务窗口（线程）
 
 **定理 3.1** (系统利用率)
+
 系统利用率定义为：
 $$\rho = \frac{\lambda}{c\mu}$$
 
 **定理 3.2** (平均等待时间)
+
 对于M/M/c队列，平均等待时间：
 $$W_q = \frac{P_0(\lambda/\mu)^c\rho}{c!(1-\rho)^2\lambda}$$
 
@@ -164,18 +182,22 @@ $$W_q = \frac{P_0(\lambda/\mu)^c\rho}{c!(1-\rho)^2\lambda}$$
 ### 3.2 性能分析
 
 **定义 3.2** (吞吐量)
+
 吞吐量是单位时间内处理的任务数：
 $$Throughput = \frac{completed\_tasks}{time}$$
 
 **定义 3.3** (响应时间)
+
 响应时间是任务从提交到完成的时间：
 $$Response\_Time = Queue\_Time + Service\_Time$$
 
 **定理 3.3** (最优线程数)
+
 在CPU密集型任务下，最优线程数近似等于CPU核心数：
 $$optimal\_threads \approx CPU\_cores$$
 
 **定理 3.4** (I/O密集型任务)
+
 在I/O密集型任务下，最优线程数可以大于CPU核心数：
 $$optimal\_threads > CPU\_cores$$
 
@@ -1375,7 +1397,8 @@ type FutureThreadPool struct {
 ---
 
 **参考文献**:
+
 1. Goetz, B. (2006). Java Concurrency in Practice
-2. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency
-3. Go sync package: https://golang.org/pkg/sync/
-4. Thread Pool Design Pattern: https://en.wikipedia.org/wiki/Thread_pool
+2. Go Concurrency Patterns: <https://golang.org/doc/effective_go.html#concurrency>
+3. Go sync package: <https://golang.org/pkg/sync/>
+4. Thread Pool Design Pattern: <https://en.wikipedia.org/wiki/Thread_pool>

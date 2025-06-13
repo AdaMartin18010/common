@@ -75,59 +75,82 @@
 设 $P$ 为生产者集合，$C$ 为消费者集合，$B$ 为缓冲区集合，$D$ 为数据集合。
 
 **定义 2.1** (生产者)
+
+```latex
 生产者是一个三元组 $(p, buffer, rate)$，其中：
 
 - $p \in P$ 是生产者实例
 - $buffer \in B$ 是目标缓冲区
 - $rate$ 是生产速率
+```
 
 **定义 2.2** (消费者)
+
+```latex
 消费者是一个三元组 $(c, buffer, rate)$，其中：
 
 - $c \in C$ 是消费者实例
 - $buffer \in B$ 是源缓冲区
 - $rate$ 是消费速率
+```
 
 **定义 2.3** (缓冲区)
+
+```latex
 缓冲区是一个四元组 $(b, capacity, items, mutex)$，其中：
 
 - $b \in B$ 是缓冲区实例
 - $capacity$ 是缓冲区容量
 - $items \subseteq D$ 是缓冲区中的数据项
 - $mutex$ 是互斥锁
+```
 
 ### 2.2 操作语义
 
 **公理 2.1** (生产操作)
+
+```latex
 对于生产者 $p$ 和数据项 $d$：
 $$produce(p, d) = \begin{cases}
 enqueue(buffer, d) & \text{if } |items| < capacity \\
 block(p) & \text{otherwise}
 \end{cases}$$
+```
 
 **公理 2.2** (消费操作)
+
+```latex
 对于消费者 $c$：
+
 $$consume(c) = \begin{cases}
 dequeue(buffer) & \text{if } |items| > 0 \\
 block(c) & \text{otherwise}
 \end{cases}$$
 
+```
+
 **公理 2.3** (缓冲区操作)
+
+```latex
 对于缓冲区 $b$ 和数据项 $d$：
 $$enqueue(b, d) = acquire(mutex) \land add(items, d) \land release(mutex)$$
 $$dequeue(b) = acquire(mutex) \land remove(items) \land release(mutex)$$
+```
 
 ### 2.3 同步约束
 
 **定义 2.4** (满缓冲区)
+
 缓冲区满的条件：
 $$full(buffer) \Leftrightarrow |items| = capacity$$
 
 **定义 2.5** (空缓冲区)
+
 缓冲区空的条件：
 $$empty(buffer) \Leftrightarrow |items| = 0$$
 
 **定理 2.1** (线程安全)
+
 生产者-消费者模式保证线程安全，当且仅当：
 $$\forall p_1, p_2 \in P, \forall c_1, c_2 \in C: \text{所有操作都通过互斥锁保护}$$
 
@@ -140,12 +163,14 @@ $$\forall p_1, p_2 \in P, \forall c_1, c_2 \in C: \text{所有操作都通过互
 生产者-消费者模式可以建模为M/M/1/K队列系统：
 
 **定义 3.1** (M/M/1/K队列)
+
 - 到达服从泊松分布，到达率为 $\lambda$ (生产速率)
 - 服务时间服从指数分布，服务率为 $\mu$ (消费速率)
 - 系统容量为 $K$ (缓冲区大小)
 - 单服务窗口
 
 **定理 3.1** (系统利用率)
+
 系统利用率：
 $$\rho = \frac{\lambda}{\mu}$$
 
@@ -1201,8 +1226,10 @@ type PubSub struct {
 ---
 
 **参考文献**:
+
 1. Goetz, B. (2006). Java Concurrency in Practice
-2. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency
-3. Producer-Consumer Pattern: https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem
-4. Go sync package: https://golang.org/pkg/sync/
+2. Go Concurrency Patterns: <https://golang.org/doc/effective_go.html#concurrency>
+3. Producer-Consumer Pattern: <https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem>
+4. Go sync package: <https://golang.org/pkg/sync/>
+
 - 实时数据流处理

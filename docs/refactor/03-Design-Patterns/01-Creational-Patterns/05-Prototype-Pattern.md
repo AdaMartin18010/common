@@ -540,6 +540,7 @@ func (c *Config) CloneForEnvironment(env string) *Config {
 ---
 
 **相关链接**:
+
 - [返回创建型模式](../README.md#1-创建型模式-creational-patterns)
 - [下一个模式: 适配器模式](../02-Structural-Patterns/01-Adapter-Pattern.md)
-- [设计模式总览](../../README.md#3-设计模式层-03-design-patterns) 
+- [设计模式总览](../../README.md#3-设计模式层-03-design-patterns)
