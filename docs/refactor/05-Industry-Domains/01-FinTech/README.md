@@ -10,6 +10,7 @@
 
 **定义 1.1** (金融系统)
 金融系统是一个五元组 $\mathcal{FS} = (A, T, B, R, \phi)$，其中：
+
 - $A$ 是账户集合
 - $T$ 是交易集合
 - $B$ 是余额函数 $B: A \rightarrow \mathbb{R}$
@@ -18,6 +19,7 @@
 
 **公理 1.1** (金融系统公理)
 对于任意金融系统 $\mathcal{FS}$：
+
 1. **余额守恒**: $\forall t \in T: \sum_{a \in A} B(a) = \sum_{a \in A} B(\phi(t, a))$
 2. **交易原子性**: $\forall t \in T: \text{atomic}(t)$
 3. **一致性**: $\forall t_1, t_2 \in T: \text{consistent}(t_1, t_2)$
@@ -26,6 +28,7 @@
 
 **定义 1.2** (支付系统)
 支付系统是一个四元组 $\mathcal{PS} = (P, M, V, \psi)$，其中：
+
 - $P$ 是支付方式集合
 - $M$ 是消息集合
 - $V$ 是验证函数 $V: M \rightarrow \text{Boolean}$
@@ -621,6 +624,7 @@ func ExampleRiskControl() {
 
 **定义 1.5** (银行账户)
 银行账户是一个三元组 $\mathcal{BA} = (A, B, H)$，其中：
+
 - $A$ 是账户标识符
 - $B$ 是余额函数 $B: \text{Time} \rightarrow \mathbb{R}$
 - $H$ 是交易历史 $H: \text{Time} \rightarrow \text{Transaction}$
@@ -996,4 +1000,4 @@ func (spp *SecurePaymentProcessor) ProcessSecurePayment(req *SecurePaymentReques
 
 ---
 
-**构建原则**: 严格数学规范，形式化证明，Go语言实现！<(￣︶￣)↗[GO!] 
+**构建原则**: 严格数学规范，形式化证明，Go语言实现！<(￣︶￣)↗[GO!]
