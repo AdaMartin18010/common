@@ -5,15 +5,41 @@
 - [04-生产者-消费者模式 (Producer-Consumer Pattern)](#04-生产者-消费者模式-producer-consumer-pattern)
   - [目录](#目录)
   - [1. 概述](#1-概述)
+    - [1.1 定义](#11-定义)
+    - [1.2 核心思想](#12-核心思想)
+    - [1.3 设计目标](#13-设计目标)
   - [2. 形式化定义](#2-形式化定义)
+    - [2.1 基本概念](#21-基本概念)
+    - [2.2 操作语义](#22-操作语义)
+    - [2.3 同步约束](#23-同步约束)
   - [3. 数学基础](#3-数学基础)
+    - [3.1 队列理论](#31-队列理论)
+    - [3.2 性能分析](#32-性能分析)
   - [4. 模式结构](#4-模式结构)
+    - [4.1 类图](#41-类图)
+    - [4.2 时序图](#42-时序图)
   - [5. Go语言实现](#5-go语言实现)
+    - [5.1 基础实现](#51-基础实现)
+    - [5.2 泛型实现](#52-泛型实现)
+    - [5.3 实际应用示例](#53-实际应用示例)
   - [6. 性能分析](#6-性能分析)
+    - [6.1 时间复杂度](#61-时间复杂度)
+    - [6.2 空间复杂度](#62-空间复杂度)
+    - [6.3 性能优化建议](#63-性能优化建议)
   - [7. 应用场景](#7-应用场景)
+    - [7.1 适用场景](#71-适用场景)
+    - [7.2 使用示例](#72-使用示例)
   - [8. 优缺点分析](#8-优缺点分析)
+    - [8.1 优点](#81-优点)
+    - [8.2 缺点](#82-缺点)
+    - [8.3 权衡考虑](#83-权衡考虑)
   - [9. 相关模式](#9-相关模式)
+    - [9.1 模式关系](#91-模式关系)
+    - [9.2 模式组合](#92-模式组合)
   - [10. 总结](#10-总结)
+    - [10.1 关键要点](#101-关键要点)
+    - [10.2 最佳实践](#102-最佳实践)
+    - [10.3 未来发展方向](#103-未来发展方向)
 
 ---
 
@@ -26,6 +52,7 @@
 ### 1.2 核心思想
 
 生产者-消费者模式的核心思想是：
+
 - **解耦**: 生产者和消费者通过缓冲区解耦，互不直接依赖
 - **缓冲**: 使用缓冲区平衡生产和消费速度的差异
 - **同步**: 通过同步机制确保线程安全
@@ -49,18 +76,21 @@
 
 **定义 2.1** (生产者)
 生产者是一个三元组 $(p, buffer, rate)$，其中：
+
 - $p \in P$ 是生产者实例
 - $buffer \in B$ 是目标缓冲区
 - $rate$ 是生产速率
 
 **定义 2.2** (消费者)
 消费者是一个三元组 $(c, buffer, rate)$，其中：
+
 - $c \in C$ 是消费者实例
 - $buffer \in B$ 是源缓冲区
 - $rate$ 是消费速率
 
 **定义 2.3** (缓冲区)
 缓冲区是一个四元组 $(b, capacity, items, mutex)$，其中：
+
 - $b \in B$ 是缓冲区实例
 - $capacity$ 是缓冲区容量
 - $items \subseteq D$ 是缓冲区中的数据项
@@ -157,7 +187,7 @@ classDiagram
         +Run()
         +Stop()
     }
-    
+
     class Consumer {
         -id: string
         -buffer: Buffer
@@ -166,7 +196,7 @@ classDiagram
         +Run()
         +Stop()
     }
-    
+
     class Buffer {
         -capacity: int
         -items: []interface{}
@@ -179,7 +209,7 @@ classDiagram
         +IsEmpty()
         +IsFull()
     }
-    
+
     class DataItem {
         -id: string
         -value: interface{}
@@ -188,7 +218,7 @@ classDiagram
         +GetValue()
         +GetTimestamp()
     }
-    
+
     Producer --> Buffer
     Consumer --> Buffer
     Buffer --> DataItem
@@ -201,7 +231,7 @@ sequenceDiagram
     participant P as Producer
     participant B as Buffer
     participant C as Consumer
-    
+
     P->>B: Put(item)
     alt Buffer not full
         B->>B: enqueue(item)
@@ -210,7 +240,7 @@ sequenceDiagram
     else Buffer full
         B->>P: block until notFull
     end
-    
+
     C->>B: Get()
     alt Buffer not empty
         B->>B: dequeue(item)
@@ -293,12 +323,12 @@ func NewBuffer(capacity int) *Buffer {
 func (b *Buffer) Put(item *DataItem) {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    
+
     // 等待缓冲区有空间
     for len(b.items) >= b.capacity {
         b.notFull.Wait()
     }
-    
+
     b.items = append(b.items, item)
     b.notEmpty.Signal()
 }
@@ -307,7 +337,7 @@ func (b *Buffer) Put(item *DataItem) {
 func (b *Buffer) PutWithTimeout(item *DataItem, timeout time.Duration) error {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    
+
     // 等待缓冲区有空间，带超时
     done := make(chan struct{})
     go func() {
@@ -316,7 +346,7 @@ func (b *Buffer) PutWithTimeout(item *DataItem, timeout time.Duration) error {
         }
         close(done)
     }()
-    
+
     select {
     case <-done:
         b.items = append(b.items, item)
@@ -331,12 +361,12 @@ func (b *Buffer) PutWithTimeout(item *DataItem, timeout time.Duration) error {
 func (b *Buffer) Get() *DataItem {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    
+
     // 等待缓冲区有数据
     for len(b.items) == 0 {
         b.notEmpty.Wait()
     }
-    
+
     item := b.items[0]
     b.items = b.items[1:]
     b.notFull.Signal()
@@ -347,7 +377,7 @@ func (b *Buffer) Get() *DataItem {
 func (b *Buffer) GetWithTimeout(timeout time.Duration) (*DataItem, error) {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    
+
     // 等待缓冲区有数据，带超时
     done := make(chan struct{})
     go func() {
@@ -356,7 +386,7 @@ func (b *Buffer) GetWithTimeout(timeout time.Duration) (*DataItem, error) {
         }
         close(done)
     }()
-    
+
     select {
     case <-done:
         item := b.items[0]
@@ -424,11 +454,11 @@ func (p *Producer) Stop() {
 // run 运行循环
 func (p *Producer) run() {
     defer p.wg.Done()
-    
+
     counter := 0
     ticker := time.NewTicker(p.rate)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-p.stopChan:
@@ -482,10 +512,10 @@ func (c *Consumer) Stop() {
 // run 运行循环
 func (c *Consumer) run() {
     defer c.wg.Done()
-    
+
     ticker := time.NewTicker(c.rate)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-c.stopChan:
@@ -578,12 +608,12 @@ func NewGenericBuffer[T any](capacity int) *GenericBuffer[T] {
 func (b *GenericBuffer[T]) Put(item *GenericDataItem[T]) {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    
+
     // 等待缓冲区有空间
     for len(b.items) >= b.capacity {
         b.notFull.Wait()
     }
-    
+
     b.items = append(b.items, item)
     b.notEmpty.Signal()
 }
@@ -592,7 +622,7 @@ func (b *GenericBuffer[T]) Put(item *GenericDataItem[T]) {
 func (b *GenericBuffer[T]) PutWithTimeout(item *GenericDataItem[T], timeout time.Duration) error {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    
+
     // 等待缓冲区有空间，带超时
     done := make(chan struct{})
     go func() {
@@ -601,7 +631,7 @@ func (b *GenericBuffer[T]) PutWithTimeout(item *GenericDataItem[T], timeout time
         }
         close(done)
     }()
-    
+
     select {
     case <-done:
         b.items = append(b.items, item)
@@ -616,12 +646,12 @@ func (b *GenericBuffer[T]) PutWithTimeout(item *GenericDataItem[T], timeout time
 func (b *GenericBuffer[T]) Get() *GenericDataItem[T] {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    
+
     // 等待缓冲区有数据
     for len(b.items) == 0 {
         b.notEmpty.Wait()
     }
-    
+
     item := b.items[0]
     b.items = b.items[1:]
     b.notFull.Signal()
@@ -632,7 +662,7 @@ func (b *GenericBuffer[T]) Get() *GenericDataItem[T] {
 func (b *GenericBuffer[T]) GetWithTimeout(timeout time.Duration) (*GenericDataItem[T], error) {
     b.mutex.Lock()
     defer b.mutex.Unlock()
-    
+
     // 等待缓冲区有数据，带超时
     done := make(chan struct{})
     go func() {
@@ -641,7 +671,7 @@ func (b *GenericBuffer[T]) GetWithTimeout(timeout time.Duration) (*GenericDataIt
         }
         close(done)
     }()
-    
+
     select {
     case <-done:
         item := b.items[0]
@@ -711,11 +741,11 @@ func (p *GenericProducer[T]) Stop() {
 // run 运行循环
 func (p *GenericProducer[T]) run() {
     defer p.wg.Done()
-    
+
     counter := 0
     ticker := time.NewTicker(p.rate)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-p.stopChan:
@@ -772,10 +802,10 @@ func (c *GenericConsumer[T]) Stop() {
 // run 运行循环
 func (c *GenericConsumer[T]) run() {
     defer c.wg.Done()
-    
+
     ticker := time.NewTicker(c.rate)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-c.stopChan:
@@ -804,7 +834,7 @@ import (
     "math/rand"
     "sync"
     "time"
-    
+
     "github.com/your-project/producerconsumer"
 )
 
@@ -820,7 +850,7 @@ func NewLogProcessor() *LogProcessor {
     buffer := producerconsumer.NewBuffer(100)
     producer := producerconsumer.NewProducer("log-producer", buffer, 100*time.Millisecond)
     consumer := producerconsumer.NewConsumer("log-consumer", buffer, 200*time.Millisecond)
-    
+
     return &LogProcessor{
         buffer:   buffer,
         producer: producer,
@@ -856,7 +886,7 @@ type ImageProcessor struct {
 // NewImageProcessor 创建图像处理器
 func NewImageProcessor() *ImageProcessor {
     buffer := producerconsumer.NewGenericBuffer[string](50)
-    
+
     // 生产者生成图像文件名
     producer := producerconsumer.NewGenericProducer[string](
         "image-producer",
@@ -866,7 +896,7 @@ func NewImageProcessor() *ImageProcessor {
             return fmt.Sprintf("image_%d.jpg", id)
         },
     )
-    
+
     // 消费者处理图像
     consumer := producerconsumer.NewGenericConsumer[string](
         "image-consumer",
@@ -878,7 +908,7 @@ func NewImageProcessor() *ImageProcessor {
             time.Sleep(100 * time.Millisecond)
         },
     )
-    
+
     return &ImageProcessor{
         buffer:   buffer,
         producer: producer,
@@ -914,7 +944,7 @@ type DataStreamProcessor struct {
 // NewDataStreamProcessor 创建数据流处理器
 func NewDataStreamProcessor() *DataStreamProcessor {
     buffer := producerconsumer.NewGenericBuffer[int](200)
-    
+
     // 生产者生成数据
     producer := producerconsumer.NewGenericProducer[int](
         "data-producer",
@@ -924,7 +954,7 @@ func NewDataStreamProcessor() *DataStreamProcessor {
             return rand.Intn(1000)
         },
     )
-    
+
     // 消费者处理数据
     consumer := producerconsumer.NewGenericConsumer[int](
         "data-consumer",
@@ -936,7 +966,7 @@ func NewDataStreamProcessor() *DataStreamProcessor {
             log.Printf("Processed data: %d -> %d", value, result)
         },
     )
-    
+
     return &DataStreamProcessor{
         buffer:   buffer,
         producer: producer,
@@ -967,47 +997,47 @@ func main() {
     fmt.Println("=== 日志处理示例 ===")
     logProcessor := NewLogProcessor()
     logProcessor.Start()
-    
+
     // 添加一些日志
     for i := 0; i < 10; i++ {
         logProcessor.AddLog(fmt.Sprintf("Log message %d", i))
         time.Sleep(50 * time.Millisecond)
     }
-    
+
     time.Sleep(2 * time.Second)
     logProcessor.Stop()
     fmt.Println("日志处理完成")
-    
+
     // 示例2: 图像处理
     fmt.Println("\n=== 图像处理示例 ===")
     imageProcessor := NewImageProcessor()
     imageProcessor.Start()
-    
+
     // 添加一些图像
     for i := 0; i < 5; i++ {
         imageProcessor.AddImage(fmt.Sprintf("user_upload_%d.jpg", i))
         time.Sleep(100 * time.Millisecond)
     }
-    
+
     time.Sleep(3 * time.Second)
     imageProcessor.Stop()
     fmt.Println("图像处理完成")
-    
+
     // 示例3: 数据流处理
     fmt.Println("\n=== 数据流处理示例 ===")
     dataProcessor := NewDataStreamProcessor()
     dataProcessor.Start()
-    
+
     // 添加一些数据
     for i := 0; i < 20; i++ {
         dataProcessor.AddData(rand.Intn(100))
         time.Sleep(30 * time.Millisecond)
     }
-    
+
     time.Sleep(4 * time.Second)
     dataProcessor.Stop()
     fmt.Println("数据流处理完成")
-    
+
     // 监控缓冲区状态
     fmt.Printf("\n=== 缓冲区状态 ===\n")
     fmt.Printf("日志处理器缓冲区大小: %d\n", logProcessor.buffer.Size())
@@ -1174,5 +1204,5 @@ type PubSub struct {
 1. Goetz, B. (2006). Java Concurrency in Practice
 2. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency
 3. Producer-Consumer Pattern: https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem
-4. Go sync package: https://golang.org/pkg/sync/ 
-- 实时数据流处理 
+4. Go sync package: https://golang.org/pkg/sync/
+- 实时数据流处理

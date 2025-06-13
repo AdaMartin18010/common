@@ -1,103 +1,268 @@
 # 06-Future/Promise模式 (Future/Promise Pattern)
 
-## 1. 形式化定义
+## 目录
 
-### 1.1 数学定义
+- [06-Future/Promise模式 (Future/Promise Pattern)](#06-futurepromise模式-futurepromise-pattern)
+  - [目录](#目录)
+  - [1. 概述](#1-概述)
+    - [1.1 定义](#11-定义)
+    - [1.2 核心思想](#12-核心思想)
+    - [1.3 设计目标](#13-设计目标)
+  - [2. 形式化定义](#2-形式化定义)
+    - [2.1 基本概念](#21-基本概念)
+    - [2.2 操作语义](#22-操作语义)
+    - [2.3 组合操作](#23-组合操作)
+  - [3. 数学基础](#3-数学基础)
+    - [3.1 函子理论](#31-函子理论)
+    - [3.2 单子理论](#32-单子理论)
+    - [3.3 异步计算理论](#33-异步计算理论)
+  - [4. 模式结构](#4-模式结构)
+    - [4.1 类图](#41-类图)
+    - [4.2 时序图](#42-时序图)
+  - [5. Go语言实现](#5-go语言实现)
+    - [5.1 基础实现](#51-基础实现)
+    - [5.2 泛型实现](#52-泛型实现)
+    - [5.3 实际应用示例](#53-实际应用示例)
+  - [6. 性能分析](#6-性能分析)
+    - [6.1 时间复杂度](#61-时间复杂度)
+    - [6.2 空间复杂度](#62-空间复杂度)
+    - [6.3 性能优化建议](#63-性能优化建议)
+  - [7. 应用场景](#7-应用场景)
+    - [7.1 适用场景](#71-适用场景)
+    - [7.2 使用示例](#72-使用示例)
+  - [8. 优缺点分析](#8-优缺点分析)
+    - [8.1 优点](#81-优点)
+    - [8.2 缺点](#82-缺点)
+    - [8.3 权衡考虑](#83-权衡考虑)
+  - [9. 相关模式](#9-相关模式)
+    - [9.1 模式关系](#91-模式关系)
+    - [9.2 模式组合](#92-模式组合)
+  - [10. 总结](#10-总结)
+    - [10.1 关键要点](#101-关键要点)
+    - [10.2 最佳实践](#102-最佳实践)
+    - [10.3 未来发展方向](#103-未来发展方向)
 
-设 $F$ 为Future集合，$P$ 为Promise集合，$V$ 为值集合，$E$ 为错误集合，Future/Promise模式满足以下公理：
+---
 
-**Future/Promise公理**：
-- **值绑定**: $\forall f \in F: \text{resolve}(f, v) \Rightarrow \text{value}(f) = v$
-- **错误绑定**: $\forall f \in F: \text{reject}(f, e) \Rightarrow \text{error}(f) = e$
-- **状态转换**: $\text{state}(f) \in \{\text{pending}, \text{fulfilled}, \text{rejected}\}$
-- **不可变性**: $\text{fulfilled}(f) \lor \text{rejected}(f) \Rightarrow \text{immutable}(f)$
+## 1. 概述
 
-**形式化约束**：
-- **状态互斥**: $\text{fulfilled}(f) \land \text{rejected}(f) \Rightarrow \text{false}$
-- **链式调用**: $\text{then}(f, g) \Rightarrow \text{new\_future}(f')$
-- **错误传播**: $\text{rejected}(f) \Rightarrow \text{catch}(f, h) \Rightarrow \text{handle}(e)$
-- **组合性**: $\text{all}([f_1, f_2, ..., f_n]) \Rightarrow \text{combined\_future}$
+### 1.1 定义
 
-### 1.2 类型理论定义
+Future/Promise模式是一种异步编程模式，它表示一个可能还没有完成的计算结果。Future代表一个异步操作的结果，而Promise是设置这个结果的机制。该模式允许程序在等待异步操作完成时继续执行其他任务。
 
-```go
-// Future接口定义
-type Future[T any] interface {
-    Get() (T, error)
-    GetWithTimeout(timeout time.Duration) (T, error)
-    Then(handler func(T) (interface{}, error)) Future[interface{}]
-    Catch(handler func(error) error) Future[T]
-    IsDone() bool
-    IsCancelled() bool
-    Cancel() bool
-}
+### 1.2 核心思想
 
-// Promise接口定义
-type Promise[T any] interface {
-    Resolve(value T) error
-    Reject(err error) error
-    Future() Future[T]
-    IsResolved() bool
-    IsRejected() bool
-}
+Future/Promise模式的核心思想是：
+- **异步执行**: 操作在后台异步执行，不阻塞主线程
+- **结果封装**: 将异步操作的结果封装在Future对象中
+- **回调机制**: 通过回调函数处理完成和错误情况
+- **链式操作**: 支持多个异步操作的链式组合
 
-// Future状态定义
-type FutureState int
+### 1.3 设计目标
 
-const (
-    Pending FutureState = iota
-    Fulfilled
-    Rejected
-    Cancelled
-)
+1. **非阻塞**: 避免阻塞主线程
+2. **响应性**: 提高系统响应性
+3. **组合性**: 支持异步操作的组合
+4. **错误处理**: 提供统一的错误处理机制
+5. **可读性**: 提高异步代码的可读性
 
-// Future结果定义
-type FutureResult[T any] struct {
-    Value T
-    Error error
-    State FutureState
-}
-```
+---
 
-## 2. 实现原理
+## 2. 形式化定义
 
-### 2.1 Future状态机
+### 2.1 基本概念
+
+设 $F$ 为Future集合，$P$ 为Promise集合，$V$ 为值集合，$E$ 为错误集合，$S$ 为状态集合。
+
+**定义 2.1** (Future)
+Future是一个四元组 $(f, value, error, state)$，其中：
+- $f \in F$ 是Future实例
+- $value \in V$ 是计算结果
+- $error \in E$ 是错误信息
+- $state \in \{pending, fulfilled, rejected\}$ 是状态
+
+**定义 2.2** (Promise)
+Promise是一个三元组 $(p, future, setters)$，其中：
+- $p \in P$ 是Promise实例
+- $future \in F$ 是关联的Future
+- $setters$ 是设置结果的函数集合
+
+**定义 2.3** (状态转换)
+Future的状态转换遵循以下规则：
+$$pending \rightarrow fulfilled \text{ (当设置值)}$$
+$$pending \rightarrow rejected \text{ (当设置错误)}$$
+
+### 2.2 操作语义
+
+**公理 2.1** (Future创建)
+对于值 $v$：
+$$create\_future() = (f, null, null, pending)$$
+
+**公理 2.2** (Promise创建)
+对于Future $f$：
+$$create\_promise(f) = (p, f, \{resolve, reject\})$$
+
+**公理 2.3** (结果设置)
+对于Promise $p$ 和值 $v$：
+$$resolve(p, v) = set\_value(future(p), v) \land set\_state(future(p), fulfilled)$$
+
+**公理 2.4** (错误设置)
+对于Promise $p$ 和错误 $e$：
+$$reject(p, e) = set\_error(future(p), e) \land set\_state(future(p), rejected)$$
+
+**公理 2.5** (结果获取)
+对于Future $f$：
+$$get(f) = \begin{cases}
+value(f) & \text{if } state(f) = fulfilled \\
+error(f) & \text{if } state(f) = rejected \\
+block\_until\_complete(f) & \text{if } state(f) = pending
+\end{cases}$$
+
+### 2.3 组合操作
+
+**定义 2.4** (Then操作)
+对于Future $f$ 和函数 $g$：
+$$then(f, g) = \begin{cases}
+g(value(f)) & \text{if } state(f) = fulfilled \\
+reject(error(f)) & \text{if } state(f) = rejected \\
+pending & \text{if } state(f) = pending
+\end{cases}$$
+
+**定义 2.5** (Catch操作)
+对于Future $f$ 和错误处理函数 $h$：
+$$catch(f, h) = \begin{cases}
+value(f) & \text{if } state(f) = fulfilled \\
+h(error(f)) & \text{if } state(f) = rejected \\
+pending & \text{if } state(f) = pending
+\end{cases}$$
+
+---
+
+## 3. 数学基础
+
+### 3.1 函子理论
+
+Future可以建模为函子：
+
+**定义 3.1** (Future函子)
+Future函子 $F: \text{Set} \rightarrow \text{Set}$ 定义为：
+$$F(A) = \{pending\} \cup A \cup E$$
+
+**定理 3.1** (函子性质)
+Future满足函子的性质：
+1. **单位律**: $F(id_A) = id_{F(A)}$
+2. **结合律**: $F(g \circ f) = F(g) \circ F(f)$
+
+### 3.2 单子理论
+
+Future可以建模为单子：
+
+**定义 3.2** (Future单子)
+Future单子 $(F, \eta, \mu)$ 定义为：
+- $F$ 是Future函子
+- $\eta_A: A \rightarrow F(A)$ 是单位映射
+- $\mu_A: F(F(A)) \rightarrow F(A)$ 是乘法映射
+
+**定理 3.2** (单子定律)
+Future满足单子定律：
+1. **左单位律**: $\mu \circ F(\eta) = id$
+2. **右单位律**: $\mu \circ \eta_F = id$
+3. **结合律**: $\mu \circ F(\mu) = \mu \circ \mu$
+
+### 3.3 异步计算理论
+
+**定义 3.3** (异步计算)
+异步计算是一个三元组 $(input, computation, output)$，其中：
+- $input$ 是输入数据
+- $computation$ 是计算函数
+- $output$ 是输出Future
+
+**定理 3.3** (异步计算性质)
+异步计算满足以下性质：
+1. **非阻塞**: 计算不阻塞调用线程
+2. **可组合**: 多个计算可以组合
+3. **错误传播**: 错误可以正确传播
+
+---
+
+## 4. 模式结构
+
+### 4.1 类图
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Pending
-    Pending --> Fulfilled : Resolve()
-    Pending --> Rejected : Reject()
-    Pending --> Cancelled : Cancel()
-    Fulfilled --> [*]
-    Rejected --> [*]
-    Cancelled --> [*]
-    
-    state Pending {
-        [*] --> Waiting
-        Waiting --> Ready : Value/Error Available
+classDiagram
+    class Future {
+        -value: interface{}
+        -error: error
+        -state: FutureState
+        -done: chan struct{}
+        -callbacks: []Callback
+        +Get()
+        +GetWithTimeout()
+        +Then()
+        +Catch()
+        +IsDone()
+        +IsFulfilled()
+        +IsRejected()
     }
+    
+    class Promise {
+        -future: *Future
+        +Resolve()
+        +Reject()
+        +GetFuture()
+    }
+    
+    class Callback {
+        -onFulfilled: func(interface{})
+        -onRejected: func(error)
+        +Execute()
+    }
+    
+    class AsyncExecutor {
+        -pool: *ThreadPool
+        +Execute()
+        +ExecuteWithTimeout()
+    }
+    
+    Future --> Callback
+    Promise --> Future
+    AsyncExecutor --> Future
 ```
 
-### 2.2 异步执行模型
+### 4.2 时序图
 
-**定理**: Future/Promise模式提供非阻塞的异步执行能力。
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant P as Promise
+    participant F as Future
+    participant E as Executor
+    participant CB as Callback
+    
+    C->>P: Create()
+    P->>F: create()
+    P->>C: return promise
+    
+    C->>E: Execute(task)
+    E->>E: run task
+    E->>P: Resolve(result)
+    P->>F: set value
+    P->>F: signal done
+    
+    C->>F: Get()
+    F->>C: result
+    
+    C->>F: Then(callback)
+    F->>CB: Execute()
+    CB->>C: callback result
+```
 
-**证明**:
+---
 
-1. **非阻塞证明**:
-   - 使用goroutine执行异步任务
-   - 通过channel进行结果传递
-   - 调用者可以继续执行其他操作
+## 5. Go语言实现
 
-2. **状态一致性证明**:
-   - 使用原子操作保证状态一致性
-   - 互斥锁保护状态转换
-   - 条件变量实现等待机制
-
-## 3. Go语言实现
-
-### 3.1 基础Future/Promise实现
+### 5.1 基础实现
 
 ```go
 package futurepromise
@@ -110,99 +275,172 @@ import (
     "time"
 )
 
-// Future 基础Future实现
-type Future[T any] struct {
-    result    *FutureResult[T]
+// FutureState Future状态
+type FutureState int
+
+const (
+    Pending FutureState = iota
+    Fulfilled
+    Rejected
+)
+
+// String 状态字符串表示
+func (s FutureState) String() string {
+    switch s {
+    case Pending:
+        return "Pending"
+    case Fulfilled:
+        return "Fulfilled"
+    case Rejected:
+        return "Rejected"
+    default:
+        return "Unknown"
+    }
+}
+
+// Callback 回调函数
+type Callback struct {
+    OnFulfilled func(interface{}) interface{}
+    OnRejected  func(error) interface{}
+}
+
+// Future Future实现
+type Future struct {
+    value     interface{}
+    error     error
+    state     FutureState
     done      chan struct{}
-    state     int32
-    mutex     sync.RWMutex
-    callbacks []func(FutureResult[T])
+    callbacks []*Callback
+    mu        sync.RWMutex
 }
 
-// NewFuture 创建新的Future
-func NewFuture[T any]() *Future[T] {
-    return &Future[T]{
+// NewFuture 创建Future
+func NewFuture() *Future {
+    return &Future{
+        state:     Pending,
         done:      make(chan struct{}),
-        callbacks: make([]func(FutureResult[T]), 0),
+        callbacks: make([]*Callback, 0),
     }
 }
 
-// Get 获取结果（阻塞）
-func (f *Future[T]) Get() (T, error) {
+// Get 获取结果
+func (f *Future) Get() (interface{}, error) {
     <-f.done
-    f.mutex.RLock()
-    defer f.mutex.RUnlock()
+    f.mu.RLock()
+    defer f.mu.RUnlock()
     
-    if f.result.State == Fulfilled {
-        return f.result.Value, nil
-    } else if f.result.State == Rejected {
-        var zero T
-        return zero, f.result.Error
-    } else {
-        var zero T
-        return zero, fmt.Errorf("future was cancelled")
+    if f.state == Fulfilled {
+        return f.value, nil
     }
+    return nil, f.error
 }
 
 // GetWithTimeout 带超时的结果获取
-func (f *Future[T]) GetWithTimeout(timeout time.Duration) (T, error) {
+func (f *Future) GetWithTimeout(timeout time.Duration) (interface{}, error) {
     select {
     case <-f.done:
-        return f.Get()
+        f.mu.RLock()
+        defer f.mu.RUnlock()
+        
+        if f.state == Fulfilled {
+            return f.value, nil
+        }
+        return nil, f.error
     case <-time.After(timeout):
-        var zero T
-        return zero, fmt.Errorf("future timeout after %v", timeout)
+        return nil, context.DeadlineExceeded
     }
 }
 
-// Then 链式调用
-func (f *Future[T]) Then(handler func(T) (interface{}, error)) Future[interface{}] {
-    newFuture := NewFuture[interface{}]()
+// Then 链式操作
+func (f *Future) Then(onFulfilled func(interface{}) interface{}) *Future {
+    return f.ThenWithError(func(value interface{}) (interface{}, error) {
+        return onFulfilled(value), nil
+    })
+}
+
+// ThenWithError 带错误处理的链式操作
+func (f *Future) ThenWithError(onFulfilled func(interface{}) (interface{}, error)) *Future {
+    newFuture := NewFuture()
     
-    go func() {
-        result, err := f.Get()
-        if err != nil {
-            newFuture.Reject(err)
-            return
+    f.mu.Lock()
+    if f.state == Pending {
+        f.callbacks = append(f.callbacks, &Callback{
+            OnFulfilled: func(value interface{}) interface{} {
+                result, err := onFulfilled(value)
+                if err != nil {
+                    newFuture.Reject(err)
+                } else {
+                    newFuture.Resolve(result)
+                }
+                return result
+            },
+        })
+        f.mu.Unlock()
+    } else {
+        f.mu.Unlock()
+        if f.state == Fulfilled {
+            go func() {
+                result, err := onFulfilled(f.value)
+                if err != nil {
+                    newFuture.Reject(err)
+                } else {
+                    newFuture.Resolve(result)
+                }
+            }()
+        } else {
+            newFuture.Reject(f.error)
         }
-        
-        newValue, newErr := handler(result)
-        if newErr != nil {
-            newFuture.Reject(newErr)
-            return
-        }
-        
-        newFuture.Resolve(newValue)
-    }()
+    }
     
     return newFuture
 }
 
 // Catch 错误处理
-func (f *Future[T]) Catch(handler func(error) error) Future[T] {
-    newFuture := NewFuture[T]()
+func (f *Future) Catch(onRejected func(error) interface{}) *Future {
+    return f.CatchWithError(func(err error) (interface{}, error) {
+        return onRejected(err), nil
+    })
+}
+
+// CatchWithError 带错误处理的Catch
+func (f *Future) CatchWithError(onRejected func(error) (interface{}, error)) *Future {
+    newFuture := NewFuture()
     
-    go func() {
-        result, err := f.Get()
-        if err != nil {
-            if handledErr := handler(err); handledErr != nil {
-                newFuture.Reject(handledErr)
-                return
-            }
-            // 错误被处理，返回零值
-            var zero T
-            newFuture.Resolve(zero)
-            return
+    f.mu.Lock()
+    if f.state == Pending {
+        f.callbacks = append(f.callbacks, &Callback{
+            OnRejected: func(err error) interface{} {
+                result, newErr := onRejected(err)
+                if newErr != nil {
+                    newFuture.Reject(newErr)
+                } else {
+                    newFuture.Resolve(result)
+                }
+                return result
+            },
+        })
+        f.mu.Unlock()
+    } else {
+        f.mu.Unlock()
+        if f.state == Rejected {
+            go func() {
+                result, newErr := onRejected(f.error)
+                if newErr != nil {
+                    newFuture.Reject(newErr)
+                } else {
+                    newFuture.Resolve(result)
+                }
+            }()
+        } else {
+            newFuture.Resolve(f.value)
         }
-        
-        newFuture.Resolve(result)
-    }()
+    }
     
     return newFuture
 }
 
 // IsDone 检查是否完成
-func (f *Future[T]) IsDone() bool {
+func (f *Future) IsDone() bool {
     select {
     case <-f.done:
         return true
@@ -211,604 +449,931 @@ func (f *Future[T]) IsDone() bool {
     }
 }
 
-// IsCancelled 检查是否被取消
-func (f *Future[T]) IsCancelled() bool {
-    return atomic.LoadInt32(&f.state) == int32(Cancelled)
+// IsFulfilled 检查是否成功完成
+func (f *Future) IsFulfilled() bool {
+    f.mu.RLock()
+    defer f.mu.RUnlock()
+    return f.state == Fulfilled
 }
 
-// Cancel 取消Future
-func (f *Future[T]) Cancel() bool {
-    if !atomic.CompareAndSwapInt32(&f.state, int32(Pending), int32(Cancelled)) {
-        return false
-    }
-    
-    f.mutex.Lock()
-    f.result = &FutureResult[T]{
-        State: Cancelled,
-        Error: fmt.Errorf("future was cancelled"),
-    }
-    f.mutex.Unlock()
-    
-    close(f.done)
-    return true
+// IsRejected 检查是否被拒绝
+func (f *Future) IsRejected() bool {
+    f.mu.RLock()
+    defer f.mu.RUnlock()
+    return f.state == Rejected
 }
 
-// Resolve 解析Future
-func (f *Future[T]) Resolve(value T) error {
-    if !atomic.CompareAndSwapInt32(&f.state, int32(Pending), int32(Fulfilled)) {
-        return fmt.Errorf("future already resolved or rejected")
+// Resolve 设置成功结果
+func (f *Future) Resolve(value interface{}) {
+    f.mu.Lock()
+    defer f.mu.Unlock()
+    
+    if f.state != Pending {
+        return
     }
     
-    f.mutex.Lock()
-    f.result = &FutureResult[T]{
-        Value: value,
-        State: Fulfilled,
-    }
-    f.mutex.Unlock()
-    
+    f.value = value
+    f.state = Fulfilled
     close(f.done)
     
     // 执行回调
     for _, callback := range f.callbacks {
-        callback(*f.result)
+        if callback.OnFulfilled != nil {
+            go callback.OnFulfilled(value)
+        }
     }
-    
-    return nil
 }
 
-// Reject 拒绝Future
-func (f *Future[T]) Reject(err error) error {
-    if !atomic.CompareAndSwapInt32(&f.state, int32(Pending), int32(Rejected)) {
-        return fmt.Errorf("future already resolved or rejected")
+// Reject 设置错误结果
+func (f *Future) Reject(err error) {
+    f.mu.Lock()
+    defer f.mu.Unlock()
+    
+    if f.state != Pending {
+        return
     }
     
-    f.mutex.Lock()
-    f.result = &FutureResult[T]{
-        Error: err,
-        State: Rejected,
-    }
-    f.mutex.Unlock()
-    
+    f.error = err
+    f.state = Rejected
     close(f.done)
     
     // 执行回调
     for _, callback := range f.callbacks {
-        callback(*f.result)
-    }
-    
-    return nil
-}
-
-// AddCallback 添加回调函数
-func (f *Future[T]) AddCallback(callback func(FutureResult[T])) {
-    f.mutex.Lock()
-    defer f.mutex.Unlock()
-    
-    if f.IsDone() {
-        // 立即执行回调
-        callback(*f.result)
-    } else {
-        // 添加到回调列表
-        f.callbacks = append(f.callbacks, callback)
+        if callback.OnRejected != nil {
+            go callback.OnRejected(err)
+        }
     }
 }
 
 // Promise Promise实现
-type Promise[T any] struct {
-    future *Future[T]
+type Promise struct {
+    future *Future
 }
 
-// NewPromise 创建新的Promise
-func NewPromise[T any]() *Promise[T] {
-    return &Promise[T]{
-        future: NewFuture[T](),
+// NewPromise 创建Promise
+func NewPromise() *Promise {
+    return &Promise{
+        future: NewFuture(),
     }
 }
 
-// Resolve 解析Promise
-func (p *Promise[T]) Resolve(value T) error {
-    return p.future.Resolve(value)
+// Resolve 设置成功结果
+func (p *Promise) Resolve(value interface{}) {
+    p.future.Resolve(value)
 }
 
-// Reject 拒绝Promise
-func (p *Promise[T]) Reject(err error) error {
-    return p.future.Reject(err)
+// Reject 设置错误结果
+func (p *Promise) Reject(err error) {
+    p.future.Reject(err)
 }
 
-// Future 获取Future
-func (p *Promise[T]) Future() Future[T] {
+// GetFuture 获取Future
+func (p *Promise) GetFuture() *Future {
     return p.future
 }
 
-// IsResolved 检查是否已解析
-func (p *Promise[T]) IsResolved() bool {
-    return p.future.IsDone() && !p.future.IsCancelled()
+// AsyncExecutor 异步执行器
+type AsyncExecutor struct {
+    pool *ThreadPool
 }
 
-// IsRejected 检查是否已拒绝
-func (p *Promise[T]) IsRejected() bool {
-    return p.future.IsDone() && p.future.IsCancelled()
+// NewAsyncExecutor 创建异步执行器
+func NewAsyncExecutor(poolSize int) *AsyncExecutor {
+    return &AsyncExecutor{
+        pool: NewThreadPool(poolSize, poolSize*2, 100),
+    }
+}
+
+// Execute 执行异步任务
+func (ae *AsyncExecutor) Execute(task func() (interface{}, error)) *Future {
+    promise := NewPromise()
+    
+    ae.pool.Submit(NewSimpleTask("async-task", func() interface{} {
+        result, err := task()
+        if err != nil {
+            promise.Reject(err)
+        } else {
+            promise.Resolve(result)
+        }
+        return nil
+    }))
+    
+    return promise.GetFuture()
+}
+
+// ExecuteWithTimeout 带超时的异步执行
+func (ae *AsyncExecutor) ExecuteWithTimeout(task func() (interface{}, error), timeout time.Duration) *Future {
+    promise := NewPromise()
+    
+    // 创建超时上下文
+    ctx, cancel := context.WithTimeout(context.Background(), timeout)
+    defer cancel()
+    
+    ae.pool.Submit(NewSimpleTask("async-timeout-task", func() interface{} {
+        // 执行任务
+        done := make(chan struct{})
+        var result interface{}
+        var err error
+        
+        go func() {
+            result, err = task()
+            close(done)
+        }()
+        
+        select {
+        case <-done:
+            if err != nil {
+                promise.Reject(err)
+            } else {
+                promise.Resolve(result)
+            }
+        case <-ctx.Done():
+            promise.Reject(context.DeadlineExceeded)
+        }
+        
+        return nil
+    }))
+    
+    return promise.GetFuture()
 }
 ```
 
-### 3.2 高级Future/Promise实现（带组合和超时）
+### 5.2 泛型实现
 
 ```go
-// FutureCombinator Future组合器
-type FutureCombinator struct{}
+package futurepromise
 
-// All 等待所有Future完成
-func (fc *FutureCombinator) All[T any](futures []Future[T]) Future[[]T] {
-    resultFuture := NewFuture[[]T]()
+import (
+    "context"
+    "sync"
+    "time"
+)
+
+// GenericFuture 泛型Future
+type GenericFuture[T any] struct {
+    value     T
+    error     error
+    state     FutureState
+    done      chan struct{}
+    callbacks []*GenericCallback[T]
+    mu        sync.RWMutex
+}
+
+// GenericCallback 泛型回调
+type GenericCallback[T any] struct {
+    OnFulfilled func(T) interface{}
+    OnRejected  func(error) interface{}
+}
+
+// NewGenericFuture 创建泛型Future
+func NewGenericFuture[T any]() *GenericFuture[T] {
+    return &GenericFuture[T]{
+        state:     Pending,
+        done:      make(chan struct{}),
+        callbacks: make([]*GenericCallback[T], 0),
+    }
+}
+
+// Get 获取结果
+func (f *GenericFuture[T]) Get() (T, error) {
+    var zero T
+    <-f.done
+    f.mu.RLock()
+    defer f.mu.RUnlock()
     
-    go func() {
-        results := make([]T, len(futures))
-        var wg sync.WaitGroup
-        var firstError error
-        var errorMutex sync.Mutex
+    if f.state == Fulfilled {
+        return f.value, nil
+    }
+    return zero, f.error
+}
+
+// GetWithTimeout 带超时的结果获取
+func (f *GenericFuture[T]) GetWithTimeout(timeout time.Duration) (T, error) {
+    var zero T
+    select {
+    case <-f.done:
+        f.mu.RLock()
+        defer f.mu.RUnlock()
         
-        for i, future := range futures {
-            wg.Add(1)
-            go func(index int, f Future[T]) {
-                defer wg.Done()
-                
-                result, err := f.Get()
-                if err != nil {
-                    errorMutex.Lock()
-                    if firstError == nil {
-                        firstError = err
-                    }
-                    errorMutex.Unlock()
-                    return
-                }
-                
-                results[index] = result
-            }(i, future)
+        if f.state == Fulfilled {
+            return f.value, nil
         }
-        
-        wg.Wait()
-        
-        if firstError != nil {
-            resultFuture.Reject(firstError)
+        return zero, f.error
+    case <-time.After(timeout):
+        return zero, context.DeadlineExceeded
+    }
+}
+
+// Then 链式操作
+func (f *GenericFuture[T]) Then(onFulfilled func(T) interface{}) *Future {
+    newFuture := NewFuture()
+    
+    f.mu.Lock()
+    if f.state == Pending {
+        f.callbacks = append(f.callbacks, &GenericCallback[T]{
+            OnFulfilled: func(value T) interface{} {
+                result := onFulfilled(value)
+                newFuture.Resolve(result)
+                return result
+            },
+        })
+        f.mu.Unlock()
+    } else {
+        f.mu.Unlock()
+        if f.state == Fulfilled {
+            go func() {
+                result := onFulfilled(f.value)
+                newFuture.Resolve(result)
+            }()
         } else {
-            resultFuture.Resolve(results)
+            newFuture.Reject(f.error)
         }
-    }()
+    }
     
-    return resultFuture
+    return newFuture
 }
 
-// Any 等待任意一个Future完成
-func (fc *FutureCombinator) Any[T any](futures []Future[T]) Future[T] {
-    resultFuture := NewFuture[T]()
+// ThenWithError 带错误处理的链式操作
+func (f *GenericFuture[T]) ThenWithError(onFulfilled func(T) (interface{}, error)) *Future {
+    newFuture := NewFuture()
     
-    go func() {
-        for _, future := range futures {
-            go func(f Future[T]) {
-                result, err := f.Get()
-                if err == nil {
-                    resultFuture.Resolve(result)
-                }
-            }(future)
-        }
-    }()
-    
-    return resultFuture
-}
-
-// Race 竞争模式
-func (fc *FutureCombinator) Race[T any](futures []Future[T]) Future[T] {
-    resultFuture := NewFuture[T]()
-    
-    go func() {
-        for _, future := range futures {
-            go func(f Future[T]) {
-                result, err := f.Get()
-                if err == nil {
-                    resultFuture.Resolve(result)
+    f.mu.Lock()
+    if f.state == Pending {
+        f.callbacks = append(f.callbacks, &GenericCallback[T]{
+            OnFulfilled: func(value T) interface{} {
+                result, err := onFulfilled(value)
+                if err != nil {
+                    newFuture.Reject(err)
                 } else {
-                    resultFuture.Reject(err)
+                    newFuture.Resolve(result)
                 }
-            }(future)
+                return result
+            },
+        })
+        f.mu.Unlock()
+    } else {
+        f.mu.Unlock()
+        if f.state == Fulfilled {
+            go func() {
+                result, err := onFulfilled(f.value)
+                if err != nil {
+                    newFuture.Reject(err)
+                } else {
+                    newFuture.Resolve(result)
+                }
+            }()
+        } else {
+            newFuture.Reject(f.error)
         }
-    }()
-    
-    return resultFuture
-}
-
-// TimeoutFuture 带超时的Future
-type TimeoutFuture[T any] struct {
-    *Future[T]
-    timeout time.Duration
-}
-
-// NewTimeoutFuture 创建带超时的Future
-func NewTimeoutFuture[T any](timeout time.Duration) *TimeoutFuture[T] {
-    tf := &TimeoutFuture[T]{
-        Future:  NewFuture[T](),
-        timeout: timeout,
     }
     
-    // 启动超时检查
-    go func() {
+    return newFuture
+}
+
+// Catch 错误处理
+func (f *GenericFuture[T]) Catch(onRejected func(error) T) *GenericFuture[T] {
+    newFuture := NewGenericFuture[T]()
+    
+    f.mu.Lock()
+    if f.state == Pending {
+        f.callbacks = append(f.callbacks, &GenericCallback[T]{
+            OnRejected: func(err error) interface{} {
+                result := onRejected(err)
+                newFuture.Resolve(result)
+                return result
+            },
+        })
+        f.mu.Unlock()
+    } else {
+        f.mu.Unlock()
+        if f.state == Rejected {
+            go func() {
+                result := onRejected(f.error)
+                newFuture.Resolve(result)
+            }()
+        } else {
+            newFuture.Resolve(f.value)
+        }
+    }
+    
+    return newFuture
+}
+
+// IsDone 检查是否完成
+func (f *GenericFuture[T]) IsDone() bool {
+    select {
+    case <-f.done:
+        return true
+    default:
+        return false
+    }
+}
+
+// IsFulfilled 检查是否成功完成
+func (f *GenericFuture[T]) IsFulfilled() bool {
+    f.mu.RLock()
+    defer f.mu.RUnlock()
+    return f.state == Fulfilled
+}
+
+// IsRejected 检查是否被拒绝
+func (f *GenericFuture[T]) IsRejected() bool {
+    f.mu.RLock()
+    defer f.mu.RUnlock()
+    return f.state == Rejected
+}
+
+// Resolve 设置成功结果
+func (f *GenericFuture[T]) Resolve(value T) {
+    f.mu.Lock()
+    defer f.mu.Unlock()
+    
+    if f.state != Pending {
+        return
+    }
+    
+    f.value = value
+    f.state = Fulfilled
+    close(f.done)
+    
+    // 执行回调
+    for _, callback := range f.callbacks {
+        if callback.OnFulfilled != nil {
+            go callback.OnFulfilled(value)
+        }
+    }
+}
+
+// Reject 设置错误结果
+func (f *GenericFuture[T]) Reject(err error) {
+    f.mu.Lock()
+    defer f.mu.Unlock()
+    
+    if f.state != Pending {
+        return
+    }
+    
+    f.error = err
+    f.state = Rejected
+    close(f.done)
+    
+    // 执行回调
+    for _, callback := range f.callbacks {
+        if callback.OnRejected != nil {
+            go callback.OnRejected(err)
+        }
+    }
+}
+
+// GenericPromise 泛型Promise
+type GenericPromise[T any] struct {
+    future *GenericFuture[T]
+}
+
+// NewGenericPromise 创建泛型Promise
+func NewGenericPromise[T any]() *GenericPromise[T] {
+    return &GenericPromise[T]{
+        future: NewGenericFuture[T](),
+    }
+}
+
+// Resolve 设置成功结果
+func (p *GenericPromise[T]) Resolve(value T) {
+    p.future.Resolve(value)
+}
+
+// Reject 设置错误结果
+func (p *GenericPromise[T]) Reject(err error) {
+    p.future.Reject(err)
+}
+
+// GetFuture 获取Future
+func (p *GenericPromise[T]) GetFuture() *GenericFuture[T] {
+    return p.future
+}
+
+// GenericAsyncExecutor 泛型异步执行器
+type GenericAsyncExecutor[T any] struct {
+    pool *ThreadPool
+}
+
+// NewGenericAsyncExecutor 创建泛型异步执行器
+func NewGenericAsyncExecutor[T any](poolSize int) *GenericAsyncExecutor[T] {
+    return &GenericAsyncExecutor[T]{
+        pool: NewThreadPool(poolSize, poolSize*2, 100),
+    }
+}
+
+// Execute 执行异步任务
+func (ae *GenericAsyncExecutor[T]) Execute(task func() (T, error)) *GenericFuture[T] {
+    promise := NewGenericPromise[T]()
+    
+    ae.pool.Submit(NewSimpleTask("generic-async-task", func() interface{} {
+        result, err := task()
+        if err != nil {
+            promise.Reject(err)
+        } else {
+            promise.Resolve(result)
+        }
+        return nil
+    }))
+    
+    return promise.GetFuture()
+}
+
+// ExecuteWithTimeout 带超时的异步执行
+func (ae *GenericAsyncExecutor[T]) ExecuteWithTimeout(task func() (T, error), timeout time.Duration) *GenericFuture[T] {
+    promise := NewGenericPromise[T]()
+    
+    // 创建超时上下文
+    ctx, cancel := context.WithTimeout(context.Background(), timeout)
+    defer cancel()
+    
+    ae.pool.Submit(NewSimpleTask("generic-async-timeout-task", func() interface{} {
+        // 执行任务
+        done := make(chan struct{})
+        var result T
+        var err error
+        
+        go func() {
+            result, err = task()
+            close(done)
+        }()
+        
         select {
-        case <-tf.done:
-            return
-        case <-time.After(timeout):
-            tf.Reject(fmt.Errorf("future timeout after %v", timeout))
+        case <-done:
+            if err != nil {
+                promise.Reject(err)
+            } else {
+                promise.Resolve(result)
+            }
+        case <-ctx.Done():
+            promise.Reject(context.DeadlineExceeded)
         }
-    }()
+        
+        return nil
+    }))
     
-    return tf
-}
-
-// RetryFuture 重试Future
-type RetryFuture[T any] struct {
-    *Future[T]
-    maxRetries int
-    retryDelay time.Duration
-}
-
-// NewRetryFuture 创建重试Future
-func NewRetryFuture[T any](maxRetries int, retryDelay time.Duration) *RetryFuture[T] {
-    return &RetryFuture[T]{
-        Future:     NewFuture[T](),
-        maxRetries: maxRetries,
-        retryDelay: retryDelay,
-    }
-}
-
-// ExecuteWithRetry 带重试的执行
-func (rf *RetryFuture[T]) ExecuteWithRetry(operation func() (T, error)) {
-    go func() {
-        var lastErr error
-        
-        for attempt := 0; attempt <= rf.maxRetries; attempt++ {
-            result, err := operation()
-            if err == nil {
-                rf.Resolve(result)
-                return
-            }
-            
-            lastErr = err
-            if attempt < rf.maxRetries {
-                time.Sleep(rf.retryDelay)
-            }
-        }
-        
-        rf.Reject(fmt.Errorf("operation failed after %d retries: %v", rf.maxRetries, lastErr))
-    }()
+    return promise.GetFuture()
 }
 ```
 
-## 4. 使用示例
-
-### 4.1 基础使用
+### 5.3 实际应用示例
 
 ```go
 package main
 
 import (
     "fmt"
+    "log"
+    "math/rand"
     "sync"
     "time"
-    
-    "github.com/your-project/futurepromise"
 )
 
-// 异步任务执行
-func asyncTask(id int) futurepromise.Future[string] {
-    promise := futurepromise.NewPromise[string]()
-    
-    go func() {
-        // 模拟异步工作
-        time.Sleep(time.Duration(id*100) * time.Millisecond)
+// DataProcessor 数据处理器
+type DataProcessor struct {
+    executor *AsyncExecutor
+}
+
+// NewDataProcessor 创建数据处理器
+func NewDataProcessor() *DataProcessor {
+    return &DataProcessor{
+        executor: NewAsyncExecutor(4),
+    }
+}
+
+// ProcessData 处理数据
+func (dp *DataProcessor) ProcessData(data []int) *Future {
+    return dp.executor.Execute(func() (interface{}, error) {
+        // 模拟数据处理
+        time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
         
-        if id%3 == 0 {
-            promise.Reject(fmt.Errorf("task %d failed", id))
-        } else {
-            promise.Resolve(fmt.Sprintf("Task %d completed", id))
+        sum := 0
+        for _, v := range data {
+            sum += v
         }
-    }()
+        
+        return sum, nil
+    })
+}
+
+// ProcessDataWithValidation 带验证的数据处理
+func (dp *DataProcessor) ProcessDataWithValidation(data []int) *Future {
+    return dp.executor.Execute(func() (interface{}, error) {
+        // 验证数据
+        if len(data) == 0 {
+            return nil, fmt.Errorf("empty data")
+        }
+        
+        // 处理数据
+        time.Sleep(time.Duration(rand.Intn(500)) * time.Millisecond)
+        
+        sum := 0
+        for _, v := range data {
+            sum += v
+        }
+        
+        return sum, nil
+    })
+}
+
+// WebService 网络服务
+type WebService struct {
+    executor *AsyncExecutor
+}
+
+// NewWebService 创建网络服务
+func NewWebService() *WebService {
+    return &WebService{
+        executor: NewAsyncExecutor(8),
+    }
+}
+
+// FetchData 获取数据
+func (ws *WebService) FetchData(url string) *Future {
+    return ws.executor.Execute(func() (interface{}, error) {
+        // 模拟网络请求
+        time.Sleep(time.Duration(rand.Intn(2000)) * time.Millisecond)
+        
+        // 模拟成功响应
+        return fmt.Sprintf("Data from %s", url), nil
+    })
+}
+
+// FetchDataWithTimeout 带超时的数据获取
+func (ws *WebService) FetchDataWithTimeout(url string, timeout time.Duration) *Future {
+    return ws.executor.ExecuteWithTimeout(func() (interface{}, error) {
+        // 模拟网络请求
+        time.Sleep(time.Duration(rand.Intn(3000)) * time.Millisecond)
+        
+        return fmt.Sprintf("Data from %s", url), nil
+    }, timeout)
+}
+
+// ImageProcessor 图像处理器
+type ImageProcessor struct {
+    executor *GenericAsyncExecutor[string]
+}
+
+// NewImageProcessor 创建图像处理器
+func NewImageProcessor() *ImageProcessor {
+    return &ImageProcessor{
+        executor: NewGenericAsyncExecutor[string](4),
+    }
+}
+
+// ProcessImage 处理图像
+func (ip *ImageProcessor) ProcessImage(filename string) *GenericFuture[string] {
+    return ip.executor.Execute(func() (string, error) {
+        // 模拟图像处理
+        time.Sleep(time.Duration(rand.Intn(1500)) * time.Millisecond)
+        
+        return fmt.Sprintf("processed_%s", filename), nil
+    })
+}
+
+// BatchProcessor 批量处理器
+type BatchProcessor struct {
+    executor *AsyncExecutor
+}
+
+// NewBatchProcessor 创建批量处理器
+func NewBatchProcessor() *BatchProcessor {
+    return &BatchProcessor{
+        executor: NewAsyncExecutor(6),
+    }
+}
+
+// ProcessBatch 批量处理
+func (bp *BatchProcessor) ProcessBatch(tasks []func() (interface{}, error)) []*Future {
+    futures := make([]*Future, len(tasks))
     
-    return promise.Future()
+    for i, task := range tasks {
+        futures[i] = bp.executor.Execute(task)
+    }
+    
+    return futures
+}
+
+// WaitAll 等待所有Future完成
+func WaitAll(futures []*Future) ([]interface{}, []error) {
+    results := make([]interface{}, len(futures))
+    errors := make([]error, len(futures))
+    
+    for i, future := range futures {
+        result, err := future.Get()
+        results[i] = result
+        errors[i] = err
+    }
+    
+    return results, errors
+}
+
+// WaitAny 等待任意一个Future完成
+func WaitAny(futures []*Future) (interface{}, error, int) {
+    if len(futures) == 0 {
+        return nil, fmt.Errorf("no futures provided"), -1
+    }
+    
+    // 创建通道来接收结果
+    resultChan := make(chan struct {
+        result interface{}
+        err    error
+        index  int
+    }, len(futures))
+    
+    // 为每个Future启动一个goroutine
+    for i, future := range futures {
+        go func(f *Future, idx int) {
+            result, err := f.Get()
+            resultChan <- struct {
+                result interface{}
+                err    error
+                index  int
+            }{result, err, idx}
+        }(future, i)
+    }
+    
+    // 等待第一个结果
+    first := <-resultChan
+    return first.result, first.err, first.index
 }
 
 func main() {
-    // 创建多个异步任务
-    var futures []futurepromise.Future[string]
-    for i := 1; i <= 5; i++ {
-        futures = append(futures, asyncTask(i))
-    }
+    // 示例1: 基础Future/Promise使用
+    fmt.Println("=== 基础Future/Promise示例 ===")
     
-    // 等待所有任务完成
-    combinator := &futurepromise.FutureCombinator{}
-    allFuture := combinator.All(futures)
+    promise := NewPromise()
     
-    results, err := allFuture.Get()
-    if err != nil {
-        fmt.Printf("Some tasks failed: %v\n", err)
-        return
-    }
-    
-    fmt.Printf("All tasks completed: %v\n", results)
-}
-
-// 链式调用示例
-func chainExample() {
-    promise := futurepromise.NewPromise[int]()
-    
-    // 启动异步任务
+    // 异步执行任务
     go func() {
-        time.Sleep(100 * time.Millisecond)
-        promise.Resolve(42)
-    }()
-    
-    // 链式处理
-    future := promise.Future().
-        Then(func(value int) (interface{}, error) {
-            return value * 2, nil
-        }).
-        Then(func(value interface{}) (interface{}, error) {
-            return fmt.Sprintf("Result: %v", value), nil
-        }).
-        Catch(func(err error) error {
-            fmt.Printf("Error occurred: %v\n", err)
-            return nil
-        })
-    
-    result, err := future.Get()
-    if err != nil {
-        fmt.Printf("Chain failed: %v\n", err)
-        return
-    }
-    
-    fmt.Printf("Chain result: %v\n", result)
-}
-```
-
-### 4.2 超时和重试
-
-```go
-// 超时示例
-func timeoutExample() {
-    // 创建带超时的Future
-    timeoutFuture := futurepromise.NewTimeoutFuture[string](500 * time.Millisecond)
-    
-    go func() {
-        // 模拟长时间运行的任务
         time.Sleep(1 * time.Second)
-        timeoutFuture.Resolve("Task completed")
+        promise.Resolve("Hello, Future!")
     }()
     
-    result, err := timeoutFuture.Get()
+    // 获取结果
+    result, err := promise.GetFuture().Get()
     if err != nil {
-        fmt.Printf("Task timeout: %v\n", err)
-        return
+        log.Printf("Error: %v", err)
+    } else {
+        fmt.Printf("Result: %v\n", result)
     }
     
-    fmt.Printf("Task result: %s\n", result)
-}
-
-// 重试示例
-func retryExample() {
-    retryFuture := futurepromise.NewRetryFuture[string](3, 100*time.Millisecond)
+    // 示例2: 链式操作
+    fmt.Println("\n=== 链式操作示例 ===")
     
-    attempt := 0
-    retryFuture.ExecuteWithRetry(func() (string, error) {
-        attempt++
-        fmt.Printf("Attempt %d\n", attempt)
-        
-        if attempt < 3 {
-            return "", fmt.Errorf("attempt %d failed", attempt)
-        }
-        
-        return "Success after retries", nil
+    future := promise.GetFuture()
+    chainedFuture := future.Then(func(value interface{}) interface{} {
+        return fmt.Sprintf("Processed: %v", value)
+    }).Then(func(value interface{}) interface{} {
+        return fmt.Sprintf("Final: %v", value)
     })
     
-    result, err := retryFuture.Get()
+    result, err = chainedFuture.Get()
     if err != nil {
-        fmt.Printf("All retries failed: %v\n", err)
-        return
+        log.Printf("Error: %v", err)
+    } else {
+        fmt.Printf("Chained result: %v\n", result)
     }
     
-    fmt.Printf("Retry result: %s\n", result)
+    // 示例3: 数据处理器
+    fmt.Println("\n=== 数据处理器示例 ===")
+    
+    processor := NewDataProcessor()
+    
+    data := []int{1, 2, 3, 4, 5}
+    future1 := processor.ProcessData(data)
+    future2 := processor.ProcessDataWithValidation(data)
+    
+    // 等待结果
+    result1, err1 := future1.Get()
+    result2, err2 := future2.Get()
+    
+    fmt.Printf("Process result 1: %v, error: %v\n", result1, err1)
+    fmt.Printf("Process result 2: %v, error: %v\n", result2, err2)
+    
+    // 示例4: 网络服务
+    fmt.Println("\n=== 网络服务示例 ===")
+    
+    service := NewWebService()
+    
+    future3 := service.FetchData("https://api.example.com/data")
+    future4 := service.FetchDataWithTimeout("https://api.example.com/slow", 1*time.Second)
+    
+    result3, err3 := future3.Get()
+    result4, err4 := future4.Get()
+    
+    fmt.Printf("Fetch result 1: %v, error: %v\n", result3, err3)
+    fmt.Printf("Fetch result 2: %v, error: %v\n", result4, err4)
+    
+    // 示例5: 泛型图像处理器
+    fmt.Println("\n=== 泛型图像处理器示例 ===")
+    
+    imageProcessor := NewImageProcessor()
+    
+    future5 := imageProcessor.ProcessImage("image1.jpg")
+    future6 := imageProcessor.ProcessImage("image2.jpg")
+    
+    result5, err5 := future5.Get()
+    result6, err6 := future6.Get()
+    
+    fmt.Printf("Image result 1: %v, error: %v\n", result5, err5)
+    fmt.Printf("Image result 2: %v, error: %v\n", result6, err6)
+    
+    // 示例6: 批量处理
+    fmt.Println("\n=== 批量处理示例 ===")
+    
+    batchProcessor := NewBatchProcessor()
+    
+    tasks := []func() (interface{}, error){
+        func() (interface{}, error) {
+            time.Sleep(500 * time.Millisecond)
+            return "Task 1 completed", nil
+        },
+        func() (interface{}, error) {
+            time.Sleep(300 * time.Millisecond)
+            return "Task 2 completed", nil
+        },
+        func() (interface{}, error) {
+            time.Sleep(700 * time.Millisecond)
+            return "Task 3 completed", nil
+        },
+    }
+    
+    futures := batchProcessor.ProcessBatch(tasks)
+    results, errors := WaitAll(futures)
+    
+    for i, result := range results {
+        fmt.Printf("Batch result %d: %v, error: %v\n", i+1, result, errors[i])
+    }
+    
+    // 示例7: 等待任意一个完成
+    fmt.Println("\n=== 等待任意一个完成示例 ===")
+    
+    result, err, index := WaitAny(futures)
+    fmt.Printf("First completed: index=%d, result=%v, error=%v\n", index, result, err)
 }
 ```
 
-### 4.3 组合模式
+---
+
+## 6. 性能分析
+
+### 6.1 时间复杂度
+
+- **Future创建**: $O(1)$
+- **Promise创建**: $O(1)$
+- **结果设置**: $O(1)$
+- **结果获取**: $O(1)$ (如果已完成)
+- **链式操作**: $O(1)$
+
+### 6.2 空间复杂度
+
+- **Future对象**: $O(1)$
+- **Promise对象**: $O(1)$
+- **回调队列**: $O(n)$，其中 $n$ 是回调数量
+
+### 6.3 性能优化建议
+
+1. **减少回调嵌套**: 避免过深的链式调用
+2. **批量操作**: 使用批量处理减少开销
+3. **超时控制**: 设置合理的超时时间
+4. **资源管理**: 及时释放不需要的Future
+5. **错误处理**: 避免错误传播开销
+
+---
+
+## 7. 应用场景
+
+### 7.1 适用场景
+
+1. **异步I/O**: 文件读写、网络请求
+2. **并发计算**: 并行数据处理
+3. **事件处理**: 异步事件响应
+4. **资源加载**: 图片、数据加载
+5. **API调用**: 微服务间通信
+
+### 7.2 使用示例
 
 ```go
-// 组合模式示例
-func combinatorExample() {
-    combinator := &futurepromise.FutureCombinator{}
-    
-    // 创建多个任务
-    var futures []futurepromise.Future[string]
-    for i := 1; i <= 3; i++ {
-        i := i // 捕获变量
-        future := futurepromise.NewFuture[string]()
-        futures = append(futures, future)
-        
-        go func() {
-            time.Sleep(time.Duration(i*200) * time.Millisecond)
-            future.Resolve(fmt.Sprintf("Task %d result", i))
-        }()
-    }
-    
-    // 等待所有完成
-    allFuture := combinator.All(futures)
-    allResults, err := allFuture.Get()
-    if err != nil {
-        fmt.Printf("All failed: %v\n", err)
-    } else {
-        fmt.Printf("All results: %v\n", allResults)
-    }
-    
-    // 等待任意一个完成
-    anyFuture := combinator.Any(futures)
-    anyResult, err := anyFuture.Get()
-    if err != nil {
-        fmt.Printf("Any failed: %v\n", err)
-    } else {
-        fmt.Printf("Any result: %s\n", anyResult)
-    }
+// 文件上传服务
+type FileUploadService struct {
+    executor *AsyncExecutor
 }
-```
 
-## 5. 性能分析
-
-### 5.1 时间复杂度
-
-| 操作 | 时间复杂度 | 说明 |
-|------|------------|------|
-| Future创建 | O(1) | 直接创建 |
-| 结果获取 | O(1) | 阻塞等待 |
-| 链式调用 | O(1) | 异步执行 |
-| 组合操作 | O(n) | n为Future数量 |
-
-### 5.2 空间复杂度
-
-- **基础Future**: O(1)
-- **带回调的Future**: O(c)，c为回调数量
-- **组合Future**: O(n)，n为组合的Future数量
-
-### 5.3 并发性能
-
-```mermaid
-graph TD
-    A[任务提交] --> B[异步执行]
-    B --> C[结果等待]
-    C --> D[结果处理]
-    
-    E[链式调用] --> F[流水线处理]
-    F --> G[错误传播]
-    
-    H[组合操作] --> I[并行执行]
-    I --> J[结果聚合]
-```
-
-## 6. 最佳实践
-
-### 6.1 错误处理
-
-```go
-// 错误处理最佳实践
-func errorHandlingExample() {
-    future := futurepromise.NewFuture[string]()
-    
-    // 添加错误处理回调
-    future.AddCallback(func(result futurepromise.FutureResult[string]) {
-        if result.State == futurepromise.Rejected {
-            fmt.Printf("Future failed: %v\n", result.Error)
-        }
+func (fus *FileUploadService) UploadFile(file *File) *Future {
+    return fus.executor.Execute(func() (interface{}, error) {
+        // 上传文件
+        return uploadToServer(file)
     })
-    
-    // 链式错误处理
-    future.
-        Then(func(value string) (interface{}, error) {
-            // 处理成功情况
-            return value, nil
-        }).
-        Catch(func(err error) error {
-            // 处理错误
-            fmt.Printf("Handled error: %v\n", err)
-            return nil // 返回nil表示错误已处理
-        })
+}
+
+// 数据库查询服务
+type DatabaseService struct {
+    executor *GenericAsyncExecutor[*Record]
+}
+
+func (ds *DatabaseService) QueryRecords(query string) *GenericFuture[[]*Record] {
+    return ds.executor.Execute(func() ([]*Record, error) {
+        // 执行查询
+        return executeQuery(query)
+    })
 }
 ```
 
-### 6.2 资源管理
+---
+
+## 8. 优缺点分析
+
+### 8.1 优点
+
+1. **非阻塞**: 避免阻塞主线程
+2. **响应性**: 提高系统响应性
+3. **组合性**: 支持异步操作组合
+4. **错误处理**: 统一的错误处理机制
+5. **可读性**: 提高异步代码可读性
+
+### 8.2 缺点
+
+1. **复杂性**: 增加代码复杂度
+2. **调试困难**: 异步代码调试复杂
+3. **内存开销**: 需要额外的对象开销
+4. **错误传播**: 错误传播可能复杂
+5. **性能开销**: 比同步代码有更多开销
+
+### 8.3 权衡考虑
+
+| 方面 | 同步代码 | Future/Promise |
+|------|----------|----------------|
+| 性能 | 高 | 中等 |
+| 响应性 | 低 | 高 |
+| 复杂度 | 低 | 高 |
+| 可读性 | 高 | 中等 |
+| 可维护性 | 高 | 中等 |
+
+---
+
+## 9. 相关模式
+
+### 9.1 模式关系
+
+- **回调模式**: Future/Promise的基础
+- **观察者模式**: 可以用于结果通知
+- **命令模式**: 可以封装异步操作
+- **线程池模式**: 用于执行异步任务
+
+### 9.2 模式组合
 
 ```go
-// 资源管理
-func resourceManagementExample() {
-    // 使用context进行取消
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-    defer cancel()
-    
-    future := futurepromise.NewFuture[string]()
-    
-    go func() {
-        select {
-        case <-ctx.Done():
-            future.Reject(ctx.Err())
-        default:
-            // 执行任务
-            time.Sleep(1 * time.Second)
-            future.Resolve("Task completed")
-        }
-    }()
-    
-    result, err := future.Get()
-    if err != nil {
-        fmt.Printf("Task failed: %v\n", err)
-        return
-    }
-    
-    fmt.Printf("Task result: %s\n", result)
+// 结合观察者的Future
+type ObservableFuture struct {
+    future *Future
+    observers []Observer
+    // ...
+}
+
+// 结合命令模式的Future
+type CommandFuture struct {
+    command Command
+    future *Future
+    // ...
 }
 ```
 
-### 6.3 性能优化
+---
 
-```go
-// 性能优化
-func performanceOptimization() {
-    // 使用对象池减少内存分配
-    type TaskResult struct {
-        ID   int
-        Data string
-    }
-    
-    // 批量处理
-    var futures []futurepromise.Future[TaskResult]
-    for i := 0; i < 1000; i++ {
-        future := futurepromise.NewFuture[TaskResult]()
-        futures = append(futures, future)
-        
-        go func(id int) {
-            // 模拟工作
-            time.Sleep(10 * time.Millisecond)
-            future.Resolve(TaskResult{ID: id, Data: fmt.Sprintf("Data %d", id)})
-        }(i)
-    }
-    
-    // 使用组合器批量处理
-    combinator := &futurepromise.FutureCombinator{}
-    allFuture := combinator.All(futures)
-    
-    results, err := allFuture.Get()
-    if err != nil {
-        fmt.Printf("Batch processing failed: %v\n", err)
-        return
-    }
-    
-    fmt.Printf("Processed %d tasks\n", len(results))
-}
-```
+## 10. 总结
 
-## 7. 与其他模式的比较
+Future/Promise模式是一种强大的异步编程模式，通过封装异步操作的结果，提供了优雅的异步编程解决方案。在Go语言中，该模式可以很好地利用goroutine和channel的特性。
 
-| 模式 | 适用场景 | 复杂度 | 性能 |
-|------|----------|--------|------|
-| Future/Promise | 异步编程 | 中等 | 高 |
-| 回调函数 | 简单异步 | 低 | 高 |
-| 消息传递 | 分布式 | 高 | 中等 |
-| 协程 | 并发编程 | 低 | 高 |
+### 10.1 关键要点
 
-## 8. 总结
+1. **异步执行**: 操作在后台异步执行
+2. **结果封装**: 将异步结果封装在Future中
+3. **链式操作**: 支持异步操作的组合
+4. **错误处理**: 提供统一的错误处理
 
-Future/Promise模式是异步编程中的核心模式，提供了优雅的方式来处理异步操作和结果。在Go语言中，我们可以使用goroutine和channel来实现高效的Future/Promise模式。
+### 10.2 最佳实践
 
-**关键优势**:
-- 非阻塞异步执行
-- 链式调用支持
-- 错误传播机制
-- 组合操作能力
+1. **合理使用链式调用**: 避免过深的嵌套
+2. **设置超时**: 避免无限等待
+3. **错误处理**: 正确处理所有错误情况
+4. **资源管理**: 及时释放资源
+5. **性能监控**: 监控异步操作性能
 
-**适用场景**:
-- 异步API调用
-- 并行任务处理
-- 事件驱动编程
-- 流式数据处理 
+### 10.3 未来发展方向
+
+1. **智能调度**: 基于负载的动态调度
+2. **自动优化**: 自动优化异步操作
+3. **分布式扩展**: 支持分布式Future
+4. **流式处理**: 支持流式异步操作
+5. **机器学习**: 使用ML优化异步性能
+
+---
+
+**参考文献**:
+1. Goetz, B. (2006). Java Concurrency in Practice
+2. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency
+3. Future/Promise Pattern: https://en.wikipedia.org/wiki/Futures_and_promises
+4. Go sync package: https://golang.org/pkg/sync/ 

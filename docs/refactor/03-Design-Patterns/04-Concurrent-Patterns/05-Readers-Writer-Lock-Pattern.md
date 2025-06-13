@@ -1,788 +1,1118 @@
 # 05-读写锁模式 (Readers-Writer Lock Pattern)
 
-## 1. 形式化定义
+## 目录
 
-### 1.1 数学定义
+- [05-读写锁模式 (Readers-Writer Lock Pattern)](#05-读写锁模式-readers-writer-lock-pattern)
+  - [目录](#目录)
+  - [1. 概述](#1-概述)
+    - [1.1 定义](#11-定义)
+    - [1.2 核心思想](#12-核心思想)
+    - [1.3 设计目标](#13-设计目标)
+  - [2. 形式化定义](#2-形式化定义)
+    - [2.1 基本概念](#21-基本概念)
+    - [2.2 操作语义](#22-操作语义)
+    - [2.3 一致性约束](#23-一致性约束)
+  - [3. 数学基础](#3-数学基础)
+    - [3.1 并发理论](#31-并发理论)
+    - [3.2 饥饿分析](#32-饥饿分析)
+  - [4. 模式结构](#4-模式结构)
+    - [4.1 类图](#41-类图)
+    - [4.2 时序图](#42-时序图)
+  - [5. Go语言实现](#5-go语言实现)
+    - [5.1 基础实现](#51-基础实现)
+    - [5.2 泛型实现](#52-泛型实现)
+    - [5.3 实际应用示例](#53-实际应用示例)
+  - [6. 性能分析](#6-性能分析)
+    - [6.1 时间复杂度](#61-时间复杂度)
+    - [6.2 空间复杂度](#62-空间复杂度)
+    - [6.3 性能优化建议](#63-性能优化建议)
+  - [7. 应用场景](#7-应用场景)
+    - [7.1 适用场景](#71-适用场景)
+    - [7.2 使用示例](#72-使用示例)
+  - [8. 优缺点分析](#8-优缺点分析)
+    - [8.1 优点](#81-优点)
+    - [8.2 缺点](#82-缺点)
+    - [8.3 权衡考虑](#83-权衡考虑)
+  - [9. 相关模式](#9-相关模式)
+    - [9.1 模式关系](#91-模式关系)
+    - [9.2 模式组合](#92-模式组合)
+  - [10. 总结](#10-总结)
+    - [10.1 关键要点](#101-关键要点)
+    - [10.2 最佳实践](#102-最佳实践)
+    - [10.3 未来发展方向](#103-未来发展方向)
 
-设 $R$ 为读者集合，$W$ 为写者集合，$L$ 为读写锁，$S$ 为共享资源，读写锁模式满足以下公理：
+---
 
-**读写锁公理**：
-- **读者并发**: $\forall r_1, r_2 \in R: \text{read}(r_1, S) \land \text{read}(r_2, S) \Rightarrow \text{concurrent}(r_1, r_2)$
-- **写者互斥**: $\forall w_1, w_2 \in W: \text{write}(w_1, S) \land \text{write}(w_2, S) \Rightarrow w_1 = w_2$
-- **读写互斥**: $\forall r \in R, w \in W: \text{read}(r, S) \land \text{write}(w, S) \Rightarrow \text{false}$
-- **公平性**: $\text{waiting}(w) \Rightarrow \text{prevent\_new\_readers}$
+## 1. 概述
 
-**形式化约束**：
-- **读者计数**: $\text{reader\_count} \geq 0$
-- **写者状态**: $\text{writer\_active} \in \{0, 1\}$
-- **等待队列**: $\text{waiting\_writers} \geq 0$
-- **优先级策略**: $\text{writer\_priority} \lor \text{reader\_priority}$
+### 1.1 定义
 
-### 1.2 类型理论定义
+读写锁模式 (Readers-Writer Lock Pattern) 是一种并发控制模式，它允许多个读者同时访问共享资源，但只允许一个写者独占访问。该模式通过区分读操作和写操作来提高并发性能，特别适用于读多写少的场景。
 
-```go
-// 读写锁接口定义
-type ReadWriteLock interface {
-    ReadLock() error
-    ReadUnlock() error
-    WriteLock() error
-    WriteUnlock() error
-    TryReadLock() bool
-    TryWriteLock() bool
-}
+### 1.2 核心思想
 
-// 读写锁状态定义
-type LockState struct {
-    ReaderCount    int
-    WriterActive   bool
-    WaitingWriters int
-    CurrentWriter  string
-}
+读写锁模式的核心思想是：
 
-// 锁策略定义
-type LockStrategy int
+- **读共享**: 多个读者可以同时访问共享资源
+- **写独占**: 写者独占访问，排斥所有其他操作
+- **优先级控制**: 支持读者优先或写者优先策略
+- **公平性**: 避免读者或写者饥饿
 
-const (
-    ReaderPriority LockStrategy = iota
-    WriterPriority
-    FairStrategy
-)
-```
+### 1.3 设计目标
 
-## 2. 实现原理
+1. **并发性**: 允许多个读者并发访问
+2. **一致性**: 保证数据读写的一致性
+3. **性能**: 提高读多写少场景的性能
+4. **公平性**: 避免读者或写者饥饿
+5. **安全性**: 保证线程安全
 
-### 2.1 读写锁状态机
+---
 
-```mermaid
-stateDiagram-v2
-    [*] --> Unlocked
-    Unlocked --> ReadLocked : ReadLock()
-    Unlocked --> WriteLocked : WriteLock()
-    ReadLocked --> ReadLocked : ReadLock()
-    ReadLocked --> Unlocked : ReadUnlock()
-    ReadLocked --> WriteWaiting : WriteLock()
-    WriteWaiting --> WriteLocked : Last ReadUnlock()
-    WriteLocked --> Unlocked : WriteUnlock()
-    WriteLocked --> ReadWaiting : ReadLock()
-    ReadWaiting --> ReadLocked : WriteUnlock()
-    
-    state ReadLocked {
-        [*] --> SingleReader
-        SingleReader --> MultipleReaders : ReadLock()
-        MultipleReaders --> SingleReader : ReadUnlock()
-        SingleReader --> [*] : ReadUnlock()
-    }
-```
+## 2. 形式化定义
 
-### 2.2 同步机制分析
+### 2.1 基本概念
 
-**定理**: 读写锁模式保证数据一致性和并发性能。
+设 $R$ 为读者集合，$W$ 为写者集合，$S$ 为共享资源集合，$L$ 为读写锁集合。
+
+**定义 2.1** (读写锁)
+读写锁是一个五元组 $(l, readers, writers, mutex, condition)$，其中：
+
+- $l \in L$ 是读写锁实例
+- $readers \subseteq R$ 是当前读者集合
+- $writers \subseteq W$ 是当前写者集合
+- $mutex$ 是互斥锁
+- $condition$ 是条件变量
+
+**定义 2.2** (读者)
+读者是一个三元组 $(r, lock, state)$，其中：
+
+- $r \in R$ 是读者实例
+- $lock \in L$ 是关联的读写锁
+- $state \in \{waiting, reading, finished\}$ 是读者状态
+
+**定义 2.3** (写者)
+写者是一个三元组 $(w, lock, state)$，其中：
+
+- $w \in W$ 是写者实例
+- $lock \in L$ 是关联的读写锁
+- $state \in \{waiting, writing, finished\}$ 是写者状态
+
+### 2.2 操作语义
+
+**公理 2.1** (读锁获取)
+对于读者 $r$ 和读写锁 $l$：
+$$read\_lock(l, r) = \begin{cases}
+acquire(mutex) \land add(readers, r) \land release(mutex) & \text{if } |writers| = 0 \\
+block(r) & \text{otherwise}
+\end{cases}$$
+
+**公理 2.2** (读锁释放)
+对于读者 $r$ 和读写锁 $l$：
+$$read\_unlock(l, r) = acquire(mutex) \land remove(readers, r) \land signal(writers) \land release(mutex)$$
+
+**公理 2.3** (写锁获取)
+对于写者 $w$ 和读写锁 $l$：
+$$write\_lock(l, w) = \begin{cases}
+acquire(mutex) \land add(writers, w) \land release(mutex) & \text{if } |readers| = 0 \land |writers| = 0 \\
+block(w) & \text{otherwise}
+\end{cases}$$
+
+**公理 2.4** (写锁释放)
+对于写者 $w$ 和读写锁 $l$：
+$$write\_unlock(l, w) = acquire(mutex) \land remove(writers, w) \land broadcast(readers) \land release(mutex)$$
+
+### 2.3 一致性约束
+
+**定义 2.4** (读一致性)
+读一致性要求：
+$$\forall r_1, r_2 \in readers: \text{可以并发执行}$$
+
+**定义 2.5** (写一致性)
+写一致性要求：
+$$\forall w \in writers: \text{独占访问，排斥所有其他操作}$$
+
+**定理 2.1** (安全性)
+读写锁模式保证安全性，当且仅当：
+$$\text{写者执行时，没有读者或其他写者同时执行}$$
 
 **证明**:
+1. 写锁获取时检查 $|readers| = 0 \land |writers| = 0$
+2. 读锁获取时检查 $|writers| = 0$
+3. 因此保证了安全性
 
-1. **数据一致性证明**:
-   - 写者互斥保证数据完整性
-   - 读写互斥防止脏读
-   - 原子操作保证状态一致性
+---
 
-2. **并发性能证明**:
-   - 多个读者可以并发访问
-   - 写者优先策略减少写等待时间
-   - 公平策略防止饥饿
+## 3. 数学基础
 
-## 3. Go语言实现
+### 3.1 并发理论
 
-### 3.1 基础读写锁实现
+**定义 3.1** (并发度)
+并发度是同时执行的读者数量：
+$$concurrency = |readers|$$
+
+**定义 3.2** (吞吐量)
+系统吞吐量：
+$$throughput = \frac{read\_operations + write\_operations}{time}$$
+
+**定理 3.1** (最优并发度)
+在读者优先策略下，最优并发度：
+$$optimal\_concurrency = \min(|R|, \text{system\_capacity})$$
+
+### 3.2 饥饿分析
+
+**定义 3.3** (读者饥饿)
+读者饥饿是指写者长时间无法获得锁：
+$$reader\_starvation = \text{写者等待时间超过阈值}$$
+
+**定义 3.4** (写者饥饿)
+写者饥饿是指读者长时间无法获得锁：
+$$writer\_starvation = \text{读者等待时间超过阈值}$$
+
+**定理 3.2** (公平性)
+读写锁模式保证公平性，当且仅当：
+$$\text{不存在无限等待的读者或写者}$$
+
+---
+
+## 4. 模式结构
+
+### 4.1 类图
+
+```mermaid
+classDiagram
+    class ReadWriteLock {
+        -readers: int
+        -writers: int
+        -waitingWriters: int
+        -mutex: sync.Mutex
+        -readCondition: *sync.Cond
+        -writeCondition: *sync.Cond
+        +RLock()
+        +RUnlock()
+        +Lock()
+        +Unlock()
+        +TryRLock()
+        +TryLock()
+    }
+
+    class Reader {
+        -id: string
+        -lock: ReadWriteLock
+        -state: ReaderState
+        +Read()
+        +AcquireReadLock()
+        +ReleaseReadLock()
+    }
+
+    class Writer {
+        -id: string
+        -lock: ReadWriteLock
+        -state: WriterState
+        +Write()
+        +AcquireWriteLock()
+        +ReleaseWriteLock()
+    }
+
+    class SharedResource {
+        -data: interface{}
+        -lock: ReadWriteLock
+        +Read()
+        +Write()
+        +GetData()
+        +SetData()
+    }
+
+    ReadWriteLock --> Reader
+    ReadWriteLock --> Writer
+    Reader --> SharedResource
+    Writer --> SharedResource
+    SharedResource --> ReadWriteLock
+```
+
+### 4.2 时序图
+
+```mermaid
+sequenceDiagram
+    participant R1 as Reader1
+    participant R2 as Reader2
+    participant W as Writer
+    participant L as ReadWriteLock
+    participant S as SharedResource
+
+    R1->>L: RLock()
+    L->>L: check writers == 0
+    L->>R1: grant read lock
+    R1->>S: Read()
+
+    R2->>L: RLock()
+    L->>L: check writers == 0
+    L->>R2: grant read lock
+    R2->>S: Read()
+
+    W->>L: Lock()
+    L->>L: check readers == 0 && writers == 0
+    L->>W: block until readers == 0
+
+    R1->>L: RUnlock()
+    L->>L: readers--
+    R2->>L: RUnlock()
+    L->>L: readers--
+    L->>W: signal writer
+    L->>W: grant write lock
+    W->>S: Write()
+    W->>L: Unlock()
+    L->>L: writers--
+```
+
+---
+
+## 5. Go语言实现
+
+### 5.1 基础实现
 
 ```go
 package readwritelock
 
 import (
+    "context"
     "fmt"
     "sync"
-    "sync/atomic"
     "time"
 )
 
-// ReadWriteLock 读写锁实现
+// ReadWriteLock 读写锁
 type ReadWriteLock struct {
-    readerCount    int32
-    writerActive   int32
-    waitingWriters int32
-    mutex          sync.Mutex
-    readerCond     *sync.Cond
-    writerCond     *sync.Cond
-    strategy       LockStrategy
-    currentWriter  string
+    readers       int
+    writers       int
+    waitingWriters int
+    mutex         sync.Mutex
+    readCondition *sync.Cond
+    writeCondition *sync.Cond
 }
 
-// NewReadWriteLock 创建新的读写锁
-func NewReadWriteLock(strategy LockStrategy) *ReadWriteLock {
-    rw := &ReadWriteLock{
-        strategy: strategy,
-    }
-    rw.readerCond = sync.NewCond(&rw.mutex)
-    rw.writerCond = sync.NewCond(&rw.mutex)
-    return rw
+// NewReadWriteLock 创建读写锁
+func NewReadWriteLock() *ReadWriteLock {
+    lock := &ReadWriteLock{}
+    lock.readCondition = sync.NewCond(&lock.mutex)
+    lock.writeCondition = sync.NewCond(&lock.mutex)
+    return lock
 }
 
-// ReadLock 获取读锁
-func (rw *ReadWriteLock) ReadLock() error {
+// RLock 获取读锁
+func (rw *ReadWriteLock) RLock() {
     rw.mutex.Lock()
     defer rw.mutex.Unlock()
-    
+
     // 等待写者完成
-    for rw.writerActive > 0 || (rw.strategy == WriterPriority && rw.waitingWriters > 0) {
-        rw.readerCond.Wait()
+    for rw.writers > 0 || rw.waitingWriters > 0 {
+        rw.readCondition.Wait()
     }
-    
-    atomic.AddInt32(&rw.readerCount, 1)
-    return nil
+
+    rw.readers++
 }
 
-// ReadUnlock 释放读锁
-func (rw *ReadWriteLock) ReadUnlock() error {
+// RUnlock 释放读锁
+func (rw *ReadWriteLock) RUnlock() {
     rw.mutex.Lock()
     defer rw.mutex.Unlock()
-    
-    if rw.readerCount <= 0 {
-        return fmt.Errorf("no read lock to unlock")
-    }
-    
-    atomic.AddInt32(&rw.readerCount, -1)
-    
+
+    rw.readers--
+
     // 如果没有读者了，唤醒等待的写者
-    if rw.readerCount == 0 && rw.waitingWriters > 0 {
-        rw.writerCond.Signal()
+    if rw.readers == 0 {
+        rw.writeCondition.Signal()
     }
-    
-    return nil
 }
 
-// WriteLock 获取写锁
-func (rw *ReadWriteLock) WriteLock() error {
+// Lock 获取写锁
+func (rw *ReadWriteLock) Lock() {
     rw.mutex.Lock()
     defer rw.mutex.Unlock()
-    
-    // 增加等待写者计数
-    atomic.AddInt32(&rw.waitingWriters, 1)
-    
+
+    rw.waitingWriters++
+
     // 等待所有读者和写者完成
-    for rw.readerCount > 0 || rw.writerActive > 0 {
-        rw.writerCond.Wait()
+    for rw.readers > 0 || rw.writers > 0 {
+        rw.writeCondition.Wait()
     }
-    
-    // 减少等待写者计数
-    atomic.AddInt32(&rw.waitingWriters, -1)
-    
-    // 设置写者活跃状态
-    atomic.StoreInt32(&rw.writerActive, 1)
-    rw.currentWriter = fmt.Sprintf("writer-%d", time.Now().UnixNano())
-    
-    return nil
+
+    rw.waitingWriters--
+    rw.writers++
 }
 
-// WriteUnlock 释放写锁
-func (rw *ReadWriteLock) WriteUnlock() error {
+// Unlock 释放写锁
+func (rw *ReadWriteLock) Unlock() {
     rw.mutex.Lock()
     defer rw.mutex.Unlock()
-    
-    if rw.writerActive == 0 {
-        return fmt.Errorf("no write lock to unlock")
-    }
-    
-    atomic.StoreInt32(&rw.writerActive, 0)
-    rw.currentWriter = ""
-    
-    // 根据策略唤醒等待的进程
-    if rw.strategy == ReaderPriority {
-        // 读者优先：唤醒所有等待的读者
-        rw.readerCond.Broadcast()
+
+    rw.writers--
+
+    // 优先唤醒等待的写者，否则唤醒所有读者
+    if rw.waitingWriters > 0 {
+        rw.writeCondition.Signal()
     } else {
-        // 写者优先或公平策略：优先唤醒写者，否则唤醒读者
-        if rw.waitingWriters > 0 {
-            rw.writerCond.Signal()
-        } else {
-            rw.readerCond.Broadcast()
+        rw.readCondition.Broadcast()
+    }
+}
+
+// TryRLock 尝试获取读锁
+func (rw *ReadWriteLock) TryRLock() bool {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    if rw.writers > 0 || rw.waitingWriters > 0 {
+        return false
+    }
+
+    rw.readers++
+    return true
+}
+
+// TryLock 尝试获取写锁
+func (rw *ReadWriteLock) TryLock() bool {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    if rw.readers > 0 || rw.writers > 0 {
+        return false
+    }
+
+    rw.writers++
+    return true
+}
+
+// RLockWithTimeout 带超时的读锁获取
+func (rw *ReadWriteLock) RLockWithTimeout(timeout time.Duration) error {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    // 等待写者完成，带超时
+    done := make(chan struct{})
+    go func() {
+        for rw.writers > 0 || rw.waitingWriters > 0 {
+            rw.readCondition.Wait()
         }
+        close(done)
+    }()
+
+    select {
+    case <-done:
+        rw.readers++
+        return nil
+    case <-time.After(timeout):
+        return context.DeadlineExceeded
     }
-    
-    return nil
 }
 
-// TryReadLock 尝试获取读锁
-func (rw *ReadWriteLock) TryReadLock() bool {
+// LockWithTimeout 带超时的写锁获取
+func (rw *ReadWriteLock) LockWithTimeout(timeout time.Duration) error {
     rw.mutex.Lock()
     defer rw.mutex.Unlock()
-    
-    if rw.writerActive > 0 || (rw.strategy == WriterPriority && rw.waitingWriters > 0) {
-        return false
+
+    rw.waitingWriters++
+
+    // 等待所有读者和写者完成，带超时
+    done := make(chan struct{})
+    go func() {
+        for rw.readers > 0 || rw.writers > 0 {
+            rw.writeCondition.Wait()
+        }
+        close(done)
+    }()
+
+    select {
+    case <-done:
+        rw.waitingWriters--
+        rw.writers++
+        return nil
+    case <-time.After(timeout):
+        rw.waitingWriters--
+        return context.DeadlineExceeded
     }
-    
-    atomic.AddInt32(&rw.readerCount, 1)
-    return true
 }
 
-// TryWriteLock 尝试获取写锁
-func (rw *ReadWriteLock) TryWriteLock() bool {
+// GetStats 获取锁统计信息
+func (rw *ReadWriteLock) GetStats() (readers, writers, waitingWriters int) {
     rw.mutex.Lock()
     defer rw.mutex.Unlock()
-    
-    if rw.readerCount > 0 || rw.writerActive > 0 {
-        return false
-    }
-    
-    atomic.StoreInt32(&rw.writerActive, 1)
-    rw.currentWriter = fmt.Sprintf("writer-%d", time.Now().UnixNano())
-    return true
-}
-
-// GetState 获取锁状态
-func (rw *ReadWriteLock) GetState() LockState {
-    rw.mutex.Lock()
-    defer rw.mutex.Unlock()
-    
-    return LockState{
-        ReaderCount:    int(rw.readerCount),
-        WriterActive:   rw.writerActive > 0,
-        WaitingWriters: int(rw.waitingWriters),
-        CurrentWriter:  rw.currentWriter,
-    }
+    return rw.readers, rw.writers, rw.waitingWriters
 }
 ```
 
-### 3.2 高级读写锁实现（带超时和统计）
+### 5.2 泛型实现
 
 ```go
-// TimedReadWriteLock 带超时的读写锁
-type TimedReadWriteLock struct {
-    *ReadWriteLock
-    readTimeout  time.Duration
-    writeTimeout time.Duration
+package readwritelock
+
+import (
+    "context"
+    "sync"
+    "time"
+)
+
+// GenericReadWriteLock 泛型读写锁
+type GenericReadWriteLock[T any] struct {
+    readers       int
+    writers       int
+    waitingWriters int
+    mutex         sync.RWMutex
+    readCondition *sync.Cond
+    writeCondition *sync.Cond
+    data          T
 }
 
-// NewTimedReadWriteLock 创建带超时的读写锁
-func NewTimedReadWriteLock(strategy LockStrategy, readTimeout, writeTimeout time.Duration) *TimedReadWriteLock {
-    return &TimedReadWriteLock{
-        ReadWriteLock: NewReadWriteLock(strategy),
-        readTimeout:   readTimeout,
-        writeTimeout:  writeTimeout,
+// NewGenericReadWriteLock 创建泛型读写锁
+func NewGenericReadWriteLock[T any](initial T) *GenericReadWriteLock[T] {
+    lock := &GenericReadWriteLock[T]{
+        data: initial,
+    }
+    lock.readCondition = sync.NewCond(&lock.mutex)
+    lock.writeCondition = sync.NewCond(&lock.mutex)
+    return lock
+}
+
+// RLock 获取读锁
+func (rw *GenericReadWriteLock[T]) RLock() {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    // 等待写者完成
+    for rw.writers > 0 || rw.waitingWriters > 0 {
+        rw.readCondition.Wait()
+    }
+
+    rw.readers++
+}
+
+// RUnlock 释放读锁
+func (rw *GenericReadWriteLock[T]) RUnlock() {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    rw.readers--
+
+    // 如果没有读者了，唤醒等待的写者
+    if rw.readers == 0 {
+        rw.writeCondition.Signal()
     }
 }
 
-// ReadLockWithTimeout 带超时的读锁获取
-func (trw *TimedReadWriteLock) ReadLockWithTimeout() error {
-    done := make(chan error, 1)
-    
-    go func() {
-        done <- trw.ReadLock()
-    }()
-    
-    select {
-    case err := <-done:
-        return err
-    case <-time.After(trw.readTimeout):
-        return fmt.Errorf("read lock timeout after %v", trw.readTimeout)
+// Lock 获取写锁
+func (rw *GenericReadWriteLock[T]) Lock() {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    rw.waitingWriters++
+
+    // 等待所有读者和写者完成
+    for rw.readers > 0 || rw.writers > 0 {
+        rw.writeCondition.Wait()
+    }
+
+    rw.waitingWriters--
+    rw.writers++
+}
+
+// Unlock 释放写锁
+func (rw *GenericReadWriteLock[T]) Unlock() {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    rw.writers--
+
+    // 优先唤醒等待的写者，否则唤醒所有读者
+    if rw.waitingWriters > 0 {
+        rw.writeCondition.Signal()
+    } else {
+        rw.readCondition.Broadcast()
     }
 }
 
-// WriteLockWithTimeout 带超时的写锁获取
-func (trw *TimedReadWriteLock) WriteLockWithTimeout() error {
-    done := make(chan error, 1)
-    
-    go func() {
-        done <- trw.WriteLock()
-    }()
-    
-    select {
-    case err := <-done:
-        return err
-    case <-time.After(trw.writeTimeout):
-        return fmt.Errorf("write lock timeout after %v", trw.writeTimeout)
-    }
+// Read 读取数据
+func (rw *GenericReadWriteLock[T]) Read() T {
+    rw.RLock()
+    defer rw.RUnlock()
+    return rw.data
 }
 
-// ReadWriteLockStats 读写锁统计
-type ReadWriteLockStats struct {
-    TotalReadLocks   int64
-    TotalWriteLocks  int64
-    ReadWaitTime     time.Duration
-    WriteWaitTime    time.Duration
-    ReadContention   int64
-    WriteContention  int64
-    mutex            sync.RWMutex
+// Write 写入数据
+func (rw *GenericReadWriteLock[T]) Write(value T) {
+    rw.Lock()
+    defer rw.Unlock()
+    rw.data = value
 }
 
-// StatsReadWriteLock 带统计的读写锁
-type StatsReadWriteLock struct {
-    *ReadWriteLock
-    stats *ReadWriteLockStats
+// ReadWithFunc 使用函数读取数据
+func (rw *GenericReadWriteLock[T]) ReadWithFunc(fn func(T) interface{}) interface{} {
+    rw.RLock()
+    defer rw.RUnlock()
+    return fn(rw.data)
 }
 
-// NewStatsReadWriteLock 创建带统计的读写锁
-func NewStatsReadWriteLock(strategy LockStrategy) *StatsReadWriteLock {
-    return &StatsReadWriteLock{
-        ReadWriteLock: NewReadWriteLock(strategy),
-        stats:         &ReadWriteLockStats{},
-    }
+// WriteWithFunc 使用函数写入数据
+func (rw *GenericReadWriteLock[T]) WriteWithFunc(fn func(T) T) {
+    rw.Lock()
+    defer rw.Unlock()
+    rw.data = fn(rw.data)
 }
 
-// ReadLock 带统计的读锁获取
-func (srw *StatsReadWriteLock) ReadLock() error {
-    start := time.Now()
-    
-    // 检查是否有竞争
-    if srw.GetState().WriterActive || srw.GetState().WaitingWriters > 0 {
-        atomic.AddInt64(&srw.stats.ReadContention, 1)
+// TryRead 尝试读取数据
+func (rw *GenericReadWriteLock[T]) TryRead() (T, bool) {
+    var zero T
+    if !rw.TryRLock() {
+        return zero, false
     }
-    
-    err := srw.ReadWriteLock.ReadLock()
-    
-    if err == nil {
-        atomic.AddInt64(&srw.stats.TotalReadLocks, 1)
-        srw.stats.mutex.Lock()
-        srw.stats.ReadWaitTime += time.Since(start)
-        srw.stats.mutex.Unlock()
-    }
-    
-    return err
+    defer rw.RUnlock()
+    return rw.data, true
 }
 
-// WriteLock 带统计的写锁获取
-func (srw *StatsReadWriteLock) WriteLock() error {
-    start := time.Now()
-    
-    // 检查是否有竞争
-    if srw.GetState().ReaderCount > 0 || srw.GetState().WriterActive {
-        atomic.AddInt64(&srw.stats.WriteContention, 1)
+// TryWrite 尝试写入数据
+func (rw *GenericReadWriteLock[T]) TryWrite(value T) bool {
+    if !rw.TryLock() {
+        return false
     }
-    
-    err := srw.ReadWriteLock.WriteLock()
-    
-    if err == nil {
-        atomic.AddInt64(&srw.stats.TotalWriteLocks, 1)
-        srw.stats.mutex.Lock()
-        srw.stats.WriteWaitTime += time.Since(start)
-        srw.stats.mutex.Unlock()
-    }
-    
-    return err
+    defer rw.Unlock()
+    rw.data = value
+    return true
 }
 
-// GetStats 获取统计信息
-func (srw *StatsReadWriteLock) GetStats() ReadWriteLockStats {
-    srw.stats.mutex.RLock()
-    defer srw.stats.mutex.RUnlock()
-    
-    return *srw.stats
+// TryRLock 尝试获取读锁
+func (rw *GenericReadWriteLock[T]) TryRLock() bool {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    if rw.writers > 0 || rw.waitingWriters > 0 {
+        return false
+    }
+
+    rw.readers++
+    return true
+}
+
+// TryLock 尝试获取写锁
+func (rw *GenericReadWriteLock[T]) TryLock() bool {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+
+    if rw.readers > 0 || rw.writers > 0 {
+        return false
+    }
+
+    rw.writers++
+    return true
+}
+
+// GetStats 获取锁统计信息
+func (rw *GenericReadWriteLock[T]) GetStats() (readers, writers, waitingWriters int) {
+    rw.mutex.Lock()
+    defer rw.mutex.Unlock()
+    return rw.readers, rw.writers, rw.waitingWriters
 }
 ```
 
-## 4. 使用示例
-
-### 4.1 基础使用
+### 5.3 实际应用示例
 
 ```go
 package main
 
 import (
     "fmt"
+    "log"
+    "math/rand"
     "sync"
     "time"
-    
-    "github.com/your-project/readwritelock"
 )
 
-// SharedResource 共享资源
-type SharedResource struct {
+// Cache 缓存实现
+type Cache struct {
+    lock *ReadWriteLock
     data map[string]interface{}
-    lock *readwritelock.ReadWriteLock
 }
 
-// NewSharedResource 创建共享资源
-func NewSharedResource() *SharedResource {
-    return &SharedResource{
+// NewCache 创建缓存
+func NewCache() *Cache {
+    return &Cache{
+        lock: NewReadWriteLock(),
         data: make(map[string]interface{}),
-        lock: readwritelock.NewReadWriteLock(readwritelock.ReaderPriority),
+    }
+}
+
+// Get 获取值
+func (c *Cache) Get(key string) (interface{}, bool) {
+    c.lock.RLock()
+    defer c.lock.RUnlock()
+
+    value, exists := c.data[key]
+    return value, exists
+}
+
+// Set 设置值
+func (c *Cache) Set(key string, value interface{}) {
+    c.lock.Lock()
+    defer c.lock.Unlock()
+
+    c.data[key] = value
+}
+
+// Delete 删除值
+func (c *Cache) Delete(key string) {
+    c.lock.Lock()
+    defer c.lock.Unlock()
+
+    delete(c.data, key)
+}
+
+// Size 获取大小
+func (c *Cache) Size() int {
+    c.lock.RLock()
+    defer c.lock.RUnlock()
+
+    return len(c.data)
+}
+
+// ConfigManager 配置管理器
+type ConfigManager struct {
+    lock *GenericReadWriteLock[map[string]string]
+}
+
+// NewConfigManager 创建配置管理器
+func NewConfigManager() *ConfigManager {
+    return &ConfigManager{
+        lock: NewGenericReadWriteLock[map[string]string](make(map[string]string)),
+    }
+}
+
+// GetConfig 获取配置
+func (cm *ConfigManager) GetConfig(key string) (string, bool) {
+    config := cm.lock.Read()
+    value, exists := config[key]
+    return value, exists
+}
+
+// SetConfig 设置配置
+func (cm *ConfigManager) SetConfig(key, value string) {
+    cm.lock.WriteWithFunc(func(config map[string]string) map[string]string {
+        newConfig := make(map[string]string)
+        for k, v := range config {
+            newConfig[k] = v
+        }
+        newConfig[key] = value
+        return newConfig
+    })
+}
+
+// GetAllConfig 获取所有配置
+func (cm *ConfigManager) GetAllConfig() map[string]string {
+    return cm.lock.Read()
+}
+
+// Database 数据库模拟
+type Database struct {
+    lock *ReadWriteLock
+    data map[int]string
+}
+
+// NewDatabase 创建数据库
+func NewDatabase() *Database {
+    return &Database{
+        lock: NewReadWriteLock(),
+        data: make(map[int]string),
     }
 }
 
 // Read 读取数据
-func (sr *SharedResource) Read(key string) (interface{}, error) {
-    if err := sr.lock.ReadLock(); err != nil {
-        return nil, err
-    }
-    defer sr.lock.ReadUnlock()
-    
-    value, exists := sr.data[key]
-    if !exists {
-        return nil, fmt.Errorf("key not found: %s", key)
-    }
-    
-    return value, nil
+func (db *Database) Read(id int) (string, bool) {
+    db.lock.RLock()
+    defer db.lock.RUnlock()
+
+    value, exists := db.data[id]
+    return value, exists
 }
 
 // Write 写入数据
-func (sr *SharedResource) Write(key string, value interface{}) error {
-    if err := sr.lock.WriteLock(); err != nil {
-        return err
-    }
-    defer sr.lock.WriteUnlock()
-    
-    sr.data[key] = value
-    return nil
+func (db *Database) Write(id int, value string) {
+    db.lock.Lock()
+    defer db.lock.Unlock()
+
+    db.data[id] = value
 }
 
-// Delete 删除数据
-func (sr *SharedResource) Delete(key string) error {
-    if err := sr.lock.WriteLock(); err != nil {
-        return err
-    }
-    defer sr.lock.WriteUnlock()
-    
-    delete(sr.data, key)
-    return nil
-}
+// BatchRead 批量读取
+func (db *Database) BatchRead(ids []int) map[int]string {
+    db.lock.RLock()
+    defer db.lock.RUnlock()
 
-// GetAll 获取所有数据
-func (sr *SharedResource) GetAll() map[string]interface{} {
-    if err := sr.lock.ReadLock(); err != nil {
-        return nil
+    result := make(map[int]string)
+    for _, id := range ids {
+        if value, exists := db.data[id]; exists {
+            result[id] = value
+        }
     }
-    defer sr.lock.ReadUnlock()
-    
-    // 创建副本以避免外部修改
-    result := make(map[string]interface{})
-    for k, v := range sr.data {
-        result[k] = v
-    }
-    
     return result
 }
 
+// Reader 读者
+type Reader struct {
+    id   string
+    cache *Cache
+    db   *Database
+    wg   *sync.WaitGroup
+}
+
+// NewReader 创建读者
+func NewReader(id string, cache *Cache, db *Database, wg *sync.WaitGroup) *Reader {
+    return &Reader{
+        id:    id,
+        cache: cache,
+        db:    db,
+        wg:    wg,
+    }
+}
+
+// Run 运行读者
+func (r *Reader) Run() {
+    defer r.wg.Done()
+
+    for i := 0; i < 10; i++ {
+        key := fmt.Sprintf("key-%d", rand.Intn(100))
+
+        // 先尝试从缓存读取
+        if value, exists := r.cache.Get(key); exists {
+            log.Printf("Reader %s read from cache: %s = %v", r.id, key, value)
+        } else {
+            // 从数据库读取
+            if value, exists := r.db.Read(rand.Intn(1000)); exists {
+                log.Printf("Reader %s read from DB: %d = %s", r.id, rand.Intn(1000), value)
+            }
+        }
+
+        time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+    }
+}
+
+// Writer 写者
+type Writer struct {
+    id   string
+    cache *Cache
+    db   *Database
+    wg   *sync.WaitGroup
+}
+
+// NewWriter 创建写者
+func NewWriter(id string, cache *Cache, db *Database, wg *sync.WaitGroup) *Writer {
+    return &Writer{
+        id:    id,
+        cache: cache,
+        db:    db,
+        wg:    wg,
+    }
+}
+
+// Run 运行写者
+func (w *Writer) Run() {
+    defer w.wg.Done()
+
+    for i := 0; i < 5; i++ {
+        key := fmt.Sprintf("key-%d", i)
+        value := fmt.Sprintf("value-%d", rand.Int63())
+
+        // 写入缓存
+        w.cache.Set(key, value)
+        log.Printf("Writer %s wrote to cache: %s = %s", w.id, key, value)
+
+        // 写入数据库
+        w.db.Write(i, value)
+        log.Printf("Writer %s wrote to DB: %d = %s", w.id, i, value)
+
+        time.Sleep(time.Duration(rand.Intn(200)) * time.Millisecond)
+    }
+}
+
 func main() {
-    resource := NewSharedResource()
+    // 示例1: 缓存系统
+    fmt.Println("=== 缓存系统示例 ===")
+    cache := NewCache()
+
+    // 初始化一些数据
+    for i := 0; i < 10; i++ {
+        cache.Set(fmt.Sprintf("key-%d", i), fmt.Sprintf("value-%d", i))
+    }
+
     var wg sync.WaitGroup
-    
+
     // 启动多个读者
     for i := 0; i < 5; i++ {
         wg.Add(1)
-        go func(id int) {
-            defer wg.Done()
-            
-            for j := 0; j < 10; j++ {
-                key := fmt.Sprintf("key-%d", j%3)
-                value, err := resource.Read(key)
-                if err != nil {
-                    fmt.Printf("Reader %d: %v\n", id, err)
-                } else {
-                    fmt.Printf("Reader %d read %s = %v\n", id, key, value)
-                }
-                time.Sleep(50 * time.Millisecond)
-            }
-        }(i)
+        reader := NewReader(fmt.Sprintf("reader-%d", i), cache, nil, &wg)
+        go reader.Run()
     }
-    
+
     // 启动写者
-    for i := 0; i < 2; i++ {
-        wg.Add(1)
+    wg.Add(1)
+    writer := NewWriter("writer-1", cache, nil, &wg)
+    go writer.Run()
+
+    wg.Wait()
+    fmt.Printf("缓存大小: %d\n", cache.Size())
+
+    // 示例2: 配置管理器
+    fmt.Println("\n=== 配置管理器示例 ===")
+    configManager := NewConfigManager()
+
+    // 设置一些配置
+    configManager.SetConfig("database.url", "localhost:5432")
+    configManager.SetConfig("redis.host", "localhost:6379")
+    configManager.SetConfig("api.port", "8080")
+
+    // 并发读取配置
+    var wg2 sync.WaitGroup
+    for i := 0; i < 10; i++ {
+        wg2.Add(1)
         go func(id int) {
-            defer wg.Done()
-            
-            for j := 0; j < 5; j++ {
-                key := fmt.Sprintf("key-%d", j)
-                value := fmt.Sprintf("value-%d-%d", id, j)
-                
-                if err := resource.Write(key, value); err != nil {
-                    fmt.Printf("Writer %d error: %v\n", id, err)
-                } else {
-                    fmt.Printf("Writer %d wrote %s = %s\n", id, key, value)
-                }
-                
-                time.Sleep(200 * time.Millisecond)
+            defer wg2.Done()
+            if value, exists := configManager.GetConfig("database.url"); exists {
+                log.Printf("Reader %d got config: database.url = %s", id, value)
             }
+            time.Sleep(time.Duration(rand.Intn(50)) * time.Millisecond)
         }(i)
     }
-    
-    wg.Wait()
-    
-    // 打印最终状态
-    fmt.Printf("Final data: %+v\n", resource.GetAll())
-}
-```
 
-### 4.2 不同策略比较
-
-```go
-// 比较不同策略的性能
-func compareStrategies() {
-    strategies := []readwritelock.LockStrategy{
-        readwritelock.ReaderPriority,
-        readwritelock.WriterPriority,
-        readwritelock.FairStrategy,
-    }
-    
-    for _, strategy := range strategies {
-        fmt.Printf("Testing strategy: %v\n", strategy)
-        
-        lock := readwritelock.NewStatsReadWriteLock(strategy)
-        var wg sync.WaitGroup
-        
-        start := time.Now()
-        
-        // 启动读者
-        for i := 0; i < 10; i++ {
-            wg.Add(1)
-            go func(id int) {
-                defer wg.Done()
-                
-                for j := 0; j < 100; j++ {
-                    lock.ReadLock()
-                    time.Sleep(1 * time.Millisecond) // 模拟读取
-                    lock.ReadUnlock()
-                }
-            }(i)
-        }
-        
-        // 启动写者
-        for i := 0; i < 2; i++ {
-            wg.Add(1)
-            go func(id int) {
-                defer wg.Done()
-                
-                for j := 0; j < 20; j++ {
-                    lock.WriteLock()
-                    time.Sleep(5 * time.Millisecond) // 模拟写入
-                    lock.WriteUnlock()
-                }
-            }(i)
-        }
-        
-        wg.Wait()
-        
-        duration := time.Since(start)
-        stats := lock.GetStats()
-        
-        fmt.Printf("Strategy %v completed in %v\n", strategy, duration)
-        fmt.Printf("Stats: Reads=%d, Writes=%d, ReadContention=%d, WriteContention=%d\n",
-            stats.TotalReadLocks, stats.TotalWriteLocks,
-            stats.ReadContention, stats.WriteContention)
-        fmt.Println()
-    }
-}
-```
-
-### 4.3 带超时的使用
-
-```go
-// 带超时的读写锁使用
-func timeoutExample() {
-    lock := readwritelock.NewTimedReadWriteLock(
-        readwritelock.WriterPriority,
-        100*time.Millisecond,  // 读锁超时
-        500*time.Millisecond,  // 写锁超时
-    )
-    
-    var wg sync.WaitGroup
-    
-    // 启动长时间持有写锁的进程
-    wg.Add(1)
+    // 并发更新配置
+    wg2.Add(1)
     go func() {
-        defer wg.Done()
-        
-        fmt.Println("Writer acquiring lock...")
-        if err := lock.WriteLock(); err != nil {
-            fmt.Printf("Writer failed to acquire lock: %v\n", err)
-            return
-        }
-        
-        fmt.Println("Writer holding lock for 1 second...")
-        time.Sleep(1 * time.Second)
-        
-        lock.WriteUnlock()
-        fmt.Println("Writer released lock")
+        defer wg2.Done()
+        configManager.SetConfig("database.url", "new-host:5432")
+        log.Printf("Writer updated database.url")
+        time.Sleep(100 * time.Millisecond)
     }()
-    
-    // 启动尝试获取读锁的进程
-    wg.Add(1)
-    go func() {
-        defer wg.Done()
-        
-        time.Sleep(100 * time.Millisecond) // 等待写者获取锁
-        
-        fmt.Println("Reader attempting to acquire lock...")
-        if err := lock.ReadLockWithTimeout(); err != nil {
-            fmt.Printf("Reader timeout: %v\n", err)
-        } else {
-            fmt.Println("Reader acquired lock")
-            lock.ReadUnlock()
-        }
-    }()
-    
-    wg.Wait()
+
+    wg2.Wait()
+
+    // 显示所有配置
+    allConfig := configManager.GetAllConfig()
+    fmt.Printf("所有配置: %v\n", allConfig)
+
+    // 示例3: 数据库系统
+    fmt.Println("\n=== 数据库系统示例 ===")
+    db := NewDatabase()
+
+    // 初始化一些数据
+    for i := 0; i < 100; i++ {
+        db.Write(i, fmt.Sprintf("data-%d", i))
+    }
+
+    var wg3 sync.WaitGroup
+
+    // 启动多个读者
+    for i := 0; i < 8; i++ {
+        wg3.Add(1)
+        reader := NewReader(fmt.Sprintf("db-reader-%d", i), nil, db, &wg3)
+        go reader.Run()
+    }
+
+    // 启动写者
+    wg3.Add(1)
+    writer := NewWriter("db-writer-1", nil, db, &wg3)
+    go writer.Run()
+
+    wg3.Wait()
+
+    // 监控锁统计
+    fmt.Printf("\n=== 锁统计 ===\n")
+    readers, writers, waitingWriters := cache.lock.GetStats()
+    fmt.Printf("缓存锁 - 读者: %d, 写者: %d, 等待写者: %d\n", readers, writers, waitingWriters)
+
+    readers, writers, waitingWriters = configManager.lock.GetStats()
+    fmt.Printf("配置锁 - 读者: %d, 写者: %d, 等待写者: %d\n", readers, writers, waitingWriters)
+
+    readers, writers, waitingWriters = db.lock.GetStats()
+    fmt.Printf("数据库锁 - 读者: %d, 写者: %d, 等待写者: %d\n", readers, writers, waitingWriters)
 }
 ```
 
-## 5. 性能分析
+---
 
-### 5.1 时间复杂度
+## 6. 性能分析
 
-| 操作 | 时间复杂度 | 说明 |
-|------|------------|------|
-| 读锁获取 | O(1) | 直接获取 |
-| 读锁释放 | O(1) | 直接释放 |
-| 写锁获取 | O(n) | n为当前读者数 |
-| 写锁释放 | O(1) | 直接释放 |
+### 6.1 时间复杂度
 
-### 5.2 空间复杂度
+- **读锁获取**: $O(1)$
+- **读锁释放**: $O(1)$
+- **写锁获取**: $O(1)$
+- **写锁释放**: $O(1)$
 
-- **基础读写锁**: O(1)
-- **带统计的读写锁**: O(1)
-- **带超时的读写锁**: O(1)
+### 6.2 空间复杂度
 
-### 5.3 性能特征
+- **读写锁**: $O(1)$
+- **条件变量**: $O(1)$
+- **等待队列**: $O(n)$，其中 $n$ 是等待的线程数
 
-```mermaid
-graph TD
-    A[读多写少] --> B[读者优先策略]
-    B --> C[高并发读取]
-    C --> D[写者可能饥饿]
-    
-    E[写多读少] --> F[写者优先策略]
-    F --> G[快速写入]
-    G --> H[读者可能饥饿]
-    
-    I[读写平衡] --> J[公平策略]
-    J --> K[避免饥饿]
-    K --> L[中等性能]
-```
+### 6.3 性能优化建议
 
-## 6. 最佳实践
+1. **读者优先策略**: 适合读多写少的场景
+2. **写者优先策略**: 适合写多读少的场景
+3. **公平策略**: 避免饥饿问题
+4. **批量操作**: 减少锁竞争
+5. **锁分离**: 使用多个锁减少竞争
 
-### 6.1 策略选择
+---
+
+## 7. 应用场景
+
+### 7.1 适用场景
+
+1. **缓存系统**: 读多写少的缓存
+2. **配置管理**: 配置的读取和更新
+3. **数据库**: 数据库的读写操作
+4. **文件系统**: 文件的读写访问
+5. **内存数据库**: 内存中的数据结构
+
+### 7.2 使用示例
 
 ```go
-// 策略选择指南
-func chooseStrategy(readRatio, writeRatio float64) readwritelock.LockStrategy {
-    if readRatio > 0.8 {
-        return readwritelock.ReaderPriority
-    } else if writeRatio > 0.8 {
-        return readwritelock.WriterPriority
-    } else {
-        return readwritelock.FairStrategy
+// 文档管理系统
+type DocumentManager struct {
+    lock *ReadWriteLock
+    documents map[string]*Document
+}
+
+func (dm *DocumentManager) ReadDocument(id string) (*Document, error) {
+    dm.lock.RLock()
+    defer dm.lock.RUnlock()
+
+    doc, exists := dm.documents[id]
+    if !exists {
+        return nil, fmt.Errorf("document not found")
     }
+    return doc, nil
 }
 
-// 动态策略调整
-type AdaptiveReadWriteLock struct {
-    *readwritelock.ReadWriteLock
-    readCount  int64
-    writeCount int64
-    mutex      sync.RWMutex
-}
+func (dm *DocumentManager) UpdateDocument(id string, content string) error {
+    dm.lock.Lock()
+    defer dm.lock.Unlock()
 
-func (arl *AdaptiveReadWriteLock) adjustStrategy() {
-    arl.mutex.Lock()
-    defer arl.mutex.Unlock()
-    
-    total := arl.readCount + arl.writeCount
-    if total == 0 {
-        return
+    doc, exists := dm.documents[id]
+    if !exists {
+        return fmt.Errorf("document not found")
     }
-    
-    readRatio := float64(arl.readCount) / float64(total)
-    // 根据比例调整策略
-    // 这里需要重新创建锁，实际实现会更复杂
-}
-```
-
-### 6.2 死锁避免
-
-```go
-// 避免死锁的最佳实践
-func safeReadWriteLockUsage() {
-    lock := readwritelock.NewReadWriteLock(readwritelock.FairStrategy)
-    
-    // 1. 总是成对使用
-    if err := lock.ReadLock(); err != nil {
-        return
-    }
-    defer lock.ReadUnlock() // 确保释放
-    
-    // 2. 避免嵌套锁
-    // 错误示例：
-    // lock.ReadLock()
-    // lock.WriteLock() // 这会导致死锁
-    
-    // 3. 使用超时机制
-    timedLock := readwritelock.NewTimedReadWriteLock(
-        readwritelock.FairStrategy,
-        1*time.Second,
-        1*time.Second,
-    )
-    
-    if err := timedLock.ReadLockWithTimeout(); err != nil {
-        // 处理超时
-        return
-    }
-    defer timedLock.ReadUnlock()
-}
-```
-
-### 6.3 性能监控
-
-```go
-// 性能监控
-type ReadWriteLockMonitor struct {
-    lock  *readwritelock.StatsReadWriteLock
-    stats chan readwritelock.ReadWriteLockStats
+    doc.Content = content
+    return nil
 }
 
-func (m *ReadWriteLockMonitor) Start() {
-    go func() {
-        ticker := time.NewTicker(1 * time.Second)
-        defer ticker.Stop()
-        
-        for {
-            select {
-            case <-ticker.C:
-                stats := m.lock.GetStats()
-                m.stats <- stats
-                
-                // 分析性能
-                if stats.ReadContention > 1000 {
-                    fmt.Printf("High read contention detected: %d\n", stats.ReadContention)
-                }
-                if stats.WriteContention > 100 {
-                    fmt.Printf("High write contention detected: %d\n", stats.WriteContention)
-                }
-            }
+// 股票价格系统
+type StockPriceSystem struct {
+    lock *GenericReadWriteLock[map[string]float64]
+}
+
+func (sps *StockPriceSystem) GetPrice(symbol string) (float64, bool) {
+    prices := sps.lock.Read()
+    price, exists := prices[symbol]
+    return price, exists
+}
+
+func (sps *StockPriceSystem) UpdatePrice(symbol string, price float64) {
+    sps.lock.WriteWithFunc(func(prices map[string]float64) map[string]float64 {
+        newPrices := make(map[string]float64)
+        for k, v := range prices {
+            newPrices[k] = v
         }
-    }()
+        newPrices[symbol] = price
+        return newPrices
+    })
 }
 ```
 
-## 7. 与其他模式的比较
+---
 
-| 模式 | 适用场景 | 复杂度 | 性能 |
-|------|----------|--------|------|
-| 读写锁 | 读多写少 | 中等 | 高 |
-| 互斥锁 | 简单同步 | 低 | 中等 |
-| 自旋锁 | 短临界区 | 低 | 高 |
-| 条件变量 | 复杂同步 | 高 | 中等 |
+## 8. 优缺点分析
 
-## 8. 总结
+### 8.1 优点
 
-读写锁模式是并发编程中的重要同步机制，通过区分读操作和写操作来提供更好的并发性能。在Go语言中，我们可以使用 `sync.RWMutex` 或自定义实现来支持不同的策略需求。
+1. **高并发**: 允许多个读者并发访问
+2. **性能优化**: 提高读多写少场景的性能
+3. **灵活性**: 支持不同的优先级策略
+4. **安全性**: 保证数据一致性
+5. **可扩展性**: 易于扩展到复杂场景
 
-**关键优势**:
-- 允许多个读者并发访问
-- 保证写操作的互斥性
-- 支持不同的优先级策略
-- 提供超时和统计功能
+### 8.2 缺点
 
-**适用场景**:
-- 读多写少的数据结构
-- 缓存系统
-- 配置管理
-- 数据库连接池 
+1. **复杂性**: 比普通锁更复杂
+2. **饥饿问题**: 可能出现读者或写者饥饿
+3. **开销**: 比普通锁有更多开销
+4. **调试困难**: 并发问题调试复杂
+5. **死锁风险**: 不当使用可能导致死锁
+
+### 8.3 权衡考虑
+
+| 方面 | 普通锁 | 读写锁 |
+|------|--------|--------|
+| 并发性 | 低 | 高 |
+| 复杂度 | 低 | 高 |
+| 性能 | 低 | 高 |
+| 安全性 | 高 | 高 |
+| 调试难度 | 低 | 高 |
+
+---
+
+## 9. 相关模式
+
+### 9.1 模式关系
+
+- **互斥锁模式**: 读写锁的基础实现
+- **条件变量模式**: 用于线程同步
+- **管程模式**: 可以结合使用
+- **信号量模式**: 可以用于控制并发度
+
+### 9.2 模式组合
+
+```go
+// 结合信号量的读写锁
+type SemaphoreReadWriteLock struct {
+    readSemaphore  chan struct{}
+    writeSemaphore chan struct{}
+    // ...
+}
+
+// 结合管程的读写锁
+type MonitorReadWriteLock struct {
+    monitor *Monitor
+    // ...
+}
+```
+
+---
+
+## 10. 总结
+
+读写锁模式是一种重要的并发控制模式，通过区分读操作和写操作来提高系统性能。在Go语言中，该模式可以很好地利用sync包的特性，提供高效的并发访问控制。
+
+### 10.1 关键要点
+
+1. **读共享**: 多个读者可以并发访问
+2. **写独占**: 写者独占访问资源
+3. **优先级控制**: 支持不同的优先级策略
+4. **公平性**: 避免饥饿问题
+
+### 10.2 最佳实践
+
+1. **选择合适的策略**: 根据场景选择读者优先或写者优先
+2. **避免长时间持有锁**: 尽快释放锁
+3. **监控性能指标**: 定期监控锁的使用情况
+4. **错误处理**: 正确处理超时和异常
+5. **测试覆盖**: 编写全面的并发测试
+
+### 10.3 未来发展方向
+
+1. **智能调度**: 基于负载的动态调度
+2. **自适应策略**: 自动调整优先级策略
+3. **分布式扩展**: 支持分布式读写锁
+4. **性能优化**: 进一步优化性能
+5. **监控集成**: 与监控系统集成
+
+---
+
+**参考文献**:
+1. Goetz, B. (2006). Java Concurrency in Practice
+2. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency
+3. Go sync package: https://golang.org/pkg/sync/
+4. Readers-Writer Lock: https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock

@@ -5,15 +5,41 @@
 - [03-线程池模式 (Thread Pool Pattern)](#03-线程池模式-thread-pool-pattern)
   - [目录](#目录)
   - [1. 概述](#1-概述)
+    - [1.1 定义](#11-定义)
+    - [1.2 核心思想](#12-核心思想)
+    - [1.3 设计目标](#13-设计目标)
   - [2. 形式化定义](#2-形式化定义)
+    - [2.1 基本概念](#21-基本概念)
+    - [2.2 操作语义](#22-操作语义)
+    - [2.3 线程池策略](#23-线程池策略)
   - [3. 数学基础](#3-数学基础)
+    - [3.1 队列理论](#31-队列理论)
+    - [3.2 性能分析](#32-性能分析)
   - [4. 模式结构](#4-模式结构)
+    - [4.1 类图](#41-类图)
+    - [4.2 时序图](#42-时序图)
   - [5. Go语言实现](#5-go语言实现)
+    - [5.1 基础实现](#51-基础实现)
+    - [5.2 泛型实现](#52-泛型实现)
+    - [5.3 实际应用示例](#53-实际应用示例)
   - [6. 性能分析](#6-性能分析)
+    - [6.1 时间复杂度](#61-时间复杂度)
+    - [6.2 空间复杂度](#62-空间复杂度)
+    - [6.3 性能优化建议](#63-性能优化建议)
   - [7. 应用场景](#7-应用场景)
+    - [7.1 适用场景](#71-适用场景)
+    - [7.2 使用示例](#72-使用示例)
   - [8. 优缺点分析](#8-优缺点分析)
+    - [8.1 优点](#81-优点)
+    - [8.2 缺点](#82-缺点)
+    - [8.3 权衡考虑](#83-权衡考虑)
   - [9. 相关模式](#9-相关模式)
+    - [9.1 模式关系](#91-模式关系)
+    - [9.2 模式组合](#92-模式组合)
   - [10. 总结](#10-总结)
+    - [10.1 关键要点](#101-关键要点)
+    - [10.2 最佳实践](#102-最佳实践)
+    - [10.3 未来发展方向](#103-未来发展方向)
 
 ---
 
@@ -26,6 +52,7 @@
 ### 1.2 核心思想
 
 线程池模式的核心思想是：
+
 - **线程复用**: 预先创建线程，避免重复创建和销毁
 - **任务队列**: 使用队列管理待执行的任务
 - **负载均衡**: 自动分配任务给空闲线程
@@ -49,6 +76,7 @@
 
 **定义 2.1** (线程池)
 线程池是一个五元组 $(p, workers, queue, min\_size, max\_size)$，其中：
+
 - $p \in P$ 是线程池实例
 - $workers \subseteq T$ 是工作线程集合
 - $queue \in Q$ 是任务队列
@@ -57,12 +85,14 @@
 
 **定义 2.2** (任务)
 任务是一个三元组 $(id, function, args)$，其中：
+
 - $id$ 是任务唯一标识符
 - $function$ 是要执行的函数
 - $args$ 是函数参数
 
 **定义 2.3** (工作线程)
 工作线程是一个三元组 $(t, pool, state)$，其中：
+
 - $t \in T$ 是线程实例
 - $pool \in P$ 是所属线程池
 - $state \in \{idle, busy, terminated\}$ 是线程状态
@@ -172,7 +202,7 @@ classDiagram
         +GetActiveCount()
         +GetQueueSize()
     }
-    
+
     class Worker {
         -id: string
         -pool: ThreadPool
@@ -182,7 +212,7 @@ classDiagram
         +Stop()
         +IsIdle()
     }
-    
+
     class TaskQueue {
         -queue: []Task
         -capacity: int
@@ -192,7 +222,7 @@ classDiagram
         +IsEmpty()
         +IsFull()
     }
-    
+
     class Task {
         -id: string
         -function: func()
@@ -202,7 +232,7 @@ classDiagram
         +GetID()
         +GetFuture()
     }
-    
+
     class Future {
         -result: interface{}
         -done: chan struct{}
@@ -211,7 +241,7 @@ classDiagram
         +IsDone()
         +Set()
     }
-    
+
     ThreadPool --> Worker
     ThreadPool --> TaskQueue
     Worker --> Task
@@ -227,19 +257,19 @@ sequenceDiagram
     participant TQ as TaskQueue
     participant W as Worker
     participant F as Future
-    
+
     C->>TP: Submit(task)
     TP->>TQ: Enqueue(task)
     TP->>F: create()
     TP->>C: return future
-    
+
     loop Worker Loop
         W->>TQ: Dequeue()
         TQ->>W: task
         W->>W: Execute(task)
         W->>F: Set(result)
     end
-    
+
     C->>F: Get()
     F->>C: result
 ```
@@ -437,7 +467,7 @@ func (w *Worker) Stop() {
 // run 运行循环
 func (w *Worker) run() {
     defer w.wg.Done()
-    
+
     for {
         select {
         case <-w.stopChan:
@@ -456,7 +486,7 @@ func (w *Worker) executeTask(task Task) {
         }
         w.pool.workerFinished(w)
     }()
-    
+
     w.pool.workerStarted(w)
     task.Execute()
 }
@@ -485,7 +515,7 @@ func NewThreadPool(coreSize, maxSize, queueCapacity int) *ThreadPool {
     if coreSize > maxSize {
         coreSize = maxSize
     }
-    
+
     pool := &ThreadPool{
         workers:     make([]*Worker, 0, maxSize),
         taskQueue:   NewTaskQueue(queueCapacity),
@@ -496,12 +526,12 @@ func NewThreadPool(coreSize, maxSize, queueCapacity int) *ThreadPool {
         activeCount: 0,
         shutdown:    0,
     }
-    
+
     // 创建核心线程
     for i := 0; i < coreSize; i++ {
         pool.addWorker()
     }
-    
+
     return pool
 }
 
@@ -509,11 +539,11 @@ func NewThreadPool(coreSize, maxSize, queueCapacity int) *ThreadPool {
 func (tp *ThreadPool) addWorker() {
     tp.mu.Lock()
     defer tp.mu.Unlock()
-    
+
     if int(tp.currentSize) >= tp.maxSize {
         return
     }
-    
+
     worker := NewWorker(fmt.Sprintf("worker-%d", len(tp.workers)), tp)
     tp.workers = append(tp.workers, worker)
     atomic.AddInt32(&tp.currentSize, 1)
@@ -524,11 +554,11 @@ func (tp *ThreadPool) addWorker() {
 func (tp *ThreadPool) removeWorker() {
     tp.mu.Lock()
     defer tp.mu.Unlock()
-    
+
     if len(tp.workers) <= tp.minSize {
         return
     }
-    
+
     if len(tp.workers) > 0 {
         worker := tp.workers[len(tp.workers)-1]
         tp.workers = tp.workers[:len(tp.workers)-1]
@@ -542,23 +572,23 @@ func (tp *ThreadPool) Submit(task Task) error {
     if atomic.LoadInt32(&tp.shutdown) == 1 {
         return fmt.Errorf("thread pool is shutdown")
     }
-    
+
     // 尝试直接分配给空闲线程
     if tp.tryAssignToIdleWorker(task) {
         return nil
     }
-    
+
     // 如果队列未满，加入队列
     if !tp.taskQueue.IsFull() {
         return tp.taskQueue.Enqueue(task)
     }
-    
+
     // 如果线程数未达上限，创建新线程
     if int(tp.currentSize) < tp.maxSize {
         tp.addWorker()
         return tp.taskQueue.Enqueue(task)
     }
-    
+
     return fmt.Errorf("thread pool is full")
 }
 
@@ -566,7 +596,7 @@ func (tp *ThreadPool) Submit(task Task) error {
 func (tp *ThreadPool) tryAssignToIdleWorker(task Task) bool {
     tp.mu.RLock()
     defer tp.mu.RUnlock()
-    
+
     for _, worker := range tp.workers {
         select {
         case worker.taskChan <- task:
@@ -586,7 +616,7 @@ func (tp *ThreadPool) workerStarted(worker *Worker) {
 // workerFinished 工作线程完成
 func (tp *ThreadPool) workerFinished(worker *Worker) {
     atomic.AddInt32(&tp.activeCount, -1)
-    
+
     // 处理队列中的任务
     if task, err := tp.taskQueue.Dequeue(); err == nil {
         worker.AssignTask(task)
@@ -596,10 +626,10 @@ func (tp *ThreadPool) workerFinished(worker *Worker) {
 // Shutdown 关闭线程池
 func (tp *ThreadPool) Shutdown() {
     atomic.StoreInt32(&tp.shutdown, 1)
-    
+
     tp.mu.Lock()
     defer tp.mu.Unlock()
-    
+
     for _, worker := range tp.workers {
         worker.Stop()
     }
@@ -815,7 +845,7 @@ func (w *GenericWorker[T]) Stop() {
 // run 运行循环
 func (w *GenericWorker[T]) run() {
     defer w.wg.Done()
-    
+
     for {
         select {
         case <-w.stopChan:
@@ -834,7 +864,7 @@ func (w *GenericWorker[T]) executeTask(task GenericTask[T]) {
         }
         w.pool.workerFinished(w)
     }()
-    
+
     w.pool.workerStarted(w)
     task.Execute()
 }
@@ -862,7 +892,7 @@ func NewGenericThreadPool[T any](coreSize, maxSize, queueCapacity int) *GenericT
     if coreSize > maxSize {
         coreSize = maxSize
     }
-    
+
     pool := &GenericThreadPool[T]{
         workers:     make([]*GenericWorker[T], 0, maxSize),
         taskQueue:   NewGenericTaskQueue[T](queueCapacity),
@@ -873,12 +903,12 @@ func NewGenericThreadPool[T any](coreSize, maxSize, queueCapacity int) *GenericT
         activeCount: 0,
         shutdown:    0,
     }
-    
+
     // 创建核心线程
     for i := 0; i < coreSize; i++ {
         pool.addWorker()
     }
-    
+
     return pool
 }
 
@@ -886,11 +916,11 @@ func NewGenericThreadPool[T any](coreSize, maxSize, queueCapacity int) *GenericT
 func (tp *GenericThreadPool[T]) addWorker() {
     tp.mu.Lock()
     defer tp.mu.Unlock()
-    
+
     if int(tp.currentSize) >= tp.maxSize {
         return
     }
-    
+
     worker := NewGenericWorker[T](fmt.Sprintf("worker-%d", len(tp.workers)), tp)
     tp.workers = append(tp.workers, worker)
     atomic.AddInt32(&tp.currentSize, 1)
@@ -902,23 +932,23 @@ func (tp *GenericThreadPool[T]) Submit(task GenericTask[T]) error {
     if atomic.LoadInt32(&tp.shutdown) == 1 {
         return fmt.Errorf("thread pool is shutdown")
     }
-    
+
     // 尝试直接分配给空闲线程
     if tp.tryAssignToIdleWorker(task) {
         return nil
     }
-    
+
     // 如果队列未满，加入队列
     if !tp.taskQueue.IsFull() {
         return tp.taskQueue.Enqueue(task)
     }
-    
+
     // 如果线程数未达上限，创建新线程
     if int(tp.currentSize) < tp.maxSize {
         tp.addWorker()
         return tp.taskQueue.Enqueue(task)
     }
-    
+
     return fmt.Errorf("thread pool is full")
 }
 
@@ -926,7 +956,7 @@ func (tp *GenericThreadPool[T]) Submit(task GenericTask[T]) error {
 func (tp *GenericThreadPool[T]) tryAssignToIdleWorker(task GenericTask[T]) bool {
     tp.mu.RLock()
     defer tp.mu.RUnlock()
-    
+
     for _, worker := range tp.workers {
         select {
         case worker.taskChan <- task:
@@ -946,7 +976,7 @@ func (tp *GenericThreadPool[T]) workerStarted(worker *GenericWorker[T]) {
 // workerFinished 工作线程完成
 func (tp *GenericThreadPool[T]) workerFinished(worker *GenericWorker[T]) {
     atomic.AddInt32(&tp.activeCount, -1)
-    
+
     // 处理队列中的任务
     if task, err := tp.taskQueue.Dequeue(); err == nil {
         worker.AssignTask(task)
@@ -956,10 +986,10 @@ func (tp *GenericThreadPool[T]) workerFinished(worker *GenericWorker[T]) {
 // Shutdown 关闭线程池
 func (tp *GenericThreadPool[T]) Shutdown() {
     atomic.StoreInt32(&tp.shutdown, 1)
-    
+
     tp.mu.Lock()
     defer tp.mu.Unlock()
-    
+
     for _, worker := range tp.workers {
         worker.Stop()
     }
@@ -1014,13 +1044,13 @@ func (ip *ImageProcessor) ProcessImage(imageID string) *Future {
         time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
         return fmt.Sprintf("Processed image: %s", imageID)
     })
-    
+
     err := ip.pool.Submit(task)
     if err != nil {
         log.Printf("Failed to submit task: %v", err)
         return nil
     }
-    
+
     return task.GetFuture()
 }
 
@@ -1048,13 +1078,13 @@ func (ws *WebServer) HandleRequest(requestID string) *Future {
         time.Sleep(time.Duration(rand.Intn(500)) * time.Millisecond)
         return fmt.Sprintf("Handled request: %s", requestID)
     })
-    
+
     err := ws.pool.Submit(task)
     if err != nil {
         log.Printf("Failed to submit request: %v", err)
         return nil
     }
-    
+
     return task.GetFuture()
 }
 
@@ -1082,13 +1112,13 @@ func (dp *DataProcessor) ProcessData(dataID string) *Future[string] {
         time.Sleep(time.Duration(rand.Intn(300)) * time.Millisecond)
         return fmt.Sprintf("Processed data: %s", dataID)
     })
-    
+
     err := dp.pool.Submit(task)
     if err != nil {
         log.Printf("Failed to submit data task: %v", err)
         return nil
     }
-    
+
     return task.GetFuture()
 }
 
@@ -1102,10 +1132,10 @@ func main() {
     fmt.Println("=== 图像处理示例 ===")
     processor := NewImageProcessor()
     defer processor.Shutdown()
-    
+
     var wg sync.WaitGroup
     wg.Add(10)
-    
+
     // 提交多个图像处理任务
     for i := 0; i < 10; i++ {
         go func(id int) {
@@ -1117,18 +1147,18 @@ func main() {
             }
         }(i)
     }
-    
+
     wg.Wait()
     fmt.Println("图像处理完成")
-    
+
     // 示例2: 网络服务器
     fmt.Println("\n=== 网络服务器示例 ===")
     server := NewWebServer()
     defer server.Shutdown()
-    
+
     var wg2 sync.WaitGroup
     wg2.Add(20)
-    
+
     // 处理多个请求
     for i := 0; i < 20; i++ {
         go func(id int) {
@@ -1140,18 +1170,18 @@ func main() {
             }
         }(i)
     }
-    
+
     wg2.Wait()
     fmt.Println("请求处理完成")
-    
+
     // 示例3: 泛型数据处理器
     fmt.Println("\n=== 泛型数据处理器示例 ===")
     dataProcessor := NewDataProcessor()
     defer dataProcessor.Shutdown()
-    
+
     var wg3 sync.WaitGroup
     wg3.Add(5)
-    
+
     // 处理多个数据任务
     for i := 0; i < 5; i++ {
         go func(id int) {
@@ -1163,22 +1193,22 @@ func main() {
             }
         }(i)
     }
-    
+
     wg3.Wait()
     fmt.Println("数据处理完成")
-    
+
     // 监控线程池状态
     fmt.Printf("\n=== 线程池状态 ===\n")
     fmt.Printf("图像处理器 - 池大小: %d, 活跃线程: %d, 队列大小: %d\n",
         processor.pool.GetPoolSize(),
         processor.pool.GetActiveCount(),
         processor.pool.GetQueueSize())
-    
+
     fmt.Printf("网络服务器 - 池大小: %d, 活跃线程: %d, 队列大小: %d\n",
         server.pool.GetPoolSize(),
         server.pool.GetActiveCount(),
         server.pool.GetQueueSize())
-    
+
     fmt.Printf("数据处理器 - 池大小: %d, 活跃线程: %d, 队列大小: %d\n",
         dataProcessor.pool.GetPoolSize(),
         dataProcessor.pool.GetActiveCount(),
@@ -1235,7 +1265,7 @@ func (h *FileUploadHandler) HandleUpload(file *File) *Future {
     task := NewSimpleTask(fmt.Sprintf("upload-%s", file.Name), func() interface{} {
         return h.processFile(file)
     })
-    
+
     h.pool.Submit(task)
     return task.GetFuture()
 }
@@ -1249,7 +1279,7 @@ func (dp *DatabasePool) ExecuteQuery(query string) *Future {
     task := NewSimpleTask(fmt.Sprintf("query-%s", query), func() interface{} {
         return dp.executeQuery(query)
     })
-    
+
     dp.pool.Submit(task)
     return task.GetFuture()
 }
@@ -1348,4 +1378,4 @@ type FutureThreadPool struct {
 1. Goetz, B. (2006). Java Concurrency in Practice
 2. Go Concurrency Patterns: https://golang.org/doc/effective_go.html#concurrency
 3. Go sync package: https://golang.org/pkg/sync/
-4. Thread Pool Design Pattern: https://en.wikipedia.org/wiki/Thread_pool 
+4. Thread Pool Design Pattern: https://en.wikipedia.org/wiki/Thread_pool
