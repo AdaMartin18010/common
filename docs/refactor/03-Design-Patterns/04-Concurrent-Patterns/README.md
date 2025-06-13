@@ -10,6 +10,7 @@
 
 **定义 1.1** (并发模式)
 并发模式是一个四元组 $\mathcal{CP} = (T, S, R, \phi)$，其中：
+
 - $T$ 是线程/协程集合
 - $S$ 是共享状态集合
 - $R$ 是同步关系集合
@@ -17,6 +18,7 @@
 
 **公理 1.1** (并发模式公理)
 对于任意并发模式 $\mathcal{CP} = (T, S, R, \phi)$：
+
 1. **安全性**: $\forall t_1, t_2 \in T: \text{race\_free}(t_1, t_2)$
 2. **活性**: $\forall t \in T: \text{eventually\_progress}(t)$
 3. **公平性**: $\forall t_1, t_2 \in T: \text{fair\_scheduling}(t_1, t_2)$
@@ -348,6 +350,7 @@ func ExampleThreadPool() {
 $$\forall t_1, t_2 \in T, \forall s \in S: \text{no\_race\_condition}(t_1, t_2, s)$$
 
 **证明**:
+
 1. 每个任务在独立的工作线程中执行
 2. 任务队列使用通道，保证线程安全
 3. 结果通道保证结果传递的线程安全
@@ -1229,18 +1232,21 @@ $$\mathcal{CP}_1 \circ \mathcal{CP}_2 = (T_1 \cup T_2, S_1 \cup S_2, R_1 \cup R_
 
 **规则 1.1** (线程池选择)
 当且仅当满足以下条件时使用线程池：
+
 1. 需要执行大量短期任务
 2. 任务执行时间相对固定
 3. 需要控制并发度
 
 **规则 1.2** (Future/Promise 选择)
 当且仅当满足以下条件时使用 Future/Promise：
+
 1. 需要异步计算结果
 2. 需要组合多个异步操作
 3. 需要超时控制
 
 **规则 1.3** (Actor 选择)
 当且仅当满足以下条件时使用 Actor：
+
 1. 需要隔离状态
 2. 需要消息传递通信
 3. 需要容错和恢复
@@ -1264,4 +1270,4 @@ $$\mathcal{CP}_1 \circ \mathcal{CP}_2 = (T_1 \cup T_2, S_1 \cup S_2, R_1 \cup R_
 
 ---
 
-**构建原则**: 严格数学规范，形式化证明，Go语言实现！<(￣︶￣)↗[GO!] 
+**构建原则**: 严格数学规范，形式化证明，Go语言实现！<(￣︶￣)↗[GO!]
