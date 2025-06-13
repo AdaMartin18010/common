@@ -1,8 +1,10 @@
-# 09-模板方法模式 (Template Method Pattern)
+# 09-模板方法模式
+
+ (Template Method Pattern)
 
 ## 目录
 
-- [09-模板方法模式 (Template Method Pattern)](#09-模板方法模式-template-method-pattern)
+- [09-模板方法模式](#09-模板方法模式)
 	- [目录](#目录)
 	- [1. 概述](#1-概述)
 		- [1.1 定义](#11-定义)
