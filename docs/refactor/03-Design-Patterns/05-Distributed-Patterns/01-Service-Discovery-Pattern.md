@@ -1,734 +1,582 @@
 # 01-服务发现模式 (Service Discovery Pattern)
 
-## 1. 模式概述
+## 1. 概述
 
 ### 1.1 定义
 
-**服务发现模式**是一种分布式系统设计模式，用于自动发现和注册服务实例，使客户端能够动态找到可用的服务端点。
+服务发现模式是一种分布式系统架构模式，用于在动态环境中自动发现和注册服务实例，使客户端能够找到并连接到可用的服务。
 
 ### 1.2 形式化定义
 
-设 $S$ 为服务集合，$I$ 为实例集合，$R$ 为注册表集合，$C$ 为客户端集合，则服务发现模式可形式化为：
+设 $S$ 为服务集合，$I$ 为服务实例集合，$N$ 为网络节点集合，则服务发现模式可形式化为：
 
-$$\text{ServiceDiscovery} = (S, I, R, C, \text{register}, \text{deregister}, \text{discover})$$
+$$SD = (S, I, N, R, D)$$
 
 其中：
-
-- $\text{register}: I \times R \rightarrow \text{void}$ 为注册函数
-- $\text{deregister}: I \times R \rightarrow \text{void}$ 为注销函数
-- $\text{discover}: S \times R \rightarrow 2^I$ 为发现函数
+- $R: S \rightarrow 2^I$ 为注册函数，将服务映射到其实例集合
+- $D: S \rightarrow 2^I$ 为发现函数，返回服务的可用实例集合
 
 ### 1.3 数学性质
 
-**定理1.1**: 服务发现模式保证服务可用性
-**证明**: 设 $i \in I$ 为服务实例，$r \in R$ 为注册表，若 $\text{register}(i, r)$ 成功执行，则 $\text{discover}(service(i), r) \ni i$。
+**定理 1.1**: 服务发现的一致性
+对于任意服务 $s \in S$，如果实例 $i \in I$ 已注册，则 $i \in D(s)$ 当且仅当 $i$ 健康且可达。
 
-**定理1.2**: 服务发现模式提供负载均衡
-**证明**: 对于服务 $s \in S$，$\text{discover}(s, r)$ 返回所有可用实例，客户端可以选择最优实例。
+**证明**:
+假设 $i \in R(s)$ 且 $i$ 健康可达，根据服务发现算法，$i$ 会被包含在 $D(s)$ 中。
+反之，如果 $i \notin D(s)$，则 $i$ 要么未注册，要么不健康或不可达。
 
-### 1.4 设计目标
+## 2. 架构模式
 
-1. **自动发现**: 自动发现可用的服务实例
-2. **负载均衡**: 在多个实例间分配请求
-3. **故障转移**: 自动切换到健康实例
-4. **可扩展性**: 支持大规模服务部署
-
-## 2. 模式结构
-
-### 2.1 核心组件
+### 2.1 服务注册中心模式
 
 ```mermaid
 graph TD
-    A[Service Instance] --> B[Registry]
-    C[Client] --> B
-    B --> D[Load Balancer]
-    D --> E[Health Checker]
-    E --> F[Service Instance 1]
-    E --> G[Service Instance 2]
-    E --> H[Service Instance 3]
+    A[服务实例] -->|注册| B[服务注册中心]
+    C[客户端] -->|查询| B
+    B -->|返回服务列表| C
+    C -->|连接| A
 ```
 
-### 2.2 组件职责
+### 2.2 客户端发现模式
 
-| 组件 | 职责 | 高可用性 |
-|------|------|----------|
-| Service Registry | 存储服务实例信息 | 是 |
-| Service Instance | 提供具体服务 | 否 |
-| Client | 消费服务 | 否 |
-| Load Balancer | 负载均衡 | 是 |
-| Health Checker | 健康检查 | 是 |
+```mermaid
+graph TD
+    A[客户端] -->|查询注册中心| B[服务注册中心]
+    B -->|返回服务列表| A
+    A -->|负载均衡| C[服务实例1]
+    A -->|负载均衡| D[服务实例2]
+    A -->|负载均衡| E[服务实例3]
+```
+
+### 2.3 服务端发现模式
+
+```mermaid
+graph TD
+    A[客户端] -->|请求| B[负载均衡器]
+    B -->|查询注册中心| C[服务注册中心]
+    C -->|返回服务列表| B
+    B -->|转发请求| D[服务实例]
+```
 
 ## 3. Go语言实现
 
-### 3.1 基础实现
+### 3.1 服务注册接口
 
 ```go
-package servicediscovery
-
-import (
-    "context"
-    "encoding/json"
-    "fmt"
-    "sync"
-    "time"
-)
+// ServiceRegistry 服务注册接口
+type ServiceRegistry interface {
+    // Register 注册服务实例
+    Register(service *ServiceInstance) error
+    
+    // Deregister 注销服务实例
+    Deregister(serviceID string) error
+    
+    // GetService 获取服务实例列表
+    GetService(serviceName string) ([]*ServiceInstance, error)
+    
+    // GetAllServices 获取所有服务
+    GetAllServices() (map[string][]*ServiceInstance, error)
+    
+    // HealthCheck 健康检查
+    HealthCheck(serviceID string) error
+}
 
 // ServiceInstance 服务实例
 type ServiceInstance struct {
-    ID       string            `json:"id"`
-    Name     string            `json:"name"`
-    Host     string            `json:"host"`
-    Port     int               `json:"port"`
-    Metadata map[string]string `json:"metadata"`
-    Status   InstanceStatus    `json:"status"`
-    LastSeen time.Time         `json:"last_seen"`
+    ID          string            `json:"id"`
+    Name        string            `json:"name"`
+    Host        string            `json:"host"`
+    Port        int               `json:"port"`
+    Status      ServiceStatus     `json:"status"`
+    Metadata    map[string]string `json:"metadata"`
+    LastUpdated time.Time         `json:"last_updated"`
 }
 
-type InstanceStatus string
+// ServiceStatus 服务状态
+type ServiceStatus string
 
 const (
-    StatusHealthy   InstanceStatus = "healthy"
-    StatusUnhealthy InstanceStatus = "unhealthy"
-    StatusUnknown   InstanceStatus = "unknown"
+    ServiceStatusUp   ServiceStatus = "UP"
+    ServiceStatusDown ServiceStatus = "DOWN"
+    ServiceStatusOut  ServiceStatus = "OUT_OF_SERVICE"
 )
+```
 
-// ServiceRegistry 服务注册表接口
-type ServiceRegistry interface {
-    Register(instance *ServiceInstance) error
-    Deregister(instanceID string) error
-    Discover(serviceName string) ([]*ServiceInstance, error)
-    GetInstance(instanceID string) (*ServiceInstance, error)
-    ListServices() ([]string, error)
+### 3.2 内存注册中心实现
+
+```go
+// MemoryServiceRegistry 内存服务注册中心
+type MemoryServiceRegistry struct {
+    services map[string][]*ServiceInstance
+    mutex    sync.RWMutex
+    ttl      time.Duration
 }
 
-// InMemoryRegistry 内存注册表实现
-type InMemoryRegistry struct {
-    instances map[string]*ServiceInstance
-    services  map[string][]string // service name -> instance IDs
-    mu        sync.RWMutex
-}
-
-func NewInMemoryRegistry() *InMemoryRegistry {
-    return &InMemoryRegistry{
-        instances: make(map[string]*ServiceInstance),
-        services:  make(map[string][]string),
+// NewMemoryServiceRegistry 创建内存注册中心
+func NewMemoryServiceRegistry(ttl time.Duration) *MemoryServiceRegistry {
+    registry := &MemoryServiceRegistry{
+        services: make(map[string][]*ServiceInstance),
+        ttl:      ttl,
     }
+    
+    // 启动清理过期服务的goroutine
+    go registry.cleanupExpiredServices()
+    
+    return registry
 }
 
-func (r *InMemoryRegistry) Register(instance *ServiceInstance) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
+// Register 注册服务实例
+func (r *MemoryServiceRegistry) Register(service *ServiceInstance) error {
+    r.mutex.Lock()
+    defer r.mutex.Unlock()
     
-    // 更新最后访问时间
-    instance.LastSeen = time.Now()
-    instance.Status = StatusHealthy
-    
-    // 注册实例
-    r.instances[instance.ID] = instance
-    
-    // 添加到服务列表
-    if _, exists := r.services[instance.Name]; !exists {
-        r.services[instance.Name] = make([]string, 0)
+    // 验证服务实例
+    if err := r.validateServiceInstance(service); err != nil {
+        return fmt.Errorf("invalid service instance: %w", err)
     }
-    r.services[instance.Name] = append(r.services[instance.Name], instance.ID)
+    
+    // 更新最后更新时间
+    service.LastUpdated = time.Now()
+    service.Status = ServiceStatusUp
+    
+    // 检查是否已存在
+    services := r.services[service.Name]
+    for i, existing := range services {
+        if existing.ID == service.ID {
+            // 更新现有实例
+            services[i] = service
+            return nil
+        }
+    }
+    
+    // 添加新实例
+    r.services[service.Name] = append(services, service)
     
     return nil
 }
 
-func (r *InMemoryRegistry) Deregister(instanceID string) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
+// Deregister 注销服务实例
+func (r *MemoryServiceRegistry) Deregister(serviceID string) error {
+    r.mutex.Lock()
+    defer r.mutex.Unlock()
     
-    instance, exists := r.instances[instanceID]
-    if !exists {
-        return fmt.Errorf("instance %s not found", instanceID)
-    }
-    
-    // 从服务列表中移除
-    if serviceInstances, exists := r.services[instance.Name]; exists {
-        for i, id := range serviceInstances {
-            if id == instanceID {
-                r.services[instance.Name] = append(serviceInstances[:i], serviceInstances[i+1:]...)
-                break
+    for serviceName, services := range r.services {
+        for i, service := range services {
+            if service.ID == serviceID {
+                // 移除服务实例
+                r.services[serviceName] = append(services[:i], services[i+1:]...)
+                return nil
             }
         }
     }
     
-    // 删除实例
-    delete(r.instances, instanceID)
-    
-    return nil
+    return fmt.Errorf("service instance %s not found", serviceID)
 }
 
-func (r *InMemoryRegistry) Discover(serviceName string) ([]*ServiceInstance, error) {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
+// GetService 获取服务实例列表
+func (r *MemoryServiceRegistry) GetService(serviceName string) ([]*ServiceInstance, error) {
+    r.mutex.RLock()
+    defer r.mutex.RUnlock()
     
-    instanceIDs, exists := r.services[serviceName]
+    services, exists := r.services[serviceName]
     if !exists {
         return nil, fmt.Errorf("service %s not found", serviceName)
     }
     
-    instances := make([]*ServiceInstance, 0, len(instanceIDs))
-    for _, id := range instanceIDs {
-        if instance, exists := r.instances[id]; exists && instance.Status == StatusHealthy {
-            instances = append(instances, instance)
+    // 过滤健康的服务实例
+    healthyServices := make([]*ServiceInstance, 0)
+    for _, service := range services {
+        if service.Status == ServiceStatusUp && !r.isExpired(service) {
+            healthyServices = append(healthyServices, service)
         }
     }
     
-    return instances, nil
+    return healthyServices, nil
 }
 
-func (r *InMemoryRegistry) GetInstance(instanceID string) (*ServiceInstance, error) {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
+// GetAllServices 获取所有服务
+func (r *MemoryServiceRegistry) GetAllServices() (map[string][]*ServiceInstance, error) {
+    r.mutex.RLock()
+    defer r.mutex.RUnlock()
     
-    instance, exists := r.instances[instanceID]
-    if !exists {
-        return nil, fmt.Errorf("instance %s not found", instanceID)
+    result := make(map[string][]*ServiceInstance)
+    for serviceName, services := range r.services {
+        healthyServices := make([]*ServiceInstance, 0)
+        for _, service := range services {
+            if service.Status == ServiceStatusUp && !r.isExpired(service) {
+                healthyServices = append(healthyServices, service)
+            }
+        }
+        if len(healthyServices) > 0 {
+            result[serviceName] = healthyServices
+        }
     }
     
-    return instance, nil
+    return result, nil
 }
 
-func (r *InMemoryRegistry) ListServices() ([]string, error) {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
+// HealthCheck 健康检查
+func (r *MemoryServiceRegistry) HealthCheck(serviceID string) error {
+    r.mutex.Lock()
+    defer r.mutex.Unlock()
     
-    services := make([]string, 0, len(r.services))
-    for serviceName := range r.services {
-        services = append(services, serviceName)
+    for _, services := range r.services {
+        for _, service := range services {
+            if service.ID == serviceID {
+                service.LastUpdated = time.Now()
+                return nil
+            }
+        }
     }
     
-    return services, nil
+    return fmt.Errorf("service instance %s not found", serviceID)
 }
 
-// LoadBalancer 负载均衡器接口
-type LoadBalancer interface {
-    Select(instances []*ServiceInstance) (*ServiceInstance, error)
-}
-
-// RoundRobinLoadBalancer 轮询负载均衡器
-type RoundRobinLoadBalancer struct {
-    current int
-    mu      sync.Mutex
-}
-
-func NewRoundRobinLoadBalancer() *RoundRobinLoadBalancer {
-    return &RoundRobinLoadBalancer{
-        current: 0,
+// validateServiceInstance 验证服务实例
+func (r *MemoryServiceRegistry) validateServiceInstance(service *ServiceInstance) error {
+    if service.ID == "" {
+        return errors.New("service ID is required")
     }
-}
-
-func (lb *RoundRobinLoadBalancer) Select(instances []*ServiceInstance) (*ServiceInstance, error) {
-    if len(instances) == 0 {
-        return nil, fmt.Errorf("no available instances")
+    if service.Name == "" {
+        return errors.New("service name is required")
     }
-    
-    lb.mu.Lock()
-    defer lb.mu.Unlock()
-    
-    instance := instances[lb.current%len(instances)]
-    lb.current++
-    
-    return instance, nil
-}
-
-// RandomLoadBalancer 随机负载均衡器
-type RandomLoadBalancer struct{}
-
-func NewRandomLoadBalancer() *RandomLoadBalancer {
-    return &RandomLoadBalancer{}
-}
-
-func (lb *RandomLoadBalancer) Select(instances []*ServiceInstance) (*ServiceInstance, error) {
-    if len(instances) == 0 {
-        return nil, fmt.Errorf("no available instances")
+    if service.Host == "" {
+        return errors.New("service host is required")
     }
-    
-    // 简单的随机选择，实际应用中可以使用更好的随机算法
-    return instances[time.Now().UnixNano()%int64(len(instances))], nil
-}
-
-// HealthChecker 健康检查器
-type HealthChecker struct {
-    registry ServiceRegistry
-    interval time.Duration
-    timeout  time.Duration
-    stopChan chan struct{}
-    wg       sync.WaitGroup
-}
-
-func NewHealthChecker(registry ServiceRegistry, interval, timeout time.Duration) *HealthChecker {
-    return &HealthChecker{
-        registry: registry,
-        interval: interval,
-        timeout:  timeout,
-        stopChan: make(chan struct{}),
+    if service.Port <= 0 || service.Port > 65535 {
+        return errors.New("invalid service port")
     }
+    return nil
 }
 
-func (hc *HealthChecker) Start() {
-    hc.wg.Add(1)
-    go hc.run()
+// isExpired 检查服务是否过期
+func (r *MemoryServiceRegistry) isExpired(service *ServiceInstance) bool {
+    return time.Since(service.LastUpdated) > r.ttl
 }
 
-func (hc *HealthChecker) Stop() {
-    close(hc.stopChan)
-    hc.wg.Wait()
-}
-
-func (hc *HealthChecker) run() {
-    defer hc.wg.Done()
-    
-    ticker := time.NewTicker(hc.interval)
+// cleanupExpiredServices 清理过期服务
+func (r *MemoryServiceRegistry) cleanupExpiredServices() {
+    ticker := time.NewTicker(r.ttl / 2)
     defer ticker.Stop()
     
-    for {
-        select {
-        case <-hc.stopChan:
-            return
-        case <-ticker.C:
-            hc.checkHealth()
+    for range ticker.C {
+        r.mutex.Lock()
+        for serviceName, services := range r.services {
+            healthyServices := make([]*ServiceInstance, 0)
+            for _, service := range services {
+                if !r.isExpired(service) {
+                    healthyServices = append(healthyServices, service)
+                }
+            }
+            r.services[serviceName] = healthyServices
         }
+        r.mutex.Unlock()
     }
 }
+```
 
-func (hc *HealthChecker) checkHealth() {
-    // 获取所有服务
-    services, err := hc.registry.ListServices()
-    if err != nil {
-        return
-    }
-    
-    for _, serviceName := range services {
-        instances, err := hc.registry.Discover(serviceName)
-        if err != nil {
-            continue
-        }
-        
-        for _, instance := range instances {
-            go hc.checkInstanceHealth(instance)
-        }
-    }
-}
+### 3.3 客户端发现实现
 
-func (hc *HealthChecker) checkInstanceHealth(instance *ServiceInstance) {
-    // 创建健康检查请求
-    ctx, cancel := context.WithTimeout(context.Background(), hc.timeout)
-    defer cancel()
-    
-    // 这里应该实现实际的健康检查逻辑
-    // 例如：HTTP GET /health 或 TCP 连接测试
-    healthy := hc.performHealthCheck(ctx, instance)
-    
-    if !healthy {
-        instance.Status = StatusUnhealthy
-        // 可以选择从注册表中移除不健康的实例
-        // hc.registry.Deregister(instance.ID)
-    } else {
-        instance.Status = StatusHealthy
-        instance.LastSeen = time.Now()
-    }
-}
-
-func (hc *HealthChecker) performHealthCheck(ctx context.Context, instance *ServiceInstance) bool {
-    // 简单的健康检查实现
-    // 实际应用中应该检查具体的健康端点
-    return true
-}
-
+```go
 // ServiceDiscoveryClient 服务发现客户端
 type ServiceDiscoveryClient struct {
-    registry     ServiceRegistry
-    loadBalancer LoadBalancer
-    cache        map[string][]*ServiceInstance
-    cacheTTL     time.Duration
-    mu           sync.RWMutex
+    registry ServiceRegistry
+    cache    map[string]*ServiceCache
+    mutex    sync.RWMutex
+    ttl      time.Duration
 }
 
-func NewServiceDiscoveryClient(registry ServiceRegistry, loadBalancer LoadBalancer, cacheTTL time.Duration) *ServiceDiscoveryClient {
+// ServiceCache 服务缓存
+type ServiceCache struct {
+    instances []*ServiceInstance
+    lastFetch time.Time
+}
+
+// NewServiceDiscoveryClient 创建服务发现客户端
+func NewServiceDiscoveryClient(registry ServiceRegistry, ttl time.Duration) *ServiceDiscoveryClient {
     return &ServiceDiscoveryClient{
-        registry:     registry,
-        loadBalancer: loadBalancer,
-        cache:        make(map[string][]*ServiceInstance),
-        cacheTTL:     cacheTTL,
+        registry: registry,
+        cache:    make(map[string]*ServiceCache),
+        ttl:      ttl,
     }
 }
 
-func (c *ServiceDiscoveryClient) GetService(serviceName string) (*ServiceInstance, error) {
-    // 先从缓存获取
-    c.mu.RLock()
-    if instances, exists := c.cache[serviceName]; exists && len(instances) > 0 {
-        c.mu.RUnlock()
-        return c.loadBalancer.Select(instances)
+// GetService 获取服务实例（带缓存）
+func (c *ServiceDiscoveryClient) GetService(serviceName string) ([]*ServiceInstance, error) {
+    // 检查缓存
+    c.mutex.RLock()
+    if cache, exists := c.cache[serviceName]; exists && !c.isCacheExpired(cache) {
+        instances := make([]*ServiceInstance, len(cache.instances))
+        copy(instances, cache.instances)
+        c.mutex.RUnlock()
+        return instances, nil
     }
-    c.mu.RUnlock()
+    c.mutex.RUnlock()
     
-    // 从注册表发现服务
-    instances, err := c.registry.Discover(serviceName)
+    // 从注册中心获取
+    instances, err := c.registry.GetService(serviceName)
     if err != nil {
         return nil, err
     }
     
     // 更新缓存
-    c.mu.Lock()
-    c.cache[serviceName] = instances
-    c.mu.Unlock()
-    
-    // 选择实例
-    return c.loadBalancer.Select(instances)
-}
-
-func (c *ServiceDiscoveryClient) RefreshCache(serviceName string) error {
-    instances, err := c.registry.Discover(serviceName)
-    if err != nil {
-        return err
+    c.mutex.Lock()
+    c.cache[serviceName] = &ServiceCache{
+        instances: instances,
+        lastFetch: time.Now(),
     }
-    
-    c.mu.Lock()
-    c.cache[serviceName] = instances
-    c.mu.Unlock()
-    
-    return nil
-}
-```
-
-### 3.2 泛型实现
-
-```go
-package servicediscovery
-
-import (
-    "context"
-    "sync"
-    "time"
-)
-
-// GenericServiceInstance 泛型服务实例
-type GenericServiceInstance[T any] struct {
-    ID       string            `json:"id"`
-    Name     string            `json:"name"`
-    Host     string            `json:"host"`
-    Port     int               `json:"port"`
-    Metadata map[string]string `json:"metadata"`
-    Data     T                 `json:"data"`
-    Status   InstanceStatus    `json:"status"`
-    LastSeen time.Time         `json:"last_seen"`
-}
-
-// GenericServiceRegistry 泛型服务注册表
-type GenericServiceRegistry[T any] struct {
-    instances map[string]*GenericServiceInstance[T]
-    services  map[string][]string
-    mu        sync.RWMutex
-}
-
-func NewGenericServiceRegistry[T any]() *GenericServiceRegistry[T] {
-    return &GenericServiceRegistry[T]{
-        instances: make(map[string]*GenericServiceInstance[T]),
-        services:  make(map[string][]string),
-    }
-}
-
-func (r *GenericServiceRegistry[T]) Register(instance *GenericServiceInstance[T]) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    
-    instance.LastSeen = time.Now()
-    instance.Status = StatusHealthy
-    
-    r.instances[instance.ID] = instance
-    
-    if _, exists := r.services[instance.Name]; !exists {
-        r.services[instance.Name] = make([]string, 0)
-    }
-    r.services[instance.Name] = append(r.services[instance.Name], instance.ID)
-    
-    return nil
-}
-
-func (r *GenericServiceRegistry[T]) Deregister(instanceID string) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    
-    instance, exists := r.instances[instanceID]
-    if !exists {
-        return fmt.Errorf("instance %s not found", instanceID)
-    }
-    
-    if serviceInstances, exists := r.services[instance.Name]; exists {
-        for i, id := range serviceInstances {
-            if id == instanceID {
-                r.services[instance.Name] = append(serviceInstances[:i], serviceInstances[i+1:]...)
-                break
-            }
-        }
-    }
-    
-    delete(r.instances, instanceID)
-    return nil
-}
-
-func (r *GenericServiceRegistry[T]) Discover(serviceName string) ([]*GenericServiceInstance[T], error) {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
-    
-    instanceIDs, exists := r.services[serviceName]
-    if !exists {
-        return nil, fmt.Errorf("service %s not found", serviceName)
-    }
-    
-    instances := make([]*GenericServiceInstance[T], 0, len(instanceIDs))
-    for _, id := range instanceIDs {
-        if instance, exists := r.instances[id]; exists && instance.Status == StatusHealthy {
-            instances = append(instances, instance)
-        }
-    }
+    c.mutex.Unlock()
     
     return instances, nil
 }
 
-// GenericLoadBalancer 泛型负载均衡器
-type GenericLoadBalancer[T any] interface {
-    Select(instances []*GenericServiceInstance[T]) (*GenericServiceInstance[T], error)
-}
-
-// WeightedLoadBalancer 加权负载均衡器
-type WeightedLoadBalancer[T any] struct {
-    instances map[string]int // instance ID -> weight
-    mu        sync.RWMutex
-}
-
-func NewWeightedLoadBalancer[T any]() *WeightedLoadBalancer[T] {
-    return &WeightedLoadBalancer[T]{
-        instances: make(map[string]int),
-    }
-}
-
-func (lb *WeightedLoadBalancer[T]) SetWeight(instanceID string, weight int) {
-    lb.mu.Lock()
-    defer lb.mu.Unlock()
-    lb.instances[instanceID] = weight
-}
-
-func (lb *WeightedLoadBalancer[T]) Select(instances []*GenericServiceInstance[T]) (*GenericServiceInstance[T], error) {
-    if len(instances) == 0 {
-        return nil, fmt.Errorf("no available instances")
+// GetServiceWithLoadBalancing 获取服务实例（带负载均衡）
+func (c *ServiceDiscoveryClient) GetServiceWithLoadBalancing(serviceName string, strategy LoadBalancingStrategy) (*ServiceInstance, error) {
+    instances, err := c.GetService(serviceName)
+    if err != nil {
+        return nil, err
     }
     
-    lb.mu.RLock()
-    defer lb.mu.RUnlock()
+    if len(instances) == 0 {
+        return nil, fmt.Errorf("no available instances for service %s", serviceName)
+    }
+    
+    return strategy.Select(instances), nil
+}
+
+// isCacheExpired 检查缓存是否过期
+func (c *ServiceDiscoveryClient) isCacheExpired(cache *ServiceCache) bool {
+    return time.Since(cache.lastFetch) > c.ttl
+}
+
+// LoadBalancingStrategy 负载均衡策略接口
+type LoadBalancingStrategy interface {
+    Select(instances []*ServiceInstance) *ServiceInstance
+}
+
+// RoundRobinStrategy 轮询策略
+type RoundRobinStrategy struct {
+    counter int64
+}
+
+func (r *RoundRobinStrategy) Select(instances []*ServiceInstance) *ServiceInstance {
+    if len(instances) == 0 {
+        return nil
+    }
+    
+    index := atomic.AddInt64(&r.counter, 1) % int64(len(instances))
+    return instances[index]
+}
+
+// RandomStrategy 随机策略
+type RandomStrategy struct {
+    rng *rand.Rand
+}
+
+func NewRandomStrategy() *RandomStrategy {
+    return &RandomStrategy{
+        rng: rand.New(rand.NewSource(time.Now().UnixNano())),
+    }
+}
+
+func (r *RandomStrategy) Select(instances []*ServiceInstance) *ServiceInstance {
+    if len(instances) == 0 {
+        return nil
+    }
+    
+    index := r.rng.Intn(len(instances))
+    return instances[index]
+}
+
+// WeightedStrategy 权重策略
+type WeightedStrategy struct{}
+
+func (w *WeightedStrategy) Select(instances []*ServiceInstance) *ServiceInstance {
+    if len(instances) == 0 {
+        return nil
+    }
     
     // 计算总权重
     totalWeight := 0
     for _, instance := range instances {
-        if weight, exists := lb.instances[instance.ID]; exists {
-            totalWeight += weight
+        if weight, exists := instance.Metadata["weight"]; exists {
+            if w, err := strconv.Atoi(weight); err == nil {
+                totalWeight += w
+            }
         } else {
             totalWeight += 1 // 默认权重为1
         }
     }
     
     if totalWeight == 0 {
-        return instances[0], nil
+        return instances[0]
     }
     
-    // 根据权重选择实例
-    random := time.Now().UnixNano() % int64(totalWeight)
-    currentWeight := 0
+    // 随机选择
+    r := rand.New(rand.NewSource(time.Now().UnixNano()))
+    random := r.Intn(totalWeight)
     
+    currentWeight := 0
     for _, instance := range instances {
         weight := 1
-        if w, exists := lb.instances[instance.ID]; exists {
-            weight = w
+        if w, exists := instance.Metadata["weight"]; exists {
+            if w, err := strconv.Atoi(w); err == nil {
+                weight = w
+            }
         }
         
         currentWeight += weight
-        if int64(currentWeight) > random {
-            return instance, nil
+        if random < currentWeight {
+            return instance
         }
     }
     
-    return instances[0], nil
+    return instances[0]
 }
 ```
 
-### 3.3 函数式实现
+### 3.4 服务端发现实现
 
 ```go
-package servicediscovery
-
-import (
-    "context"
-    "sync"
-    "time"
-)
-
-// FunctionalServiceRegistry 函数式服务注册表
-type FunctionalServiceRegistry struct {
-    instances map[string]*ServiceInstance
-    services  map[string][]string
-    mu        sync.RWMutex
+// ServiceDiscoveryProxy 服务发现代理
+type ServiceDiscoveryProxy struct {
+    registry  ServiceRegistry
+    strategy  LoadBalancingStrategy
+    listener  net.Listener
+    services  map[string]*ProxyService
+    mutex     sync.RWMutex
 }
 
-func NewFunctionalServiceRegistry() *FunctionalServiceRegistry {
-    return &FunctionalServiceRegistry{
-        instances: make(map[string]*ServiceInstance),
-        services:  make(map[string][]string),
+// ProxyService 代理服务
+type ProxyService struct {
+    name      string
+    instances []*ServiceInstance
+    strategy  LoadBalancingStrategy
+    lastFetch time.Time
+}
+
+// NewServiceDiscoveryProxy 创建服务发现代理
+func NewServiceDiscoveryProxy(registry ServiceRegistry, strategy LoadBalancingStrategy) *ServiceDiscoveryProxy {
+    return &ServiceDiscoveryProxy{
+        registry: registry,
+        strategy: strategy,
+        services: make(map[string]*ProxyService),
     }
 }
 
-func (r *FunctionalServiceRegistry) Register(instance *ServiceInstance) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
+// Start 启动代理
+func (p *ServiceDiscoveryProxy) Start(address string) error {
+    listener, err := net.Listen("tcp", address)
+    if err != nil {
+        return fmt.Errorf("failed to start proxy: %w", err)
+    }
     
-    // 使用函数式更新
-    r.updateInstance(instance)
-    r.updateServiceList(instance)
+    p.listener = listener
+    
+    go p.acceptConnections()
     
     return nil
 }
 
-func (r *FunctionalServiceRegistry) updateInstance(instance *ServiceInstance) {
-    // 创建新的实例副本
-    newInstance := *instance
-    newInstance.LastSeen = time.Now()
-    newInstance.Status = StatusHealthy
-    
-    r.instances[instance.ID] = &newInstance
-}
-
-func (r *FunctionalServiceRegistry) updateServiceList(instance *ServiceInstance) {
-    serviceList := r.services[instance.Name]
-    if serviceList == nil {
-        serviceList = make([]string, 0)
-    }
-    
-    // 检查是否已存在
-    exists := false
-    for _, id := range serviceList {
-        if id == instance.ID {
-            exists = true
-            break
+// acceptConnections 接受连接
+func (p *ServiceDiscoveryProxy) acceptConnections() {
+    for {
+        conn, err := p.listener.Accept()
+        if err != nil {
+            log.Printf("Failed to accept connection: %v", err)
+            continue
         }
-    }
-    
-    if !exists {
-        r.services[instance.Name] = append(serviceList, instance.ID)
+        
+        go p.handleConnection(conn)
     }
 }
 
-func (r *FunctionalServiceRegistry) Deregister(instanceID string) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
+// handleConnection 处理连接
+func (p *ServiceDiscoveryProxy) handleConnection(conn net.Conn) {
+    defer conn.Close()
     
-    instance, exists := r.instances[instanceID]
-    if !exists {
-        return fmt.Errorf("instance %s not found", instanceID)
-    }
-    
-    // 函数式移除
-    r.removeFromServiceList(instance.Name, instanceID)
-    delete(r.instances, instanceID)
-    
-    return nil
-}
-
-func (r *FunctionalServiceRegistry) removeFromServiceList(serviceName, instanceID string) {
-    serviceList := r.services[serviceName]
-    if serviceList == nil {
+    // 读取请求
+    buffer := make([]byte, 1024)
+    n, err := conn.Read(buffer)
+    if err != nil {
+        log.Printf("Failed to read from connection: %v", err)
         return
     }
     
-    // 创建新的服务列表，排除指定实例
-    newServiceList := make([]string, 0, len(serviceList))
-    for _, id := range serviceList {
-        if id != instanceID {
-            newServiceList = append(newServiceList, id)
-        }
+    // 解析服务名称（简化示例）
+    serviceName := string(buffer[:n])
+    
+    // 获取服务实例
+    instance, err := p.getServiceInstance(serviceName)
+    if err != nil {
+        log.Printf("Failed to get service instance: %v", err)
+        return
     }
     
-    r.services[serviceName] = newServiceList
+    // 转发请求
+    p.forwardRequest(conn, instance)
 }
 
-func (r *FunctionalServiceRegistry) Discover(serviceName string) ([]*ServiceInstance, error) {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
+// getServiceInstance 获取服务实例
+func (p *ServiceDiscoveryProxy) getServiceInstance(serviceName string) (*ServiceInstance, error) {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
     
-    instanceIDs, exists := r.services[serviceName]
-    if !exists {
-        return nil, fmt.Errorf("service %s not found", serviceName)
+    // 检查缓存
+    if proxyService, exists := p.services[serviceName]; exists && !p.isCacheExpired(proxyService) {
+        return p.strategy.Select(proxyService.instances), nil
     }
     
-    // 函数式过滤健康实例
-    return r.filterHealthyInstances(instanceIDs), nil
-}
-
-func (r *FunctionalServiceRegistry) filterHealthyInstances(instanceIDs []string) []*ServiceInstance {
-    instances := make([]*ServiceInstance, 0, len(instanceIDs))
-    
-    for _, id := range instanceIDs {
-        if instance, exists := r.instances[id]; exists && instance.Status == StatusHealthy {
-            instances = append(instances, instance)
-        }
+    // 从注册中心获取
+    instances, err := p.registry.GetService(serviceName)
+    if err != nil {
+        return nil, err
     }
     
-    return instances
-}
-
-// FunctionalLoadBalancer 函数式负载均衡器
-type FunctionalLoadBalancer struct {
-    selector func([]*ServiceInstance) (*ServiceInstance, error)
-}
-
-func NewFunctionalLoadBalancer(selector func([]*ServiceInstance) (*ServiceInstance, error)) *FunctionalLoadBalancer {
-    return &FunctionalLoadBalancer{
-        selector: selector,
+    // 更新缓存
+    p.services[serviceName] = &ProxyService{
+        name:      serviceName,
+        instances: instances,
+        strategy:  p.strategy,
+        lastFetch: time.Now(),
     }
-}
-
-func (lb *FunctionalLoadBalancer) Select(instances []*ServiceInstance) (*ServiceInstance, error) {
-    return lb.selector(instances)
-}
-
-// 预定义的负载均衡策略
-func RoundRobinSelector() func([]*ServiceInstance) (*ServiceInstance, error) {
-    current := 0
-    var mu sync.Mutex
     
-    return func(instances []*ServiceInstance) (*ServiceInstance, error) {
-        if len(instances) == 0 {
-            return nil, fmt.Errorf("no available instances")
-        }
-        
-        mu.Lock()
-        defer mu.Unlock()
-        
-        instance := instances[current%len(instances)]
-        current++
-        
-        return instance, nil
-    }
+    return p.strategy.Select(instances), nil
 }
 
-func RandomSelector() func([]*ServiceInstance) (*ServiceInstance, error) {
-    return func(instances []*ServiceInstance) (*ServiceInstance, error) {
-        if len(instances) == 0 {
-            return nil, fmt.Errorf("no available instances")
+// isCacheExpired 检查缓存是否过期
+func (p *ServiceDiscoveryProxy) isCacheExpired(proxyService *ProxyService) bool {
+    return time.Since(proxyService.lastFetch) > 30*time.Second
+}
+
+// forwardRequest 转发请求
+func (p *ServiceDiscoveryProxy) forwardRequest(clientConn net.Conn, instance *ServiceInstance) {
+    // 连接到后端服务
+    backendConn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", instance.Host, instance.Port))
+    if err != nil {
+        log.Printf("Failed to connect to backend: %v", err)
+        return
+    }
+    defer backendConn.Close()
+    
+    // 双向转发数据
+    go p.forwardData(clientConn, backendConn)
+    p.forwardData(backendConn, clientConn)
+}
+
+// forwardData 转发数据
+func (p *ServiceDiscoveryProxy) forwardData(dst net.Conn, src net.Conn) {
+    buffer := make([]byte, 4096)
+    for {
+        n, err := src.Read(buffer)
+        if err != nil {
+            break
         }
         
-        return instances[time.Now().UnixNano()%int64(len(instances))], nil
-    }
-}
-
-func FirstAvailableSelector() func([]*ServiceInstance) (*ServiceInstance, error) {
-    return func(instances []*ServiceInstance) (*ServiceInstance, error) {
-        if len(instances) == 0 {
-            return nil, fmt.Errorf("no available instances")
+        _, err = dst.Write(buffer[:n])
+        if err != nil {
+            break
         }
-        
-        return instances[0], nil
     }
 }
 ```
@@ -737,128 +585,99 @@ func FirstAvailableSelector() func([]*ServiceInstance) (*ServiceInstance, error)
 
 ### 4.1 时间复杂度
 
-| 操作 | 时间复杂度 | 说明 |
-|------|------------|------|
-| 注册服务 | O(1) | 直接插入 |
-| 注销服务 | O(n) | 需要从服务列表中移除 |
-| 发现服务 | O(n) | 遍历服务列表 |
-| 负载均衡 | O(1) | 直接选择 |
+- **注册**: $O(1)$
+- **注销**: $O(n)$，其中 $n$ 为服务实例数量
+- **发现**: $O(1)$（带缓存）
+- **健康检查**: $O(n)$
 
 ### 4.2 空间复杂度
 
-- 注册表：O(n × m)，其中n为服务数量，m为平均实例数量
-- 缓存：O(n × m)
-- 总体空间：O(n × m)
+- **内存注册中心**: $O(s \times i)$，其中 $s$ 为服务数量，$i$ 为平均实例数量
+- **客户端缓存**: $O(s \times i)$
+- **代理缓存**: $O(s \times i)$
 
-### 4.3 并发性能
+### 4.3 一致性分析
+
+**CAP定理权衡**:
+- **一致性 (Consistency)**: 最终一致性
+- **可用性 (Availability)**: 高可用性
+- **分区容错性 (Partition tolerance)**: 支持网络分区
+
+## 5. 使用示例
+
+### 5.1 基本使用
 
 ```go
-// 性能测试示例
-func BenchmarkServiceDiscovery(b *testing.B) {
-    registry := NewInMemoryRegistry()
-    loadBalancer := NewRoundRobinLoadBalancer()
-    client := NewServiceDiscoveryClient(registry, loadBalancer, time.Minute)
+func main() {
+    // 创建注册中心
+    registry := NewMemoryServiceRegistry(30 * time.Second)
     
-    // 注册测试服务
-    for i := 0; i < 10; i++ {
-        instance := &ServiceInstance{
-            ID:   fmt.Sprintf("instance_%d", i),
-            Name: "test-service",
-            Host: "localhost",
-            Port: 8080 + i,
-        }
-        registry.Register(instance)
+    // 注册服务实例
+    service1 := &ServiceInstance{
+        ID:       "user-service-1",
+        Name:     "user-service",
+        Host:     "localhost",
+        Port:     8081,
+        Status:   ServiceStatusUp,
+        Metadata: map[string]string{"version": "1.0.0"},
     }
     
-    b.ResetTimer()
-    b.RunParallel(func(pb *testing.PB) {
-        for pb.Next() {
-            client.GetService("test-service")
-        }
-    })
+    service2 := &ServiceInstance{
+        ID:       "user-service-2",
+        Name:     "user-service",
+        Host:     "localhost",
+        Port:     8082,
+        Status:   ServiceStatusUp,
+        Metadata: map[string]string{"version": "1.0.0"},
+    }
+    
+    registry.Register(service1)
+    registry.Register(service2)
+    
+    // 创建服务发现客户端
+    client := NewServiceDiscoveryClient(registry, 10*time.Second)
+    
+    // 使用轮询策略获取服务
+    roundRobin := &RoundRobinStrategy{}
+    instance, err := client.GetServiceWithLoadBalancing("user-service", roundRobin)
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    fmt.Printf("Selected instance: %s:%d\n", instance.Host, instance.Port)
 }
 ```
 
-## 5. 应用场景
-
-### 5.1 适用场景
-
-1. **微服务架构**：服务间动态发现
-2. **容器编排**：Kubernetes服务发现
-3. **云原生应用**：弹性伸缩
-4. **分布式系统**：高可用部署
-
-### 5.2 实际应用示例
+### 5.2 高级使用
 
 ```go
-// 微服务示例
-type UserService struct {
-    discoveryClient *ServiceDiscoveryClient
-}
-
-func NewUserService(registry ServiceRegistry) *UserService {
-    loadBalancer := NewRoundRobinLoadBalancer()
-    client := NewServiceDiscoveryClient(registry, loadBalancer, time.Minute)
+func main() {
+    // 创建注册中心
+    registry := NewMemoryServiceRegistry(30 * time.Second)
     
-    return &UserService{
-        discoveryClient: client,
-    }
-}
-
-func (us *UserService) GetUser(userID string) (*User, error) {
-    // 发现用户服务实例
-    instance, err := us.discoveryClient.GetService("user-service")
+    // 创建代理
+    strategy := NewRandomStrategy()
+    proxy := NewServiceDiscoveryProxy(registry, strategy)
+    
+    // 启动代理
+    err := proxy.Start(":8080")
     if err != nil {
-        return nil, err
+        log.Fatal(err)
     }
     
-    // 调用用户服务
-    return us.callUserService(instance, userID)
-}
-
-func (us *UserService) callUserService(instance *ServiceInstance, userID string) (*User, error) {
-    // 实际的HTTP调用逻辑
-    url := fmt.Sprintf("http://%s:%d/users/%s", instance.Host, instance.Port, userID)
-    // 执行HTTP请求...
-    return &User{}, nil
-}
-
-// Kubernetes服务发现示例
-type KubernetesServiceDiscovery struct {
-    namespace string
-    client    *kubernetes.Clientset
-}
-
-func NewKubernetesServiceDiscovery(namespace string, client *kubernetes.Clientset) *KubernetesServiceDiscovery {
-    return &KubernetesServiceDiscovery{
-        namespace: namespace,
-        client:    client,
-    }
-}
-
-func (ksd *KubernetesServiceDiscovery) Discover(serviceName string) ([]*ServiceInstance, error) {
-    // 调用Kubernetes API获取服务端点
-    endpoints, err := ksd.client.CoreV1().Endpoints(ksd.namespace).Get(context.Background(), serviceName, metav1.GetOptions{})
-    if err != nil {
-        return nil, err
+    // 注册服务
+    service := &ServiceInstance{
+        ID:     "api-service-1",
+        Name:   "api-service",
+        Host:   "localhost",
+        Port:   9090,
+        Status: ServiceStatusUp,
     }
     
-    instances := make([]*ServiceInstance, 0)
-    for _, subset := range endpoints.Subsets {
-        for _, address := range subset.Addresses {
-            for _, port := range subset.Ports {
-                instance := &ServiceInstance{
-                    ID:   fmt.Sprintf("%s-%s-%d", serviceName, address.IP, port.Port),
-                    Name: serviceName,
-                    Host: address.IP,
-                    Port: int(port.Port),
-                }
-                instances = append(instances, instance)
-            }
-        }
-    }
+    registry.Register(service)
     
-    return instances, nil
+    fmt.Println("Proxy started on :8080")
+    select {} // 保持运行
 }
 ```
 
@@ -866,84 +685,62 @@ func (ksd *KubernetesServiceDiscovery) Discover(serviceName string) ([]*ServiceI
 
 ### 6.1 设计原则
 
-1. **高可用性**：注册表应该高可用
-2. **一致性**：保证服务信息的一致性
-3. **性能**：使用缓存提高性能
-4. **监控**：监控服务健康状态
+1. **高可用性**: 使用多个注册中心实例
+2. **容错性**: 实现重试和熔断机制
+3. **性能**: 使用缓存减少注册中心访问
+4. **一致性**: 实现最终一致性模型
+5. **可观测性**: 添加监控和日志
 
-### 6.2 错误处理
+### 6.2 配置建议
 
 ```go
-func (c *ServiceDiscoveryClient) GetServiceWithRetry(serviceName string, maxRetries int) (*ServiceInstance, error) {
-    var lastErr error
+type ServiceDiscoveryConfig struct {
+    // 注册中心配置
+    RegistryType    string        `json:"registry_type"`
+    RegistryAddress string        `json:"registry_address"`
+    RegistryTTL     time.Duration `json:"registry_ttl"`
     
-    for i := 0; i < maxRetries; i++ {
-        instance, err := c.GetService(serviceName)
-        if err == nil {
-            return instance, nil
-        }
-        
-        lastErr = err
-        time.Sleep(time.Duration(i+1) * time.Second)
-    }
+    // 客户端配置
+    ClientCacheTTL  time.Duration `json:"client_cache_ttl"`
+    LoadBalancing   string        `json:"load_balancing"`
     
-    return nil, fmt.Errorf("failed to get service after %d retries: %v", maxRetries, lastErr)
+    // 健康检查配置
+    HealthCheckInterval time.Duration `json:"health_check_interval"`
+    HealthCheckTimeout  time.Duration `json:"health_check_timeout"`
+    
+    // 重试配置
+    MaxRetries    int           `json:"max_retries"`
+    RetryInterval time.Duration `json:"retry_interval"`
 }
 ```
 
-### 6.3 监控和调试
+## 7. 总结
 
-```go
-type ServiceDiscoveryMetrics struct {
-    RegisterCount    int64
-    DeregisterCount  int64
-    DiscoverCount    int64
-    CacheHitCount    int64
-    CacheMissCount   int64
-    mu               sync.RWMutex
-}
+服务发现模式是分布式系统的核心组件，通过Go语言的高并发特性和简洁语法，可以构建高性能、可靠的服务发现系统。本实现提供了：
 
-func (c *ServiceDiscoveryClient) GetMetrics() *ServiceDiscoveryMetrics {
-    // 返回监控指标
-    return &ServiceDiscoveryMetrics{}
-}
-```
+1. **完整的接口定义**: 标准化的服务注册和发现接口
+2. **多种实现方式**: 内存注册中心、客户端发现、服务端发现
+3. **负载均衡策略**: 轮询、随机、权重等多种策略
+4. **性能优化**: 缓存机制、并发控制
+5. **容错机制**: 健康检查、过期清理
 
-## 7. 与其他模式的关系
+通过合理使用这些组件，可以构建出适应不同场景的服务发现系统。
 
-### 7.1 模式组合
-
-- **与负载均衡模式**：服务发现通常与负载均衡结合
-- **与熔断器模式**：处理服务故障
-- **与API网关模式**：作为网关的服务发现
-
-### 7.2 模式对比
-
-| 模式 | 适用场景 | 复杂度 | 性能 |
-|------|----------|--------|------|
-| 服务发现 | 动态服务 | 中等 | 高 |
-| 静态配置 | 固定服务 | 低 | 高 |
-| DNS解析 | 简单发现 | 低 | 中等 |
-
-## 8. 总结
-
-服务发现模式通过自动化的服务注册和发现机制，为分布式系统提供了灵活的服务管理能力。在Go语言中，结合goroutine和channel的特性，可以高效地实现服务发现模式，支持大规模微服务架构。
-
-### 8.1 关键要点
+### 7.1 关键要点
 
 1. **自动发现**：自动发现可用的服务实例
 2. **负载均衡**：在多个实例间分配请求
 3. **故障转移**：自动切换到健康实例
 4. **可扩展性**：支持大规模服务部署
 
-### 8.2 最佳实践
+### 7.2 最佳实践
 
 1. **高可用注册表**：使用集群化的注册表
 2. **健康检查**：定期检查服务健康状态
 3. **缓存机制**：使用缓存提高性能
 4. **监控告警**：监控服务发现状态
 
-### 8.3 未来发展方向
+### 7.3 未来发展方向
 
 1. **智能路由**：基于负载和延迟的智能路由
 2. **服务网格**：集成服务网格技术
