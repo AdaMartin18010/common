@@ -15,6 +15,7 @@
 $$t_i = (id_i, type_i, address_i, ports_i, services_i, vulnerabilities_i)$$
 
 其中：
+
 - $id_i$: 目标唯一标识符
 - $type_i \in \{host, network, application, database\}$: 目标类型
 - $address_i$: 目标地址（IP地址、域名、URL等）
@@ -29,6 +30,7 @@ $$t_i = (id_i, type_i, address_i, ports_i, services_i, vulnerabilities_i)$$
 $$v = (cve_id, severity, cvss_score, description, affected_components, remediation)$$
 
 其中：
+
 - $cve_id$: CVE标识符
 - $severity \in \{critical, high, medium, low, info\}$: 严重程度
 - $cvss_score \in [0, 10]$: CVSS评分
@@ -43,6 +45,7 @@ $$v = (cve_id, severity, cvss_score, description, affected_components, remediati
 $$P = (scan_type, target_filter, port_range, service_detection, vulnerability_checks, rate_limit)$$
 
 其中：
+
 - $scan_type \in \{full, quick, custom\}$: 扫描类型
 - $target_filter$: 目标过滤条件
 - $port_range \subseteq \mathbb{N} \times \mathbb{N}$: 端口范围
