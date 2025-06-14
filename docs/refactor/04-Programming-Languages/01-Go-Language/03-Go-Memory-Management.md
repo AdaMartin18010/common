@@ -236,16 +236,6 @@ func (og *ObjectGraph) markObject(id uintptr) {
         og.markObject(refID)
     }
 }
-
-func (og *ObjectGraph) sweepPhase() {
-    for id, obj := range og.nodes {
-        if !obj.marked {
-            delete(og.nodes, id)
-        } else {
-            obj.marked = false
-        }
-    }
-}
 ```
 
 #### 1.3.2 GC算法分类
