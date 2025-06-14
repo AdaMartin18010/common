@@ -3,16 +3,44 @@
 ## 目录
 
 - [01-软件架构基础理论 (Software Architecture Foundation)](#01-软件架构基础理论-software-architecture-foundation)
-  - [目录](#目录)
-  - [1. 概念与定义](#1-概念与定义)
-  - [2. 形式化定义](#2-形式化定义)
-  - [3. 数学证明](#3-数学证明)
-  - [4. 设计原则](#4-设计原则)
-  - [5. Go语言实现](#5-go语言实现)
-  - [6. 应用场景](#6-应用场景)
-  - [7. 性能分析](#7-性能分析)
-  - [8. 最佳实践](#8-最佳实践)
-  - [9. 相关模式](#9-相关模式)
+	- [目录](#目录)
+	- [1. 概念与定义](#1-概念与定义)
+		- [1.1 基本概念](#11-基本概念)
+		- [1.2 核心组件](#12-核心组件)
+		- [1.3 架构视图](#13-架构视图)
+	- [2. 形式化定义](#2-形式化定义)
+		- [2.1 软件架构数学模型](#21-软件架构数学模型)
+		- [2.2 组件交互函数](#22-组件交互函数)
+		- [2.3 架构约束函数](#23-架构约束函数)
+	- [3. 数学证明](#3-数学证明)
+		- [3.1 架构一致性定理](#31-架构一致性定理)
+		- [3.2 组件独立性定理](#32-组件独立性定理)
+		- [3.3 质量属性权衡定理](#33-质量属性权衡定理)
+	- [4. 设计原则](#4-设计原则)
+		- [4.1 单一职责原则](#41-单一职责原则)
+		- [4.2 开闭原则](#42-开闭原则)
+		- [4.3 依赖倒置原则](#43-依赖倒置原则)
+		- [4.4 接口隔离原则](#44-接口隔离原则)
+		- [4.5 里氏替换原则](#45-里氏替换原则)
+	- [5. Go语言实现](#5-go语言实现)
+		- [5.1 基础架构实现](#51-基础架构实现)
+		- [5.2 泛型架构实现](#52-泛型架构实现)
+		- [5.3 架构模式实现](#53-架构模式实现)
+	- [6. 应用场景](#6-应用场景)
+		- [6.1 Web应用架构](#61-web应用架构)
+		- [6.2 微服务架构](#62-微服务架构)
+	- [7. 性能分析](#7-性能分析)
+		- [7.1 时间复杂度](#71-时间复杂度)
+		- [7.2 空间复杂度](#72-空间复杂度)
+		- [7.3 架构复杂度](#73-架构复杂度)
+	- [8. 最佳实践](#8-最佳实践)
+		- [8.1 架构设计原则](#81-架构设计原则)
+		- [8.2 质量属性权衡](#82-质量属性权衡)
+		- [8.3 架构演化](#83-架构演化)
+	- [9. 相关模式](#9-相关模式)
+		- [9.1 设计模式](#91-设计模式)
+		- [9.2 架构模式](#92-架构模式)
+		- [9.3 企业架构](#93-企业架构)
 
 ## 1. 概念与定义
 
@@ -71,6 +99,7 @@
 $$interact(c_i, c_j, message) = (response, state\_change)$$
 
 其中：
+
 - $message$ 是交互消息
 - $response$ 是响应结果
 - $state\_change$ 是状态变化
@@ -90,6 +119,7 @@ $$constraint(A, requirement) = satisfied \in \{true, false\}$$
 **定理**: 如果架构 $A$ 满足所有约束条件，则架构是一致的。
 
 **证明**:
+
 1. 设架构 $A = (C, N, R, Q, S)$
 2. 对于任意约束 $c \in C$，$constraint(A, c) = true$
 3. 因此，架构 $A$ 满足所有约束条件
@@ -100,6 +130,7 @@ $$constraint(A, requirement) = satisfied \in \{true, false\}$$
 **定理**: 如果组件 $c_i$ 和 $c_j$ 之间没有直接关系，则它们是独立的。
 
 **证明**:
+
 1. 设组件 $c_i, c_j \in C$
 2. 如果 $R(c_i, c_j) = \emptyset$，则组件间没有直接关系
 3. 因此，组件 $c_i$ 和 $c_j$ 是独立的
@@ -110,6 +141,7 @@ $$constraint(A, requirement) = satisfied \in \{true, false\}$$
 **定理**: 在资源有限的情况下，质量属性之间存在权衡关系。
 
 **证明**:
+
 1. 设质量属性集合 $Q = \{q_1, q_2, ..., q_k\}$
 2. 资源约束为 $R = \sum_{i=1}^{k} r_i \leq R_{max}$
 3. 质量属性之间存在相互影响
@@ -146,224 +178,224 @@ $$constraint(A, requirement) = satisfied \in \{true, false\}$$
 package architecture
 
 import (
-	"context"
-	"fmt"
-	"sync"
-	"time"
+ "context"
+ "fmt"
+ "sync"
+ "time"
 )
 
 // Component 组件接口
 type Component interface {
-	GetName() string
-	GetType() string
-	Initialize(ctx context.Context) error
-	Start(ctx context.Context) error
-	Stop(ctx context.Context) error
-	HandleMessage(ctx context.Context, message Message) (Response, error)
-	GetHealth() Health
+ GetName() string
+ GetType() string
+ Initialize(ctx context.Context) error
+ Start(ctx context.Context) error
+ Stop(ctx context.Context) error
+ HandleMessage(ctx context.Context, message Message) (Response, error)
+ GetHealth() Health
 }
 
 // Connector 连接器接口
 type Connector interface {
-	GetName() string
-	GetType() string
-	Connect(source, target Component) error
-	Disconnect(source, target Component) error
-	SendMessage(ctx context.Context, message Message) error
-	GetStatus() Status
+ GetName() string
+ GetType() string
+ Connect(source, target Component) error
+ Disconnect(source, target Component) error
+ SendMessage(ctx context.Context, message Message) error
+ GetStatus() Status
 }
 
 // Message 消息
 type Message struct {
-	ID       string
-	Type     string
-	Source   string
-	Target   string
-	Data     map[string]interface{}
-	Priority int
-	Timestamp time.Time
+ ID       string
+ Type     string
+ Source   string
+ Target   string
+ Data     map[string]interface{}
+ Priority int
+ Timestamp time.Time
 }
 
 // Response 响应
 type Response struct {
-	ID       string
-	Success  bool
-	Data     map[string]interface{}
-	Error    error
-	Duration time.Duration
+ ID       string
+ Success  bool
+ Data     map[string]interface{}
+ Error    error
+ Duration time.Duration
 }
 
 // Health 健康状态
 type Health struct {
-	Status    string
-	Timestamp time.Time
-	Metrics   map[string]float64
+ Status    string
+ Timestamp time.Time
+ Metrics   map[string]float64
 }
 
 // Status 连接器状态
 type Status struct {
-	Connected bool
-	Latency   time.Duration
-	Throughput float64
-	ErrorRate  float64
+ Connected bool
+ Latency   time.Duration
+ Throughput float64
+ ErrorRate  float64
 }
 
 // QualityAttribute 质量属性
 type QualityAttribute struct {
-	Name        string
-	Value       float64
-	Unit        string
-	Threshold   float64
-	Weight      float64
+ Name        string
+ Value       float64
+ Unit        string
+ Threshold   float64
+ Weight      float64
 }
 
 // Architecture 软件架构
 type Architecture struct {
-	Name        string
-	Components  map[string]Component
-	Connectors  map[string]Connector
-	Constraints map[string]func() bool
-	Quality     map[string]QualityAttribute
-	mu          sync.RWMutex
+ Name        string
+ Components  map[string]Component
+ Connectors  map[string]Connector
+ Constraints map[string]func() bool
+ Quality     map[string]QualityAttribute
+ mu          sync.RWMutex
 }
 
 // NewArchitecture 创建架构
 func NewArchitecture(name string) *Architecture {
-	return &Architecture{
-		Name:        name,
-		Components:  make(map[string]Component),
-		Connectors:  make(map[string]Connector),
-		Constraints: make(map[string]func() bool),
-		Quality:     make(map[string]QualityAttribute),
-	}
+ return &Architecture{
+  Name:        name,
+  Components:  make(map[string]Component),
+  Connectors:  make(map[string]Connector),
+  Constraints: make(map[string]func() bool),
+  Quality:     make(map[string]QualityAttribute),
+ }
 }
 
 // AddComponent 添加组件
 func (a *Architecture) AddComponent(component Component) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.Components[component.GetName()] = component
+ a.mu.Lock()
+ defer a.mu.Unlock()
+ a.Components[component.GetName()] = component
 }
 
 // AddConnector 添加连接器
 func (a *Architecture) AddConnector(connector Connector) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.Connectors[connector.GetName()] = connector
+ a.mu.Lock()
+ defer a.mu.Unlock()
+ a.Connectors[connector.GetName()] = connector
 }
 
 // AddConstraint 添加约束
 func (a *Architecture) AddConstraint(name string, constraint func() bool) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.Constraints[name] = constraint
+ a.mu.Lock()
+ defer a.mu.Unlock()
+ a.Constraints[name] = constraint
 }
 
 // AddQualityAttribute 添加质量属性
 func (a *Architecture) AddQualityAttribute(attr QualityAttribute) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.Quality[attr.Name] = attr
+ a.mu.Lock()
+ defer a.mu.Unlock()
+ a.Quality[attr.Name] = attr
 }
 
 // Initialize 初始化架构
 func (a *Architecture) Initialize(ctx context.Context) error {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	
-	// 初始化所有组件
-	for _, component := range a.Components {
-		if err := component.Initialize(ctx); err != nil {
-			return fmt.Errorf("初始化组件 %s 失败: %v", component.GetName(), err)
-		}
-	}
-	
-	// 验证约束
-	for name, constraint := range a.Constraints {
-		if !constraint() {
-			return fmt.Errorf("约束 %s 验证失败", name)
-		}
-	}
-	
-	return nil
+ a.mu.RLock()
+ defer a.mu.RUnlock()
+ 
+ // 初始化所有组件
+ for _, component := range a.Components {
+  if err := component.Initialize(ctx); err != nil {
+   return fmt.Errorf("初始化组件 %s 失败: %v", component.GetName(), err)
+  }
+ }
+ 
+ // 验证约束
+ for name, constraint := range a.Constraints {
+  if !constraint() {
+   return fmt.Errorf("约束 %s 验证失败", name)
+  }
+ }
+ 
+ return nil
 }
 
 // Start 启动架构
 func (a *Architecture) Start(ctx context.Context) error {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	
-	// 启动所有组件
-	for _, component := range a.Components {
-		if err := component.Start(ctx); err != nil {
-			return fmt.Errorf("启动组件 %s 失败: %v", component.GetName(), err)
-		}
-	}
-	
-	return nil
+ a.mu.RLock()
+ defer a.mu.RUnlock()
+ 
+ // 启动所有组件
+ for _, component := range a.Components {
+  if err := component.Start(ctx); err != nil {
+   return fmt.Errorf("启动组件 %s 失败: %v", component.GetName(), err)
+  }
+ }
+ 
+ return nil
 }
 
 // Stop 停止架构
 func (a *Architecture) Stop(ctx context.Context) error {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	
-	// 停止所有组件
-	for _, component := range a.Components {
-		if err := component.Stop(ctx); err != nil {
-			return fmt.Errorf("停止组件 %s 失败: %v", component.GetName(), err)
-		}
-	}
-	
-	return nil
+ a.mu.RLock()
+ defer a.mu.RUnlock()
+ 
+ // 停止所有组件
+ for _, component := range a.Components {
+  if err := component.Stop(ctx); err != nil {
+   return fmt.Errorf("停止组件 %s 失败: %v", component.GetName(), err)
+  }
+ }
+ 
+ return nil
 }
 
 // SendMessage 发送消息
 func (a *Architecture) SendMessage(ctx context.Context, message Message) (Response, error) {
-	a.mu.RLock()
-	source, sourceExists := a.Components[message.Source]
-	target, targetExists := a.Components[message.Target]
-	a.mu.RUnlock()
-	
-	if !sourceExists {
-		return Response{}, fmt.Errorf("源组件 %s 不存在", message.Source)
-	}
-	
-	if !targetExists {
-		return Response{}, fmt.Errorf("目标组件 %s 不存在", message.Target)
-	}
-	
-	start := time.Now()
-	response, err := target.HandleMessage(ctx, message)
-	response.Duration = time.Since(start)
-	
-	return response, err
+ a.mu.RLock()
+ source, sourceExists := a.Components[message.Source]
+ target, targetExists := a.Components[message.Target]
+ a.mu.RUnlock()
+ 
+ if !sourceExists {
+  return Response{}, fmt.Errorf("源组件 %s 不存在", message.Source)
+ }
+ 
+ if !targetExists {
+  return Response{}, fmt.Errorf("目标组件 %s 不存在", message.Target)
+ }
+ 
+ start := time.Now()
+ response, err := target.HandleMessage(ctx, message)
+ response.Duration = time.Since(start)
+ 
+ return response, err
 }
 
 // GetHealth 获取架构健康状态
 func (a *Architecture) GetHealth() map[string]Health {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	
-	health := make(map[string]Health)
-	for name, component := range a.Components {
-		health[name] = component.GetHealth()
-	}
-	
-	return health
+ a.mu.RLock()
+ defer a.mu.RUnlock()
+ 
+ health := make(map[string]Health)
+ for name, component := range a.Components {
+  health[name] = component.GetHealth()
+ }
+ 
+ return health
 }
 
 // ValidateQualityAttributes 验证质量属性
 func (a *Architecture) ValidateQualityAttributes() map[string]bool {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	
-	results := make(map[string]bool)
-	for name, attr := range a.Quality {
-		results[name] = attr.Value >= attr.Threshold
-	}
-	
-	return results
+ a.mu.RLock()
+ defer a.mu.RUnlock()
+ 
+ results := make(map[string]bool)
+ for name, attr := range a.Quality {
+  results[name] = attr.Value >= attr.Threshold
+ }
+ 
+ return results
 }
 ```
 
@@ -373,107 +405,107 @@ func (a *Architecture) ValidateQualityAttributes() map[string]bool {
 package architecture
 
 import (
-	"context"
-	"fmt"
-	"sync"
+ "context"
+ "fmt"
+ "sync"
 )
 
 // Component[T] 泛型组件接口
 type Component[T any] interface {
-	GetName() string
-	GetType() string
-	Initialize(ctx context.Context) error
-	Start(ctx context.Context) error
-	Stop(ctx context.Context) error
-	HandleMessage(ctx context.Context, message Message[T]) (Response[T], error)
-	GetHealth() Health
+ GetName() string
+ GetType() string
+ Initialize(ctx context.Context) error
+ Start(ctx context.Context) error
+ Stop(ctx context.Context) error
+ HandleMessage(ctx context.Context, message Message[T]) (Response[T], error)
+ GetHealth() Health
 }
 
 // Message[T] 泛型消息
 type Message[T any] struct {
-	ID       string
-	Type     string
-	Source   string
-	Target   string
-	Data     T
-	Priority int
-	Timestamp time.Time
+ ID       string
+ Type     string
+ Source   string
+ Target   string
+ Data     T
+ Priority int
+ Timestamp time.Time
 }
 
 // Response[T] 泛型响应
 type Response[T any] struct {
-	ID       string
-	Success  bool
-	Data     T
-	Error    error
-	Duration time.Duration
+ ID       string
+ Success  bool
+ Data     T
+ Error    error
+ Duration time.Duration
 }
 
 // Connector[T] 泛型连接器接口
 type Connector[T any] interface {
-	GetName() string
-	GetType() string
-	Connect(source, target Component[T]) error
-	Disconnect(source, target Component[T]) error
-	SendMessage(ctx context.Context, message Message[T]) error
-	GetStatus() Status
+ GetName() string
+ GetType() string
+ Connect(source, target Component[T]) error
+ Disconnect(source, target Component[T]) error
+ SendMessage(ctx context.Context, message Message[T]) error
+ GetStatus() Status
 }
 
 // Architecture[T] 泛型架构
 type Architecture[T any] struct {
-	Name        string
-	Components  map[string]Component[T]
-	Connectors  map[string]Connector[T]
-	Constraints map[string]func() bool
-	Quality     map[string]QualityAttribute
-	mu          sync.RWMutex
+ Name        string
+ Components  map[string]Component[T]
+ Connectors  map[string]Connector[T]
+ Constraints map[string]func() bool
+ Quality     map[string]QualityAttribute
+ mu          sync.RWMutex
 }
 
 // NewArchitecture[T] 创建泛型架构
 func NewArchitecture[T any](name string) *Architecture[T] {
-	return &Architecture[T]{
-		Name:        name,
-		Components:  make(map[string]Component[T]),
-		Connectors:  make(map[string]Connector[T]),
-		Constraints: make(map[string]func() bool),
-		Quality:     make(map[string]QualityAttribute),
-	}
+ return &Architecture[T]{
+  Name:        name,
+  Components:  make(map[string]Component[T]),
+  Connectors:  make(map[string]Connector[T]),
+  Constraints: make(map[string]func() bool),
+  Quality:     make(map[string]QualityAttribute),
+ }
 }
 
 // AddComponent[T] 添加泛型组件
 func (a *Architecture[T]) AddComponent(component Component[T]) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.Components[component.GetName()] = component
+ a.mu.Lock()
+ defer a.mu.Unlock()
+ a.Components[component.GetName()] = component
 }
 
 // AddConnector[T] 添加泛型连接器
 func (a *Architecture[T]) AddConnector(connector Connector[T]) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.Connectors[connector.GetName()] = connector
+ a.mu.Lock()
+ defer a.mu.Unlock()
+ a.Connectors[connector.GetName()] = connector
 }
 
 // SendMessage[T] 发送泛型消息
 func (a *Architecture[T]) SendMessage(ctx context.Context, message Message[T]) (Response[T], error) {
-	a.mu.RLock()
-	source, sourceExists := a.Components[message.Source]
-	target, targetExists := a.Components[message.Target]
-	a.mu.RUnlock()
-	
-	if !sourceExists {
-		return Response[T]{}, fmt.Errorf("源组件 %s 不存在", message.Source)
-	}
-	
-	if !targetExists {
-		return Response[T]{}, fmt.Errorf("目标组件 %s 不存在", message.Target)
-	}
-	
-	start := time.Now()
-	response, err := target.HandleMessage(ctx, message)
-	response.Duration = time.Since(start)
-	
-	return response, err
+ a.mu.RLock()
+ source, sourceExists := a.Components[message.Source]
+ target, targetExists := a.Components[message.Target]
+ a.mu.RUnlock()
+ 
+ if !sourceExists {
+  return Response[T]{}, fmt.Errorf("源组件 %s 不存在", message.Source)
+ }
+ 
+ if !targetExists {
+  return Response[T]{}, fmt.Errorf("目标组件 %s 不存在", message.Target)
+ }
+ 
+ start := time.Now()
+ response, err := target.HandleMessage(ctx, message)
+ response.Duration = time.Since(start)
+ 
+ return response, err
 }
 ```
 
@@ -483,105 +515,105 @@ func (a *Architecture[T]) SendMessage(ctx context.Context, message Message[T]) (
 package architecture
 
 import (
-	"context"
-	"fmt"
-	"sync"
+ "context"
+ "fmt"
+ "sync"
 )
 
 // LayeredArchitecture 分层架构
 type LayeredArchitecture struct {
-	*Architecture
-	Layers map[string][]Component
+ *Architecture
+ Layers map[string][]Component
 }
 
 // NewLayeredArchitecture 创建分层架构
 func NewLayeredArchitecture(name string) *LayeredArchitecture {
-	return &LayeredArchitecture{
-		Architecture: NewArchitecture(name),
-		Layers:       make(map[string][]Component),
-	}
+ return &LayeredArchitecture{
+  Architecture: NewArchitecture(name),
+  Layers:       make(map[string][]Component),
+ }
 }
 
 // AddLayer 添加层
 func (la *LayeredArchitecture) AddLayer(name string, components ...Component) {
-	la.Layers[name] = components
-	for _, component := range components {
-		la.AddComponent(component)
-	}
+ la.Layers[name] = components
+ for _, component := range components {
+  la.AddComponent(component)
+ }
 }
 
 // ValidateLayering 验证分层约束
 func (la *LayeredArchitecture) ValidateLayering() error {
-	// 验证上层只能调用下层
-	for layerName, components := range la.Layers {
-		for _, component := range components {
-			// 这里需要实现具体的分层验证逻辑
-			fmt.Printf("验证层 %s 中的组件 %s\n", layerName, component.GetName())
-		}
-	}
-	return nil
+ // 验证上层只能调用下层
+ for layerName, components := range la.Layers {
+  for _, component := range components {
+   // 这里需要实现具体的分层验证逻辑
+   fmt.Printf("验证层 %s 中的组件 %s\n", layerName, component.GetName())
+  }
+ }
+ return nil
 }
 
 // MicroserviceArchitecture 微服务架构
 type MicroserviceArchitecture struct {
-	*Architecture
-	Services map[string]Component
-	Gateway  Component
+ *Architecture
+ Services map[string]Component
+ Gateway  Component
 }
 
 // NewMicroserviceArchitecture 创建微服务架构
 func NewMicroserviceArchitecture(name string) *MicroserviceArchitecture {
-	return &MicroserviceArchitecture{
-		Architecture: NewArchitecture(name),
-		Services:     make(map[string]Component),
-	}
+ return &MicroserviceArchitecture{
+  Architecture: NewArchitecture(name),
+  Services:     make(map[string]Component),
+ }
 }
 
 // AddService 添加服务
 func (ma *MicroserviceArchitecture) AddService(name string, service Component) {
-	ma.Services[name] = service
-	ma.AddComponent(service)
+ ma.Services[name] = service
+ ma.AddComponent(service)
 }
 
 // SetGateway 设置网关
 func (ma *MicroserviceArchitecture) SetGateway(gateway Component) {
-	ma.Gateway = gateway
-	ma.AddComponent(gateway)
+ ma.Gateway = gateway
+ ma.AddComponent(gateway)
 }
 
 // EventDrivenArchitecture 事件驱动架构
 type EventDrivenArchitecture struct {
-	*Architecture
-	EventBus Component
-	Producers map[string]Component
-	Consumers map[string]Component
+ *Architecture
+ EventBus Component
+ Producers map[string]Component
+ Consumers map[string]Component
 }
 
 // NewEventDrivenArchitecture 创建事件驱动架构
 func NewEventDrivenArchitecture(name string) *EventDrivenArchitecture {
-	return &EventDrivenArchitecture{
-		Architecture: NewArchitecture(name),
-		Producers:    make(map[string]Component),
-		Consumers:    make(map[string]Component),
-	}
+ return &EventDrivenArchitecture{
+  Architecture: NewArchitecture(name),
+  Producers:    make(map[string]Component),
+  Consumers:    make(map[string]Component),
+ }
 }
 
 // SetEventBus 设置事件总线
 func (eda *EventDrivenArchitecture) SetEventBus(eventBus Component) {
-	eda.EventBus = eventBus
-	eda.AddComponent(eventBus)
+ eda.EventBus = eventBus
+ eda.AddComponent(eventBus)
 }
 
 // AddProducer 添加生产者
 func (eda *EventDrivenArchitecture) AddProducer(name string, producer Component) {
-	eda.Producers[name] = producer
-	eda.AddComponent(producer)
+ eda.Producers[name] = producer
+ eda.AddComponent(producer)
 }
 
 // AddConsumer 添加消费者
 func (eda *EventDrivenArchitecture) AddConsumer(name string, consumer Component) {
-	eda.Consumers[name] = consumer
-	eda.AddComponent(consumer)
+ eda.Consumers[name] = consumer
+ eda.AddComponent(consumer)
 }
 ```
 
@@ -593,99 +625,99 @@ func (eda *EventDrivenArchitecture) AddConsumer(name string, consumer Component)
 package webapp
 
 import (
-	"context"
-	"fmt"
-	"time"
+ "context"
+ "fmt"
+ "time"
 )
 
 // WebComponent Web组件
 type WebComponent struct {
-	name   string
-	status string
+ name   string
+ status string
 }
 
 func (w *WebComponent) GetName() string {
-	return w.name
+ return w.name
 }
 
 func (w *WebComponent) GetType() string {
-	return "web"
+ return "web"
 }
 
 func (w *WebComponent) Initialize(ctx context.Context) error {
-	fmt.Printf("初始化Web组件: %s\n", w.name)
-	w.status = "initialized"
-	return nil
+ fmt.Printf("初始化Web组件: %s\n", w.name)
+ w.status = "initialized"
+ return nil
 }
 
 func (w *WebComponent) Start(ctx context.Context) error {
-	fmt.Printf("启动Web组件: %s\n", w.name)
-	w.status = "running"
-	return nil
+ fmt.Printf("启动Web组件: %s\n", w.name)
+ w.status = "running"
+ return nil
 }
 
 func (w *WebComponent) Stop(ctx context.Context) error {
-	fmt.Printf("停止Web组件: %s\n", w.name)
-	w.status = "stopped"
-	return nil
+ fmt.Printf("停止Web组件: %s\n", w.name)
+ w.status = "stopped"
+ return nil
 }
 
 func (w *WebComponent) HandleMessage(ctx context.Context, message Message) (Response, error) {
-	fmt.Printf("Web组件 %s 处理消息: %s\n", w.name, message.Type)
-	
-	response := Response{
-		ID:      message.ID,
-		Success: true,
-		Data: map[string]interface{}{
-			"component": w.name,
-			"message":   message.Type,
-		},
-	}
-	
-	return response, nil
+ fmt.Printf("Web组件 %s 处理消息: %s\n", w.name, message.Type)
+ 
+ response := Response{
+  ID:      message.ID,
+  Success: true,
+  Data: map[string]interface{}{
+   "component": w.name,
+   "message":   message.Type,
+  },
+ }
+ 
+ return response, nil
 }
 
 func (w *WebComponent) GetHealth() Health {
-	return Health{
-		Status:    w.status,
-		Timestamp: time.Now(),
-		Metrics: map[string]float64{
-			"uptime": 100.0,
-		},
-	}
+ return Health{
+  Status:    w.status,
+  Timestamp: time.Now(),
+  Metrics: map[string]float64{
+   "uptime": 100.0,
+  },
+ }
 }
 
 // CreateWebArchitecture 创建Web应用架构
 func CreateWebArchitecture() *Architecture {
-	arch := NewArchitecture("web_application")
-	
-	// 添加组件
-	webComponent := &WebComponent{name: "web_server"}
-	arch.AddComponent(webComponent)
-	
-	// 添加质量属性
-	arch.AddQualityAttribute(QualityAttribute{
-		Name:      "availability",
-		Value:     99.9,
-		Unit:      "percent",
-		Threshold: 99.0,
-		Weight:    0.3,
-	})
-	
-	arch.AddQualityAttribute(QualityAttribute{
-		Name:      "response_time",
-		Value:     100.0,
-		Unit:      "ms",
-		Threshold: 200.0,
-		Weight:    0.4,
-	})
-	
-	// 添加约束
-	arch.AddConstraint("single_responsibility", func() bool {
-		return true // 简化实现
-	})
-	
-	return arch
+ arch := NewArchitecture("web_application")
+ 
+ // 添加组件
+ webComponent := &WebComponent{name: "web_server"}
+ arch.AddComponent(webComponent)
+ 
+ // 添加质量属性
+ arch.AddQualityAttribute(QualityAttribute{
+  Name:      "availability",
+  Value:     99.9,
+  Unit:      "percent",
+  Threshold: 99.0,
+  Weight:    0.3,
+ })
+ 
+ arch.AddQualityAttribute(QualityAttribute{
+  Name:      "response_time",
+  Value:     100.0,
+  Unit:      "ms",
+  Threshold: 200.0,
+  Weight:    0.4,
+ })
+ 
+ // 添加约束
+ arch.AddConstraint("single_responsibility", func() bool {
+  return true // 简化实现
+ })
+ 
+ return arch
 }
 ```
 
@@ -695,86 +727,86 @@ func CreateWebArchitecture() *Architecture {
 package microservice
 
 import (
-	"context"
-	"fmt"
-	"time"
+ "context"
+ "fmt"
+ "time"
 )
 
 // ServiceComponent 服务组件
 type ServiceComponent struct {
-	name   string
-	status string
+ name   string
+ status string
 }
 
 func (s *ServiceComponent) GetName() string {
-	return s.name
+ return s.name
 }
 
 func (s *ServiceComponent) GetType() string {
-	return "service"
+ return "service"
 }
 
 func (s *ServiceComponent) Initialize(ctx context.Context) error {
-	fmt.Printf("初始化服务: %s\n", s.name)
-	s.status = "initialized"
-	return nil
+ fmt.Printf("初始化服务: %s\n", s.name)
+ s.status = "initialized"
+ return nil
 }
 
 func (s *ServiceComponent) Start(ctx context.Context) error {
-	fmt.Printf("启动服务: %s\n", s.name)
-	s.status = "running"
-	return nil
+ fmt.Printf("启动服务: %s\n", s.name)
+ s.status = "running"
+ return nil
 }
 
 func (s *ServiceComponent) Stop(ctx context.Context) error {
-	fmt.Printf("停止服务: %s\n", s.name)
-	s.status = "stopped"
-	return nil
+ fmt.Printf("停止服务: %s\n", s.name)
+ s.status = "stopped"
+ return nil
 }
 
 func (s *ServiceComponent) HandleMessage(ctx context.Context, message Message) (Response, error) {
-	fmt.Printf("服务 %s 处理消息: %s\n", s.name, message.Type)
-	
-	response := Response{
-		ID:      message.ID,
-		Success: true,
-		Data: map[string]interface{}{
-			"service": s.name,
-			"message": message.Type,
-		},
-	}
-	
-	return response, nil
+ fmt.Printf("服务 %s 处理消息: %s\n", s.name, message.Type)
+ 
+ response := Response{
+  ID:      message.ID,
+  Success: true,
+  Data: map[string]interface{}{
+   "service": s.name,
+   "message": message.Type,
+  },
+ }
+ 
+ return response, nil
 }
 
 func (s *ServiceComponent) GetHealth() Health {
-	return Health{
-		Status:    s.status,
-		Timestamp: time.Now(),
-		Metrics: map[string]float64{
-			"requests_per_second": 1000.0,
-		},
-	}
+ return Health{
+  Status:    s.status,
+  Timestamp: time.Now(),
+  Metrics: map[string]float64{
+   "requests_per_second": 1000.0,
+  },
+ }
 }
 
 // CreateMicroserviceArchitecture 创建微服务架构
 func CreateMicroserviceArchitecture() *MicroserviceArchitecture {
-	arch := NewMicroserviceArchitecture("microservice_system")
-	
-	// 添加服务
-	userService := &ServiceComponent{name: "user_service"}
-	orderService := &ServiceComponent{name: "order_service"}
-	paymentService := &ServiceComponent{name: "payment_service"}
-	
-	arch.AddService("user", userService)
-	arch.AddService("order", orderService)
-	arch.AddService("payment", paymentService)
-	
-	// 设置网关
-	gateway := &ServiceComponent{name: "api_gateway"}
-	arch.SetGateway(gateway)
-	
-	return arch
+ arch := NewMicroserviceArchitecture("microservice_system")
+ 
+ // 添加服务
+ userService := &ServiceComponent{name: "user_service"}
+ orderService := &ServiceComponent{name: "order_service"}
+ paymentService := &ServiceComponent{name: "payment_service"}
+ 
+ arch.AddService("user", userService)
+ arch.AddService("order", orderService)
+ arch.AddService("payment", paymentService)
+ 
+ // 设置网关
+ gateway := &ServiceComponent{name: "api_gateway"}
+ arch.SetGateway(gateway)
+ 
+ return arch
 }
 ```
 
@@ -836,7 +868,8 @@ func CreateMicroserviceArchitecture() *MicroserviceArchitecture {
 ---
 
 **相关链接**:
+
 - [02-组件架构](../02-组件架构/README.md)
 - [03-微服务架构](../03-微服务架构/README.md)
 - [04-系统架构](../04-系统架构/README.md)
-- [返回上级目录](../../README.md) 
+- [返回上级目录](../../README.md)

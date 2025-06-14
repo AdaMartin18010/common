@@ -5,16 +5,39 @@
 - [03-Web3组件架构 (Web3 Component Architecture)](#03-web3组件架构-web3-component-architecture)
   - [目录](#目录)
   - [1. 概述](#1-概述)
+    - [1.1 核心概念](#11-核心概念)
+    - [1.2 架构层次](#12-架构层次)
   - [2. 形式化定义](#2-形式化定义)
+    - [2.1 Web3组件代数](#21-web3组件代数)
+    - [2.2 状态一致性](#22-状态一致性)
   - [3. 核心组件](#3-核心组件)
+    - [3.1 钱包组件](#31-钱包组件)
+    - [3.2 智能合约组件](#32-智能合约组件)
+    - [3.3 去中心化存储组件](#33-去中心化存储组件)
   - [4. Go语言实现](#4-go语言实现)
+    - [4.1 Web3组件管理器](#41-web3组件管理器)
+    - [4.2 使用示例](#42-使用示例)
   - [5. 智能合约集成](#5-智能合约集成)
+    - [5.1 合约ABI生成](#51-合约abi生成)
+    - [5.2 合约事件监听](#52-合约事件监听)
   - [6. 区块链交互](#6-区块链交互)
+    - [6.1 多链支持](#61-多链支持)
+    - [6.2 交易池管理](#62-交易池管理)
   - [7. 安全考虑](#7-安全考虑)
+    - [7.1 私钥管理](#71-私钥管理)
+    - [7.2 交易验证](#72-交易验证)
   - [8. 性能优化](#8-性能优化)
+    - [8.1 连接池](#81-连接池)
+    - [8.2 缓存策略](#82-缓存策略)
   - [9. 测试策略](#9-测试策略)
+    - [9.1 单元测试](#91-单元测试)
+    - [9.2 集成测试](#92-集成测试)
   - [10. 部署和运维](#10-部署和运维)
+    - [10.1 容器化部署](#101-容器化部署)
+    - [10.2 监控和日志](#102-监控和日志)
   - [11. 总结](#11-总结)
+    - [11.1 最佳实践](#111-最佳实践)
+    - [11.2 未来发展方向](#112-未来发展方向)
 
 ---
 
@@ -26,6 +49,7 @@ Web3组件架构是专门为去中心化应用(DApp)设计的组件化架构模�
 
 **定义 1.1.1 (Web3组件)**
 Web3组件是一个支持区块链交互的组件，具有以下特性：
+
 - 去中心化：不依赖单一中心化服务
 - 不可变性：数据一旦写入区块链不可篡改
 - 透明性：所有交易和状态公开可查
@@ -35,6 +59,7 @@ Web3组件是一个支持区块链交互的组件，具有以下特性：
 智能合约组件是与区块链智能合约交互的组件：
 $$C_{SC} = (A, I, S, T)$$
 其中：
+
 - $A$ 是合约地址
 - $I$ 是接口定义
 - $S$ 是状态管理
@@ -76,11 +101,14 @@ Web3组件的交易操作具有原子性：
 $$\forall t \in T: \text{Commit}(t) \lor \text{Rollback}(t)$$
 
 **证明**：
+
+```latex
 设 $t$ 为交易，$S$ 为状态，$S'$ 为新状态：
 $$S' = \begin{cases}
 S & \text{if } \text{Rollback}(t) \\
 \text{Apply}(t, S) & \text{if } \text{Commit}(t)
 \end{cases}$$
+```
 
 ### 2.2 状态一致性
 
@@ -129,20 +157,20 @@ func NewEthereumWallet(config WalletConfig) (*EthereumWallet, error) {
     if err != nil {
         return nil, fmt.Errorf("failed to connect to Ethereum: %w", err)
     }
-    
+
     privateKey, err := crypto.HexToECDSA(config.PrivateKey)
     if err != nil {
         return nil, fmt.Errorf("invalid private key: %w", err)
     }
-    
+
     publicKey := privateKey.Public()
     publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
     if !ok {
         return nil, fmt.Errorf("failed to get public key")
     }
-    
+
     address := crypto.PubkeyToAddress(*publicKeyECDSA)
-    
+
     return &EthereumWallet{
         BaseComponent: NewBaseComponent("ethereum-wallet"),
         config:        config,
@@ -158,7 +186,7 @@ func (w *EthereumWallet) Connect() error {
     if err != nil {
         return fmt.Errorf("failed to connect to Ethereum network: %w", err)
     }
-    
+
     return nil
 }
 
@@ -173,7 +201,7 @@ func (w *EthereumWallet) SignTransaction(tx *Transaction) (*SignedTransaction, e
     if err != nil {
         return nil, fmt.Errorf("failed to get nonce: %w", err)
     }
-    
+
     // 创建交易
     ethTx := &types.Transaction{
         Nonce:    nonce,
@@ -183,13 +211,13 @@ func (w *EthereumWallet) SignTransaction(tx *Transaction) (*SignedTransaction, e
         Value:    tx.Value,
         Data:     tx.Data,
     }
-    
+
     // 签名交易
     signedTx, err := types.SignTx(ethTx, types.NewEIP155Signer(big.NewInt(w.config.ChainID)), w.privateKey)
     if err != nil {
         return nil, fmt.Errorf("failed to sign transaction: %w", err)
     }
-    
+
     return &SignedTransaction{
         Transaction: signedTx,
         Hash:        signedTx.Hash(),
@@ -200,13 +228,13 @@ func (w *EthereumWallet) SignMessage(message []byte) (*Signature, error) {
     // 创建以太坊签名消息
     ethMessage := fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s", len(message), message)
     hash := crypto.Keccak256Hash([]byte(ethMessage))
-    
+
     // 签名
     signature, err := crypto.Sign(hash.Bytes(), w.privateKey)
     if err != nil {
         return nil, fmt.Errorf("failed to sign message: %w", err)
     }
-    
+
     return &Signature{
         R: new(big.Int).SetBytes(signature[:32]),
         S: new(big.Int).SetBytes(signature[32:64]),
@@ -223,7 +251,7 @@ func (w *EthereumWallet) GetBalance() (*big.Int, error) {
     if err != nil {
         return nil, fmt.Errorf("failed to get balance: %w", err)
     }
-    
+
     return balance, nil
 }
 ```
@@ -263,11 +291,11 @@ func NewEthereumContract(config ContractConfig) (*EthereumContract, error) {
     if err != nil {
         return nil, fmt.Errorf("failed to parse ABI: %w", err)
     }
-    
+
     // 创建合约绑定
     address := common.HexToAddress(config.Address)
     contract := bind.NewBoundContract(address, parsedABI, nil, nil, nil)
-    
+
     return &EthereumContract{
         BaseComponent: NewBaseComponent("ethereum-contract"),
         config:        config,
@@ -282,23 +310,23 @@ func (c *EthereumContract) Deploy(bytecode []byte, args ...interface{}) (string,
     if err != nil {
         return "", err
     }
-    
+
     // 部署合约
     address, tx, _, err := bind.DeployContract(auth, *c.contract.ABI, bytecode, nil, args...)
     if err != nil {
         return "", fmt.Errorf("failed to deploy contract: %w", err)
     }
-    
+
     // 等待交易确认
     receipt, err := c.waitForTransaction(tx.Hash())
     if err != nil {
         return "", err
     }
-    
+
     if receipt.Status == 0 {
         return "", fmt.Errorf("contract deployment failed")
     }
-    
+
     return address.Hex(), nil
 }
 
@@ -308,7 +336,7 @@ func (c *EthereumContract) Call(method string, args ...interface{}) ([]interface
     if err != nil {
         return nil, fmt.Errorf("failed to call method %s: %w", method, err)
     }
-    
+
     return result, nil
 }
 
@@ -318,15 +346,15 @@ func (c *EthereumContract) Send(method string, value *big.Int, args ...interface
     if err != nil {
         return nil, err
     }
-    
+
     auth.Value = value
-    
+
     // 发送交易
     tx, err := c.contract.Transact(auth, method, args...)
     if err != nil {
         return nil, fmt.Errorf("failed to send transaction: %w", err)
     }
-    
+
     return &Transaction{
         Hash:   tx.Hash().Hex(),
         From:   auth.From.Hex(),
@@ -346,7 +374,7 @@ func (c *EthereumContract) GetEvents(eventName string, fromBlock, toBlock uint64
     if err != nil {
         return nil, fmt.Errorf("failed to get events: %w", err)
     }
-    
+
     events := make([]Event, 0, len(logs))
     for _, log := range logs {
         events = append(events, Event{
@@ -357,7 +385,7 @@ func (c *EthereumContract) GetEvents(eventName string, fromBlock, toBlock uint64
             TxHash:      log.TxHash.Hex(),
         })
     }
-    
+
     return events, nil
 }
 
@@ -366,7 +394,7 @@ func (c *EthereumContract) getTransactOpts() (*bind.TransactOpts, error) {
     if !ok {
         return nil, fmt.Errorf("unsupported wallet type")
     }
-    
+
     return &bind.TransactOpts{
         From:     wallet.address,
         Signer:   wallet.getSigner(),
@@ -382,7 +410,7 @@ func (c *EthereumContract) waitForTransaction(hash common.Hash) (*types.Receipt,
         if err == nil {
             return receipt, nil
         }
-        
+
         time.Sleep(1 * time.Second)
     }
 }
@@ -416,7 +444,7 @@ type StorageConfig struct {
 func NewIPFSStorage(config StorageConfig) (*IPFSStorage, error) {
     client := ipfsapi.NewShell(config.APIURL)
     client.SetTimeout(config.Timeout)
-    
+
     return &IPFSStorage{
         BaseComponent: NewBaseComponent("ipfs-storage"),
         client:        client,
@@ -430,7 +458,7 @@ func (s *IPFSStorage) Upload(data []byte) (string, error) {
     if err != nil {
         return "", fmt.Errorf("failed to upload to IPFS: %w", err)
     }
-    
+
     return hash, nil
 }
 
@@ -441,12 +469,12 @@ func (s *IPFSStorage) Download(hash string) ([]byte, error) {
         return nil, fmt.Errorf("failed to download from IPFS: %w", err)
     }
     defer reader.Close()
-    
+
     data, err := io.ReadAll(reader)
     if err != nil {
         return nil, fmt.Errorf("failed to read data: %w", err)
     }
-    
+
     return data, nil
 }
 
@@ -456,7 +484,7 @@ func (s *IPFSStorage) Pin(hash string) error {
     if err != nil {
         return fmt.Errorf("failed to pin file: %w", err)
     }
-    
+
     return nil
 }
 
@@ -466,7 +494,7 @@ func (s *IPFSStorage) Unpin(hash string) error {
     if err != nil {
         return fmt.Errorf("failed to unpin file: %w", err)
     }
-    
+
     return nil
 }
 
@@ -476,7 +504,7 @@ func (s *IPFSStorage) GetStats() (*StorageStats, error) {
     if err != nil {
         return nil, fmt.Errorf("failed to get repo stats: %w", err)
     }
-    
+
     return &StorageStats{
         NumObjects: stats.NumObjects,
         RepoSize:   stats.RepoSize,
@@ -550,14 +578,14 @@ import (
     "fmt"
     "log"
     "math/big"
-    
+
     "github.com/yourproject/webcomponent"
 )
 
 func main() {
     // 创建Web3组件管理器
     manager := webcomponent.NewWeb3ComponentManager()
-    
+
     // 创建钱包
     walletConfig := webcomponent.WalletConfig{
         ProviderURL: "https://mainnet.infura.io/v3/YOUR_PROJECT_ID",
@@ -566,69 +594,69 @@ func main() {
         GasLimit:    21000,
         GasPrice:    big.NewInt(20000000000), // 20 Gwei
     }
-    
+
     wallet, err := webcomponent.NewEthereumWallet(walletConfig)
     if err != nil {
         log.Fatal(err)
     }
-    
+
     // 注册钱包
     if err := manager.RegisterWallet("main", wallet); err != nil {
         log.Fatal(err)
     }
-    
+
     // 创建IPFS存储
     storageConfig := webcomponent.StorageConfig{
         APIURL:  "http://localhost:5001",
         Timeout: 30 * time.Second,
     }
-    
+
     storage, err := webcomponent.NewIPFSStorage(storageConfig)
     if err != nil {
         log.Fatal(err)
     }
-    
+
     // 注册存储
     if err := manager.RegisterStorage("ipfs", storage); err != nil {
         log.Fatal(err)
     }
-    
+
     // 启动所有组件
     ctx := context.Background()
     if err := manager.StartAll(ctx); err != nil {
         log.Fatal(err)
     }
-    
+
     // 连接钱包
     if err := wallet.Connect(); err != nil {
         log.Fatal(err)
     }
-    
+
     // 获取余额
     balance, err := wallet.GetBalance()
     if err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Printf("Wallet balance: %s wei\n", balance.String())
-    
+
     // 上传数据到IPFS
     data := []byte("Hello, Web3!")
     hash, err := storage.Upload(data)
     if err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Printf("Data uploaded to IPFS: %s\n", hash)
-    
+
     // 下载数据
     downloaded, err := storage.Download(hash)
     if err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Printf("Downloaded data: %s\n", string(downloaded))
-    
+
     // 停止所有组件
     if err := manager.StopAll(); err != nil {
         log.Printf("Error during shutdown: %v", err)
@@ -651,12 +679,12 @@ type ContractGenerator struct {
 
 func (g *ContractGenerator) GenerateGoBindings() error {
     // 使用abigen生成Go绑定
-    cmd := exec.Command("abigen", 
+    cmd := exec.Command("abigen",
         "--abi="+g.abiPath,
         "--pkg=contract",
         "--out="+g.outputPath,
     )
-    
+
     return cmd.Run()
 }
 ```
@@ -693,7 +721,7 @@ func (l *EventListener) Start() {
                     time.Sleep(1 * time.Second)
                     continue
                 }
-                
+
                 for _, event := range events {
                     select {
                     case l.events <- event:
@@ -701,7 +729,7 @@ func (l *EventListener) Start() {
                         // 通道已满，丢弃事件
                     }
                 }
-                
+
                 time.Sleep(1 * time.Second)
             }
         }
@@ -798,11 +826,11 @@ func NewTransactionPool(maxSize int) *TransactionPool {
 func (p *TransactionPool) Add(tx *Transaction) error {
     p.mutex.Lock()
     defer p.mutex.Unlock()
-    
+
     if len(p.transactions) >= p.maxSize {
         return fmt.Errorf("transaction pool is full")
     }
-    
+
     p.transactions[tx.Hash] = tx
     return nil
 }
@@ -810,14 +838,14 @@ func (p *TransactionPool) Add(tx *Transaction) error {
 func (p *TransactionPool) Remove(hash string) {
     p.mutex.Lock()
     defer p.mutex.Unlock()
-    
+
     delete(p.transactions, hash)
 }
 
 func (p *TransactionPool) Get(hash string) (*Transaction, bool) {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+
     tx, exists := p.transactions[hash]
     return tx, exists
 }
@@ -825,12 +853,12 @@ func (p *TransactionPool) Get(hash string) (*Transaction, bool) {
 func (p *TransactionPool) GetAll() []*Transaction {
     p.mutex.RLock()
     defer p.mutex.RUnlock()
-    
+
     txs := make([]*Transaction, 0, len(p.transactions))
     for _, tx := range p.transactions {
         txs = append(txs, tx)
     }
-    
+
     return txs
 }
 ```
@@ -899,11 +927,11 @@ func (v *EthereumValidator) ValidateTransaction(tx *Transaction) error {
     if tx.To == (common.Address{}) {
         return fmt.Errorf("invalid recipient address")
     }
-    
+
     if tx.Value.Cmp(big.NewInt(0)) < 0 {
         return fmt.Errorf("negative value")
     }
-    
+
     return nil
 }
 
@@ -919,11 +947,11 @@ func (v *EthereumValidator) CheckNonce(address string, nonce uint64) error {
     if err != nil {
         return err
     }
-    
+
     if nonce < currentNonce {
         return fmt.Errorf("nonce too low")
     }
-    
+
     return nil
 }
 ```
@@ -981,7 +1009,7 @@ type BlockchainCache struct {
 func (c *BlockchainCache) Get(key string) (interface{}, bool) {
     c.mutex.RLock()
     defer c.mutex.RUnlock()
-    
+
     value, exists := c.cache[key]
     return value, exists
 }
@@ -989,7 +1017,7 @@ func (c *BlockchainCache) Get(key string) (interface{}, bool) {
 func (c *BlockchainCache) Set(key string, value interface{}) {
     c.mutex.Lock()
     defer c.mutex.Unlock()
-    
+
     c.cache[key] = value
 }
 ```
@@ -1007,7 +1035,7 @@ import (
     "context"
     "testing"
     "time"
-    
+
     "github.com/yourproject/webcomponent"
 )
 
@@ -1019,29 +1047,29 @@ func TestEthereumWallet(t *testing.T) {
         GasLimit:    21000,
         GasPrice:    big.NewInt(20000000000),
     }
-    
+
     wallet, err := webcomponent.NewEthereumWallet(config)
     if err != nil {
         t.Fatal(err)
     }
-    
+
     // 测试连接
     if err := wallet.Connect(); err != nil {
         t.Errorf("Failed to connect: %v", err)
     }
-    
+
     // 测试获取地址
     address := wallet.GetAddress()
     if address == "" {
         t.Error("Expected non-empty address")
     }
-    
+
     // 测试获取余额
     balance, err := wallet.GetBalance()
     if err != nil {
         t.Errorf("Failed to get balance: %v", err)
     }
-    
+
     if balance.Cmp(big.NewInt(0)) < 0 {
         t.Error("Expected non-negative balance")
     }
@@ -1053,40 +1081,40 @@ func TestEthereumWallet(t *testing.T) {
 ```go
 func TestWeb3ComponentManager(t *testing.T) {
     manager := webcomponent.NewWeb3ComponentManager()
-    
+
     // 创建测试钱包
     walletConfig := webcomponent.WalletConfig{
         ProviderURL: "https://goerli.infura.io/v3/YOUR_PROJECT_ID",
         ChainID:     5,
         PrivateKey:  "test_private_key",
     }
-    
+
     wallet, err := webcomponent.NewEthereumWallet(walletConfig)
     if err != nil {
         t.Fatal(err)
     }
-    
+
     // 注册钱包
     if err := manager.RegisterWallet("test", wallet); err != nil {
         t.Errorf("Failed to register wallet: %v", err)
     }
-    
+
     // 启动管理器
     ctx := context.Background()
     if err := manager.StartAll(ctx); err != nil {
         t.Errorf("Failed to start manager: %v", err)
     }
-    
+
     // 测试获取钱包
     retrievedWallet, exists := manager.GetWallet("test")
     if !exists {
         t.Error("Wallet not found")
     }
-    
+
     if retrievedWallet != wallet {
         t.Error("Retrieved wallet does not match")
     }
-    
+
     // 停止管理器
     if err := manager.StopAll(); err != nil {
         t.Errorf("Failed to stop manager: %v", err)
@@ -1183,7 +1211,8 @@ Web3组件架构为构建去中心化应用提供了强大的基础。通过Go�
 ---
 
 **相关链接**:
+
 - [01-组件架构基础](./01-Component-Architecture-Foundation.md)
 - [02-Web组件架构](./02-Web-Component-Architecture.md)
 - [04-认证组件架构](./04-Auth-Component-Architecture.md)
-- [01-微服务架构基础](../03-Microservice-Architecture/01-Microservice-Architecture-Foundation.md) 
+- [01-微服务架构基础](../03-Microservice-Architecture/01-Microservice-Architecture-Foundation.md)
