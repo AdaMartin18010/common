@@ -1,81 +1,130 @@
 # 01-单例模式 (Singleton Pattern)
 
-## 1. 形式化定义
+## 目录
 
-### 1.1 数学定义
+- [01-单例模式 (Singleton Pattern)](#01-单例模式-singleton-pattern)
+  - [目录](#目录)
+  - [1. 概念与定义](#1-概念与定义)
+    - [1.1 基本概念](#11-基本概念)
+    - [1.2 核心特征](#12-核心特征)
+    - [1.3 设计原则](#13-设计原则)
+  - [2. 形式化定义](#2-形式化定义)
+    - [2.1 集合论定义](#21-集合论定义)
+    - [2.2 状态机定义](#22-状态机定义)
+    - [2.3 形式化约束](#23-形式化约束)
+  - [3. 数学证明](#3-数学证明)
+    - [3.1 唯一性证明](#31-唯一性证明)
+    - [3.2 线程安全性证明](#32-线程安全性证明)
+  - [4. Go语言实现](#4-go语言实现)
+    - [4.1 基础实现](#41-基础实现)
+    - [4.2 泛型实现](#42-泛型实现)
+    - [4.3 函数式实现](#43-函数式实现)
+  - [5. 性能分析](#5-性能分析)
+    - [5.1 时间复杂度](#51-时间复杂度)
+    - [5.2 空间复杂度](#52-空间复杂度)
+    - [5.3 性能对比](#53-性能对比)
+  - [6. 应用场景](#6-应用场景)
+    - [6.1 配置管理](#61-配置管理)
+    - [6.2 日志记录器](#62-日志记录器)
+    - [6.3 数据库连接池](#63-数据库连接池)
+  - [7. 相关模式](#7-相关模式)
+    - [7.1 与工厂模式的关系](#71-与工厂模式的关系)
+    - [7.2 与享元模式的关系](#72-与享元模式的关系)
+    - [7.3 与依赖注入的关系](#73-与依赖注入的关系)
+  - [总结](#总结)
 
-设 $S$ 为单例类，$I$ 为实例集合，单例模式满足以下公理：
+---
 
-$$\forall s_1, s_2 \in I: s_1 = s_2$$
+## 1. 概念与定义
 
-**形式化约束**：
+### 1.1 基本概念
 
-- **唯一性**: $\exists! s \in I$
-- **全局访问**: $\forall x \in \text{System}: \text{access}(x, s)$
-- **延迟初始化**: $\text{init}(s) \iff \text{first\_access}(s)$
+单例模式是一种创建型设计模式，确保一个类只有一个实例，并提供一个全局访问点。
 
-### 1.2 类型理论定义
+### 1.2 核心特征
+
+- **唯一性**: 类只有一个实例
+- **全局访问**: 提供全局访问点
+- **延迟初始化**: 实例在首次访问时创建
+- **线程安全**: 在多线程环境下保证唯一性
+
+### 1.3 设计原则
 
 ```go
-// 单例接口定义
+// 设计原则：单一职责原则 + 开闭原则
 type Singleton interface {
-    GetInstance() *Singleton
     DoSomething() string
+    GetInstance() Singleton
 }
-
-// 单例实现
-type singleton struct {
-    data string
-}
-
-var (
-    instance *singleton
-    once     sync.Once
-)
 ```
 
-## 2. 实现原理
+---
 
-### 2.1 线程安全保证
+## 2. 形式化定义
 
-**定理**: 使用 `sync.Once` 的单例模式是线程安全的。
+### 2.1 集合论定义
+
+设 $S$ 为单例类，$I$ 为实例集合，则：
+
+$$S = \{s \mid s \in I \land |I| = 1\}$$
+
+其中 $|I|$ 表示集合 $I$ 的基数。
+
+### 2.2 状态机定义
+
+单例模式可以表示为有限状态机 $M = (Q, \Sigma, \delta, q_0, F)$：
+
+- $Q = \{\text{未初始化}, \text{已初始化}\}$
+- $\Sigma = \{\text{getInstance()}\}$
+- $\delta: Q \times \Sigma \rightarrow Q$
+- $q_0 = \text{未初始化}$
+- $F = \{\text{已初始化}\}$
+
+### 2.3 形式化约束
+
+```go
+// 形式化约束定义
+type SingletonConstraints struct {
+    Uniqueness    bool // ∀x,y ∈ S: x = y
+    GlobalAccess  bool // ∃g: ∀s ∈ S: g() = s
+    ThreadSafety  bool // ∀t1,t2: getInstance(t1) = getInstance(t2)
+}
+```
+
+---
+
+## 3. 数学证明
+
+### 3.1 唯一性证明
+
+**定理**: 单例模式保证实例唯一性
 
 **证明**:
 
-1. `sync.Once` 保证 `Do` 方法只执行一次
-2. 内存屏障确保可见性
-3. 原子操作保证原子性
+1. 假设存在两个实例 $s_1, s_2 \in S$
+2. 根据单例约束：$s_1 = s_2$
+3. 因此 $|S| = 1$，唯一性得证
 
-```go
-// 线程安全单例实现
-func GetInstance() *singleton {
-    once.Do(func() {
-        instance = &singleton{
-            data: "Initialized",
-        }
-    })
-    return instance
-}
-```
+### 3.2 线程安全性证明
 
-### 2.2 内存模型分析
+**定理**: 使用互斥锁的单例模式是线程安全的
 
-```mermaid
-graph TD
-    A[第一次调用] --> B[sync.Once.Do]
-    B --> C[初始化实例]
-    C --> D[设置内存屏障]
-    D --> E[返回实例]
-    
-    F[后续调用] --> G[直接返回实例]
-    G --> E
-    
-    E --> H[全局唯一访问点]
-```
+**证明**:
 
-## 3. Go语言实现
+1. 设 $M$ 为互斥锁，$s$ 为单例实例
+2. 对于任意线程 $t_1, t_2$：
+   - $t_1$ 获取锁：$M.Lock()$
+   - 检查实例：$\text{if } s == \text{nil}$
+   - 创建实例：$s = \text{new}(S)$
+   - 释放锁：$M.Unlock()$
+3. 由于互斥锁的排他性，$t_2$ 必须等待 $t_1$ 完成
+4. 因此线程安全性得证
 
-### 3.1 基础实现
+---
+
+## 4. Go语言实现
+
+### 4.1 基础实现
 
 ```go
 package singleton
@@ -88,11 +137,11 @@ import (
 
 // Singleton 单例接口
 type Singleton interface {
+    DoSomething() string
     GetID() string
-    DoWork() string
 }
 
-// singleton 具体实现
+// singleton 具体单例实现
 type singleton struct {
     id        string
     createdAt time.Time
@@ -101,134 +150,147 @@ type singleton struct {
 var (
     instance *singleton
     once     sync.Once
+    mu       sync.Mutex
 )
 
-// GetInstance 获取单例实例
+// GetInstance 获取单例实例（线程安全）
 func GetInstance() Singleton {
     once.Do(func() {
         instance = &singleton{
             id:        fmt.Sprintf("singleton-%d", time.Now().UnixNano()),
             createdAt: time.Now(),
         }
-        fmt.Printf("Singleton created: %s\n", instance.id)
     })
     return instance
+}
+
+// DoSomething 业务方法
+func (s *singleton) DoSomething() string {
+    return fmt.Sprintf("Singleton[%s] doing work", s.id)
 }
 
 // GetID 获取实例ID
 func (s *singleton) GetID() string {
     return s.id
 }
-
-// DoWork 执行工作
-func (s *singleton) DoWork() string {
-    return fmt.Sprintf("Working with singleton: %s", s.id)
-}
 ```
 
-### 3.2 高级实现（带配置）
+### 4.2 泛型实现
 
 ```go
-// ConfigurableSingleton 可配置单例
-type ConfigurableSingleton struct {
-    config map[string]interface{}
-    mutex  sync.RWMutex
-}
-
-var (
-    configInstance *ConfigurableSingleton
-    configOnce     sync.Once
-)
-
-// GetConfigurableInstance 获取可配置单例
-func GetConfigurableInstance() *ConfigurableSingleton {
-    configOnce.Do(func() {
-        configInstance = &ConfigurableSingleton{
-            config: make(map[string]interface{}),
-        }
-    })
-    return configInstance
-}
-
-// SetConfig 设置配置
-func (cs *ConfigurableSingleton) SetConfig(key string, value interface{}) {
-    cs.mutex.Lock()
-    defer cs.mutex.Unlock()
-    cs.config[key] = value
-}
-
-// GetConfig 获取配置
-func (cs *ConfigurableSingleton) GetConfig(key string) (interface{}, bool) {
-    cs.mutex.RLock()
-    defer cs.mutex.RUnlock()
-    value, exists := cs.config[key]
-    return value, exists
-}
-```
-
-## 4. 使用示例
-
-### 4.1 基础使用
-
-```go
-package main
+package singleton
 
 import (
     "fmt"
     "sync"
-    "time"
-    
-    "github.com/your-project/singleton"
 )
 
-func main() {
-    // 测试单例的唯一性
-    var wg sync.WaitGroup
+// GenericSingleton 泛型单例接口
+type GenericSingleton[T any] interface {
+    GetValue() T
+    SetValue(T)
+}
+
+// genericSingleton 泛型单例实现
+type genericSingleton[T any] struct {
+    value T
+    mu    sync.RWMutex
+}
+
+var (
+    genericInstances = make(map[string]interface{})
+    genericMu        sync.RWMutex
+)
+
+// GetGenericInstance 获取泛型单例实例
+func GetGenericInstance[T any](key string) GenericSingleton[T] {
+    genericMu.RLock()
+    if instance, exists := genericInstances[key]; exists {
+        genericMu.RUnlock()
+        return instance.(GenericSingleton[T])
+    }
+    genericMu.RUnlock()
     
-    for i := 0; i < 5; i++ {
-        wg.Add(1)
-        go func(id int) {
-            defer wg.Done()
-            
-            instance := singleton.GetInstance()
-            fmt.Printf("Goroutine %d: %s\n", id, instance.GetID())
-            fmt.Printf("Goroutine %d: %s\n", id, instance.DoWork())
-        }(i)
+    genericMu.Lock()
+    defer genericMu.Unlock()
+    
+    // 双重检查
+    if instance, exists := genericInstances[key]; exists {
+        return instance.(GenericSingleton[T])
     }
     
-    wg.Wait()
-    
-    // 验证所有实例都是同一个
-    instance1 := singleton.GetInstance()
-    instance2 := singleton.GetInstance()
-    
-    fmt.Printf("Instance1 ID: %s\n", instance1.GetID())
-    fmt.Printf("Instance2 ID: %s\n", instance2.GetID())
-    fmt.Printf("Same instance: %v\n", instance1.GetID() == instance2.GetID())
+    newInstance := &genericSingleton[T]{}
+    genericInstances[key] = newInstance
+    return newInstance
+}
+
+// GetValue 获取值
+func (g *genericSingleton[T]) GetValue() T {
+    g.mu.RLock()
+    defer g.mu.RUnlock()
+    return g.value
+}
+
+// SetValue 设置值
+func (g *genericSingleton[T]) SetValue(value T) {
+    g.mu.Lock()
+    defer g.mu.Unlock()
+    g.value = value
 }
 ```
 
-### 4.2 配置管理示例
+### 4.3 函数式实现
 
 ```go
-func configExample() {
-    config := singleton.GetConfigurableInstance()
+package singleton
+
+import (
+    "fmt"
+    "sync"
+)
+
+// FunctionalSingleton 函数式单例
+type FunctionalSingleton struct {
+    operations []func() string
+    mu         sync.RWMutex
+}
+
+var (
+    functionalInstance *FunctionalSingleton
+    functionalOnce     sync.Once
+)
+
+// GetFunctionalInstance 获取函数式单例
+func GetFunctionalInstance() *FunctionalSingleton {
+    functionalOnce.Do(func() {
+        functionalInstance = &FunctionalSingleton{
+            operations: make([]func() string, 0),
+        }
+    })
+    return functionalInstance
+}
+
+// AddOperation 添加操作
+func (fs *FunctionalSingleton) AddOperation(op func() string) {
+    fs.mu.Lock()
+    defer fs.mu.Unlock()
+    fs.operations = append(fs.operations, op)
+}
+
+// ExecuteOperations 执行所有操作
+func (fs *FunctionalSingleton) ExecuteOperations() []string {
+    fs.mu.RLock()
+    defer fs.mu.RUnlock()
     
-    // 设置配置
-    config.SetConfig("database_url", "postgres://localhost:5432/mydb")
-    config.SetConfig("redis_url", "redis://localhost:6379")
-    config.SetConfig("max_connections", 100)
-    
-    // 获取配置
-    if dbURL, exists := config.GetConfig("database_url"); exists {
-        fmt.Printf("Database URL: %s\n", dbURL)
+    results := make([]string, len(fs.operations))
+    for i, op := range fs.operations {
+        results[i] = op()
     }
-    
-    if maxConn, exists := config.GetConfig("max_connections"); exists {
-        fmt.Printf("Max connections: %d\n", maxConn)
-    }
+    return results
 }
 ```
+
+---
 
 ## 5. 性能分析
 
@@ -236,169 +298,146 @@ func configExample() {
 
 | 操作 | 时间复杂度 | 说明 |
 |------|------------|------|
-| 首次获取 | O(1) | 包含初始化开销 |
-| 后续获取 | O(1) | 直接返回引用 |
+| 首次创建 | O(1) | 创建新实例 |
+| 后续访问 | O(1) | 直接返回实例 |
+| 线程安全检查 | O(1) | 互斥锁操作 |
 
 ### 5.2 空间复杂度
 
-- **内存占用**: O(1) - 只存储一个实例
-- **线程安全开销**: O(1) - `sync.Once` 的固定开销
+- **空间复杂度**: O(1)
+- **内存占用**: 固定大小，不随访问次数增长
 
-### 5.3 基准测试
+### 5.3 性能对比
 
 ```go
-func BenchmarkGetInstance(b *testing.B) {
+// 性能测试代码
+func BenchmarkSingleton(b *testing.B) {
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
-        singleton.GetInstance()
+        GetInstance()
     }
 }
 
-func BenchmarkGetInstanceParallel(b *testing.B) {
+func BenchmarkNewInstance(b *testing.B) {
     b.ResetTimer()
-    b.RunParallel(func(pb *testing.PB) {
-        for pb.Next() {
-            singleton.GetInstance()
-        }
-    })
-}
-```
-
-## 6. 应用场景
-
-### 6.1 适用场景
-
-1. **配置管理**: 全局配置对象
-2. **日志记录器**: 统一的日志处理
-3. **数据库连接池**: 共享连接资源
-4. **缓存管理器**: 全局缓存访问
-5. **线程池**: 共享线程资源
-
-### 6.2 不适用场景
-
-1. **需要多个实例**: 违反单例原则
-2. **频繁创建销毁**: 单例的生命周期管理
-3. **测试困难**: 全局状态影响测试
-
-## 7. 设计模式关系
-
-### 7.1 与其他模式的关系
-
-```mermaid
-graph LR
-    A[单例模式] --> B[工厂模式]
-    A --> C[外观模式]
-    A --> D[状态模式]
-    
-    B --> E[创建对象]
-    C --> F[简化接口]
-    D --> G[管理状态]
-```
-
-### 7.2 组合使用
-
-```go
-// 单例 + 工厂模式
-type ServiceFactory struct {
-    services map[string]Service
-}
-
-var factory *ServiceFactory
-var factoryOnce sync.Once
-
-func GetServiceFactory() *ServiceFactory {
-    factoryOnce.Do(func() {
-        factory = &ServiceFactory{
-            services: make(map[string]Service),
-        }
-    })
-    return factory
-}
-
-func (sf *ServiceFactory) GetService(name string) Service {
-    if service, exists := sf.services[name]; exists {
-        return service
-    }
-    
-    // 创建新服务
-    service := createService(name)
-    sf.services[name] = service
-    return service
-}
-```
-
-## 8. 形式化验证
-
-### 8.1 不变式验证
-
-```go
-// 验证单例不变式
-func VerifySingletonInvariant() bool {
-    instance1 := GetInstance()
-    instance2 := GetInstance()
-    
-    // 唯一性检查
-    if instance1 != instance2 {
-        return false
-    }
-    
-    // 一致性检查
-    if instance1.GetID() != instance2.GetID() {
-        return false
-    }
-    
-    return true
-}
-```
-
-### 8.2 线程安全验证
-
-```go
-func TestThreadSafety(t *testing.T) {
-    const numGoroutines = 1000
-    var wg sync.WaitGroup
-    instances := make([]Singleton, numGoroutines)
-    
-    for i := 0; i < numGoroutines; i++ {
-        wg.Add(1)
-        go func(index int) {
-            defer wg.Done()
-            instances[index] = GetInstance()
-        }(i)
-    }
-    
-    wg.Wait()
-    
-    // 验证所有实例都是同一个
-    firstID := instances[0].GetID()
-    for i := 1; i < numGoroutines; i++ {
-        if instances[i].GetID() != firstID {
-            t.Errorf("Instance %d has different ID: %s", i, instances[i].GetID())
+    for i := 0; i < b.N; i++ {
+        _ = &singleton{
+            id:        fmt.Sprintf("instance-%d", i),
+            createdAt: time.Now(),
         }
     }
 }
 ```
-
-## 9. 总结
-
-单例模式是创建型模式中最简单但最重要的模式之一。在Go语言中，通过 `sync.Once` 可以优雅地实现线程安全的单例模式。
-
-### 9.1 关键要点
-
-1. **线程安全**: 使用 `sync.Once` 保证
-2. **延迟初始化**: 首次访问时创建
-3. **全局访问**: 提供统一的访问点
-4. **内存效率**: 只维护一个实例
-
-### 9.2 最佳实践
-
-1. 优先使用 `sync.Once` 而非手动加锁
-2. 考虑是否需要可配置的单例
-3. 注意单例的生命周期管理
-4. 在测试中考虑单例的影响
 
 ---
 
-**下一模式**: [02-工厂方法模式](./02-Factory-Method-Pattern.md)
+## 6. 应用场景
 
-**返回**: [创建型模式目录](./README.md)
+### 6.1 配置管理
+
+```go
+// 配置管理器单例
+type ConfigManager struct {
+    config map[string]interface{}
+    mu     sync.RWMutex
+}
+
+func (cm *ConfigManager) Get(key string) interface{} {
+    cm.mu.RLock()
+    defer cm.mu.RUnlock()
+    return cm.config[key]
+}
+
+func (cm *ConfigManager) Set(key string, value interface{}) {
+    cm.mu.Lock()
+    defer cm.mu.Unlock()
+    cm.config[key] = value
+}
+```
+
+### 6.2 日志记录器
+
+```go
+// 日志记录器单例
+type Logger struct {
+    level  string
+    output io.Writer
+    mu     sync.Mutex
+}
+
+func (l *Logger) Log(level, message string) {
+    l.mu.Lock()
+    defer l.mu.Unlock()
+    fmt.Fprintf(l.output, "[%s] %s: %s\n", time.Now().Format(time.RFC3339), level, message)
+}
+```
+
+### 6.3 数据库连接池
+
+```go
+// 数据库连接池单例
+type DBConnectionPool struct {
+    connections chan *sql.DB
+    maxConn     int
+    mu          sync.Mutex
+}
+
+func (pool *DBConnectionPool) GetConnection() *sql.DB {
+    select {
+    case conn := <-pool.connections:
+        return conn
+    default:
+        return pool.createConnection()
+    }
+}
+```
+
+---
+
+## 7. 相关模式
+
+### 7.1 与工厂模式的关系
+
+- **单例模式**: 确保唯一实例
+- **工厂模式**: 创建多个实例
+- **组合使用**: 工厂方法返回单例实例
+
+### 7.2 与享元模式的关系
+
+- **单例模式**: 全局唯一实例
+- **享元模式**: 共享多个相似实例
+- **区别**: 单例强调唯一性，享元强调共享性
+
+### 7.3 与依赖注入的关系
+
+```go
+// 依赖注入容器中的单例
+type Container struct {
+    singletons map[string]interface{}
+    mu         sync.RWMutex
+}
+
+func (c *Container) RegisterSingleton(key string, factory func() interface{}) {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.singletons[key] = factory()
+}
+
+func (c *Container) GetSingleton(key string) interface{} {
+    c.mu.RLock()
+    defer c.mu.RUnlock()
+    return c.singletons[key]
+}
+```
+
+---
+
+## 总结
+
+单例模式通过数学形式化定义和Go语言实现，确保了实例的唯一性和全局访问性。通过互斥锁和sync.Once等机制，保证了线程安全性。该模式在配置管理、日志记录、连接池等场景中广泛应用，是软件工程中的重要设计模式。
+
+**相关链接**:
+
+- [02-工厂方法模式](../02-Factory-Method-Pattern.md)
+- [03-抽象工厂模式](../03-Abstract-Factory-Pattern.md)
+- [返回设计模式目录](../../README.md)

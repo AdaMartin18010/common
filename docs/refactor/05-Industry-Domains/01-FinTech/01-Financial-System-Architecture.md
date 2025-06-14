@@ -2,1221 +2,770 @@
 
 ## 目录
 
-1. [理论基础](#1-理论基础)
-2. [形式化定义](#2-形式化定义)
-3. [架构模式](#3-架构模式)
-4. [Go语言实现](#4-go语言实现)
-5. [安全机制](#5-安全机制)
-6. [实际应用](#6-实际应用)
+- [01-金融系统架构 (Financial System Architecture)](#01-金融系统架构-financial-system-architecture)
+  - [目录](#目录)
+  - [1. 概念与定义](#1-概念与定义)
+    - [1.1 基本概念](#11-基本概念)
+    - [1.2 核心特征](#12-核心特征)
+    - [1.3 设计原则](#13-设计原则)
+  - [2. 形式化定义](#2-形式化定义)
+    - [2.1 交易处理模型](#21-交易处理模型)
+    - [2.2 风险控制模型](#22-风险控制模型)
+    - [2.3 合规监管模型](#23-合规监管模型)
+  - [3. 数学证明](#3-数学证明)
+    - [3.1 ACID属性证明](#31-acid属性证明)
+    - [3.2 风险控制证明](#32-风险控制证明)
+  - [4. Go语言实现](#4-go语言实现)
+    - [4.1 核心架构实现](#41-核心架构实现)
+    - [4.2 账户服务实现](#42-账户服务实现)
+    - [4.3 风险服务实现](#43-风险服务实现)
+  - [5. 性能分析](#5-性能分析)
+    - [5.1 时间复杂度](#51-时间复杂度)
+    - [5.2 空间复杂度](#52-空间复杂度)
+    - [5.3 性能优化](#53-性能优化)
+  - [6. 应用场景](#6-应用场景)
+    - [6.1 支付系统](#61-支付系统)
+    - [6.2 风控系统](#62-风控系统)
+    - [6.3 合规系统](#63-合规系统)
+  - [7. 相关架构](#7-相关架构)
+    - [7.1 微服务架构](#71-微服务架构)
+    - [7.2 事件驱动架构](#72-事件驱动架构)
+    - [7.3 CQRS架构](#73-cqrs架构)
+  - [总结](#总结)
 
-## 1. 理论基础
+---
 
-### 1.1 金融系统定义
+## 1. 概念与定义
 
-金融系统是处理货币、信贷、投资等金融业务的信息系统，具有高安全性、高可靠性、高一致性和高可用性的特点。
+### 1.1 基本概念
 
-**形式化定义**：
-```math
-金融系统定义为七元组：
-FS = (A, T, U, B, S, R, C)
+金融系统架构是支撑金融业务运行的技术基础设施，包括交易处理、风险控制、合规监管、数据管理等核心组件。
 
-其中：
-- A: 账户集合，A = \{a_1, a_2, ..., a_n\}
-- T: 交易集合，T = \{t_1, t_2, ..., t_m\}
-- U: 用户集合，U = \{u_1, u_2, ..., u_k\}
-- B: 余额函数，B: A \rightarrow \mathbb{R}
-- S: 安全机制，S: T \rightarrow \mathbb{B}
-- R: 风险控制，R: T \rightarrow \mathbb{B}
-- C: 合规检查，C: T \rightarrow \mathbb{B}
+### 1.2 核心特征
+
+- **高可用性**: 7x24小时不间断运行
+- **高性能**: 毫秒级交易处理
+- **高安全性**: 资金安全和数据保护
+- **高合规性**: 监管要求和审计追踪
+- **高扩展性**: 支持业务快速增长
+
+### 1.3 设计原则
+
+```go
+// 设计原则：ACID + CAP + 金融合规
+type FinancialSystem interface {
+    ProcessTransaction(tx Transaction) (Result, error)
+    RiskCheck(tx Transaction) (RiskLevel, error)
+    ComplianceCheck(tx Transaction) (ComplianceStatus, error)
+    AuditLog(tx Transaction, result Result) error
+}
 ```
 
-### 1.2 金融系统特点
-
-1. **高安全性**: 保护用户资金和信息安全
-2. **高可靠性**: 确保系统稳定运行
-3. **高一致性**: 保证数据一致性
-4. **高可用性**: 提供24/7服务
-5. **高合规性**: 符合金融监管要求
-
-### 1.3 核心业务领域
-
-1. **账户管理**: 用户账户的创建、维护和注销
-2. **交易处理**: 资金转账、支付、清算
-3. **风险控制**: 欺诈检测、信用评估
-4. **合规管理**: 反洗钱、KYC/AML
-5. **报表系统**: 财务报表、监管报表
+---
 
 ## 2. 形式化定义
 
-### 2.1 账户模型
+### 2.1 交易处理模型
 
-```math
-账户定义为五元组：
-Account = (ID, Type, Balance, Status, Metadata)
+设 $T$ 为交易集合，$A$ 为账户集合，$B$ 为余额函数，则交易处理满足：
 
-其中：
-- ID: 账户唯一标识
-- Type: 账户类型 (储蓄、支票、投资等)
-- Balance: 账户余额
-- Status: 账户状态 (活跃、冻结、关闭等)
-- Metadata: 账户元数据
+$$\forall t \in T: \text{Process}(t) \rightarrow \text{Result}$$
 
-余额约束：
-\forall a \in A: B(a) \geq 0
-```
+其中 $\text{Process}$ 满足ACID属性：
 
-### 2.2 交易模型
+- **原子性**: $\text{Process}(t) = \text{Success} \lor \text{Process}(t) = \text{Failure}$
+- **一致性**: $\sum_{a \in A} B(a) = \text{const}$
+- **隔离性**: $\text{Process}(t_1) \cap \text{Process}(t_2) = \emptyset$
+- **持久性**: $\text{Process}(t) = \text{Success} \Rightarrow \text{Commit}(t)$
 
-```math
-交易定义为六元组：
-Transaction = (ID, From, To, Amount, Type, Timestamp)
+### 2.2 风险控制模型
 
-其中：
-- ID: 交易唯一标识
-- From: 源账户
-- To: 目标账户
-- Amount: 交易金额
-- Type: 交易类型
-- Timestamp: 交易时间戳
+设 $R$ 为风险函数，$L$ 为风险等级，则：
 
-交易约束：
-\forall t \in T: B(t.From) \geq t.Amount
-```
+$$R: T \times A \times \text{Market} \rightarrow L$$
 
-### 2.3 一致性模型
+风险控制满足：
 
-```math
-ACID属性定义：
+$$\forall t \in T: R(t) \leq \text{RiskThreshold} \Rightarrow \text{Approve}(t)$$
 
-1. 原子性 (Atomicity):
-   \forall t \in T: \text{要么全部执行，要么全部回滚}
+### 2.3 合规监管模型
 
-2. 一致性 (Consistency):
-   \forall t \in T: \text{执行前后系统状态一致}
+设 $C$ 为合规检查函数，$S$ 为合规状态，则：
 
-3. 隔离性 (Isolation):
-   \forall t_1, t_2 \in T: t_1 \parallel t_2 \Rightarrow \text{互不干扰}
+$$C: T \times \text{Regulations} \rightarrow S$$
 
-4. 持久性 (Durability):
-   \forall t \in T: \text{提交后永久保存}
-```
+合规检查满足：
 
-## 3. 架构模式
+$$\forall t \in T: C(t) = \text{Compliant} \Rightarrow \text{Allow}(t)$$
 
-### 3.1 分层架构
+---
 
-```go
-// FinancialSystemArchitecture 金融系统架构
-type FinancialSystemArchitecture struct {
-    // 表示层 - 用户界面和API
-    PresentationLayer *PresentationLayer
-    // 业务层 - 业务逻辑处理
-    BusinessLayer *BusinessLayer
-    // 服务层 - 核心服务
-    ServiceLayer *ServiceLayer
-    // 数据层 - 数据存储和访问
-    DataLayer *DataLayer
-    // 基础设施层 - 安全、监控、日志
-    InfrastructureLayer *InfrastructureLayer
-}
+## 3. 数学证明
 
-// PresentationLayer 表示层
-type PresentationLayer struct {
-    WebAPI     *WebAPI
-    MobileAPI  *MobileAPI
-    AdminAPI   *AdminAPI
-    Dashboard  *Dashboard
-}
+### 3.1 ACID属性证明
 
-// BusinessLayer 业务层
-type BusinessLayer struct {
-    AccountManager    *AccountManager
-    TransactionManager *TransactionManager
-    RiskManager       *RiskManager
-    ComplianceManager *ComplianceManager
-    ReportManager     *ReportManager
-}
+**定理**: 金融系统的事务处理满足ACID属性
 
-// ServiceLayer 服务层
-type ServiceLayer struct {
-    AccountService     *AccountService
-    TransactionService *TransactionService
-    PaymentService     *PaymentService
-    ClearingService    *ClearingService
-    SettlementService  *SettlementService
-}
+**证明**:
 
-// DataLayer 数据层
-type DataLayer struct {
-    AccountDB      *AccountDatabase
-    TransactionDB  *TransactionDatabase
-    AuditDB        *AuditDatabase
-    ReportDB       *ReportDatabase
-    Cache          *Cache
-}
+1. **原子性**: 使用两阶段提交协议
+   - 准备阶段：$\text{Prepare}(t) \rightarrow \text{Ready}$
+   - 提交阶段：$\text{Commit}(t) \rightarrow \text{Success}$
+2. **一致性**: 使用约束检查
+   - 余额约束：$\sum B(a) = \text{Total}$
+   - 业务约束：$\text{Validate}(t) = \text{true}$
+3. **隔离性**: 使用锁机制
+   - 行级锁：$\text{Lock}(a) \rightarrow \text{Exclusive}$
+   - 时间戳：$\text{Timestamp}(t) \rightarrow \text{Order}$
+4. **持久性**: 使用WAL日志
+   - 预写日志：$\text{WriteAheadLog}(t)$
+   - 持久化存储：$\text{Persist}(t)$
 
-// InfrastructureLayer 基础设施层
-type InfrastructureLayer struct {
-    Security       *SecurityManager
-    Monitoring     *MonitoringSystem
-    Logging        *LoggingSystem
-    Backup         *BackupSystem
-    DisasterRecovery *DisasterRecovery
-}
-```
+### 3.2 风险控制证明
 
-### 3.2 微服务架构
+**定理**: 风险控制系统能够有效控制交易风险
 
-```go
-// MicroservicesArchitecture 微服务架构
-type MicroservicesArchitecture struct {
-    // 用户服务
-    UserService *UserService
-    // 账户服务
-    AccountService *AccountService
-    // 交易服务
-    TransactionService *TransactionService
-    // 支付服务
-    PaymentService *PaymentService
-    // 风控服务
-    RiskService *RiskService
-    // 合规服务
-    ComplianceService *ComplianceService
-    // 报表服务
-    ReportService *ReportService
-    // 通知服务
-    NotificationService *NotificationService
-}
+**证明**:
 
-// ServiceInterface 服务接口
-type ServiceInterface interface {
-    // 服务注册
-    Register() error
-    // 服务发现
-    Discover(serviceName string) (*ServiceInstance, error)
-    // 健康检查
-    HealthCheck() error
-    // 服务降级
-    Degrade() error
-}
-```
+1. 设风险函数 $R(t) = f(\text{Amount}, \text{Frequency}, \text{Pattern})$
+2. 风险阈值 $\text{Threshold} = \text{MaxRisk}$
+3. 对于任意交易 $t$：
+   - 如果 $R(t) \leq \text{Threshold}$，则 $\text{Approve}(t)$
+   - 如果 $R(t) > \text{Threshold}$，则 $\text{Reject}(t)$
+4. 因此风险控制有效
+
+---
 
 ## 4. Go语言实现
 
-### 4.1 账户管理
+### 4.1 核心架构实现
 
 ```go
-// Account 账户定义
-type Account struct {
-    ID          string            `json:"id"`
-    UserID      string            `json:"user_id"`
-    Type        AccountType       `json:"type"`
-    Balance     decimal.Decimal   `json:"balance"`
-    Currency    string            `json:"currency"`
-    Status      AccountStatus     `json:"status"`
-    CreatedAt   time.Time         `json:"created_at"`
-    UpdatedAt   time.Time         `json:"updated_at"`
-    Metadata    map[string]string `json:"metadata"`
-}
+package fintech
 
-// AccountType 账户类型
-type AccountType int
-
-const (
-    AccountTypeSavings AccountType = iota
-    AccountTypeChecking
-    AccountTypeInvestment
-    AccountTypeCredit
+import (
+    "context"
+    "fmt"
+    "sync"
+    "time"
 )
 
-// AccountStatus 账户状态
-type AccountStatus int
-
-const (
-    AccountStatusActive AccountStatus = iota
-    AccountStatusFrozen
-    AccountStatusClosed
-    AccountStatusSuspended
-)
-
-// AccountManager 账户管理器
-type AccountManager struct {
-    db          *sql.DB
-    cache       *Cache
-    validator   *AccountValidator
-    auditor     *Auditor
-    mu          sync.RWMutex
-}
-
-// NewAccountManager 创建账户管理器
-func NewAccountManager(db *sql.DB, cache *Cache) *AccountManager {
-    return &AccountManager{
-        db:        db,
-        cache:     cache,
-        validator: NewAccountValidator(),
-        auditor:   NewAuditor(),
-    }
-}
-
-// CreateAccount 创建账户
-func (am *AccountManager) CreateAccount(account *Account) error {
-    am.mu.Lock()
-    defer am.mu.Unlock()
-    
-    // 验证账户信息
-    if err := am.validator.ValidateAccount(account); err != nil {
-        return err
-    }
-    
-    // 检查用户是否已存在账户
-    if exists, _ := am.accountExists(account.UserID, account.Type); exists {
-        return errors.New("account already exists for user")
-    }
-    
-    // 生成账户ID
-    account.ID = am.generateAccountID()
-    account.CreatedAt = time.Now()
-    account.UpdatedAt = time.Now()
-    account.Status = AccountStatusActive
-    
-    // 保存到数据库
-    if err := am.saveAccount(account); err != nil {
-        return err
-    }
-    
-    // 更新缓存
-    am.cache.Set(account.ID, account, 24*time.Hour)
-    
-    // 记录审计日志
-    am.auditor.LogAccountCreation(account)
-    
-    return nil
-}
-
-// GetAccount 获取账户
-func (am *AccountManager) GetAccount(accountID string) (*Account, error) {
-    am.mu.RLock()
-    defer am.mu.RUnlock()
-    
-    // 先从缓存获取
-    if cached, found := am.cache.Get(accountID); found {
-        return cached.(*Account), nil
-    }
-    
-    // 从数据库获取
-    account, err := am.loadAccount(accountID)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 更新缓存
-    am.cache.Set(accountID, account, 24*time.Hour)
-    
-    return account, nil
-}
-
-// UpdateBalance 更新余额
-func (am *AccountManager) UpdateBalance(accountID string, amount decimal.Decimal) error {
-    am.mu.Lock()
-    defer am.mu.Unlock()
-    
-    // 获取账户
-    account, err := am.GetAccount(accountID)
-    if err != nil {
-        return err
-    }
-    
-    // 检查账户状态
-    if account.Status != AccountStatusActive {
-        return errors.New("account is not active")
-    }
-    
-    // 更新余额
-    newBalance := account.Balance.Add(amount)
-    if newBalance.LessThan(decimal.Zero) {
-        return errors.New("insufficient balance")
-    }
-    
-    account.Balance = newBalance
-    account.UpdatedAt = time.Now()
-    
-    // 保存到数据库
-    if err := am.saveAccount(account); err != nil {
-        return err
-    }
-    
-    // 更新缓存
-    am.cache.Set(accountID, account, 24*time.Hour)
-    
-    // 记录审计日志
-    am.auditor.LogBalanceUpdate(account, amount)
-    
-    return nil
-}
-
-// saveAccount 保存账户到数据库
-func (am *AccountManager) saveAccount(account *Account) error {
-    query := `
-        INSERT INTO accounts (id, user_id, type, balance, currency, status, created_at, updated_at, metadata)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-        balance = VALUES(balance),
-        status = VALUES(status),
-        updated_at = VALUES(updated_at),
-        metadata = VALUES(metadata)
-    `
-    
-    metadataJSON, err := json.Marshal(account.Metadata)
-    if err != nil {
-        return err
-    }
-    
-    _, err = am.db.Exec(query,
-        account.ID,
-        account.UserID,
-        account.Type,
-        account.Balance.String(),
-        account.Currency,
-        account.Status,
-        account.CreatedAt,
-        account.UpdatedAt,
-        metadataJSON,
-    )
-    
-    return err
-}
-
-// loadAccount 从数据库加载账户
-func (am *AccountManager) loadAccount(accountID string) (*Account, error) {
-    query := `
-        SELECT id, user_id, type, balance, currency, status, created_at, updated_at, metadata
-        FROM accounts WHERE id = ?
-    `
-    
-    var account Account
-    var balanceStr string
-    var metadataJSON []byte
-    
-    err := am.db.QueryRow(query, accountID).Scan(
-        &account.ID,
-        &account.UserID,
-        &account.Type,
-        &balanceStr,
-        &account.Currency,
-        &account.Status,
-        &account.CreatedAt,
-        &account.UpdatedAt,
-        &metadataJSON,
-    )
-    
-    if err != nil {
-        return nil, err
-    }
-    
-    // 解析余额
-    account.Balance, err = decimal.NewFromString(balanceStr)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 解析元数据
-    if err := json.Unmarshal(metadataJSON, &account.Metadata); err != nil {
-        return nil, err
-    }
-    
-    return &account, nil
-}
-```
-
-### 4.2 交易处理
-
-```go
 // Transaction 交易定义
 type Transaction struct {
-    ID          string            `json:"id"`
-    FromAccount string            `json:"from_account"`
-    ToAccount   string            `json:"to_account"`
-    Amount      decimal.Decimal   `json:"amount"`
-    Currency    string            `json:"currency"`
-    Type        TransactionType   `json:"type"`
-    Status      TransactionStatus `json:"status"`
-    Description string            `json:"description"`
-    CreatedAt   time.Time         `json:"created_at"`
-    UpdatedAt   time.Time         `json:"updated_at"`
-    Metadata    map[string]string `json:"metadata"`
-}
-
-// TransactionType 交易类型
-type TransactionType int
-
-const (
-    TransactionTypeTransfer TransactionType = iota
-    TransactionTypePayment
-    TransactionTypeDeposit
-    TransactionTypeWithdrawal
-    TransactionTypeRefund
-)
-
-// TransactionStatus 交易状态
-type TransactionStatus int
-
-const (
-    TransactionStatusPending TransactionStatus = iota
-    TransactionStatusProcessing
-    TransactionStatusCompleted
-    TransactionStatusFailed
-    TransactionStatusCancelled
-)
-
-// TransactionManager 交易管理器
-type TransactionManager struct {
-    db          *sql.DB
-    cache       *Cache
-    validator   *TransactionValidator
-    riskManager *RiskManager
-    auditor     *Auditor
-    mu          sync.RWMutex
-}
-
-// NewTransactionManager 创建交易管理器
-func NewTransactionManager(db *sql.DB, cache *Cache) *TransactionManager {
-    return &TransactionManager{
-        db:          db,
-        cache:       cache,
-        validator:   NewTransactionValidator(),
-        riskManager: NewRiskManager(),
-        auditor:     NewAuditor(),
-    }
-}
-
-// CreateTransaction 创建交易
-func (am *TransactionManager) CreateTransaction(transaction *Transaction) error {
-    am.mu.Lock()
-    defer am.mu.Unlock()
-    
-    // 验证交易信息
-    if err := am.validator.ValidateTransaction(transaction); err != nil {
-        return err
-    }
-    
-    // 风险检查
-    if err := am.riskManager.CheckTransaction(transaction); err != nil {
-        return err
-    }
-    
-    // 生成交易ID
-    transaction.ID = am.generateTransactionID()
-    transaction.CreatedAt = time.Now()
-    transaction.UpdatedAt = time.Now()
-    transaction.Status = TransactionStatusPending
-    
-    // 保存交易
-    if err := am.saveTransaction(transaction); err != nil {
-        return err
-    }
-    
-    // 更新缓存
-    am.cache.Set(transaction.ID, transaction, 1*time.Hour)
-    
-    // 记录审计日志
-    am.auditor.LogTransactionCreation(transaction)
-    
-    return nil
-}
-
-// ProcessTransaction 处理交易
-func (am *TransactionManager) ProcessTransaction(transactionID string) error {
-    am.mu.Lock()
-    defer am.mu.Unlock()
-    
-    // 获取交易
-    transaction, err := am.GetTransaction(transactionID)
-    if err != nil {
-        return err
-    }
-    
-    // 检查交易状态
-    if transaction.Status != TransactionStatusPending {
-        return errors.New("transaction is not in pending status")
-    }
-    
-    // 更新状态为处理中
-    transaction.Status = TransactionStatusProcessing
-    transaction.UpdatedAt = time.Now()
-    am.saveTransaction(transaction)
-    
-    // 执行交易
-    if err := am.executeTransaction(transaction); err != nil {
-        // 更新状态为失败
-        transaction.Status = TransactionStatusFailed
-        transaction.UpdatedAt = time.Now()
-        am.saveTransaction(transaction)
-        return err
-    }
-    
-    // 更新状态为完成
-    transaction.Status = TransactionStatusCompleted
-    transaction.UpdatedAt = time.Now()
-    am.saveTransaction(transaction)
-    
-    // 记录审计日志
-    am.auditor.LogTransactionCompletion(transaction)
-    
-    return nil
-}
-
-// executeTransaction 执行交易
-func (am *TransactionManager) executeTransaction(transaction *Transaction) error {
-    // 开始数据库事务
-    tx, err := am.db.Begin()
-    if err != nil {
-        return err
-    }
-    defer tx.Rollback()
-    
-    // 扣减源账户余额
-    if err := am.debitAccount(tx, transaction.FromAccount, transaction.Amount); err != nil {
-        return err
-    }
-    
-    // 增加目标账户余额
-    if err := am.creditAccount(tx, transaction.ToAccount, transaction.Amount); err != nil {
-        return err
-    }
-    
-    // 提交事务
-    return tx.Commit()
-}
-
-// debitAccount 扣减账户余额
-func (am *TransactionManager) debitAccount(tx *sql.Tx, accountID string, amount decimal.Decimal) error {
-    query := `
-        UPDATE accounts 
-        SET balance = balance - ?, updated_at = ?
-        WHERE id = ? AND balance >= ? AND status = ?
-    `
-    
-    result, err := tx.Exec(query, amount.String(), time.Now(), accountID, amount.String(), AccountStatusActive)
-    if err != nil {
-        return err
-    }
-    
-    rowsAffected, err := result.RowsAffected()
-    if err != nil {
-        return err
-    }
-    
-    if rowsAffected == 0 {
-        return errors.New("insufficient balance or account not active")
-    }
-    
-    return nil
-}
-
-// creditAccount 增加账户余额
-func (am *TransactionManager) creditAccount(tx *sql.Tx, accountID string, amount decimal.Decimal) error {
-    query := `
-        UPDATE accounts 
-        SET balance = balance + ?, updated_at = ?
-        WHERE id = ? AND status = ?
-    `
-    
-    result, err := tx.Exec(query, amount.String(), time.Now(), accountID, AccountStatusActive)
-    if err != nil {
-        return err
-    }
-    
-    rowsAffected, err := result.RowsAffected()
-    if err != nil {
-        return err
-    }
-    
-    if rowsAffected == 0 {
-        return errors.New("account not active")
-    }
-    
-    return nil
-}
-
-// GetTransaction 获取交易
-func (am *TransactionManager) GetTransaction(transactionID string) (*Transaction, error) {
-    am.mu.RLock()
-    defer am.mu.RUnlock()
-    
-    // 先从缓存获取
-    if cached, found := am.cache.Get(transactionID); found {
-        return cached.(*Transaction), nil
-    }
-    
-    // 从数据库获取
-    transaction, err := am.loadTransaction(transactionID)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 更新缓存
-    am.cache.Set(transactionID, transaction, 1*time.Hour)
-    
-    return transaction, nil
-}
-
-// saveTransaction 保存交易到数据库
-func (am *TransactionManager) saveTransaction(transaction *Transaction) error {
-    query := `
-        INSERT INTO transactions (id, from_account, to_account, amount, currency, type, status, description, created_at, updated_at, metadata)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-        status = VALUES(status),
-        updated_at = VALUES(updated_at),
-        metadata = VALUES(metadata)
-    `
-    
-    metadataJSON, err := json.Marshal(transaction.Metadata)
-    if err != nil {
-        return err
-    }
-    
-    _, err = am.db.Exec(query,
-        transaction.ID,
-        transaction.FromAccount,
-        transaction.ToAccount,
-        transaction.Amount.String(),
-        transaction.Currency,
-        transaction.Type,
-        transaction.Status,
-        transaction.Description,
-        transaction.CreatedAt,
-        transaction.UpdatedAt,
-        metadataJSON,
-    )
-    
-    return err
-}
-
-// loadTransaction 从数据库加载交易
-func (am *TransactionManager) loadTransaction(transactionID string) (*Transaction, error) {
-    query := `
-        SELECT id, from_account, to_account, amount, currency, type, status, description, created_at, updated_at, metadata
-        FROM transactions WHERE id = ?
-    `
-    
-    var transaction Transaction
-    var amountStr string
-    var metadataJSON []byte
-    
-    err := am.db.QueryRow(query, transactionID).Scan(
-        &transaction.ID,
-        &transaction.FromAccount,
-        &transaction.ToAccount,
-        &amountStr,
-        &transaction.Currency,
-        &transaction.Type,
-        &transaction.Status,
-        &transaction.Description,
-        &transaction.CreatedAt,
-        &transaction.UpdatedAt,
-        &metadataJSON,
-    )
-    
-    if err != nil {
-        return nil, err
-    }
-    
-    // 解析金额
-    transaction.Amount, err = decimal.NewFromString(amountStr)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 解析元数据
-    if err := json.Unmarshal(metadataJSON, &transaction.Metadata); err != nil {
-        return nil, err
-    }
-    
-    return &transaction, nil
-}
-```
-
-### 4.3 风险控制
-
-```go
-// RiskManager 风险管理器
-type RiskManager struct {
-    rules       []RiskRule
-    thresholds  map[string]decimal.Decimal
-    cache       *Cache
-    auditor     *Auditor
-    mu          sync.RWMutex
-}
-
-// RiskRule 风险规则
-type RiskRule struct {
     ID          string                 `json:"id"`
-    Name        string                 `json:"name"`
-    Type        RiskRuleType           `json:"type"`
-    Condition   string                 `json:"condition"`
-    Action      RiskAction             `json:"action"`
-    Threshold   decimal.Decimal        `json:"threshold"`
-    Enabled     bool                   `json:"enabled"`
+    FromAccount string                 `json:"from_account"`
+    ToAccount   string                 `json:"to_account"`
+    Amount      Money                  `json:"amount"`
+    Currency    string                 `json:"currency"`
+    Type        TransactionType        `json:"type"`
+    Timestamp   time.Time              `json:"timestamp"`
     Metadata    map[string]interface{} `json:"metadata"`
 }
 
-// RiskRuleType 风险规则类型
-type RiskRuleType int
+// Money 金额类型
+type Money struct {
+    Amount   int64  `json:"amount"`   // 以最小单位存储（如分）
+    Currency string `json:"currency"` // 货币代码
+}
+
+// TransactionType 交易类型
+type TransactionType string
 
 const (
-    RiskRuleTypeAmount RiskRuleType = iota
-    RiskRuleTypeFrequency
-    RiskRuleTypePattern
-    RiskRuleTypeLocation
-    RiskRuleTypeDevice
+    Transfer TransactionType = "transfer"
+    Payment  TransactionType = "payment"
+    Deposit  TransactionType = "deposit"
+    Withdraw TransactionType = "withdraw"
 )
 
-// RiskAction 风险动作
-type RiskAction int
+// Result 交易结果
+type Result struct {
+    Success      bool      `json:"success"`
+    TransactionID string   `json:"transaction_id"`
+    Timestamp    time.Time `json:"timestamp"`
+    Error        string    `json:"error,omitempty"`
+}
 
-const (
-    RiskActionAllow RiskAction = iota
-    RiskActionBlock
-    RiskActionReview
-    RiskActionLimit
-)
+// FinancialSystem 金融系统接口
+type FinancialSystem interface {
+    ProcessTransaction(ctx context.Context, tx Transaction) (Result, error)
+    GetAccountBalance(accountID string) (Money, error)
+    GetTransactionHistory(accountID string) ([]Transaction, error)
+}
 
-// NewRiskManager 创建风险管理器
-func NewRiskManager() *RiskManager {
-    return &RiskManager{
-        rules:      make([]RiskRule, 0),
-        thresholds: make(map[string]decimal.Decimal),
-        cache:      NewCache(),
-        auditor:    NewAuditor(),
+// financialSystem 金融系统实现
+type financialSystem struct {
+    accountService    AccountService
+    riskService       RiskService
+    complianceService ComplianceService
+    auditService      AuditService
+    mu                sync.RWMutex
+}
+
+// NewFinancialSystem 创建金融系统
+func NewFinancialSystem(
+    accountService AccountService,
+    riskService RiskService,
+    complianceService ComplianceService,
+    auditService AuditService,
+) FinancialSystem {
+    return &financialSystem{
+        accountService:    accountService,
+        riskService:       riskService,
+        complianceService: complianceService,
+        auditService:      auditService,
     }
 }
 
-// AddRule 添加风险规则
-func (rm *RiskManager) AddRule(rule *RiskRule) error {
-    rm.mu.Lock()
-    defer rm.mu.Unlock()
-    
-    // 验证规则
-    if err := rm.validateRule(rule); err != nil {
-        return err
+// ProcessTransaction 处理交易
+func (fs *financialSystem) ProcessTransaction(ctx context.Context, tx Transaction) (Result, error) {
+    fs.mu.Lock()
+    defer fs.mu.Unlock()
+
+    // 1. 合规检查
+    complianceStatus, err := fs.complianceService.CheckCompliance(ctx, tx)
+    if err != nil {
+        return Result{Success: false, Error: fmt.Sprintf("compliance check failed: %v", err)}, err
     }
-    
-    rm.rules = append(rm.rules, *rule)
-    return nil
-}
-
-// CheckTransaction 检查交易风险
-func (rm *RiskManager) CheckTransaction(transaction *Transaction) error {
-    rm.mu.RLock()
-    defer rm.mu.RUnlock()
-    
-    for _, rule := range rm.rules {
-        if !rule.Enabled {
-            continue
-        }
-        
-        if rm.evaluateRule(&rule, transaction) {
-            switch rule.Action {
-            case RiskActionBlock:
-                return fmt.Errorf("transaction blocked by risk rule: %s", rule.Name)
-            case RiskActionReview:
-                // 标记为需要人工审核
-                transaction.Metadata["requires_review"] = "true"
-                transaction.Metadata["review_reason"] = rule.Name
-            case RiskActionLimit:
-                // 检查是否超过限制
-                if rm.checkLimit(rule, transaction) {
-                    return fmt.Errorf("transaction exceeds limit: %s", rule.Name)
-                }
-            }
-        }
+    if !complianceStatus.IsCompliant {
+        return Result{Success: false, Error: "transaction not compliant"}, nil
     }
-    
-    return nil
-}
 
-// evaluateRule 评估风险规则
-func (rm *RiskManager) evaluateRule(rule *RiskRule, transaction *Transaction) bool {
-    switch rule.Type {
-    case RiskRuleTypeAmount:
-        return rm.evaluateAmountRule(rule, transaction)
-    case RiskRuleTypeFrequency:
-        return rm.evaluateFrequencyRule(rule, transaction)
-    case RiskRuleTypePattern:
-        return rm.evaluatePatternRule(rule, transaction)
-    case RiskRuleTypeLocation:
-        return rm.evaluateLocationRule(rule, transaction)
-    case RiskRuleTypeDevice:
-        return rm.evaluateDeviceRule(rule, transaction)
-    default:
-        return false
+    // 2. 风险检查
+    riskLevel, err := fs.riskService.AssessRisk(ctx, tx)
+    if err != nil {
+        return Result{Success: false, Error: fmt.Sprintf("risk assessment failed: %v", err)}, err
     }
-}
-
-// evaluateAmountRule 评估金额规则
-func (rm *RiskManager) evaluateAmountRule(rule *RiskRule, transaction *Transaction) bool {
-    return transaction.Amount.GreaterThan(rule.Threshold)
-}
-
-// evaluateFrequencyRule 评估频率规则
-func (rm *RiskManager) evaluateFrequencyRule(rule *RiskRule, transaction *Transaction) bool {
-    // 获取用户最近交易频率
-    frequency := rm.getUserTransactionFrequency(transaction.FromAccount)
-    threshold, _ := rule.Metadata["frequency_threshold"].(int)
-    
-    return frequency > threshold
-}
-
-// evaluatePatternRule 评估模式规则
-func (rm *RiskManager) evaluatePatternRule(rule *RiskRule, transaction *Transaction) bool {
-    // 检查交易模式是否异常
-    pattern := rm.analyzeTransactionPattern(transaction)
-    suspiciousPatterns, _ := rule.Metadata["suspicious_patterns"].([]string)
-    
-    for _, suspicious := range suspiciousPatterns {
-        if pattern == suspicious {
-            return true
-        }
+    if riskLevel.Level > RiskLevelMedium {
+        return Result{Success: false, Error: "transaction risk too high"}, nil
     }
-    
-    return false
+
+    // 3. 账户验证
+    if err := fs.accountService.ValidateTransaction(ctx, tx); err != nil {
+        return Result{Success: false, Error: fmt.Sprintf("account validation failed: %v", err)}, err
+    }
+
+    // 4. 执行交易
+    result, err := fs.accountService.ExecuteTransaction(ctx, tx)
+    if err != nil {
+        return Result{Success: false, Error: fmt.Sprintf("transaction execution failed: %v", err)}, err
+    }
+
+    // 5. 审计日志
+    if err := fs.auditService.LogTransaction(ctx, tx, result); err != nil {
+        // 审计失败不影响交易结果，但需要记录
+        fmt.Printf("audit logging failed: %v\n", err)
+    }
+
+    return result, nil
 }
 
-// evaluateLocationRule 评估位置规则
-func (rm *RiskManager) evaluateLocationRule(rule *RiskRule, transaction *Transaction) bool {
-    // 检查交易位置是否异常
-    location := rm.getTransactionLocation(transaction)
-    blockedLocations, _ := rule.Metadata["blocked_locations"].([]string)
-    
-    for _, blocked := range blockedLocations {
-        if location == blocked {
-            return true
-        }
-    }
-    
-    return false
+// GetAccountBalance 获取账户余额
+func (fs *financialSystem) GetAccountBalance(accountID string) (Money, error) {
+    fs.mu.RLock()
+    defer fs.mu.RUnlock()
+    return fs.accountService.GetBalance(accountID)
 }
 
-// evaluateDeviceRule 评估设备规则
-func (rm *RiskManager) evaluateDeviceRule(rule *RiskRule, transaction *Transaction) bool {
-    // 检查设备是否异常
-    device := rm.getTransactionDevice(transaction)
-    blockedDevices, _ := rule.Metadata["blocked_devices"].([]string)
-    
-    for _, blocked := range blockedDevices {
-        if device == blocked {
-            return true
-        }
-    }
-    
-    return false
-}
-
-// checkLimit 检查限制
-func (rm *RiskManager) checkLimit(rule *RiskRule, transaction *Transaction) bool {
-    // 获取用户当前使用量
-    usage := rm.getUserUsage(transaction.FromAccount, rule.ID)
-    return usage.Add(transaction.Amount).GreaterThan(rule.Threshold)
-}
-
-// validateRule 验证规则
-func (rm *RiskManager) validateRule(rule *RiskRule) error {
-    if rule.Name == "" {
-        return errors.New("rule name is required")
-    }
-    
-    if rule.Condition == "" {
-        return errors.New("rule condition is required")
-    }
-    
-    return nil
+// GetTransactionHistory 获取交易历史
+func (fs *financialSystem) GetTransactionHistory(accountID string) ([]Transaction, error) {
+    fs.mu.RLock()
+    defer fs.mu.RUnlock()
+    return fs.accountService.GetTransactionHistory(accountID)
 }
 ```
 
-## 5. 安全机制
-
-### 5.1 加密机制
+### 4.2 账户服务实现
 
 ```go
-// SecurityManager 安全管理器
-type SecurityManager struct {
-    encryption  *EncryptionService
-    hashing     *HashingService
-    signing     *SigningService
-    keyManager  *KeyManager
+package fintech
+
+import (
+    "context"
+    "fmt"
+    "sync"
+    "time"
+)
+
+// AccountService 账户服务接口
+type AccountService interface {
+    ValidateTransaction(ctx context.Context, tx Transaction) error
+    ExecuteTransaction(ctx context.Context, tx Transaction) (Result, error)
+    GetBalance(accountID string) (Money, error)
+    GetTransactionHistory(accountID string) ([]Transaction, error)
 }
 
-// EncryptionService 加密服务
-type EncryptionService struct {
-    algorithm string
-    keySize   int
+// accountService 账户服务实现
+type accountService struct {
+    accounts map[string]*Account
+    mu       sync.RWMutex
 }
 
-// Encrypt 加密数据
-func (es *EncryptionService) Encrypt(data []byte, key []byte) ([]byte, error) {
-    block, err := aes.NewCipher(key)
-    if err != nil {
-        return nil, err
-    }
-    
-    ciphertext := make([]byte, aes.BlockSize+len(data))
-    iv := ciphertext[:aes.BlockSize]
-    if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-        return nil, err
-    }
-    
-    stream := cipher.NewCFBEncrypter(block, iv)
-    stream.XORKeyStream(ciphertext[aes.BlockSize:], data)
-    
-    return ciphertext, nil
+// Account 账户结构
+type Account struct {
+    ID        string    `json:"id"`
+    CustomerID string   `json:"customer_id"`
+    Balance   Money     `json:"balance"`
+    Status    string    `json:"status"`
+    CreatedAt time.Time `json:"created_at"`
+    UpdatedAt time.Time `json:"updated_at"`
 }
 
-// Decrypt 解密数据
-func (es *EncryptionService) Decrypt(ciphertext []byte, key []byte) ([]byte, error) {
-    block, err := aes.NewCipher(key)
-    if err != nil {
-        return nil, err
+// NewAccountService 创建账户服务
+func NewAccountService() AccountService {
+    return &accountService{
+        accounts: make(map[string]*Account),
     }
-    
-    if len(ciphertext) < aes.BlockSize {
-        return nil, errors.New("ciphertext too short")
-    }
-    
-    iv := ciphertext[:aes.BlockSize]
-    ciphertext = ciphertext[aes.BlockSize:]
-    
-    stream := cipher.NewCFBDecrypter(block, iv)
-    stream.XORKeyStream(ciphertext, ciphertext)
-    
-    return ciphertext, nil
 }
 
-// HashingService 哈希服务
-type HashingService struct {
-    algorithm string
-    salt      []byte
+// ValidateTransaction 验证交易
+func (as *accountService) ValidateTransaction(ctx context.Context, tx Transaction) error {
+    as.mu.RLock()
+    defer as.mu.RUnlock()
+
+    // 检查源账户
+    fromAccount, exists := as.accounts[tx.FromAccount]
+    if !exists {
+        return fmt.Errorf("source account %s not found", tx.FromAccount)
+    }
+    if fromAccount.Status != "active" {
+        return fmt.Errorf("source account %s is not active", tx.FromAccount)
+    }
+
+    // 检查目标账户
+    toAccount, exists := as.accounts[tx.ToAccount]
+    if !exists {
+        return fmt.Errorf("target account %s not found", tx.ToAccount)
+    }
+    if toAccount.Status != "active" {
+        return fmt.Errorf("target account %s is not active", tx.ToAccount)
+    }
+
+    // 检查余额
+    if fromAccount.Balance.Amount < tx.Amount.Amount {
+        return fmt.Errorf("insufficient balance in account %s", tx.FromAccount)
+    }
+
+    // 检查货币一致性
+    if fromAccount.Balance.Currency != tx.Amount.Currency {
+        return fmt.Errorf("currency mismatch: account %s has %s, transaction uses %s",
+            tx.FromAccount, fromAccount.Balance.Currency, tx.Amount.Currency)
+    }
+
+    return nil
 }
 
-// Hash 哈希数据
-func (hs *HashingService) Hash(data []byte) ([]byte, error) {
-    h := sha256.New()
-    h.Write(data)
-    h.Write(hs.salt)
-    return h.Sum(nil), nil
-}
+// ExecuteTransaction 执行交易
+func (as *accountService) ExecuteTransaction(ctx context.Context, tx Transaction) (Result, error) {
+    as.mu.Lock()
+    defer as.mu.Unlock()
 
-// VerifyHash 验证哈希
-func (hs *HashingService) VerifyHash(data []byte, hash []byte) bool {
-    computedHash, err := hs.Hash(data)
-    if err != nil {
-        return false
+    // 双重检查余额
+    fromAccount := as.accounts[tx.FromAccount]
+    if fromAccount.Balance.Amount < tx.Amount.Amount {
+        return Result{Success: false, Error: "insufficient balance"}, nil
     }
-    return bytes.Equal(computedHash, hash)
-}
-```
 
-### 5.2 身份认证
+    // 执行转账
+    fromAccount.Balance.Amount -= tx.Amount.Amount
+    fromAccount.UpdatedAt = time.Now()
 
-```go
-// AuthenticationService 身份认证服务
-type AuthenticationService struct {
-    userManager *UserManager
-    tokenManager *TokenManager
-    hashing     *HashingService
-}
+    toAccount := as.accounts[tx.ToAccount]
+    toAccount.Balance.Amount += tx.Amount.Amount
+    toAccount.UpdatedAt = time.Now()
 
-// Authenticate 身份认证
-func (as *AuthenticationService) Authenticate(username, password string) (*AuthResult, error) {
-    // 获取用户
-    user, err := as.userManager.GetUserByUsername(username)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 验证密码
-    if !as.hashing.VerifyHash([]byte(password), user.PasswordHash) {
-        return nil, errors.New("invalid password")
-    }
-    
-    // 生成令牌
-    token, err := as.tokenManager.GenerateToken(user.ID)
-    if err != nil {
-        return nil, err
-    }
-    
-    return &AuthResult{
-        User:  user,
-        Token: token,
+    return Result{
+        Success:       true,
+        TransactionID: tx.ID,
+        Timestamp:     time.Now(),
     }, nil
 }
 
-// ValidateToken 验证令牌
-func (as *AuthenticationService) ValidateToken(token string) (*User, error) {
-    userID, err := as.tokenManager.ValidateToken(token)
-    if err != nil {
-        return nil, err
+// GetBalance 获取余额
+func (as *accountService) GetBalance(accountID string) (Money, error) {
+    as.mu.RLock()
+    defer as.mu.RUnlock()
+
+    account, exists := as.accounts[accountID]
+    if !exists {
+        return Money{}, fmt.Errorf("account %s not found", accountID)
     }
-    
-    return as.userManager.GetUser(userID)
+
+    return account.Balance, nil
+}
+
+// GetTransactionHistory 获取交易历史
+func (as *accountService) GetTransactionHistory(accountID string) ([]Transaction, error) {
+    // 简化实现，实际应该从数据库查询
+    return []Transaction{}, nil
 }
 ```
 
-## 6. 实际应用
+### 4.3 风险服务实现
+
+```go
+package fintech
+
+import (
+    "context"
+    "fmt"
+    "time"
+)
+
+// RiskService 风险服务接口
+type RiskService interface {
+    AssessRisk(ctx context.Context, tx Transaction) (RiskLevel, error)
+}
+
+// RiskLevel 风险等级
+type RiskLevel struct {
+    Level     int       `json:"level"`     // 1-5，5为最高风险
+    Score     float64   `json:"score"`     // 0-100风险评分
+    Factors   []string  `json:"factors"`   // 风险因素
+    Timestamp time.Time `json:"timestamp"`
+}
+
+const (
+    RiskLevelLow    = 1
+    RiskLevelMedium = 3
+    RiskLevelHigh   = 5
+)
+
+// riskService 风险服务实现
+type riskService struct {
+    rules []RiskRule
+}
+
+// RiskRule 风险规则
+type RiskRule interface {
+    Evaluate(tx Transaction) (float64, []string)
+}
+
+// NewRiskService 创建风险服务
+func NewRiskService() RiskService {
+    return &riskService{
+        rules: []RiskRule{
+            &AmountRiskRule{},
+            &FrequencyRiskRule{},
+            &PatternRiskRule{},
+        },
+    }
+}
+
+// AssessRisk 评估风险
+func (rs *riskService) AssessRisk(ctx context.Context, tx Transaction) (RiskLevel, error) {
+    var totalScore float64
+    var allFactors []string
+
+    // 应用所有风险规则
+    for _, rule := range rs.rules {
+        score, factors := rule.Evaluate(tx)
+        totalScore += score
+        allFactors = append(allFactors, factors...)
+    }
+
+    // 计算风险等级
+    level := rs.calculateRiskLevel(totalScore)
+
+    return RiskLevel{
+        Level:     level,
+        Score:     totalScore,
+        Factors:   allFactors,
+        Timestamp: time.Now(),
+    }, nil
+}
+
+// calculateRiskLevel 计算风险等级
+func (rs *riskService) calculateRiskLevel(score float64) int {
+    switch {
+    case score < 20:
+        return RiskLevelLow
+    case score < 60:
+        return RiskLevelMedium
+    default:
+        return RiskLevelHigh
+    }
+}
+
+// AmountRiskRule 金额风险规则
+type AmountRiskRule struct{}
+
+func (r *AmountRiskRule) Evaluate(tx Transaction) (float64, []string) {
+    var factors []string
+    score := 0.0
+
+    // 大额交易风险
+    if tx.Amount.Amount > 1000000 { // 10万
+        score += 40
+        factors = append(factors, "large_amount")
+    } else if tx.Amount.Amount > 100000 { // 1万
+        score += 20
+        factors = append(factors, "medium_amount")
+    }
+
+    return score, factors
+}
+
+// FrequencyRiskRule 频率风险规则
+type FrequencyRiskRule struct{}
+
+func (r *FrequencyRiskRule) Evaluate(tx Transaction) (float64, []string) {
+    // 简化实现，实际应该查询历史交易
+    return 10.0, []string{"frequency_check"}
+}
+
+// PatternRiskRule 模式风险规则
+type PatternRiskRule struct{}
+
+func (r *PatternRiskRule) Evaluate(tx Transaction) (float64, []string) {
+    var factors []string
+    score := 0.0
+
+    // 异常时间交易
+    hour := tx.Timestamp.Hour()
+    if hour < 6 || hour > 22 {
+        score += 15
+        factors = append(factors, "unusual_time")
+    }
+
+    // 跨时区交易
+    if tx.FromAccount != tx.ToAccount {
+        score += 5
+        factors = append(factors, "cross_account")
+    }
+
+    return score, factors
+}
+```
+
+---
+
+## 5. 性能分析
+
+### 5.1 时间复杂度
+
+| 操作 | 时间复杂度 | 说明 |
+|------|------------|------|
+| 交易处理 | O(1) | 账户查找和更新 |
+| 风险评估 | O(n) | n为风险规则数量 |
+| 合规检查 | O(m) | m为合规规则数量 |
+| 余额查询 | O(1) | 直接账户查找 |
+
+### 5.2 空间复杂度
+
+- **账户存储**: O(a) - a为账户数量
+- **交易历史**: O(t) - t为交易数量
+- **风险规则**: O(r) - r为规则数量
+
+### 5.3 性能优化
+
+```go
+// 性能优化：缓存和索引
+type OptimizedAccountService struct {
+    accounts    map[string]*Account
+    balanceCache map[string]Money
+    index       map[string][]string // 客户ID -> 账户ID列表
+    mu          sync.RWMutex
+}
+
+// 批量处理优化
+func (as *OptimizedAccountService) BatchProcessTransactions(txs []Transaction) []Result {
+    results := make([]Result, len(txs))
+    
+    // 并行处理
+    var wg sync.WaitGroup
+    for i, tx := range txs {
+        wg.Add(1)
+        go func(index int, transaction Transaction) {
+            defer wg.Done()
+            results[index], _ = as.ExecuteTransaction(context.Background(), transaction)
+        }(i, tx)
+    }
+    wg.Wait()
+    
+    return results
+}
+```
+
+---
+
+## 6. 应用场景
 
 ### 6.1 支付系统
 
 ```go
-// PaymentSystem 支付系统
+// 支付系统集成
 type PaymentSystem struct {
-    accountManager    *AccountManager
-    transactionManager *TransactionManager
-    riskManager       *RiskManager
-    securityManager   *SecurityManager
-    notificationService *NotificationService
+    financialSystem FinancialSystem
+    paymentGateway  PaymentGateway
 }
 
-// ProcessPayment 处理支付
-func (ps *PaymentSystem) ProcessPayment(payment *Payment) error {
-    // 1. 验证支付信息
-    if err := ps.validatePayment(payment); err != nil {
-        return err
-    }
-    
-    // 2. 风险检查
-    if err := ps.riskManager.CheckPayment(payment); err != nil {
-        return err
-    }
-    
-    // 3. 创建交易
-    transaction := &Transaction{
+func (ps *PaymentSystem) ProcessPayment(payment Payment) (PaymentResult, error) {
+    // 转换为内部交易格式
+    tx := Transaction{
+        ID:          payment.ID,
         FromAccount: payment.FromAccount,
         ToAccount:   payment.ToAccount,
         Amount:      payment.Amount,
         Currency:    payment.Currency,
-        Type:        TransactionTypePayment,
-        Description: payment.Description,
+        Type:        Payment,
+        Timestamp:   time.Now(),
     }
-    
-    if err := ps.transactionManager.CreateTransaction(transaction); err != nil {
-        return err
-    }
-    
-    // 4. 处理交易
-    if err := ps.transactionManager.ProcessTransaction(transaction.ID); err != nil {
-        return err
-    }
-    
-    // 5. 发送通知
-    ps.notificationService.SendPaymentNotification(payment)
-    
-    return nil
-}
 
-// validatePayment 验证支付
-func (ps *PaymentSystem) validatePayment(payment *Payment) error {
-    // 验证金额
-    if payment.Amount.LessThanOrEqual(decimal.Zero) {
-        return errors.New("invalid amount")
-    }
-    
-    // 验证账户
-    fromAccount, err := ps.accountManager.GetAccount(payment.FromAccount)
+    // 通过金融系统处理
+    result, err := ps.financialSystem.ProcessTransaction(context.Background(), tx)
     if err != nil {
-        return err
+        return PaymentResult{Success: false, Error: err.Error()}, err
     }
-    
-    if fromAccount.Status != AccountStatusActive {
-        return errors.New("source account is not active")
-    }
-    
-    if fromAccount.Balance.LessThan(payment.Amount) {
-        return errors.New("insufficient balance")
-    }
-    
-    return nil
+
+    return PaymentResult{
+        Success: result.Success,
+        ID:      result.TransactionID,
+    }, nil
 }
 ```
 
-### 6.2 报表系统
+### 6.2 风控系统
 
 ```go
-// ReportSystem 报表系统
-type ReportSystem struct {
-    accountManager    *AccountManager
-    transactionManager *TransactionManager
-    reportGenerator   *ReportGenerator
-    reportScheduler   *ReportScheduler
+// 风控系统集成
+type RiskManagementSystem struct {
+    riskService    RiskService
+    alertService   AlertService
+    reportService  ReportService
 }
 
-// GenerateBalanceReport 生成余额报表
-func (rs *ReportSystem) GenerateBalanceReport(userID string, startDate, endDate time.Time) (*BalanceReport, error) {
-    // 获取用户账户
-    accounts, err := rs.accountManager.GetUserAccounts(userID)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 获取交易记录
-    transactions, err := rs.transactionManager.GetUserTransactions(userID, startDate, endDate)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 生成报表
-    report := &BalanceReport{
-        UserID:      userID,
-        StartDate:   startDate,
-        EndDate:     endDate,
-        Accounts:    accounts,
-        Transactions: transactions,
-        GeneratedAt: time.Now(),
-    }
-    
-    // 计算统计信息
-    rs.calculateBalanceStatistics(report)
-    
-    return report, nil
-}
+func (rms *RiskManagementSystem) MonitorTransactions(txs []Transaction) {
+    for _, tx := range txs {
+        riskLevel, err := rms.riskService.AssessRisk(context.Background(), tx)
+        if err != nil {
+            continue
+        }
 
-// calculateBalanceStatistics 计算余额统计
-func (rs *ReportSystem) calculateBalanceStatistics(report *BalanceReport) {
-    var totalBalance decimal.Decimal
-    var totalTransactions int
-    var totalAmount decimal.Decimal
-    
-    for _, account := range report.Accounts {
-        totalBalance = totalBalance.Add(account.Balance)
-    }
-    
-    for _, transaction := range report.Transactions {
-        totalTransactions++
-        totalAmount = totalAmount.Add(transaction.Amount)
-    }
-    
-    report.Statistics = &BalanceStatistics{
-        TotalBalance:     totalBalance,
-        TotalTransactions: totalTransactions,
-        TotalAmount:      totalAmount,
-        AverageAmount:    totalAmount.Div(decimal.NewFromInt(int64(totalTransactions))),
+        if riskLevel.Level >= RiskLevelHigh {
+            rms.alertService.SendAlert(Alert{
+                Type:    "high_risk_transaction",
+                Level:   riskLevel.Level,
+                Message: fmt.Sprintf("High risk transaction detected: %s", tx.ID),
+            })
+        }
     }
 }
 ```
+
+### 6.3 合规系统
+
+```go
+// 合规系统集成
+type ComplianceSystem struct {
+    complianceService ComplianceService
+    auditService      AuditService
+    reportService     ReportService
+}
+
+func (cs *ComplianceSystem) CheckCompliance(tx Transaction) (ComplianceResult, error) {
+    status, err := cs.complianceService.CheckCompliance(context.Background(), tx)
+    if err != nil {
+        return ComplianceResult{Compliant: false, Error: err.Error()}, err
+    }
+
+    // 记录合规检查结果
+    cs.auditService.LogComplianceCheck(tx, status)
+
+    return ComplianceResult{
+        Compliant: status.IsCompliant,
+        Rules:     status.AppliedRules,
+    }, nil
+}
+```
+
+---
+
+## 7. 相关架构
+
+### 7.1 微服务架构
+
+```go
+// 微服务架构示例
+type MicroserviceArchitecture struct {
+    transactionService TransactionService
+    accountService     AccountService
+    riskService        RiskService
+    complianceService  ComplianceService
+    auditService       AuditService
+}
+
+// 服务发现和负载均衡
+type ServiceRegistry interface {
+    Register(service Service) error
+    Discover(serviceName string) ([]Service, error)
+    HealthCheck(service Service) bool
+}
+```
+
+### 7.2 事件驱动架构
+
+```go
+// 事件驱动架构
+type EventDrivenArchitecture struct {
+    eventBus    EventBus
+    handlers    map[string][]EventHandler
+}
+
+type EventBus interface {
+    Publish(event Event) error
+    Subscribe(eventType string, handler EventHandler) error
+}
+
+type EventHandler interface {
+    Handle(event Event) error
+}
+
+// 交易事件
+type TransactionEvent struct {
+    Type        string      `json:"type"`
+    Transaction Transaction `json:"transaction"`
+    Result      Result      `json:"result"`
+    Timestamp   time.Time   `json:"timestamp"`
+}
+```
+
+### 7.3 CQRS架构
+
+```go
+// CQRS架构
+type CQRSArchitecture struct {
+    commandBus CommandBus
+    queryBus   QueryBus
+}
+
+type CommandBus interface {
+    Send(command Command) error
+}
+
+type QueryBus interface {
+    Query(query Query) (interface{}, error)
+}
+
+// 命令
+type ProcessTransactionCommand struct {
+    Transaction Transaction `json:"transaction"`
+}
+
+// 查询
+type GetAccountBalanceQuery struct {
+    AccountID string `json:"account_id"`
+}
+```
+
+---
 
 ## 总结
 
-金融系统架构是构建安全、可靠、高性能金融应用的基础。本文档提供了完整的理论基础、形式化定义、Go语言实现和实际应用示例。
+金融系统架构通过严格的ACID事务处理、多层次风险控制和全面的合规监管，确保了金融业务的安全性和可靠性。通过Go语言的高性能特性和并发安全机制，可以构建出满足金融行业严苛要求的技术系统。
 
-### 关键要点
+**相关链接**:
 
-1. **安全性**: 实现多层次的安全保护机制
-2. **一致性**: 确保数据一致性和事务完整性
-3. **可扩展性**: 设计支持业务增长的架构
-4. **合规性**: 满足金融监管要求
-5. **监控告警**: 建立完善的监控体系
-
-### 扩展阅读
-
-- [支付系统](./02-Payment-System.md)
-- [风控系统](./03-Risk-Management-System.md)
-- [清算系统](./04-Settlement-System.md)
+- [02-支付系统](../02-Payment-System.md)
+- [03-风控系统](../03-Risk-Management-System.md)
+- [返回行业领域目录](../../README.md)
