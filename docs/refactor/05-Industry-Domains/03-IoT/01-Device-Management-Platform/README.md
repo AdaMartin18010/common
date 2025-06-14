@@ -1,981 +1,906 @@
 # 01-设备管理平台 (Device Management Platform)
 
-## 1. 概述
+## 概述
 
-### 1.1 定义与目标
+设备管理平台是物联网系统的核心组件，负责大规模设备的连接、注册、监控、配置管理和生命周期管理。本文档使用Go语言实现，并提供形式化的数学定义和证明。
 
-**设备管理平台**是物联网系统的核心组件，负责大规模设备的生命周期管理、状态监控、配置管理和安全控制。
+## 目录
 
-**形式化定义**：
-设 $D = \{d_1, d_2, ..., d_n\}$ 为设备集合，$S = \{s_1, s_2, ..., s_m\}$ 为状态集合，则设备管理平台可定义为：
+- [1. 形式化定义](#1-形式化定义)
+- [2. 架构设计](#2-架构设计)
+- [3. 核心组件](#3-核心组件)
+- [4. 数据模型](#4-数据模型)
+- [5. 算法实现](#5-算法实现)
+- [6. 性能分析](#6-性能分析)
+- [7. 安全机制](#7-安全机制)
+- [8. 部署方案](#8-部署方案)
 
-$$P_{DMP} = (D, S, T, C, F)$$
+## 1. 形式化定义
+
+### 1.1 设备管理系统的数学定义
+
+**定义 1.1** (设备管理系统)
+设备管理系统是一个五元组 $DMS = (D, S, C, F, T)$，其中：
+
+- $D = \{d_1, d_2, ..., d_n\}$ 是设备集合
+- $S = \{s_1, s_2, ..., s_m\}$ 是状态集合
+- $C = \{c_1, c_2, ..., c_k\}$ 是配置集合
+- $F: D \times S \rightarrow S$ 是状态转移函数
+- $T: D \times C \rightarrow C$ 是配置更新函数
+
+**定义 1.2** (设备状态)
+设备 $d_i$ 的状态 $s_i$ 定义为：
+$$s_i = (status, health, last_seen, metadata)$$
 
 其中：
+- $status \in \{online, offline, error, maintenance\}$
+- $health \in [0, 1]$ 表示健康度
+- $last_seen \in \mathbb{R}^+$ 表示最后活跃时间戳
+- $metadata \in \mathcal{P}(\Sigma^*)$ 表示元数据集合
 
-- $T: D \times S \rightarrow S$ 为状态转换函数
-- $C: D \rightarrow \mathcal{P}(Config)$ 为配置映射函数  
-- $F: D \times Event \rightarrow Action$ 为事件处理函数
+**定理 1.1** (设备状态一致性)
+对于任意设备 $d_i \in D$，其状态转移满足：
+$$\forall s_1, s_2 \in S: F(d_i, s_1) = F(d_i, s_2) \Rightarrow s_1 = s_2$$
 
-### 1.2 核心挑战
+**证明**：
+假设存在 $s_1 \neq s_2$ 但 $F(d_i, s_1) = F(d_i, s_2)$。
+根据状态转移函数的定义，$F$ 是确定性的，因此：
+$$F(d_i, s_1) = F(d_i, s_2) \Rightarrow s_1 = s_2$$
+这与假设矛盾，因此定理成立。$\square$
 
-1. **大规模设备管理**：支持百万级设备并发连接
-2. **实时状态同步**：设备状态实时更新和同步
-3. **配置管理**：设备配置的版本控制和分发
-4. **安全控制**：设备认证、授权和加密通信
-5. **故障恢复**：设备离线检测和自动重连
+### 1.2 设备发现算法
+
+**算法 1.1** (设备发现算法)
+```go
+// 设备发现算法的形式化描述
+func DeviceDiscovery(network Network, timeout Duration) DeviceSet {
+    discovered := NewDeviceSet()
+    active := network.ScanActiveDevices(timeout)
+    
+    for device := range active {
+        if ValidateDevice(device) {
+            discovered.Add(device)
+        }
+    }
+    
+    return discovered
+}
+```
+
+**复杂度分析**：
+- 时间复杂度：$O(n \cdot m)$，其中 $n$ 是网络设备数量，$m$ 是验证时间
+- 空间复杂度：$O(n)$，用于存储发现的设备
 
 ## 2. 架构设计
 
-### 2.1 分层架构
+### 2.1 系统架构图
 
 ```mermaid
 graph TB
-    A[应用层] --> B[服务层]
-    B --> C[协议层]
-    C --> D[硬件层]
+    A[设备管理平台] --> B[设备注册服务]
+    A --> C[设备监控服务]
+    A --> D[配置管理服务]
+    A --> E[生命周期管理]
     
-    A1[设备管理] --> A
-    A2[配置管理] --> A
-    A3[监控告警] --> A
+    B --> F[设备发现]
+    B --> G[身份验证]
+    B --> H[元数据管理]
     
-    B1[设备注册] --> B
-    B2[状态管理] --> B
-    B3[通信服务] --> B
+    C --> I[健康检查]
+    C --> J[性能监控]
+    C --> K[告警系统]
     
-    C1[MQTT] --> C
-    C2[CoAP] --> C
-    C3[HTTP] --> C
+    D --> L[配置下发]
+    D --> M[配置验证]
+    D --> N[版本管理]
     
-    D1[传感器] --> D
-    D2[执行器] --> D
-    D3[通信模块] --> D
+    E --> O[设备上线]
+    E --> P[设备下线]
+    E --> Q[设备维护]
 ```
 
 ### 2.2 微服务架构
 
 ```go
-// 设备管理服务
-type DeviceManagementService struct {
-    deviceRegistry    *DeviceRegistry
-    stateManager      *StateManager
-    configManager     *ConfigManager
-    communicationMgr  *CommunicationManager
-    securityMgr       *SecurityManager
+// 设备管理平台的核心架构
+type DeviceManagementPlatform struct {
+    registry    *DeviceRegistry
+    monitor     *DeviceMonitor
+    config      *ConfigManager
+    lifecycle   *LifecycleManager
+    security    *SecurityManager
+    analytics   *AnalyticsEngine
 }
 
 // 设备注册服务
 type DeviceRegistry struct {
-    devices    map[string]*Device
-    mutex      sync.RWMutex
-    db         *sql.DB
+    devices     map[string]*Device
+    metadata    *MetadataStore
+    auth        *AuthenticationService
+    mutex       sync.RWMutex
 }
 
-// 状态管理服务
-type StateManager struct {
-    states     map[string]*DeviceState
-    mutex      sync.RWMutex
-    cache      *redis.Client
+// 设备监控服务
+type DeviceMonitor struct {
+    healthChecker *HealthChecker
+    performance   *PerformanceMonitor
+    alerting      *AlertingSystem
+    metrics       *MetricsCollector
 }
 
 // 配置管理服务
 type ConfigManager struct {
-    configs    map[string]*DeviceConfig
-    versions   map[string][]string
-    mutex      sync.RWMutex
+    configStore  *ConfigStore
+    validator    *ConfigValidator
+    distributor  *ConfigDistributor
+    versioner    *VersionManager
 }
 ```
 
-## 3. 核心组件实现
+## 3. 核心组件
 
-### 3.1 设备模型
+### 3.1 设备注册组件
 
 ```go
-// 设备基础模型
-type Device struct {
-    ID              string            `json:"id"`
-    Name            string            `json:"name"`
-    Type            DeviceType        `json:"type"`
-    Status          DeviceStatus      `json:"status"`
-    LastSeen        time.Time         `json:"last_seen"`
-    Config          *DeviceConfig     `json:"config"`
-    Metadata        map[string]string `json:"metadata"`
-    CreatedAt       time.Time         `json:"created_at"`
-    UpdatedAt       time.Time         `json:"updated_at"`
+// 设备注册接口
+type DeviceRegistration interface {
+    Register(device *Device) error
+    Unregister(deviceID string) error
+    Update(device *Device) error
+    Get(deviceID string) (*Device, error)
+    List(filters DeviceFilters) ([]*Device, error)
 }
 
-// 设备类型枚举
-type DeviceType string
+// 设备结构体
+type Device struct {
+    ID          string            `json:"id"`
+    Name        string            `json:"name"`
+    Type        DeviceType        `json:"type"`
+    Status      DeviceStatus      `json:"status"`
+    Health      float64           `json:"health"`
+    LastSeen    time.Time         `json:"last_seen"`
+    Metadata    map[string]string `json:"metadata"`
+    Config      *DeviceConfig     `json:"config"`
+    Location    *Location         `json:"location"`
+    CreatedAt   time.Time         `json:"created_at"`
+    UpdatedAt   time.Time         `json:"updated_at"`
+}
 
-const (
-    DeviceTypeSensor    DeviceType = "sensor"
-    DeviceTypeActuator  DeviceType = "actuator"
-    DeviceTypeGateway   DeviceType = "gateway"
-    DeviceTypeController DeviceType = "controller"
-)
+// 设备注册实现
+type deviceRegistry struct {
+    devices  map[string]*Device
+    mutex    sync.RWMutex
+    storage  DeviceStorage
+    auth     AuthenticationService
+}
 
-// 设备状态枚举
-type DeviceStatus string
+func (r *deviceRegistry) Register(device *Device) error {
+    r.mutex.Lock()
+    defer r.mutex.Unlock()
+    
+    // 验证设备信息
+    if err := r.validateDevice(device); err != nil {
+        return fmt.Errorf("device validation failed: %w", err)
+    }
+    
+    // 生成设备ID
+    if device.ID == "" {
+        device.ID = generateDeviceID(device)
+    }
+    
+    // 设置时间戳
+    now := time.Now()
+    device.CreatedAt = now
+    device.UpdatedAt = now
+    
+    // 存储设备
+    if err := r.storage.Store(device); err != nil {
+        return fmt.Errorf("failed to store device: %w", err)
+    }
+    
+    r.devices[device.ID] = device
+    return nil
+}
 
-const (
-    DeviceStatusOnline   DeviceStatus = "online"
-    DeviceStatusOffline  DeviceStatus = "offline"
-    DeviceStatusError    DeviceStatus = "error"
-    DeviceStatusMaintenance DeviceStatus = "maintenance"
-)
+func (r *deviceRegistry) validateDevice(device *Device) error {
+    if device.Name == "" {
+        return errors.New("device name is required")
+    }
+    
+    if device.Type == "" {
+        return errors.New("device type is required")
+    }
+    
+    // 验证元数据
+    for key, value := range device.Metadata {
+        if !isValidMetadataKey(key) || !isValidMetadataValue(value) {
+            return fmt.Errorf("invalid metadata: %s=%s", key, value)
+        }
+    }
+    
+    return nil
+}
+```
+
+### 3.2 设备监控组件
+
+```go
+// 设备监控接口
+type DeviceMonitoring interface {
+    StartMonitoring(deviceID string) error
+    StopMonitoring(deviceID string) error
+    GetHealth(deviceID string) (*HealthStatus, error)
+    GetMetrics(deviceID string, duration time.Duration) ([]Metric, error)
+    SetAlert(deviceID string, alert *Alert) error
+}
+
+// 健康状态
+type HealthStatus struct {
+    DeviceID    string    `json:"device_id"`
+    Status      string    `json:"status"`
+    Score       float64   `json:"score"`
+    LastCheck   time.Time `json:"last_check"`
+    Details     []string  `json:"details"`
+}
+
+// 健康检查器
+type healthChecker struct {
+    checks    map[string]HealthCheck
+    interval  time.Duration
+    timeout   time.Duration
+}
+
+type HealthCheck func(device *Device) (*HealthResult, error)
+
+type HealthResult struct {
+    Passed     bool      `json:"passed"`
+    Score      float64   `json:"score"`
+    Message    string    `json:"message"`
+    Timestamp  time.Time `json:"timestamp"`
+}
+
+// 健康检查实现
+func (hc *healthChecker) CheckHealth(device *Device) (*HealthStatus, error) {
+    var results []*HealthResult
+    var totalScore float64
+    
+    for name, check := range hc.checks {
+        result, err := check(device)
+        if err != nil {
+            return nil, fmt.Errorf("health check %s failed: %w", name, err)
+        }
+        
+        results = append(results, result)
+        totalScore += result.Score
+    }
+    
+    avgScore := totalScore / float64(len(results))
+    status := hc.determineStatus(avgScore, results)
+    
+    return &HealthStatus{
+        DeviceID:  device.ID,
+        Status:    status,
+        Score:     avgScore,
+        LastCheck: time.Now(),
+        Details:   hc.extractDetails(results),
+    }, nil
+}
+
+func (hc *healthChecker) determineStatus(score float64, results []*HealthResult) string {
+    if score >= 0.8 {
+        return "healthy"
+    } else if score >= 0.6 {
+        return "warning"
+    } else {
+        return "critical"
+    }
+}
+```
+
+### 3.3 配置管理组件
+
+```go
+// 配置管理接口
+type ConfigManagement interface {
+    SetConfig(deviceID string, config *DeviceConfig) error
+    GetConfig(deviceID string) (*DeviceConfig, error)
+    UpdateConfig(deviceID string, updates map[string]interface{}) error
+    ValidateConfig(config *DeviceConfig) error
+    RollbackConfig(deviceID string, version string) error
+}
 
 // 设备配置
 type DeviceConfig struct {
     Version     string                 `json:"version"`
     Parameters  map[string]interface{} `json:"parameters"`
-    Rules       []Rule                 `json:"rules"`
-    Schedule    *Schedule              `json:"schedule"`
+    Rules       []ConfigRule          `json:"rules"`
+    Metadata    map[string]string     `json:"metadata"`
+    CreatedAt   time.Time             `json:"created_at"`
+    UpdatedAt   time.Time             `json:"updated_at"`
 }
 
-// 设备状态
-type DeviceState struct {
-    DeviceID    string                 `json:"device_id"`
-    Status      DeviceStatus           `json:"status"`
-    Data        map[string]interface{} `json:"data"`
-    Alerts      []Alert                `json:"alerts"`
-    LastUpdate  time.Time              `json:"last_update"`
-}
-```
-
-### 3.2 设备注册服务
-
-```go
-// 设备注册服务实现
-type DeviceRegistryService struct {
-    registry *DeviceRegistry
-    logger   *log.Logger
+// 配置规则
+type ConfigRule struct {
+    Name        string      `json:"name"`
+    Condition   string      `json:"condition"`
+    Action      string      `json:"action"`
+    Priority    int         `json:"priority"`
+    Enabled     bool        `json:"enabled"`
 }
 
-// 注册新设备
-func (s *DeviceRegistryService) RegisterDevice(ctx context.Context, device *Device) error {
-    s.registry.mutex.Lock()
-    defer s.registry.mutex.Unlock()
-    
-    // 验证设备信息
-    if err := s.validateDevice(device); err != nil {
-        return fmt.Errorf("device validation failed: %w", err)
-    }
-    
-    // 检查设备是否已存在
-    if _, exists := s.registry.devices[device.ID]; exists {
-        return fmt.Errorf("device %s already exists", device.ID)
-    }
-    
-    // 设置创建时间
-    device.CreatedAt = time.Now()
-    device.UpdatedAt = time.Now()
-    
-    // 存储到内存
-    s.registry.devices[device.ID] = device
-    
-    // 存储到数据库
-    if err := s.saveToDatabase(ctx, device); err != nil {
-        delete(s.registry.devices, device.ID)
-        return fmt.Errorf("failed to save device to database: %w", err)
-    }
-    
-    s.logger.Printf("Device %s registered successfully", device.ID)
-    return nil
+// 配置管理器实现
+type configManager struct {
+    storage     ConfigStorage
+    validator   ConfigValidator
+    distributor ConfigDistributor
+    versioner   VersionManager
 }
 
-// 获取设备信息
-func (s *DeviceRegistryService) GetDevice(ctx context.Context, deviceID string) (*Device, error) {
-    s.registry.mutex.RLock()
-    defer s.registry.mutex.RUnlock()
-    
-    device, exists := s.registry.devices[deviceID]
-    if !exists {
-        return nil, fmt.Errorf("device %s not found", deviceID)
+func (cm *configManager) SetConfig(deviceID string, config *DeviceConfig) error {
+    // 验证配置
+    if err := cm.validator.Validate(config); err != nil {
+        return fmt.Errorf("config validation failed: %w", err)
     }
     
-    return device, nil
-}
-
-// 更新设备状态
-func (s *DeviceRegistryService) UpdateDeviceStatus(ctx context.Context, deviceID string, status DeviceStatus) error {
-    s.registry.mutex.Lock()
-    defer s.registry.mutex.Unlock()
-    
-    device, exists := s.registry.devices[deviceID]
-    if !exists {
-        return fmt.Errorf("device %s not found", deviceID)
-    }
-    
-    device.Status = status
-    device.UpdatedAt = time.Now()
-    
-    // 更新数据库
-    return s.updateDeviceInDatabase(ctx, device)
-}
-
-// 设备验证
-func (s *DeviceRegistryService) validateDevice(device *Device) error {
-    if device.ID == "" {
-        return fmt.Errorf("device ID cannot be empty")
-    }
-    
-    if device.Name == "" {
-        return fmt.Errorf("device name cannot be empty")
-    }
-    
-    if device.Type == "" {
-        return fmt.Errorf("device type cannot be empty")
-    }
-    
-    return nil
-}
-```
-
-### 3.3 状态管理服务
-
-```go
-// 状态管理服务实现
-type StateManagerService struct {
-    stateManager *StateManager
-    logger       *log.Logger
-}
-
-// 更新设备状态
-func (s *StateManagerService) UpdateDeviceState(ctx context.Context, deviceID string, data map[string]interface{}) error {
-    s.stateManager.mutex.Lock()
-    defer s.stateManager.mutex.Unlock()
-    
-    state, exists := s.stateManager.states[deviceID]
-    if !exists {
-        state = &DeviceState{
-            DeviceID:   deviceID,
-            Status:     DeviceStatusOnline,
-            Data:       make(map[string]interface{}),
-            Alerts:     make([]Alert, 0),
-            LastUpdate: time.Now(),
-        }
-        s.stateManager.states[deviceID] = state
-    }
-    
-    // 更新状态数据
-    state.Data = data
-    state.LastUpdate = time.Now()
-    
-    // 检查告警条件
-    alerts := s.checkAlerts(deviceID, data)
-    state.Alerts = alerts
-    
-    // 缓存到Redis
-    return s.cacheState(ctx, state)
-}
-
-// 获取设备状态
-func (s *StateManagerService) GetDeviceState(ctx context.Context, deviceID string) (*DeviceState, error) {
-    s.stateManager.mutex.RLock()
-    defer s.stateManager.mutex.RUnlock()
-    
-    state, exists := s.stateManager.states[deviceID]
-    if !exists {
-        return nil, fmt.Errorf("device state %s not found", deviceID)
-    }
-    
-    return state, nil
-}
-
-// 批量获取设备状态
-func (s *StateManagerService) GetDeviceStates(ctx context.Context, deviceIDs []string) (map[string]*DeviceState, error) {
-    s.stateManager.mutex.RLock()
-    defer s.stateManager.mutex.RUnlock()
-    
-    states := make(map[string]*DeviceState)
-    for _, deviceID := range deviceIDs {
-        if state, exists := s.stateManager.states[deviceID]; exists {
-            states[deviceID] = state
-        }
-    }
-    
-    return states, nil
-}
-
-// 检查告警条件
-func (s *StateManagerService) checkAlerts(deviceID string, data map[string]interface{}) []Alert {
-    alerts := make([]Alert, 0)
-    
-    // 温度告警检查
-    if temp, ok := data["temperature"].(float64); ok {
-        if temp > 80.0 {
-            alerts = append(alerts, Alert{
-                Type:      AlertTypeHighTemperature,
-                Message:   fmt.Sprintf("Temperature too high: %.2f°C", temp),
-                Severity:  AlertSeverityWarning,
-                Timestamp: time.Now(),
-            })
-        }
-    }
-    
-    // 湿度告警检查
-    if humidity, ok := data["humidity"].(float64); ok {
-        if humidity > 90.0 {
-            alerts = append(alerts, Alert{
-                Type:      AlertTypeHighHumidity,
-                Message:   fmt.Sprintf("Humidity too high: %.2f%%", humidity),
-                Severity:  AlertSeverityWarning,
-                Timestamp: time.Now(),
-            })
-        }
-    }
-    
-    return alerts
-}
-```
-
-### 3.4 配置管理服务
-
-```go
-// 配置管理服务实现
-type ConfigManagerService struct {
-    configManager *ConfigManager
-    logger        *log.Logger
-}
-
-// 创建设备配置
-func (s *ConfigManagerService) CreateDeviceConfig(ctx context.Context, deviceID string, config *DeviceConfig) error {
-    s.configManager.mutex.Lock()
-    defer s.configManager.mutex.Unlock()
-    
-    // 生成版本号
-    config.Version = s.generateVersion(deviceID)
+    // 生成版本
+    config.Version = cm.versioner.GenerateVersion()
+    config.UpdatedAt = time.Now()
     
     // 存储配置
-    s.configManager.configs[deviceID] = config
-    
-    // 记录版本历史
-    if s.configManager.versions[deviceID] == nil {
-        s.configManager.versions[deviceID] = make([]string, 0)
-    }
-    s.configManager.versions[deviceID] = append(s.configManager.versions[deviceID], config.Version)
-    
-    // 保存到数据库
-    return s.saveConfigToDatabase(ctx, deviceID, config)
-}
-
-// 获取设备配置
-func (s *ConfigManagerService) GetDeviceConfig(ctx context.Context, deviceID string) (*DeviceConfig, error) {
-    s.configManager.mutex.RLock()
-    defer s.configManager.mutex.RUnlock()
-    
-    config, exists := s.configManager.configs[deviceID]
-    if !exists {
-        return nil, fmt.Errorf("config for device %s not found", deviceID)
+    if err := cm.storage.Store(deviceID, config); err != nil {
+        return fmt.Errorf("failed to store config: %w", err)
     }
     
-    return config, nil
-}
-
-// 更新设备配置
-func (s *ConfigManagerService) UpdateDeviceConfig(ctx context.Context, deviceID string, updates map[string]interface{}) error {
-    s.configManager.mutex.Lock()
-    defer s.configManager.mutex.Unlock()
-    
-    config, exists := s.configManager.configs[deviceID]
-    if !exists {
-        return fmt.Errorf("config for device %s not found", deviceID)
+    // 分发配置
+    if err := cm.distributor.Distribute(deviceID, config); err != nil {
+        return fmt.Errorf("failed to distribute config: %w", err)
     }
     
-    // 创建新版本
-    newConfig := &DeviceConfig{
-        Version:    s.generateVersion(deviceID),
-        Parameters: make(map[string]interface{}),
-        Rules:      config.Rules,
-        Schedule:   config.Schedule,
-    }
-    
-    // 复制现有参数
-    for k, v := range config.Parameters {
-        newConfig.Parameters[k] = v
-    }
-    
-    // 应用更新
-    for k, v := range updates {
-        newConfig.Parameters[k] = v
-    }
-    
-    // 更新配置
-    s.configManager.configs[deviceID] = newConfig
-    s.configManager.versions[deviceID] = append(s.configManager.versions[deviceID], newConfig.Version)
-    
-    return s.saveConfigToDatabase(ctx, deviceID, newConfig)
-}
-
-// 获取配置版本历史
-func (s *ConfigManagerService) GetConfigVersions(ctx context.Context, deviceID string) ([]string, error) {
-    s.configManager.mutex.RLock()
-    defer s.configManager.mutex.RUnlock()
-    
-    versions, exists := s.configManager.versions[deviceID]
-    if !exists {
-        return nil, fmt.Errorf("no config versions found for device %s", deviceID)
-    }
-    
-    return versions, nil
-}
-
-// 生成版本号
-func (s *ConfigManagerService) generateVersion(deviceID string) string {
-    timestamp := time.Now().Unix()
-    return fmt.Sprintf("v%d", timestamp)
-}
-```
-
-## 4. 通信协议支持
-
-### 4.1 MQTT协议支持
-
-```go
-// MQTT通信管理器
-type MQTTManager struct {
-    client     mqtt.Client
-    topics     map[string]mqtt.MessageHandler
-    logger     *log.Logger
-}
-
-// 初始化MQTT客户端
-func NewMQTTManager(broker string, clientID string) (*MQTTManager, error) {
-    opts := mqtt.NewClientOptions()
-    opts.AddBroker(broker)
-    opts.SetClientID(clientID)
-    opts.SetAutoReconnect(true)
-    opts.SetConnectRetry(true)
-    
-    client := mqtt.NewClient(opts)
-    if token := client.Connect(); token.Wait() && token.Error() != nil {
-        return nil, fmt.Errorf("failed to connect to MQTT broker: %w", token.Error())
-    }
-    
-    return &MQTTManager{
-        client: client,
-        topics: make(map[string]mqtt.MessageHandler),
-        logger: log.New(os.Stdout, "[MQTT] ", log.LstdFlags),
-    }, nil
-}
-
-// 订阅主题
-func (m *MQTTManager) Subscribe(topic string, handler mqtt.MessageHandler) error {
-    if token := m.client.Subscribe(topic, 0, handler); token.Wait() && token.Error() != nil {
-        return fmt.Errorf("failed to subscribe to topic %s: %w", topic, token.Error())
-    }
-    
-    m.topics[topic] = handler
-    m.logger.Printf("Subscribed to topic: %s", topic)
     return nil
 }
 
-// 发布消息
-func (m *MQTTManager) Publish(topic string, payload interface{}) error {
-    data, err := json.Marshal(payload)
-    if err != nil {
-        return fmt.Errorf("failed to marshal payload: %w", err)
-    }
-    
-    if token := m.client.Publish(topic, 0, false, data); token.Wait() && token.Error() != nil {
-        return fmt.Errorf("failed to publish to topic %s: %w", topic, token.Error())
-    }
-    
-    m.logger.Printf("Published to topic: %s", topic)
-    return nil
-}
-
-// 处理设备数据消息
-func (m *MQTTManager) handleDeviceData(client mqtt.Client, msg mqtt.Message) {
-    var deviceData DeviceData
-    if err := json.Unmarshal(msg.Payload(), &deviceData); err != nil {
-        m.logger.Printf("Failed to unmarshal device data: %v", err)
-        return
-    }
-    
-    m.logger.Printf("Received data from device %s: %+v", deviceData.DeviceID, deviceData)
-    
-    // 处理设备数据
-    // 这里可以调用状态管理服务更新设备状态
-}
-
-// 设备数据结构
-type DeviceData struct {
-    DeviceID    string                 `json:"device_id"`
-    Timestamp   time.Time              `json:"timestamp"`
-    Data        map[string]interface{} `json:"data"`
-    Status      DeviceStatus           `json:"status"`
-}
-```
-
-### 4.2 CoAP协议支持
-
-```go
-// CoAP通信管理器
-type CoAPManager struct {
-    server     *coap.Server
-    handlers   map[string]coap.HandlerFunc
-    logger     *log.Logger
-}
-
-// 初始化CoAP服务器
-func NewCoAPManager(addr string) (*CoAPManager, error) {
-    server := coap.NewServer()
-    
-    manager := &CoAPManager{
-        server:   server,
-        handlers: make(map[string]coap.HandlerFunc),
-        logger:   log.New(os.Stdout, "[CoAP] ", log.LstdFlags),
-    }
-    
-    // 注册默认处理器
-    server.Handle("/device", manager.handleDeviceRequest)
-    server.Handle("/data", manager.handleDataRequest)
-    server.Handle("/config", manager.handleConfigRequest)
-    
-    go func() {
-        if err := server.ListenAndServe(addr); err != nil {
-            manager.logger.Printf("CoAP server error: %v", err)
+func (cm *configManager) ValidateConfig(config *DeviceConfig) error {
+    // 验证参数
+    for key, value := range config.Parameters {
+        if err := cm.validateParameter(key, value); err != nil {
+            return fmt.Errorf("invalid parameter %s: %w", key, err)
         }
+    }
+    
+    // 验证规则
+    for _, rule := range config.Rules {
+        if err := cm.validateRule(rule); err != nil {
+            return fmt.Errorf("invalid rule %s: %w", rule.Name, err)
+        }
+    }
+    
+    return nil
+}
+```
+
+## 4. 数据模型
+
+### 4.1 数据库设计
+
+```sql
+-- 设备表
+CREATE TABLE devices (
+    id VARCHAR(64) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'offline',
+    health DECIMAL(3,2) DEFAULT 1.00,
+    last_seen TIMESTAMP,
+    metadata JSONB,
+    location_lat DECIMAL(10,8),
+    location_lng DECIMAL(11,8),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 设备配置表
+CREATE TABLE device_configs (
+    id SERIAL PRIMARY KEY,
+    device_id VARCHAR(64) REFERENCES devices(id),
+    version VARCHAR(50) NOT NULL,
+    parameters JSONB NOT NULL,
+    rules JSONB,
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(device_id, version)
+);
+
+-- 设备健康记录表
+CREATE TABLE device_health (
+    id SERIAL PRIMARY KEY,
+    device_id VARCHAR(64) REFERENCES devices(id),
+    status VARCHAR(50) NOT NULL,
+    score DECIMAL(3,2) NOT NULL,
+    details JSONB,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 设备告警表
+CREATE TABLE device_alerts (
+    id SERIAL PRIMARY KEY,
+    device_id VARCHAR(64) REFERENCES devices(id),
+    type VARCHAR(100) NOT NULL,
+    severity VARCHAR(20) NOT NULL,
+    message TEXT NOT NULL,
+    resolved BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP
+);
+```
+
+### 4.2 数据访问层
+
+```go
+// 数据访问接口
+type DeviceRepository interface {
+    Create(device *Device) error
+    Update(device *Device) error
+    Delete(deviceID string) error
+    FindByID(deviceID string) (*Device, error)
+    FindByType(deviceType DeviceType) ([]*Device, error)
+    FindByStatus(status DeviceStatus) ([]*Device, error)
+    FindByLocation(location *Location, radius float64) ([]*Device, error)
+}
+
+// PostgreSQL实现
+type postgresDeviceRepository struct {
+    db *sql.DB
+}
+
+func (r *postgresDeviceRepository) Create(device *Device) error {
+    query := `
+        INSERT INTO devices (id, name, type, status, health, last_seen, metadata, location_lat, location_lng)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `
+    
+    metadata, err := json.Marshal(device.Metadata)
+    if err != nil {
+        return fmt.Errorf("failed to marshal metadata: %w", err)
+    }
+    
+    _, err = r.db.Exec(query,
+        device.ID,
+        device.Name,
+        device.Type,
+        device.Status,
+        device.Health,
+        device.LastSeen,
+        metadata,
+        device.Location.Latitude,
+        device.Location.Longitude,
+    )
+    
+    return err
+}
+
+func (r *postgresDeviceRepository) FindByID(deviceID string) (*Device, error) {
+    query := `
+        SELECT id, name, type, status, health, last_seen, metadata, location_lat, location_lng, created_at, updated_at
+        FROM devices WHERE id = $1
+    `
+    
+    var device Device
+    var metadata []byte
+    
+    err := r.db.QueryRow(query, deviceID).Scan(
+        &device.ID,
+        &device.Name,
+        &device.Type,
+        &device.Status,
+        &device.Health,
+        &device.LastSeen,
+        &metadata,
+        &device.Location.Latitude,
+        &device.Location.Longitude,
+        &device.CreatedAt,
+        &device.UpdatedAt,
+    )
+    
+    if err != nil {
+        return nil, err
+    }
+    
+    if err := json.Unmarshal(metadata, &device.Metadata); err != nil {
+        return nil, fmt.Errorf("failed to unmarshal metadata: %w", err)
+    }
+    
+    return &device, nil
+}
+```
+
+## 5. 算法实现
+
+### 5.1 设备发现算法
+
+```go
+// 设备发现算法实现
+type DeviceDiscoveryAlgorithm struct {
+    networkScanner NetworkScanner
+    validator      DeviceValidator
+    rateLimiter    RateLimiter
+}
+
+func (dda *DeviceDiscoveryAlgorithm) Discover(timeout time.Duration) ([]*Device, error) {
+    var discovered []*Device
+    
+    // 扫描网络
+    devices, err := dda.networkScanner.Scan(timeout)
+    if err != nil {
+        return nil, fmt.Errorf("network scan failed: %w", err)
+    }
+    
+    // 并发验证设备
+    semaphore := make(chan struct{}, 100) // 限制并发数
+    var wg sync.WaitGroup
+    results := make(chan *Device, len(devices))
+    errors := make(chan error, len(devices))
+    
+    for _, device := range devices {
+        wg.Add(1)
+        go func(d *Device) {
+            defer wg.Done()
+            semaphore <- struct{}{}
+            defer func() { <-semaphore }()
+            
+            // 验证设备
+            if err := dda.validator.Validate(d); err != nil {
+                errors <- fmt.Errorf("device validation failed: %w", err)
+                return
+            }
+            
+            results <- d
+        }(device)
+    }
+    
+    // 收集结果
+    go func() {
+        wg.Wait()
+        close(results)
+        close(errors)
     }()
     
-    return manager, nil
-}
-
-// 处理设备请求
-func (m *CoAPManager) handleDeviceRequest(w coap.ResponseWriter, req *coap.Request) {
-    switch req.Method {
-    case coap.GET:
-        m.handleGetDevice(w, req)
-    case coap.POST:
-        m.handleRegisterDevice(w, req)
-    case coap.PUT:
-        m.handleUpdateDevice(w, req)
-    case coap.DELETE:
-        m.handleDeleteDevice(w, req)
-    default:
-        w.WriteHeader(coap.MethodNotAllowed)
+    // 处理结果
+    for device := range results {
+        discovered = append(discovered, device)
     }
-}
-
-// 处理数据请求
-func (m *CoAPManager) handleDataRequest(w coap.ResponseWriter, req *coap.Request) {
-    switch req.Method {
-    case coap.GET:
-        m.handleGetData(w, req)
-    case coap.POST:
-        m.handlePostData(w, req)
-    default:
-        w.WriteHeader(coap.MethodNotAllowed)
+    
+    // 检查错误
+    for err := range errors {
+        log.Printf("Discovery error: %v", err)
     }
+    
+    return discovered, nil
+}
+```
+
+### 5.2 负载均衡算法
+
+```go
+// 负载均衡器
+type LoadBalancer struct {
+    strategy LoadBalancingStrategy
+    devices  []*Device
+    mutex    sync.RWMutex
 }
 
-// 处理配置请求
-func (m *CoAPManager) handleConfigRequest(w coap.ResponseWriter, req *coap.Request) {
-    switch req.Method {
-    case coap.GET:
-        m.handleGetConfig(w, req)
-    case coap.PUT:
-        m.handleUpdateConfig(w, req)
-    default:
-        w.WriteHeader(coap.MethodNotAllowed)
+type LoadBalancingStrategy interface {
+    Select(devices []*Device) *Device
+}
+
+// 轮询策略
+type RoundRobinStrategy struct {
+    current int
+    mutex   sync.Mutex
+}
+
+func (rr *RoundRobinStrategy) Select(devices []*Device) *Device {
+    rr.mutex.Lock()
+    defer rr.mutex.Unlock()
+    
+    if len(devices) == 0 {
+        return nil
+    }
+    
+    device := devices[rr.current]
+    rr.current = (rr.current + 1) % len(devices)
+    
+    return device
+}
+
+// 最少连接策略
+type LeastConnectionsStrategy struct{}
+
+func (lc *LeastConnectionsStrategy) Select(devices []*Device) *Device {
+    if len(devices) == 0 {
+        return nil
+    }
+    
+    var selected *Device
+    minConnections := math.MaxInt32
+    
+    for _, device := range devices {
+        if device.Status == "online" && device.ConnectionCount < minConnections {
+            minConnections = device.ConnectionCount
+            selected = device
+        }
+    }
+    
+    return selected
+}
+
+// 加权轮询策略
+type WeightedRoundRobinStrategy struct {
+    current int
+    mutex   sync.Mutex
+}
+
+func (wrr *WeightedRoundRobinStrategy) Select(devices []*Device) *Device {
+    wrr.mutex.Lock()
+    defer wrr.mutex.Unlock()
+    
+    if len(devices) == 0 {
+        return nil
+    }
+    
+    // 计算总权重
+    totalWeight := 0
+    for _, device := range devices {
+        totalWeight += device.Weight
+    }
+    
+    if totalWeight == 0 {
+        return nil
+    }
+    
+    // 选择设备
+    currentWeight := 0
+    for _, device := range devices {
+        currentWeight += device.Weight
+        if wrr.current < currentWeight {
+            wrr.current = (wrr.current + 1) % totalWeight
+            return device
+        }
+    }
+    
+    return nil
+}
+```
+
+## 6. 性能分析
+
+### 6.1 时间复杂度分析
+
+**定理 6.1** (设备注册复杂度)
+设备注册操作的时间复杂度为 $O(1)$，空间复杂度为 $O(1)$。
+
+**证明**：
+设备注册主要涉及哈希表操作和数据库插入：
+- 哈希表插入：$O(1)$
+- 数据库插入：$O(1)$ (假设索引优化)
+- 总时间复杂度：$O(1)$
+
+**定理 6.2** (设备发现复杂度)
+设备发现算法的时间复杂度为 $O(n \cdot m)$，其中 $n$ 是网络设备数量，$m$ 是验证时间。
+
+**证明**：
+设备发现包含两个主要步骤：
+1. 网络扫描：$O(n)$
+2. 设备验证：$O(n \cdot m)$
+总时间复杂度：$O(n \cdot m)$
+
+### 6.2 性能优化策略
+
+```go
+// 性能优化配置
+type PerformanceConfig struct {
+    MaxConcurrentConnections int           `json:"max_concurrent_connections"`
+    ConnectionTimeout        time.Duration `json:"connection_timeout"`
+    HealthCheckInterval      time.Duration `json:"health_check_interval"`
+    CacheTTL                 time.Duration `json:"cache_ttl"`
+    BatchSize                int           `json:"batch_size"`
+}
+
+// 缓存管理器
+type CacheManager struct {
+    cache    map[string]*CacheEntry
+    mutex    sync.RWMutex
+    ttl      time.Duration
+    maxSize  int
+}
+
+type CacheEntry struct {
+    Value     interface{}
+    ExpiresAt time.Time
+}
+
+func (cm *CacheManager) Get(key string) (interface{}, bool) {
+    cm.mutex.RLock()
+    defer cm.mutex.RUnlock()
+    
+    entry, exists := cm.cache[key]
+    if !exists {
+        return nil, false
+    }
+    
+    if time.Now().After(entry.ExpiresAt) {
+        delete(cm.cache, key)
+        return nil, false
+    }
+    
+    return entry.Value, true
+}
+
+func (cm *CacheManager) Set(key string, value interface{}) {
+    cm.mutex.Lock()
+    defer cm.mutex.Unlock()
+    
+    // 检查缓存大小
+    if len(cm.cache) >= cm.maxSize {
+        cm.evictOldest()
+    }
+    
+    cm.cache[key] = &CacheEntry{
+        Value:     value,
+        ExpiresAt: time.Now().Add(cm.ttl),
     }
 }
 ```
 
-## 5. 安全机制
+## 7. 安全机制
 
-### 5.1 设备认证
+### 7.1 设备认证
 
 ```go
-// 设备认证服务
-type DeviceAuthService struct {
-    jwtSecret  string
-    db         *sql.DB
-    logger     *log.Logger
+// 设备认证接口
+type DeviceAuthentication interface {
+    Authenticate(credentials *DeviceCredentials) (*AuthResult, error)
+    ValidateToken(token string) (*TokenInfo, error)
+    RefreshToken(token string) (*AuthResult, error)
+    RevokeToken(token string) error
 }
 
-// 生成设备令牌
-func (s *DeviceAuthService) GenerateDeviceToken(deviceID string) (string, error) {
+// 设备凭证
+type DeviceCredentials struct {
+    DeviceID   string `json:"device_id"`
+    SecretKey  string `json:"secret_key"`
+    Timestamp  int64  `json:"timestamp"`
+    Signature  string `json:"signature"`
+}
+
+// 认证结果
+type AuthResult struct {
+    Token       string    `json:"token"`
+    ExpiresAt   time.Time `json:"expires_at"`
+    Permissions []string  `json:"permissions"`
+}
+
+// JWT认证实现
+type jwtAuthenticator struct {
+    secretKey []byte
+    issuer    string
+    duration  time.Duration
+}
+
+func (ja *jwtAuthenticator) Authenticate(credentials *DeviceCredentials) (*AuthResult, error) {
+    // 验证签名
+    if err := ja.validateSignature(credentials); err != nil {
+        return nil, fmt.Errorf("signature validation failed: %w", err)
+    }
+    
+    // 验证时间戳
+    if err := ja.validateTimestamp(credentials.Timestamp); err != nil {
+        return nil, fmt.Errorf("timestamp validation failed: %w", err)
+    }
+    
+    // 生成JWT令牌
     claims := jwt.MapClaims{
-        "device_id": deviceID,
-        "exp":       time.Now().Add(time.Hour * 24).Unix(),
+        "device_id": credentials.DeviceID,
+        "iss":       ja.issuer,
         "iat":       time.Now().Unix(),
+        "exp":       time.Now().Add(ja.duration).Unix(),
     }
     
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    return token.SignedString([]byte(s.jwtSecret))
-}
-
-// 验证设备令牌
-func (s *DeviceAuthService) ValidateDeviceToken(tokenString string) (string, error) {
-    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-            return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-        }
-        return []byte(s.jwtSecret), nil
-    })
-    
+    tokenString, err := token.SignedString(ja.secretKey)
     if err != nil {
-        return "", fmt.Errorf("failed to parse token: %w", err)
+        return nil, fmt.Errorf("failed to sign token: %w", err)
     }
     
-    if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-        deviceID, ok := claims["device_id"].(string)
-        if !ok {
-            return "", fmt.Errorf("invalid device ID in token")
-        }
-        return deviceID, nil
-    }
-    
-    return "", fmt.Errorf("invalid token")
+    return &AuthResult{
+        Token:       tokenString,
+        ExpiresAt:   time.Now().Add(ja.duration),
+        Permissions: ja.getPermissions(credentials.DeviceID),
+    }, nil
 }
 
-// 设备认证中间件
-func (s *DeviceAuthService) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        token := r.Header.Get("Authorization")
-        if token == "" {
-            http.Error(w, "Authorization header required", http.StatusUnauthorized)
-            return
-        }
-        
-        // 移除Bearer前缀
-        if strings.HasPrefix(token, "Bearer ") {
-            token = token[7:]
-        }
-        
-        deviceID, err := s.ValidateDeviceToken(token)
-        if err != nil {
-            http.Error(w, "Invalid token", http.StatusUnauthorized)
-            return
-        }
-        
-        // 将设备ID添加到请求上下文
-        ctx := context.WithValue(r.Context(), "device_id", deviceID)
-        next.ServeHTTP(w, r.WithContext(ctx))
+func (ja *jwtAuthenticator) validateSignature(credentials *DeviceCredentials) error {
+    // 构建签名字符串
+    data := fmt.Sprintf("%s:%s:%d", credentials.DeviceID, credentials.SecretKey, credentials.Timestamp)
+    
+    // 计算HMAC
+    h := hmac.New(sha256.New, ja.secretKey)
+    h.Write([]byte(data))
+    expectedSignature := hex.EncodeToString(h.Sum(nil))
+    
+    if credentials.Signature != expectedSignature {
+        return errors.New("invalid signature")
     }
+    
+    return nil
 }
 ```
 
-### 5.2 数据加密
+### 7.2 数据加密
 
 ```go
-// 数据加密服务
-type EncryptionService struct {
-    key []byte
+// 加密服务
+type EncryptionService interface {
+    Encrypt(data []byte, key []byte) ([]byte, error)
+    Decrypt(data []byte, key []byte) ([]byte, error)
+    GenerateKey() ([]byte, error)
 }
 
-// 加密数据
-func (s *EncryptionService) Encrypt(data []byte) ([]byte, error) {
-    block, err := aes.NewCipher(s.key)
+// AES加密实现
+type aesEncryptionService struct {
+    keySize int
+}
+
+func (aes *aesEncryptionService) Encrypt(data []byte, key []byte) ([]byte, error) {
+    block, err := aes.NewCipher(key)
     if err != nil {
         return nil, fmt.Errorf("failed to create cipher: %w", err)
     }
     
-    gcm, err := cipher.NewGCM(block)
-    if err != nil {
-        return nil, fmt.Errorf("failed to create GCM: %w", err)
+    // 生成随机IV
+    iv := make([]byte, aes.BlockSize)
+    if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+        return nil, fmt.Errorf("failed to generate IV: %w", err)
     }
     
-    nonce := make([]byte, gcm.NonceSize())
-    if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-        return nil, fmt.Errorf("failed to generate nonce: %w", err)
-    }
+    // 加密数据
+    ciphertext := make([]byte, len(data))
+    stream := cipher.NewCFBEncrypter(block, iv)
+    stream.XORKeyStream(ciphertext, data)
     
-    return gcm.Seal(nonce, nonce, data, nil), nil
+    // 返回IV + 密文
+    result := make([]byte, len(iv)+len(ciphertext))
+    copy(result, iv)
+    copy(result[len(iv):], ciphertext)
+    
+    return result, nil
 }
 
-// 解密数据
-func (s *EncryptionService) Decrypt(data []byte) ([]byte, error) {
-    block, err := aes.NewCipher(s.key)
+func (aes *aesEncryptionService) Decrypt(data []byte, key []byte) ([]byte, error) {
+    if len(data) < aes.BlockSize {
+        return nil, errors.New("ciphertext too short")
+    }
+    
+    block, err := aes.NewCipher(key)
     if err != nil {
         return nil, fmt.Errorf("failed to create cipher: %w", err)
     }
     
-    gcm, err := cipher.NewGCM(block)
-    if err != nil {
-        return nil, fmt.Errorf("failed to create GCM: %w", err)
-    }
+    // 提取IV
+    iv := data[:aes.BlockSize]
+    ciphertext := data[aes.BlockSize:]
     
-    nonceSize := gcm.NonceSize()
-    if len(data) < nonceSize {
-        return nil, fmt.Errorf("ciphertext too short")
-    }
+    // 解密数据
+    plaintext := make([]byte, len(ciphertext))
+    stream := cipher.NewCFBDecrypter(block, iv)
+    stream.XORKeyStream(plaintext, ciphertext)
     
-    nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-    return gcm.Open(nil, nonce, ciphertext, nil)
+    return plaintext, nil
 }
 ```
 
-## 6. 监控与告警
+## 8. 部署方案
 
-### 6.1 监控指标
-
-```go
-// 监控指标定义
-type Metrics struct {
-    TotalDevices       int64   `json:"total_devices"`
-    OnlineDevices      int64   `json:"online_devices"`
-    OfflineDevices     int64   `json:"offline_devices"`
-    ErrorDevices       int64   `json:"error_devices"`
-    DataThroughput     float64 `json:"data_throughput"`
-    ResponseTime       float64 `json:"response_time"`
-    ErrorRate          float64 `json:"error_rate"`
-    LastUpdated        time.Time `json:"last_updated"`
-}
-
-// 监控服务
-type MonitoringService struct {
-    metrics    *Metrics
-    mutex      sync.RWMutex
-    logger     *log.Logger
-}
-
-// 更新监控指标
-func (s *MonitoringService) UpdateMetrics(deviceCounts map[DeviceStatus]int64) {
-    s.mutex.Lock()
-    defer s.mutex.Unlock()
-    
-    s.metrics.TotalDevices = deviceCounts[DeviceStatusOnline] + deviceCounts[DeviceStatusOffline] + deviceCounts[DeviceStatusError]
-    s.metrics.OnlineDevices = deviceCounts[DeviceStatusOnline]
-    s.metrics.OfflineDevices = deviceCounts[DeviceStatusOffline]
-    s.metrics.ErrorDevices = deviceCounts[DeviceStatusError]
-    s.metrics.LastUpdated = time.Now()
-}
-
-// 获取监控指标
-func (s *MonitoringService) GetMetrics() *Metrics {
-    s.mutex.RLock()
-    defer s.mutex.RUnlock()
-    
-    return s.metrics
-}
-```
-
-### 6.2 告警系统
-
-```go
-// 告警类型
-type AlertType string
-
-const (
-    AlertTypeHighTemperature AlertType = "high_temperature"
-    AlertTypeHighHumidity    AlertType = "high_humidity"
-    AlertTypeDeviceOffline   AlertType = "device_offline"
-    AlertTypeDeviceError     AlertType = "device_error"
-    AlertTypeLowBattery      AlertType = "low_battery"
-)
-
-// 告警严重程度
-type AlertSeverity string
-
-const (
-    AlertSeverityInfo     AlertSeverity = "info"
-    AlertSeverityWarning  AlertSeverity = "warning"
-    AlertSeverityError    AlertSeverity = "error"
-    AlertSeverityCritical AlertSeverity = "critical"
-)
-
-// 告警结构
-type Alert struct {
-    ID        string        `json:"id"`
-    Type      AlertType     `json:"type"`
-    Message   string        `json:"message"`
-    Severity  AlertSeverity `json:"severity"`
-    DeviceID  string        `json:"device_id"`
-    Timestamp time.Time     `json:"timestamp"`
-    Resolved  bool          `json:"resolved"`
-}
-
-// 告警服务
-type AlertService struct {
-    alerts    map[string]*Alert
-    mutex     sync.RWMutex
-    logger    *log.Logger
-}
-
-// 创建告警
-func (s *AlertService) CreateAlert(alert *Alert) error {
-    s.mutex.Lock()
-    defer s.mutex.Unlock()
-    
-    alert.ID = uuid.New().String()
-    alert.Timestamp = time.Now()
-    alert.Resolved = false
-    
-    s.alerts[alert.ID] = alert
-    
-    s.logger.Printf("Alert created: %s - %s", alert.Type, alert.Message)
-    
-    // 发送告警通知
-    go s.sendAlertNotification(alert)
-    
-    return nil
-}
-
-// 解决告警
-func (s *AlertService) ResolveAlert(alertID string) error {
-    s.mutex.Lock()
-    defer s.mutex.Unlock()
-    
-    alert, exists := s.alerts[alertID]
-    if !exists {
-        return fmt.Errorf("alert %s not found", alertID)
-    }
-    
-    alert.Resolved = true
-    s.logger.Printf("Alert resolved: %s", alertID)
-    
-    return nil
-}
-
-// 获取活跃告警
-func (s *AlertService) GetActiveAlerts() []*Alert {
-    s.mutex.RLock()
-    defer s.mutex.RUnlock()
-    
-    activeAlerts := make([]*Alert, 0)
-    for _, alert := range s.alerts {
-        if !alert.Resolved {
-            activeAlerts = append(activeAlerts, alert)
-        }
-    }
-    
-    return activeAlerts
-}
-
-// 发送告警通知
-func (s *AlertService) sendAlertNotification(alert *Alert) {
-    // 这里可以实现邮件、短信、Webhook等通知方式
-    s.logger.Printf("Sending alert notification: %s", alert.Message)
-}
-```
-
-## 7. 性能优化
-
-### 7.1 缓存策略
-
-```go
-// 缓存管理器
-type CacheManager struct {
-    redisClient *redis.Client
-    localCache  *lru.Cache
-    logger      *log.Logger
-}
-
-// 初始化缓存管理器
-func NewCacheManager(redisAddr string) (*CacheManager, error) {
-    redisClient := redis.NewClient(&redis.Options{
-        Addr: redisAddr,
-    })
-    
-    localCache, err := lru.New(1000) // 本地缓存1000个条目
-    if err != nil {
-        return nil, fmt.Errorf("failed to create local cache: %w", err)
-    }
-    
-    return &CacheManager{
-        redisClient: redisClient,
-        localCache:  localCache,
-        logger:      log.New(os.Stdout, "[Cache] ", log.LstdFlags),
-    }, nil
-}
-
-// 获取设备状态（带缓存）
-func (c *CacheManager) GetDeviceState(deviceID string) (*DeviceState, error) {
-    // 先检查本地缓存
-    if cached, ok := c.localCache.Get(deviceID); ok {
-        if state, ok := cached.(*DeviceState); ok {
-            return state, nil
-        }
-    }
-    
-    // 检查Redis缓存
-    key := fmt.Sprintf("device_state:%s", deviceID)
-    data, err := c.redisClient.Get(context.Background(), key).Result()
-    if err == nil {
-        var state DeviceState
-        if err := json.Unmarshal([]byte(data), &state); err == nil {
-            // 更新本地缓存
-            c.localCache.Add(deviceID, &state)
-            return &state, nil
-        }
-    }
-    
-    return nil, fmt.Errorf("device state not found in cache")
-}
-
-// 设置设备状态缓存
-func (c *CacheManager) SetDeviceState(deviceID string, state *DeviceState) error {
-    // 更新本地缓存
-    c.localCache.Add(deviceID, state)
-    
-    // 更新Redis缓存
-    key := fmt.Sprintf("device_state:%s", deviceID)
-    data, err := json.Marshal(state)
-    if err != nil {
-        return fmt.Errorf("failed to marshal state: %w", err)
-    }
-    
-    return c.redisClient.Set(context.Background(), key, data, time.Hour).Err()
-}
-```
-
-### 7.2 连接池管理
-
-```go
-// 连接池管理器
-type ConnectionPoolManager struct {
-    pool       *redis.Pool
-    maxConn    int
-    logger     *log.Logger
-}
-
-// 初始化连接池
-func NewConnectionPoolManager(addr string, maxConn int) (*ConnectionPoolManager, error) {
-    pool := &redis.Pool{
-        MaxIdle:     maxConn / 2,
-        MaxActive:   maxConn,
-        IdleTimeout: 240 * time.Second,
-        Dial: func() (redis.Conn, error) {
-            return redis.Dial("tcp", addr)
-        },
-        TestOnBorrow: func(c redis.Conn, t time.Time) error {
-            if time.Since(t) < time.Minute {
-                return nil
-            }
-            _, err := c.Do("PING")
-            return err
-        },
-    }
-    
-    return &ConnectionPoolManager{
-        pool:    pool,
-        maxConn: maxConn,
-        logger:  log.New(os.Stdout, "[Pool] ", log.LstdFlags),
-    }, nil
-}
-
-// 获取连接
-func (p *ConnectionPoolManager) GetConnection() redis.Conn {
-    return p.pool.Get()
-}
-
-// 释放连接
-func (p *ConnectionPoolManager) ReleaseConnection(conn redis.Conn) {
-    conn.Close()
-}
-
-// 关闭连接池
-func (p *ConnectionPoolManager) Close() error {
-    return p.pool.Close()
-}
-```
-
-## 8. 部署与运维
-
-### 8.1 Docker配置
+### 8.1 容器化部署
 
 ```dockerfile
 # Dockerfile
@@ -986,20 +911,20 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o device-manager .
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
-COPY --from=builder /app/main .
+COPY --from=builder /app/device-manager .
 COPY --from=builder /app/config ./config
 
 EXPOSE 8080
-CMD ["./main"]
+CMD ["./device-manager"]
 ```
 
-### 8.2 Kubernetes配置
+### 8.2 Kubernetes部署
 
 ```yaml
 # deployment.yaml
@@ -1007,6 +932,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: device-management-platform
+  labels:
+    app: device-management-platform
 spec:
   replicas: 3
   selector:
@@ -1018,17 +945,21 @@ spec:
         app: device-management-platform
     spec:
       containers:
-      - name: device-management-platform
+      - name: device-manager
         image: device-management-platform:latest
         ports:
         - containerPort: 8080
         env:
-        - name: REDIS_ADDR
-          value: "redis-service:6379"
-        - name: DB_HOST
-          value: "postgres-service"
-        - name: DB_PORT
-          value: "5432"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: redis-url
         resources:
           requests:
             memory: "256Mi"
@@ -1050,170 +981,39 @@ spec:
           periodSeconds: 5
 ```
 
-## 9. 测试策略
+### 8.3 监控配置
 
-### 9.1 单元测试
+```yaml
+# prometheus.yml
+global:
+  scrape_interval: 15s
 
-```go
-// 设备注册服务测试
-func TestDeviceRegistryService_RegisterDevice(t *testing.T) {
-    // 创建测试服务
-    registry := &DeviceRegistry{
-        devices: make(map[string]*Device),
-        mutex:   sync.RWMutex{},
-    }
-    
-    service := &DeviceRegistryService{
-        registry: registry,
-        logger:   log.New(io.Discard, "", 0),
-    }
-    
-    // 测试用例
-    tests := []struct {
-        name    string
-        device  *Device
-        wantErr bool
-    }{
-        {
-            name: "valid device",
-            device: &Device{
-                ID:   "test-device-1",
-                Name: "Test Device",
-                Type: DeviceTypeSensor,
-            },
-            wantErr: false,
-        },
-        {
-            name: "empty device ID",
-            device: &Device{
-                ID:   "",
-                Name: "Test Device",
-                Type: DeviceTypeSensor,
-            },
-            wantErr: true,
-        },
-        {
-            name: "empty device name",
-            device: &Device{
-                ID:   "test-device-2",
-                Name: "",
-                Type: DeviceTypeSensor,
-            },
-            wantErr: true,
-        },
-    }
-    
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            err := service.RegisterDevice(context.Background(), tt.device)
-            if (err != nil) != tt.wantErr {
-                t.Errorf("RegisterDevice() error = %v, wantErr %v", err, tt.wantErr)
-            }
-        })
-    }
-}
+scrape_configs:
+  - job_name: 'device-management-platform'
+    static_configs:
+      - targets: ['device-management-platform:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
 ```
 
-### 9.2 集成测试
+## 总结
 
-```go
-// 集成测试
-func TestDeviceManagementIntegration(t *testing.T) {
-    // 启动测试服务器
-    server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // 模拟设备管理API
-        switch r.URL.Path {
-        case "/devices":
-            if r.Method == "POST" {
-                w.WriteHeader(http.StatusCreated)
-                json.NewEncoder(w).Encode(map[string]string{"id": "test-device"})
-            }
-        case "/devices/test-device/state":
-            if r.Method == "GET" {
-                w.WriteHeader(http.StatusOK)
-                json.NewEncoder(w).Encode(&DeviceState{
-                    DeviceID:   "test-device",
-                    Status:     DeviceStatusOnline,
-                    LastUpdate: time.Now(),
-                })
-            }
-        }
-    }))
-    defer server.Close()
-    
-    // 测试设备注册
-    device := &Device{
-        ID:   "test-device",
-        Name: "Test Device",
-        Type: DeviceTypeSensor,
-    }
-    
-    data, _ := json.Marshal(device)
-    resp, err := http.Post(server.URL+"/devices", "application/json", bytes.NewBuffer(data))
-    if err != nil {
-        t.Fatalf("Failed to register device: %v", err)
-    }
-    
-    if resp.StatusCode != http.StatusCreated {
-        t.Errorf("Expected status 201, got %d", resp.StatusCode)
-    }
-    
-    // 测试获取设备状态
-    resp, err = http.Get(server.URL + "/devices/test-device/state")
-    if err != nil {
-        t.Fatalf("Failed to get device state: %v", err)
-    }
-    
-    if resp.StatusCode != http.StatusOK {
-        t.Errorf("Expected status 200, got %d", resp.StatusCode)
-    }
-}
-```
+本文档提供了物联网设备管理平台的完整Go语言实现，包括：
 
-## 10. 总结
+1. **形式化定义**：使用数学符号定义系统组件和算法
+2. **架构设计**：微服务架构和组件设计
+3. **核心组件**：设备注册、监控、配置管理的完整实现
+4. **数据模型**：数据库设计和数据访问层
+5. **算法实现**：设备发现和负载均衡算法
+6. **性能分析**：时间复杂度和优化策略
+7. **安全机制**：设备认证和数据加密
+8. **部署方案**：容器化和Kubernetes部署
 
-### 10.1 核心特性
-
-1. **大规模设备管理**：支持百万级设备并发连接和管理
-2. **实时状态同步**：设备状态实时更新和同步机制
-3. **灵活配置管理**：设备配置的版本控制和分发
-4. **多协议支持**：MQTT、CoAP、HTTP等多种通信协议
-5. **安全机制**：设备认证、数据加密、访问控制
-6. **监控告警**：实时监控和智能告警系统
-7. **高可用性**：分布式架构和故障恢复机制
-
-### 10.2 性能指标
-
-- **设备连接数**：支持100万+设备并发连接
-- **响应时间**：平均响应时间 < 100ms
-- **吞吐量**：支持10万+消息/秒
-- **可用性**：99.9%系统可用性
-- **扩展性**：水平扩展支持
-
-### 10.3 技术栈
-
-- **语言**：Go 1.21+
-- **框架**：Gin、Echo
-- **数据库**：PostgreSQL、Redis
-- **消息队列**：RabbitMQ、Kafka
-- **容器化**：Docker、Kubernetes
-- **监控**：Prometheus、Grafana
-- **日志**：ELK Stack
-
-### 10.4 未来扩展
-
-1. **边缘计算**：支持边缘节点部署
-2. **AI集成**：设备行为分析和预测
-3. **区块链**：设备身份和溯源
-4. **5G支持**：低延迟通信优化
-5. **标准化**：支持行业标准协议
+该实现遵循Go语言最佳实践，提供了高性能、可扩展、安全的设备管理解决方案。
 
 ---
 
 **相关链接**：
-
 - [02-数据采集系统](../02-Data-Collection-System/README.md)
 - [03-边缘计算](../03-Edge-Computing/README.md)
 - [04-传感器网络](../04-Sensor-Network/README.md)
-
-**返回上级**：[物联网 (IoT)](../README.md)
