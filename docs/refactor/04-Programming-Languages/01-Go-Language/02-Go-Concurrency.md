@@ -2,47 +2,66 @@
 
 ## 目录
 
-- [02-Go并发编程](#02-go并发编程-go-concurrency-programming)
+- [02-Go并发编程 (Go Concurrency Programming)](#02-go并发编程-go-concurrency-programming)
   - [目录](#目录)
   - [1. 并发编程基础理论](#1-并发编程基础理论)
     - [1.1 并发与并行概念](#11-并发与并行概念)
-    - [1.2 并发模型分类](#12-并发模型分类)
+      - [形式化定义](#形式化定义)
+      - [并发模型分类](#并发模型分类)
+    - [1.2 Go并发模型](#12-go并发模型)
+      - [CSP模型形式化定义](#csp模型形式化定义)
+      - [Go并发原语](#go并发原语)
     - [1.3 并发编程挑战](#13-并发编程挑战)
-  - [2. Go并发模型](#2-go并发模型)
-    - [2.1 CSP模型](#21-csp模型)
-    - [2.2 Goroutine模型](#22-goroutine模型)
-    - [2.3 Channel模型](#23-channel模型)
-  - [3. Goroutine详解](#3-goroutine详解)
-    - [3.1 Goroutine生命周期](#31-goroutine生命周期)
-    - [3.2 Goroutine调度器](#32-goroutine调度器)
-    - [3.3 Goroutine性能优化](#33-goroutine性能优化)
-  - [4. Channel详解](#4-channel详解)
-    - [4.1 Channel类型与操作](#41-channel类型与操作)
-    - [4.2 Channel模式](#42-channel模式)
-    - [4.3 Channel最佳实践](#43-channel最佳实践)
-  - [5. 同步原语](#5-同步原语)
-    - [5.1 Mutex与RWMutex](#51-mutex与rwmutex)
-    - [5.2 WaitGroup](#52-waitgroup)
-    - [5.3 Cond](#53-cond)
-    - [5.4 Once](#54-once)
-    - [5.5 Pool](#55-pool)
-  - [6. 并发模式](#6-并发模式)
-    - [6.1 Worker Pool模式](#61-worker-pool模式)
-    - [6.2 Pipeline模式](#62-pipeline模式)
-    - [6.3 Fan-out/Fan-in模式](#63-fan-outfan-in模式)
-    - [6.4 Context模式](#64-context模式)
-  - [7. 并发安全](#7-并发安全)
-    - [7.1 数据竞争检测](#71-数据竞争检测)
-    - [7.2 内存模型](#72-内存模型)
-    - [7.3 原子操作](#73-原子操作)
-  - [8. 性能优化](#8-性能优化)
-    - [8.1 并发性能分析](#81-并发性能分析)
-    - [8.2 内存优化](#82-内存优化)
-    - [8.3 调度优化](#83-调度优化)
-  - [9. 实际应用](#9-实际应用)
-    - [9.1 Web服务器](#91-web服务器)
-    - [9.2 数据处理管道](#92-数据处理管道)
-    - [9.3 微服务通信](#93-微服务通信)
+      - [1. 数据竞争（Data Race）](#1-数据竞争data-race)
+      - [2. 死锁（Deadlock）](#2-死锁deadlock)
+  - [2. Goroutine详解](#2-goroutine详解)
+    - [2.1 Goroutine生命周期](#21-goroutine生命周期)
+      - [状态转换图](#状态转换图)
+      - [实现示例](#实现示例)
+    - [2.2 Goroutine调度器](#22-goroutine调度器)
+      - [GMP模型](#gmp模型)
+      - [调度算法](#调度算法)
+    - [2.3 Goroutine性能优化](#23-goroutine性能优化)
+      - [1. 减少Goroutine创建开销](#1-减少goroutine创建开销)
+      - [2. 批量处理](#2-批量处理)
+  - [3. Channel详解](#3-channel详解)
+    - [3.1 Channel类型与操作](#31-channel类型与操作)
+      - [Channel分类](#channel分类)
+      - [Channel操作语义](#channel操作语义)
+      - [Channel形式化语义](#channel形式化语义)
+    - [3.2 Channel模式](#32-channel模式)
+      - [1. 生产者-消费者模式](#1-生产者-消费者模式)
+      - [2. 工作池模式](#2-工作池模式)
+      - [3. 扇出-扇入模式](#3-扇出-扇入模式)
+    - [3.3 Channel最佳实践](#33-channel最佳实践)
+      - [1. Channel所有权](#1-channel所有权)
+      - [2. 避免Channel泄漏](#2-避免channel泄漏)
+  - [4. 同步原语](#4-同步原语)
+    - [4.1 Mutex与RWMutex](#41-mutex与rwmutex)
+      - [互斥锁（Mutex）](#互斥锁mutex)
+      - [读写锁（RWMutex）](#读写锁rwmutex)
+    - [4.2 WaitGroup](#42-waitgroup)
+    - [4.3 Cond](#43-cond)
+    - [4.4 Once](#44-once)
+    - [4.5 Pool](#45-pool)
+  - [5. 并发模式](#5-并发模式)
+    - [5.1 Worker Pool模式](#51-worker-pool模式)
+    - [5.2 Pipeline模式](#52-pipeline模式)
+    - [5.3 Context模式](#53-context模式)
+  - [6. 并发安全](#6-并发安全)
+    - [6.1 数据竞争检测](#61-数据竞争检测)
+    - [6.2 内存模型](#62-内存模型)
+      - [Go内存模型保证](#go内存模型保证)
+    - [6.3 原子操作](#63-原子操作)
+  - [7. 性能优化](#7-性能优化)
+    - [7.1 并发性能分析](#71-并发性能分析)
+    - [7.2 内存优化](#72-内存优化)
+    - [7.3 调度优化](#73-调度优化)
+  - [8. 实际应用](#8-实际应用)
+    - [8.1 Web服务器](#81-web服务器)
+    - [8.2 数据处理管道](#82-数据处理管道)
+    - [8.3 微服务通信](#83-微服务通信)
+  - [总结](#总结)
 
 ---
 
@@ -57,13 +76,17 @@
 **并行（Parallelism）**：多个任务在同一时刻同时执行。
 
 形式化表示：
+
+```latex
 - 并发：$\forall t_1, t_2 \in T, \exists t \in T: t_1 \cap t_2 \neq \emptyset$
 - 并行：$\forall t_1, t_2 \in T, t_1 \parallel t_2 \Rightarrow t_1 \cap t_2 = t_1 = t_2$
 
 其中：
+
 - $T$ 是任务集合
 - $t_1, t_2$ 是任务执行时间区间
 - $\parallel$ 表示并行关系
+```
 
 #### 并发模型分类
 
@@ -85,6 +108,7 @@ CSP模型可以形式化表示为：
 $P = (S, \Sigma, \rightarrow, s_0)$
 
 其中：
+
 - $S$ 是状态集合
 - $\Sigma$ 是事件集合
 - $\rightarrow \subseteq S \times \Sigma \times S$ 是转移关系
@@ -114,6 +138,7 @@ value := <-ch   // 接收
 $\exists g_1, g_2 \in G, \exists m \in M: (g_1, m, w) \land (g_2, m, r/w) \land (t_1 \cap t_2 \neq \emptyset)$
 
 其中：
+
 - $G$ 是goroutine集合
 - $M$ 是内存位置集合
 - $w$ 表示写操作
@@ -125,6 +150,7 @@ $\exists g_1, g_2 \in G, \exists m \in M: (g_1, m, w) \land (g_2, m, r/w) \land 
 **定义**：两个或多个goroutine互相等待对方释放资源，导致所有goroutine都无法继续执行。
 
 **死锁的四个必要条件**：
+
 1. 互斥条件（Mutual Exclusion）
 2. 持有和等待（Hold and Wait）
 3. 非抢占条件（No Preemption）
@@ -336,6 +362,7 @@ func channelOperations() {
 - **关闭操作**：$close(c)$
 
 **阻塞语义**：
+
 - 无缓冲channel：发送和接收必须同时准备好
 - 有缓冲channel：缓冲区满时发送阻塞，空时接收阻塞
 
@@ -1337,4 +1364,4 @@ Go的并发编程模型基于CSP理论，通过goroutine和channel提供了简�
 5. **性能优化**：调度优化、内存优化、性能分析
 6. **实际应用**：Web服务器、数据处理管道、微服务通信
 
-Go的并发模型强调"通过通信来共享内存"，而不是"通过共享内存来通信"，这使得并发程序更加简洁、安全和高效。通过合理使用goroutine、channel和同步原语，可以构建高性能、高并发的应用程序。 
+Go的并发模型强调"通过通信来共享内存"，而不是"通过共享内存来通信"，这使得并发程序更加简洁、安全和高效。通过合理使用goroutine、channel和同步原语，可以构建高性能、高并发的应用程序。
