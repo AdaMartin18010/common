@@ -8,40 +8,38 @@
     - [1.1 核心概念](#11-核心概念)
     - [1.2 架构层次](#12-架构层次)
   - [2. 形式化定义](#2-形式化定义)
-    - [2.1 组件代数](#21-组件代数)
-    - [2.2 组件生命周期](#22-组件生命周期)
+    - [2.1 组件定义](#21-组件定义)
+    - [2.2 组件组合](#22-组件组合)
+    - [2.3 组件生命周期](#23-组件生命周期)
   - [3. 架构模式](#3-架构模式)
-    - [3.1 MVC模式](#31-mvc模式)
-    - [3.2 微前端架构](#32-微前端架构)
+    - [3.1 分层组件架构](#31-分层组件架构)
+    - [3.2 组件通信模式](#32-组件通信模式)
+      - [3.2.1 事件驱动模式](#321-事件驱动模式)
+      - [3.2.2 状态管理模式](#322-状态管理模式)
   - [4. Go语言实现](#4-go语言实现)
-    - [4.1 基础组件框架](#41-基础组件框架)
-    - [4.2 HTTP组件](#42-http组件)
+    - [4.1 基础组件接口](#41-基础组件接口)
+    - [4.2 具体组件实现](#42-具体组件实现)
+      - [4.2.1 UI组件](#421-ui组件)
+      - [4.2.2 容器组件](#422-容器组件)
     - [4.3 组件管理器](#43-组件管理器)
-    - [4.4 使用示例](#44-使用示例)
-  - [5. 设计原则](#5-设计原则)
-    - [5.1 SOLID原则](#51-solid原则)
-    - [5.2 组件设计模式](#52-组件设计模式)
-  - [6. 性能优化](#6-性能优化)
-    - [6.1 并发优化](#61-并发优化)
-    - [6.2 缓存策略](#62-缓存策略)
-  - [7. 安全考虑](#7-安全考虑)
-    - [7.1 输入验证](#71-输入验证)
-    - [7.2 访问控制](#72-访问控制)
-  - [8. 测试策略](#8-测试策略)
-    - [8.1 单元测试](#81-单元测试)
-    - [8.2 集成测试](#82-集成测试)
-  - [9. 部署和运维](#9-部署和运维)
-    - [9.1 容器化部署](#91-容器化部署)
-    - [9.2 监控和日志](#92-监控和日志)
-  - [10. 总结](#10-总结)
-    - [10.1 最佳实践](#101-最佳实践)
-    - [10.2 未来发展方向](#102-未来发展方向)
+  - [5. 性能优化](#5-性能优化)
+    - [5.1 虚拟DOM](#51-虚拟dom)
+    - [5.2 组件缓存](#52-组件缓存)
+  - [6. 测试策略](#6-测试策略)
+    - [6.1 单元测试](#61-单元测试)
+    - [6.2 集成测试](#62-集成测试)
+  - [7. 最佳实践](#7-最佳实践)
+    - [7.1 组件设计原则](#71-组件设计原则)
+    - [7.2 性能优化建议](#72-性能优化建议)
+    - [7.3 安全考虑](#73-安全考虑)
+  - [8. 总结](#8-总结)
+  - [相关链接](#相关链接)
 
 ---
 
 ## 1. 概述
 
-Web组件架构是一种基于组件的软件架构模式，专门用于构建Web应用程序。它将应用程序分解为可重用、可组合的组件，每个组件负责特定的功能或业务逻辑。
+Web组件架构是现代Web应用开发的核心架构模式，它通过组件化的方式构建可复用、可维护的Web应用。本文档从形式化定义、架构模式、Go语言实现等多个维度深入分析Web组件架构。
 
 ### 1.1 核心概念
 
@@ -84,102 +82,185 @@ graph TB
 
 ## 2. 形式化定义
 
-### 2.1 组件代数
+### 2.1 组件定义
 
-**公理 2.1.1 (组件组合)**
-对于任意两个组件 $C_1$ 和 $C_2$，其组合 $C_1 \circ C_2$ 满足：
-$$(C_1 \circ C_2) \circ C_3 = C_1 \circ (C_2 \circ C_3)$$
+**定义 1.1** (Web组件)
+Web组件是一个三元组 $C = (S, I, B)$，其中：
 
-**定理 2.1.1 (组件可交换性)**
-如果组件 $C_1$ 和 $C_2$ 无依赖关系，则：
-$$C_1 \circ C_2 = C_2 \circ C_1$$
+- $S$ 是组件的状态集合 (State Set)
+- $I$ 是组件的接口集合 (Interface Set)  
+- $B$ 是组件的行为集合 (Behavior Set)
+
+**定义 1.2** (组件状态)
+组件状态是一个映射 $s: V \rightarrow D$，其中：
+
+- $V$ 是状态变量集合
+- $D$ 是数据域集合
+
+**定义 1.3** (组件接口)
+组件接口是一个四元组 $i = (name, type, direction, contract)$，其中：
+
+- $name$ 是接口名称
+- $type$ 是数据类型
+- $direction$ 是数据流向 (in/out/bidirectional)
+- $contract$ 是接口契约
+
+### 2.2 组件组合
+
+**定义 1.4** (组件组合)
+给定组件集合 $C_1, C_2, ..., C_n$，其组合 $C_{composite} = \oplus(C_1, C_2, ..., C_n)$ 满足：
+
+$$C_{composite} = (\bigcup_{i=1}^n S_i, \bigcup_{i=1}^n I_i, \bigcup_{i=1}^n B_i)$$
+
+**定理 1.1** (组合可交换性)
+对于任意组件 $C_1, C_2$，有：
+$$\oplus(C_1, C_2) = \oplus(C_2, C_1)$$
 
 **证明**：
-设 $I_1$ 和 $I_2$ 分别为 $C_1$ 和 $C_2$ 的接口，由于无依赖关系：
-$$I_1 \cap I_2 = \emptyset$$
-因此组合顺序不影响最终结果。
+由集合运算的可交换性，$\bigcup$ 运算满足交换律，因此组件组合满足可交换性。
 
-### 2.2 组件生命周期
+### 2.3 组件生命周期
 
-**定义 2.2.1 (组件状态)**
-组件状态是一个有限状态机：
-$$S = (Q, \Sigma, \delta, q_0, F)$$
-其中：
+**定义 1.5** (组件生命周期)
+组件生命周期是一个状态机 $L = (Q, \Sigma, \delta, q_0, F)$，其中：
 
-- $Q$ 是状态集合
-- $\Sigma$ 是输入字母表
-- $\delta$ 是状态转移函数
-- $q_0$ 是初始状态
-- $F$ 是接受状态集合
+- $Q = \{Initialized, Mounted, Updated, Unmounted\}$ 是状态集合
+- $\Sigma$ 是事件集合
+- $\delta: Q \times \Sigma \rightarrow Q$ 是状态转移函数
+- $q_0 = Initialized$ 是初始状态
+- $F = \{Unmounted\}$ 是终止状态集合
 
 ---
 
 ## 3. 架构模式
 
-### 3.1 MVC模式
+### 3.1 分层组件架构
 
-**定义 3.1.1 (MVC组件)**
-MVC组件包含三个子组件：
-$$C_{MVC} = (M, V, C)$$
-其中：
+```mermaid
+graph TB
+    subgraph "表现层 (Presentation Layer)"
+        UI[UI Components]
+        Pages[Page Components]
+        Layout[Layout Components]
+    end
+    
+    subgraph "业务层 (Business Layer)"
+        Services[Service Components]
+        Controllers[Controller Components]
+        Validators[Validator Components]
+    end
+    
+    subgraph "数据层 (Data Layer)"
+        Repositories[Repository Components]
+        Models[Model Components]
+        DAO[DAO Components]
+    end
+    
+    UI --> Services
+    Pages --> Controllers
+    Layout --> Services
+    Services --> Repositories
+    Controllers --> Repositories
+    Repositories --> Models
+```
 
-- $M$ 是模型组件
-- $V$ 是视图组件
-- $C$ 是控制器组件
+### 3.2 组件通信模式
+
+#### 3.2.1 事件驱动模式
 
 ```go
-// MVC组件接口
-type MVCComponent interface {
-    Model() Model
-    View() View
-    Controller() Controller
+// 事件定义
+type Event interface {
+    Type() string
+    Data() interface{}
+    Timestamp() time.Time
 }
 
-// 模型组件
-type Model interface {
-    GetData() interface{}
-    SetData(data interface{}) error
-    Validate() error
+// 事件总线
+type EventBus struct {
+    subscribers map[string][]chan Event
+    mu          sync.RWMutex
 }
 
-// 视图组件
-type View interface {
-    Render(data interface{}) ([]byte, error)
-    Update(data interface{}) error
+func NewEventBus() *EventBus {
+    return &EventBus{
+        subscribers: make(map[string][]chan Event),
+    }
 }
 
-// 控制器组件
-type Controller interface {
-    HandleRequest(req *http.Request) (*http.Response, error)
-    ProcessInput(input interface{}) error
+func (eb *EventBus) Subscribe(eventType string, ch chan Event) {
+    eb.mu.Lock()
+    defer eb.mu.Unlock()
+    
+    if eb.subscribers[eventType] == nil {
+        eb.subscribers[eventType] = make([]chan Event, 0)
+    }
+    eb.subscribers[eventType] = append(eb.subscribers[eventType], ch)
+}
+
+func (eb *EventBus) Publish(event Event) {
+    eb.mu.RLock()
+    defer eb.mu.RUnlock()
+    
+    if channels, exists := eb.subscribers[event.Type()]; exists {
+        for _, ch := range channels {
+            select {
+            case ch <- event:
+            default:
+                // 非阻塞发送
+            }
+        }
+    }
 }
 ```
 
-### 3.2 微前端架构
-
-**定义 3.2.1 (微前端组件)**
-微前端组件是一个独立的、可部署的前端应用：
-$$C_{MF} = (A, R, S)$$
-其中：
-
-- $A$ 是应用组件
-- $R$ 是路由组件
-- $S$ 是共享组件
+#### 3.2.2 状态管理模式
 
 ```go
-// 微前端容器
-type MicroFrontendContainer struct {
-    apps    map[string]MicroFrontendApp
-    router  Router
-    shared  SharedServices
+// 状态管理器
+type StateManager struct {
+    state     map[string]interface{}
+    listeners map[string][]func(interface{})
+    mu        sync.RWMutex
 }
 
-// 微前端应用
-type MicroFrontendApp interface {
-    ID() string
-    Mount(container *MicroFrontendContainer) error
-    Unmount() error
-    HandleRoute(path string) error
+func NewStateManager() *StateManager {
+    return &StateManager{
+        state:     make(map[string]interface{}),
+        listeners: make(map[string][]func(interface{})),
+    }
+}
+
+func (sm *StateManager) SetState(key string, value interface{}) {
+    sm.mu.Lock()
+    defer sm.mu.Unlock()
+    
+    sm.state[key] = value
+    
+    // 通知监听器
+    if listeners, exists := sm.listeners[key]; exists {
+        for _, listener := range listeners {
+            go listener(value)
+        }
+    }
+}
+
+func (sm *StateManager) GetState(key string) (interface{}, bool) {
+    sm.mu.RLock()
+    defer sm.mu.RUnlock()
+    
+    value, exists := sm.state[key]
+    return value, exists
+}
+
+func (sm *StateManager) Subscribe(key string, listener func(interface{})) {
+    sm.mu.Lock()
+    defer sm.mu.Unlock()
+    
+    if sm.listeners[key] == nil {
+        sm.listeners[key] = make([]func(interface{}), 0)
+    }
+    sm.listeners[key] = append(sm.listeners[key], listener)
 }
 ```
 
@@ -187,682 +268,481 @@ type MicroFrontendApp interface {
 
 ## 4. Go语言实现
 
-### 4.1 基础组件框架
+### 4.1 基础组件接口
 
 ```go
-package webcomponent
-
-import (
-    "context"
-    "fmt"
-    "net/http"
-    "sync"
-)
-
-// Component 基础组件接口
+// 组件接口
 type Component interface {
     ID() string
-    Initialize(ctx context.Context) error
-    Start(ctx context.Context) error
-    Stop(ctx context.Context) error
-    Health() HealthStatus
+    Name() string
+    Type() string
+    Initialize() error
+    Mount() error
+    Update(props interface{}) error
+    Unmount() error
+    Render() ([]byte, error)
 }
 
-// HealthStatus 健康状态
-type HealthStatus struct {
-    Status    string `json:"status"`
-    Message   string `json:"message"`
-    Timestamp int64  `json:"timestamp"`
-}
-
-// BaseComponent 基础组件实现
+// 基础组件实现
 type BaseComponent struct {
     id       string
-    status   HealthStatus
-    mutex    sync.RWMutex
-    ctx      context.Context
-    cancel   context.CancelFunc
+    name     string
+    compType string
+    props    interface{}
+    state    interface{}
+    children []Component
 }
 
-// NewBaseComponent 创建基础组件
-func NewBaseComponent(id string) *BaseComponent {
+func NewBaseComponent(id, name, compType string) *BaseComponent {
     return &BaseComponent{
-        id: id,
-        status: HealthStatus{
-            Status:    "initialized",
-            Message:   "Component created",
-            Timestamp: time.Now().Unix(),
-        },
+        id:       id,
+        name:     name,
+        compType: compType,
+        children: make([]Component, 0),
     }
 }
 
-func (c *BaseComponent) ID() string {
-    return c.id
+func (bc *BaseComponent) ID() string {
+    return bc.id
 }
 
-func (c *BaseComponent) Initialize(ctx context.Context) error {
-    c.mutex.Lock()
-    defer c.mutex.Unlock()
-    
-    c.ctx, c.cancel = context.WithCancel(ctx)
-    c.status.Status = "initialized"
-    c.status.Timestamp = time.Now().Unix()
-    
+func (bc *BaseComponent) Name() string {
+    return bc.name
+}
+
+func (bc *BaseComponent) Type() string {
+    return bc.compType
+}
+
+func (bc *BaseComponent) Initialize() error {
+    // 基础初始化逻辑
     return nil
 }
 
-func (c *BaseComponent) Start(ctx context.Context) error {
-    c.mutex.Lock()
-    defer c.mutex.Unlock()
-    
-    c.status.Status = "running"
-    c.status.Timestamp = time.Now().Unix()
-    
+func (bc *BaseComponent) Mount() error {
+    // 基础挂载逻辑
     return nil
 }
 
-func (c *BaseComponent) Stop(ctx context.Context) error {
-    c.mutex.Lock()
-    defer c.mutex.Unlock()
-    
-    if c.cancel != nil {
-        c.cancel()
-    }
-    
-    c.status.Status = "stopped"
-    c.status.Timestamp = time.Now().Unix()
-    
+func (bc *BaseComponent) Update(props interface{}) error {
+    bc.props = props
     return nil
 }
 
-func (c *BaseComponent) Health() HealthStatus {
-    c.mutex.RLock()
-    defer c.mutex.RUnlock()
-    
-    return c.status
+func (bc *BaseComponent) Unmount() error {
+    // 基础卸载逻辑
+    return nil
+}
+
+func (bc *BaseComponent) Render() ([]byte, error) {
+    // 基础渲染逻辑
+    return []byte(""), nil
 }
 ```
 
-### 4.2 HTTP组件
+### 4.2 具体组件实现
+
+#### 4.2.1 UI组件
 
 ```go
-// HTTPComponent HTTP组件
-type HTTPComponent struct {
+// 按钮组件
+type ButtonComponent struct {
     *BaseComponent
-    server   *http.Server
-    handlers map[string]http.HandlerFunc
-    port     int
+    text     string
+    onClick  func()
+    disabled bool
 }
 
-// NewHTTPComponent 创建HTTP组件
-func NewHTTPComponent(id string, port int) *HTTPComponent {
-    return &HTTPComponent{
-        BaseComponent: NewBaseComponent(id),
-        handlers:     make(map[string]http.HandlerFunc),
-        port:         port,
+func NewButtonComponent(id, text string, onClick func()) *ButtonComponent {
+    return &ButtonComponent{
+        BaseComponent: NewBaseComponent(id, "Button", "ui"),
+        text:         text,
+        onClick:      onClick,
+        disabled:     false,
     }
 }
 
-// RegisterHandler 注册处理器
-func (c *HTTPComponent) RegisterHandler(path string, handler http.HandlerFunc) {
-    c.handlers[path] = handler
+func (bc *ButtonComponent) SetDisabled(disabled bool) {
+    bc.disabled = disabled
 }
 
-// Start 启动HTTP服务器
-func (c *HTTPComponent) Start(ctx context.Context) error {
-    if err := c.BaseComponent.Start(ctx); err != nil {
-        return err
+func (bc *ButtonComponent) Render() ([]byte, error) {
+    disabledAttr := ""
+    if bc.disabled {
+        disabledAttr = " disabled"
     }
     
-    mux := http.NewServeMux()
-    for path, handler := range c.handlers {
-        mux.HandleFunc(path, handler)
+    html := fmt.Sprintf(`<button id="%s" class="btn"%s>%s</button>`, 
+        bc.id, disabledAttr, bc.text)
+    return []byte(html), nil
+}
+
+// 输入框组件
+type InputComponent struct {
+    *BaseComponent
+    placeholder string
+    value       string
+    onChange    func(string)
+}
+
+func NewInputComponent(id, placeholder string, onChange func(string)) *InputComponent {
+    return &InputComponent{
+        BaseComponent: NewBaseComponent(id, "Input", "ui"),
+        placeholder:   placeholder,
+        value:        "",
+        onChange:     onChange,
     }
-    
-    c.server = &http.Server{
-        Addr:    fmt.Sprintf(":%d", c.port),
-        Handler: mux,
+}
+
+func (ic *InputComponent) SetValue(value string) {
+    ic.value = value
+}
+
+func (ic *InputComponent) Render() ([]byte, error) {
+    html := fmt.Sprintf(`<input id="%s" type="text" placeholder="%s" value="%s" class="input">`, 
+        ic.id, ic.placeholder, ic.value)
+    return []byte(html), nil
+}
+```
+
+#### 4.2.2 容器组件
+
+```go
+// 容器组件
+type ContainerComponent struct {
+    *BaseComponent
+    layout string
+}
+
+func NewContainerComponent(id, layout string) *ContainerComponent {
+    return &ContainerComponent{
+        BaseComponent: NewBaseComponent(id, "Container", "layout"),
+        layout:       layout,
     }
+}
+
+func (cc *ContainerComponent) AddChild(child Component) {
+    cc.children = append(cc.children, child)
+}
+
+func (cc *ContainerComponent) Render() ([]byte, error) {
+    var childrenHTML strings.Builder
     
-    go func() {
-        if err := c.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-            log.Printf("HTTP server error: %v", err)
+    for _, child := range cc.children {
+        childBytes, err := child.Render()
+        if err != nil {
+            return nil, err
         }
-    }()
-    
-    return nil
-}
-
-// Stop 停止HTTP服务器
-func (c *HTTPComponent) Stop(ctx context.Context) error {
-    if c.server != nil {
-        c.server.Shutdown(ctx)
+        childrenHTML.Write(childBytes)
     }
     
-    return c.BaseComponent.Stop(ctx)
+    html := fmt.Sprintf(`<div id="%s" class="container %s">%s</div>`, 
+        cc.id, cc.layout, childrenHTML.String())
+    return []byte(html), nil
 }
 ```
 
 ### 4.3 组件管理器
 
 ```go
-// ComponentManager 组件管理器
+// 组件管理器
 type ComponentManager struct {
     components map[string]Component
-    mutex      sync.RWMutex
-    ctx        context.Context
-    cancel     context.CancelFunc
+    registry   map[string]func() Component
+    mu         sync.RWMutex
 }
 
-// NewComponentManager 创建组件管理器
 func NewComponentManager() *ComponentManager {
     return &ComponentManager{
         components: make(map[string]Component),
+        registry:   make(map[string]func() Component),
     }
 }
 
-// RegisterComponent 注册组件
-func (c *ComponentManager) RegisterComponent(component Component) error {
-    c.mutex.Lock()
-    defer c.mutex.Unlock()
+func (cm *ComponentManager) Register(compType string, factory func() Component) {
+    cm.mu.Lock()
+    defer cm.mu.Unlock()
     
-    id := component.ID()
-    if _, exists := c.components[id]; exists {
-        return fmt.Errorf("component %s already exists", id)
-    }
-    
-    c.components[id] = component
-    return nil
+    cm.registry[compType] = factory
 }
 
-// StartAll 启动所有组件
-func (c *ComponentManager) StartAll(ctx context.Context) error {
-    c.mutex.Lock()
-    defer c.mutex.Unlock()
+func (cm *ComponentManager) Create(compType, id string) (Component, error) {
+    cm.mu.RLock()
+    factory, exists := cm.registry[compType]
+    cm.mu.RUnlock()
     
-    c.ctx, c.cancel = context.WithCancel(ctx)
-    
-    for _, component := range c.components {
-        if err := component.Initialize(c.ctx); err != nil {
-            return fmt.Errorf("failed to initialize component %s: %w", component.ID(), err)
-        }
-        
-        if err := component.Start(c.ctx); err != nil {
-            return fmt.Errorf("failed to start component %s: %w", component.ID(), err)
-        }
+    if !exists {
+        return nil, fmt.Errorf("component type %s not registered", compType)
     }
     
-    return nil
+    component := factory()
+    if err := component.Initialize(); err != nil {
+        return nil, err
+    }
+    
+    cm.mu.Lock()
+    cm.components[id] = component
+    cm.mu.Unlock()
+    
+    return component, nil
 }
 
-// StopAll 停止所有组件
-func (c *ComponentManager) StopAll() error {
-    c.mutex.Lock()
-    defer c.mutex.Unlock()
+func (cm *ComponentManager) Get(id string) (Component, bool) {
+    cm.mu.RLock()
+    defer cm.mu.RUnlock()
     
-    if c.cancel != nil {
-        c.cancel()
-    }
-    
-    for _, component := range c.components {
-        if err := component.Stop(c.ctx); err != nil {
-            log.Printf("Failed to stop component %s: %v", component.ID(), err)
-        }
-    }
-    
-    return nil
-}
-
-// GetComponent 获取组件
-func (c *ComponentManager) GetComponent(id string) (Component, bool) {
-    c.mutex.RLock()
-    defer c.mutex.RUnlock()
-    
-    component, exists := c.components[id]
+    component, exists := cm.components[id]
     return component, exists
 }
 
-// Health 健康检查
-func (c *ComponentManager) Health() map[string]HealthStatus {
-    c.mutex.RLock()
-    defer c.mutex.RUnlock()
+func (cm *ComponentManager) Remove(id string) {
+    cm.mu.Lock()
+    defer cm.mu.Unlock()
     
-    health := make(map[string]HealthStatus)
-    for id, component := range c.components {
-        health[id] = component.Health()
-    }
-    
-    return health
-}
-```
-
-### 4.4 使用示例
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "log"
-    "net/http"
-    "os"
-    "os/signal"
-    "syscall"
-    "time"
-    
-    "github.com/yourproject/webcomponent"
-)
-
-func main() {
-    // 创建组件管理器
-    manager := webcomponent.NewComponentManager()
-    
-    // 创建HTTP组件
-    httpComponent := webcomponent.NewHTTPComponent("api-server", 8080)
-    
-    // 注册处理器
-    httpComponent.RegisterHandler("/health", func(w http.ResponseWriter, r *http.Request) {
-        health := manager.Health()
-        fmt.Fprintf(w, "Health: %+v", health)
-    })
-    
-    httpComponent.RegisterHandler("/api/users", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Users API")
-    })
-    
-    // 注册组件
-    if err := manager.RegisterComponent(httpComponent); err != nil {
-        log.Fatal(err)
-    }
-    
-    // 启动所有组件
-    ctx := context.Background()
-    if err := manager.StartAll(ctx); err != nil {
-        log.Fatal(err)
-    }
-    
-    // 等待中断信号
-    sigChan := make(chan os.Signal, 1)
-    signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-    <-sigChan
-    
-    // 优雅关闭
-    log.Println("Shutting down...")
-    if err := manager.StopAll(); err != nil {
-        log.Printf("Error during shutdown: %v", err)
+    if component, exists := cm.components[id]; exists {
+        component.Unmount()
+        delete(cm.components, id)
     }
 }
 ```
 
 ---
 
-## 5. 设计原则
+## 5. 性能优化
 
-### 5.1 SOLID原则
-
-**单一职责原则 (SRP)**
-每个组件应该只有一个改变的理由。
-
-**开闭原则 (OCP)**
-组件应该对扩展开放，对修改关闭。
-
-**里氏替换原则 (LSP)**
-子组件应该能够替换其父组件。
-
-**接口隔离原则 (ISP)**
-客户端不应该依赖它不使用的接口。
-
-**依赖倒置原则 (DIP)**
-高层组件不应该依赖低层组件，两者都应该依赖抽象。
-
-### 5.2 组件设计模式
+### 5.1 虚拟DOM
 
 ```go
-// 工厂模式
-type ComponentFactory interface {
-    CreateComponent(config ComponentConfig) (Component, error)
-}
-
-// 建造者模式
-type ComponentBuilder struct {
-    component Component
-}
-
-func (b *ComponentBuilder) WithID(id string) *ComponentBuilder {
-    // 设置ID
-    return b
-}
-
-func (b *ComponentBuilder) WithConfig(config interface{}) *ComponentBuilder {
-    // 设置配置
-    return b
-}
-
-func (b *ComponentBuilder) Build() Component {
-    return b.component
-}
-
-// 观察者模式
-type ComponentObserver interface {
-    OnComponentEvent(event ComponentEvent)
-}
-
-type ComponentEvent struct {
+// 虚拟DOM节点
+type VNode struct {
     Type      string
+    Props     map[string]interface{}
+    Children  []*VNode
+    Key       string
     Component Component
-    Data      interface{}
-    Timestamp time.Time
 }
+
+// 虚拟DOM差异算法
+func Diff(oldNode, newNode *VNode) []Patch {
+    var patches []Patch
+    
+    if oldNode.Type != newNode.Type {
+        patches = append(patches, Patch{
+            Type: Replace,
+            Node: newNode,
+        })
+        return patches
+    }
+    
+    // 属性差异
+    if !reflect.DeepEqual(oldNode.Props, newNode.Props) {
+        patches = append(patches, Patch{
+            Type: UpdateProps,
+            Props: newNode.Props,
+        })
+    }
+    
+    // 子节点差异
+    childPatches := diffChildren(oldNode.Children, newNode.Children)
+    patches = append(patches, childPatches...)
+    
+    return patches
+}
+
+type Patch struct {
+    Type  PatchType
+    Node  *VNode
+    Props map[string]interface{}
+}
+
+type PatchType int
+
+const (
+    Replace PatchType = iota
+    UpdateProps
+    UpdateChildren
+    Remove
+)
 ```
 
----
-
-## 6. 性能优化
-
-### 6.1 并发优化
-
-```go
-// 并发安全的组件池
-type ComponentPool struct {
-    components chan Component
-    factory    ComponentFactory
-    maxSize    int
-}
-
-func NewComponentPool(factory ComponentFactory, maxSize int) *ComponentPool {
-    return &ComponentPool{
-        components: make(chan Component, maxSize),
-        factory:    factory,
-        maxSize:    maxSize,
-    }
-}
-
-func (p *ComponentPool) Get() (Component, error) {
-    select {
-    case component := <-p.components:
-        return component, nil
-    default:
-        return p.factory.CreateComponent(ComponentConfig{})
-    }
-}
-
-func (p *ComponentPool) Put(component Component) {
-    select {
-    case p.components <- component:
-    default:
-        // 池已满，丢弃组件
-    }
-}
-```
-
-### 6.2 缓存策略
+### 5.2 组件缓存
 
 ```go
 // 组件缓存
 type ComponentCache struct {
-    cache map[string]Component
-    mutex sync.RWMutex
-    ttl   time.Duration
+    cache map[string]*CacheEntry
+    mu    sync.RWMutex
 }
 
-func (c *ComponentCache) Get(key string) (Component, bool) {
-    c.mutex.RLock()
-    defer c.mutex.RUnlock()
-    
-    component, exists := c.cache[key]
-    return component, exists
+type CacheEntry struct {
+    Component Component
+    Timestamp time.Time
+    Hits      int
 }
 
-func (c *ComponentCache) Set(key string, component Component) {
-    c.mutex.Lock()
-    defer c.mutex.Unlock()
+func NewComponentCache() *ComponentCache {
+    return &ComponentCache{
+        cache: make(map[string]*CacheEntry),
+    }
+}
+
+func (cc *ComponentCache) Get(key string) (Component, bool) {
+    cc.mu.RLock()
+    defer cc.mu.RUnlock()
     
-    c.cache[key] = component
+    if entry, exists := cc.cache[key]; exists {
+        entry.Hits++
+        return entry.Component, true
+    }
+    return nil, false
+}
+
+func (cc *ComponentCache) Set(key string, component Component) {
+    cc.mu.Lock()
+    defer cc.mu.Unlock()
+    
+    cc.cache[key] = &CacheEntry{
+        Component: component,
+        Timestamp: time.Now(),
+        Hits:      0,
+    }
+}
+
+func (cc *ComponentCache) Cleanup(maxAge time.Duration) {
+    cc.mu.Lock()
+    defer cc.mu.Unlock()
+    
+    now := time.Now()
+    for key, entry := range cc.cache {
+        if now.Sub(entry.Timestamp) > maxAge {
+            delete(cc.cache, key)
+        }
+    }
 }
 ```
 
 ---
 
-## 7. 安全考虑
+## 6. 测试策略
 
-### 7.1 输入验证
+### 6.1 单元测试
 
 ```go
-// 输入验证器
-type InputValidator interface {
-    Validate(input interface{}) error
-}
-
-// 组件安全包装器
-type SecureComponent struct {
-    component Component
-    validator InputValidator
-}
-
-func (s *SecureComponent) HandleRequest(req *http.Request) (*http.Response, error) {
-    // 验证输入
-    if err := s.validator.Validate(req); err != nil {
-        return nil, fmt.Errorf("input validation failed: %w", err)
+func TestButtonComponent(t *testing.T) {
+    clicked := false
+    onClick := func() {
+        clicked = true
     }
     
-    // 处理请求
-    return s.component.HandleRequest(req)
-}
-```
-
-### 7.2 访问控制
-
-```go
-// 访问控制
-type AccessControl interface {
-    CheckPermission(user string, resource string, action string) bool
-}
-
-// 安全组件
-type SecureComponent struct {
-    component     Component
-    accessControl AccessControl
-}
-
-func (s *SecureComponent) HandleRequest(req *http.Request) (*http.Response, error) {
-    user := getUserFromRequest(req)
-    resource := getResourceFromRequest(req)
-    action := getActionFromRequest(req)
-    
-    if !s.accessControl.CheckPermission(user, resource, action) {
-        return nil, fmt.Errorf("access denied")
-    }
-    
-    return s.component.HandleRequest(req)
-}
-```
-
----
-
-## 8. 测试策略
-
-### 8.1 单元测试
-
-```go
-package webcomponent_test
-
-import (
-    "context"
-    "testing"
-    "time"
-    
-    "github.com/yourproject/webcomponent"
-)
-
-func TestBaseComponent(t *testing.T) {
-    component := webcomponent.NewBaseComponent("test")
+    button := NewButtonComponent("test-btn", "Click Me", onClick)
     
     // 测试初始化
-    ctx := context.Background()
-    if err := component.Initialize(ctx); err != nil {
-        t.Errorf("Failed to initialize component: %v", err)
-    }
+    err := button.Initialize()
+    assert.NoError(t, err)
     
-    // 测试启动
-    if err := component.Start(ctx); err != nil {
-        t.Errorf("Failed to start component: %v", err)
-    }
+    // 测试渲染
+    html, err := button.Render()
+    assert.NoError(t, err)
+    assert.Contains(t, string(html), "Click Me")
     
-    // 测试健康检查
-    health := component.Health()
-    if health.Status != "running" {
-        t.Errorf("Expected status 'running', got '%s'", health.Status)
-    }
-    
-    // 测试停止
-    if err := component.Stop(ctx); err != nil {
-        t.Errorf("Failed to stop component: %v", err)
-    }
+    // 测试状态更新
+    button.SetDisabled(true)
+    html, err = button.Render()
+    assert.NoError(t, err)
+    assert.Contains(t, string(html), "disabled")
 }
-```
 
-### 8.2 集成测试
-
-```go
 func TestComponentManager(t *testing.T) {
-    manager := webcomponent.NewComponentManager()
+    manager := NewComponentManager()
     
-    // 创建测试组件
-    component := webcomponent.NewBaseComponent("test")
-    
-    // 注册组件
-    if err := manager.RegisterComponent(component); err != nil {
-        t.Errorf("Failed to register component: %v", err)
-    }
-    
-    // 启动所有组件
-    ctx := context.Background()
-    if err := manager.StartAll(ctx); err != nil {
-        t.Errorf("Failed to start components: %v", err)
-    }
-    
-    // 检查健康状态
-    health := manager.Health()
-    if len(health) != 1 {
-        t.Errorf("Expected 1 component, got %d", len(health))
-    }
-    
-    // 停止所有组件
-    if err := manager.StopAll(); err != nil {
-        t.Errorf("Failed to stop components: %v", err)
-    }
-}
-```
-
----
-
-## 9. 部署和运维
-
-### 9.1 容器化部署
-
-```dockerfile
-FROM golang:1.21-alpine AS builder
-
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-
-COPY . .
-RUN go build -o main .
-
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-WORKDIR /root/
-
-COPY --from=builder /app/main .
-CMD ["./main"]
-```
-
-### 9.2 监控和日志
-
-```go
-// 监控指标
-type Metrics struct {
-    ComponentCount    int64
-    RequestCount      int64
-    ErrorCount        int64
-    ResponseTime      time.Duration
-}
-
-// 日志记录
-type Logger interface {
-    Info(msg string, fields map[string]interface{})
-    Error(msg string, err error, fields map[string]interface{})
-    Debug(msg string, fields map[string]interface{})
-}
-
-// 可观测组件
-type ObservableComponent struct {
-    component Component
-    metrics   *Metrics
-    logger    Logger
-}
-
-func (o *ObservableComponent) HandleRequest(req *http.Request) (*http.Response, error) {
-    start := time.Now()
-    
-    o.logger.Info("Handling request", map[string]interface{}{
-        "method": req.Method,
-        "path":   req.URL.Path,
+    // 注册组件工厂
+    manager.Register("button", func() Component {
+        return NewButtonComponent("", "", nil)
     })
     
-    response, err := o.component.HandleRequest(req)
+    // 创建组件
+    component, err := manager.Create("button", "btn-1")
+    assert.NoError(t, err)
+    assert.NotNil(t, component)
     
-    o.metrics.RequestCount++
-    o.metrics.ResponseTime = time.Since(start)
+    // 获取组件
+    retrieved, exists := manager.Get("btn-1")
+    assert.True(t, exists)
+    assert.Equal(t, component, retrieved)
+}
+```
+
+### 6.2 集成测试
+
+```go
+func TestComponentIntegration(t *testing.T) {
+    manager := NewComponentManager()
     
-    if err != nil {
-        o.metrics.ErrorCount++
-        o.logger.Error("Request failed", err, map[string]interface{}{
-            "method": req.Method,
-            "path":   req.URL.Path,
-        })
-    }
+    // 注册组件
+    manager.Register("container", func() Component {
+        return NewContainerComponent("", "flex")
+    })
+    manager.Register("button", func() Component {
+        return NewButtonComponent("", "", nil)
+    })
     
-    return response, err
+    // 创建组件树
+    container, _ := manager.Create("container", "main")
+    button, _ := manager.Create("button", "btn")
+    
+    container.(*ContainerComponent).AddChild(button)
+    
+    // 测试渲染
+    html, err := container.Render()
+    assert.NoError(t, err)
+    assert.Contains(t, string(html), "container")
+    assert.Contains(t, string(html), "btn")
 }
 ```
 
 ---
 
-## 10. 总结
+## 7. 最佳实践
 
-Web组件架构提供了一种模块化、可扩展的方式来构建Web应用程序。通过Go语言的实现，我们可以获得：
+### 7.1 组件设计原则
 
-1. **高性能**: Go的并发模型和编译优化
-2. **类型安全**: 编译时类型检查
-3. **内存安全**: 自动内存管理
-4. **可维护性**: 清晰的接口和职责分离
-5. **可测试性**: 易于单元测试和集成测试
+1. **单一职责原则**: 每个组件只负责一个功能
+2. **开闭原则**: 对扩展开放，对修改关闭
+3. **依赖倒置原则**: 依赖抽象而非具体实现
+4. **接口隔离原则**: 使用小而专一的接口
+5. **组合优于继承**: 优先使用组合而非继承
 
-### 10.1 最佳实践
+### 7.2 性能优化建议
 
-1. **组件设计**: 遵循SOLID原则
-2. **错误处理**: 使用Go的错误处理模式
-3. **并发安全**: 使用互斥锁和通道
-4. **性能优化**: 使用连接池和缓存
-5. **安全考虑**: 输入验证和访问控制
-6. **监控**: 指标收集和日志记录
+1. **懒加载**: 按需加载组件
+2. **缓存**: 缓存计算结果和组件实例
+3. **批处理**: 批量更新DOM
+4. **虚拟化**: 对长列表使用虚拟滚动
+5. **代码分割**: 按路由分割代码
 
-### 10.2 未来发展方向
+### 7.3 安全考虑
 
-1. **云原生**: 支持Kubernetes部署
-2. **服务网格**: 集成Istio等服务网格
-3. **事件驱动**: 支持事件流处理
-4. **AI集成**: 智能组件和自动优化
-5. **边缘计算**: 支持边缘部署
+1. **输入验证**: 验证所有用户输入
+2. **XSS防护**: 转义HTML内容
+3. **CSRF防护**: 使用CSRF令牌
+4. **权限控制**: 实现细粒度权限控制
+5. **审计日志**: 记录重要操作
 
 ---
 
-**相关链接**:
+## 8. 总结
+
+Web组件架构通过组件化的方式提供了可复用、可维护的Web应用开发模式。通过形式化定义、Go语言实现和最佳实践，可以构建高性能、高可靠的Web组件系统。
+
+关键要点：
+
+- 组件是状态、接口和行为的组合
+- 事件驱动和状态管理是核心通信模式
+- 虚拟DOM和缓存是重要的性能优化手段
+- 测试和最佳实践确保系统质量
+
+## 相关链接
 
 - [01-组件架构基础](./01-Component-Architecture-Foundation.md)
 - [03-Web3组件架构](./03-Web3-Component-Architecture.md)
 - [04-认证组件架构](./04-Auth-Component-Architecture.md)
-- [01-微服务架构基础](../03-Microservice-Architecture/01-Microservice-Architecture-Foundation.md)
