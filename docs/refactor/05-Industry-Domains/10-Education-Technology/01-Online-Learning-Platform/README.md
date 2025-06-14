@@ -12,6 +12,7 @@
 $$f: U \times C \rightarrow L \times P$$
 
 其中：
+
 - $U = \{u_1, u_2, ..., u_n\}$ 为学习者集合
 - $C = \{c_1, c_2, ..., c_m\}$ 为课程集合
 - $L = \{l_1, l_2, ..., l_k\}$ 为学习活动集合
@@ -31,7 +32,7 @@ $$\text{OptimalPath}(u) = \arg\min_{p \in P} \sum_{i=1}^{n} \text{Difficulty}(p_
 
 ### 2.1 微服务架构
 
-```
+```texttext
 ┌─────────────────────────────────────┐
 │           用户服务层                  │
 ├─────────────────────────────────────┤
@@ -878,6 +879,7 @@ type LearningPatterns struct {
 $$r_{u,i} = \frac{\sum_{v \in N(u)} sim(u,v) \cdot r_{v,i}}{\sum_{v \in N(u)} |sim(u,v)|}$$
 
 其中：
+
 - $r_{u,i}$ 为用户 $u$ 对项目 $i$ 的预测评分
 - $N(u)$ 为用户 $u$ 的邻居集合
 - $sim(u,v)$ 为用户 $u$ 和 $v$ 的相似度
@@ -891,6 +893,7 @@ $$sim(u,v) = \frac{\sum_{i} r_{u,i} \cdot r_{v,i}}{\sqrt{\sum_{i} r_{u,i}^2} \cd
 $$P(u,c) = \frac{\sum_{i=1}^{n} w_i \cdot p_i}{\sum_{i=1}^{n} w_i}$$
 
 其中：
+
 - $P(u,c)$ 为用户 $u$ 在课程 $c$ 中的总进度
 - $w_i$ 为模块 $i$ 的权重
 - $p_i$ 为模块 $i$ 的完成进度
@@ -901,6 +904,7 @@ $$P(u,c) = \frac{\sum_{i=1}^{n} w_i \cdot p_i}{\sum_{i=1}^{n} w_i}$$
 $$E(u,c) = \alpha \cdot P(u,c) + \beta \cdot Q(u,c) + \gamma \cdot T(u,c)$$
 
 其中：
+
 - $P(u,c)$ 为进度分数
 - $Q(u,c)$ 为质量分数
 - $T(u,c)$ 为时间效率分数
@@ -1133,6 +1137,7 @@ type UserActivity struct {
 ---
 
 **相关链接**：
+
 - [02-教育管理系统](../02-Education-Management-System/README.md)
 - [03-智能评估系统](../03-Intelligent-Assessment-System/README.md)
 - [04-内容管理系统](../04-Content-Management-System/README.md)
