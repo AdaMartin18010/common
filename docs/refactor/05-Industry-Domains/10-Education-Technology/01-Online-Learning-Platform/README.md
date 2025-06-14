@@ -1,971 +1,1138 @@
 # 01-在线学习平台 (Online Learning Platform)
 
-## 概述
+## 1. 概述
 
-在线学习平台是教育科技领域的核心组件，负责课程管理、学习进度跟踪和个性化推荐。本文档使用Go语言实现，并提供形式化的数学定义和证明。
+### 1.1 定义与目标
 
-## 目录
+在线学习平台是教育科技领域的核心系统，为学习者提供个性化、交互式的数字化学习体验。
 
-- [1. 形式化定义](#1-形式化定义)
-- [2. 架构设计](#2-架构设计)
-- [3. 核心组件](#3-核心组件)
-- [4. 数据模型](#4-数据模型)
-- [5. 算法实现](#5-算法实现)
-- [6. 性能分析](#6-性能分析)
+**形式化定义**：
+设 $U$ 为用户集合，$C$ 为课程集合，$L$ 为学习活动集合，$P$ 为进度集合，则学习平台函数 $f$ 定义为：
 
-## 1. 形式化定义
-
-### 1.1 在线学习系统的数学定义
-
-**定义 1.1** (在线学习系统)
-在线学习系统是一个八元组 $OLS = (U, C, L, P, A, R, E, F)$，其中：
-
-- $U = \{u_1, u_2, ..., u_n\}$ 是用户集合
-- $C = \{c_1, c_2, ..., c_m\}$ 是课程集合
-- $L = \{l_1, l_2, ..., l_k\}$ 是学习记录集合
-- $P = \{p_1, p_2, ..., p_p\}$ 是进度集合
-- $A: U \times C \rightarrow L$ 是学习活动函数
-- $R: U \times C \rightarrow [0, 1]$ 是推荐函数
-- $E: L \times P \rightarrow \mathbb{R}$ 是评估函数
-- $F: U \times C \rightarrow P$ 是进度跟踪函数
-
-**定义 1.2** (学习记录)
-学习记录 $l_i$ 定义为：
-$$l_i = (user_id, course_id, activity_type, duration, score, timestamp)$$
+$$f: U \times C \rightarrow L \times P$$
 
 其中：
+- $U = \{u_1, u_2, ..., u_n\}$ 为学习者集合
+- $C = \{c_1, c_2, ..., c_m\}$ 为课程集合
+- $L = \{l_1, l_2, ..., l_k\}$ 为学习活动集合
+- $P = \{p_1, p_2, ..., p_r\}$ 为学习进度集合
 
-- $user_id \in U$ 是用户标识符
-- $course_id \in C$ 是课程标识符
-- $activity_type \in \{watch, read, quiz, assignment\}$ 是活动类型
-- $duration \in \mathbb{R}^+$ 是学习时长
-- $score \in [0, 100]$ 是得分
-- $timestamp \in \mathbb{R}^+$ 是时间戳
+### 1.2 学习理论模型
 
-**定理 1.1** (学习进度收敛性)
-对于任意用户 $u \in U$ 和课程 $c \in C$，学习进度函数 $F$ 在足够的学习活动下收敛到完成状态。
+**个性化学习模型**：
+$$\text{PersonalizedScore}(u, c) = \alpha \cdot \text{Interest}(u, c) + \beta \cdot \text{Ability}(u, c) + \gamma \cdot \text{Progress}(u, c)$$
 
-**证明**：
-设 $P_t$ 是时间 $t$ 的进度，$A_t$ 是时间 $t$ 的学习活动。
-进度更新规则：$P_{t+1} = P_t + \alpha \cdot A_t$
-其中 $\alpha$ 是学习率。
-当 $A_t > 0$ 时，$P_t$ 单调递增且有上界1。
-因此 $P_t$ 收敛到1。$\square$
+其中 $\alpha + \beta + \gamma = 1$ 为权重系数。
 
-### 1.2 推荐算法
-
-**算法 1.1** (协同过滤算法)
-
-```go
-// 协同过滤的形式化描述
-func CollaborativeFiltering(user User, users []User, courses []Course) []Course {
-    similarUsers := findSimilarUsers(user, users)
-    recommendations := make([]Course, 0)
-    
-    for _, similarUser := range similarUsers {
-        for _, course := range similarUser.CompletedCourses {
-            if !user.HasEnrolled(course) {
-                recommendations = append(recommendations, course)
-            }
-        }
-    }
-    
-    return rankRecommendations(recommendations, user)
-}
-```
-
-**复杂度分析**：
-
-- 时间复杂度：$O(n \cdot m)$，其中 $n$ 是用户数量，$m$ 是课程数量
-- 空间复杂度：$O(n \cdot m)$，用于存储用户-课程矩阵
+**学习路径优化**：
+$$\text{OptimalPath}(u) = \arg\min_{p \in P} \sum_{i=1}^{n} \text{Difficulty}(p_i) - \text{Ability}(u, p_i)$$
 
 ## 2. 架构设计
 
-### 2.1 系统架构图
+### 2.1 微服务架构
 
-```mermaid
-graph TB
-    A[在线学习平台] --> B[用户管理]
-    A --> C[课程管理]
-    A --> D[学习引擎]
-    A --> E[推荐系统]
-    
-    B --> F[用户注册]
-    B --> G[认证授权]
-    B --> H[个人资料]
-    
-    C --> I[课程创建]
-    C --> J[内容管理]
-    C --> K[课程发布]
-    
-    D --> L[学习跟踪]
-    D --> M[进度管理]
-    D --> N[评估系统]
-    
-    E --> O[协同过滤]
-    E --> P[内容推荐]
-    E --> Q[个性化推荐]
+```
+┌─────────────────────────────────────┐
+│           用户服务层                  │
+├─────────────────────────────────────┤
+│           课程服务层                  │
+├─────────────────────────────────────┤
+│           学习引擎层                  │
+├─────────────────────────────────────┤
+│           内容管理层                  │
+├─────────────────────────────────────┤
+│           分析推荐层                  │
+└─────────────────────────────────────┘
 ```
 
-### 2.2 核心架构
+### 2.2 核心组件
+
+#### 2.2.1 用户服务
 
 ```go
-// 在线学习平台核心架构
-type OnlineLearningPlatform struct {
-    userManager     *UserManager
-    courseManager   *CourseManager
-    learningEngine  *LearningEngine
-    recommendation  *RecommendationSystem
-    analytics       *AnalyticsEngine
-    contentDelivery *ContentDeliverySystem
+// UserService 用户服务
+type UserService struct {
+    repo        UserRepository
+    auth        AuthService
+    profile     ProfileService
+    preferences PreferenceService
+    config      *UserServiceConfig
 }
 
-// 用户管理器
-type UserManager struct {
-    registry     *UserRegistry
-    auth         *AuthenticationService
-    profile      *ProfileManager
+// UserServiceConfig 用户服务配置
+type UserServiceConfig struct {
+    MaxUsersPerPage int           `json:"max_users_per_page"`
+    SessionTimeout  time.Duration `json:"session_timeout"`
+    EnableMFA       bool          `json:"enable_mfa"`
+    PasswordPolicy  PasswordPolicy `json:"password_policy"`
 }
 
-// 课程管理器
-type CourseManager struct {
-    catalog      *CourseCatalog
-    content      *ContentManager
-    publishing   *PublishingService
-}
-```
-
-## 3. 核心组件
-
-### 3.1 用户管理系统
-
-```go
-// 用户管理接口
-type UserManagement interface {
-    RegisterUser(user *User) error
-    AuthenticateUser(credentials *Credentials) (*AuthResult, error)
-    UpdateProfile(userID string, updates map[string]interface{}) error
-    GetUser(userID string) (*User, error)
-    GetUserProgress(userID string) (*LearningProgress, error)
-}
-
-// 用户
+// User 用户模型
 type User struct {
-    ID              string            `json:"id"`
-    Email           string            `json:"email"`
-    Username        string            `json:"username"`
-    FirstName       string            `json:"first_name"`
-    LastName        string            `json:"last_name"`
-    Profile         *UserProfile      `json:"profile"`
-    Preferences     *UserPreferences  `json:"preferences"`
-    EnrolledCourses []string          `json:"enrolled_courses"`
-    CompletedCourses []string         `json:"completed_courses"`
-    CreatedAt       time.Time         `json:"created_at"`
-    UpdatedAt       time.Time         `json:"updated_at"`
+    ID          string                 `json:"id"`
+    Email       string                 `json:"email"`
+    Username    string                 `json:"username"`
+    Role        UserRole               `json:"role"`
+    Profile     *UserProfile           `json:"profile"`
+    Preferences *UserPreferences       `json:"preferences"`
+    Status      UserStatus             `json:"status"`
+    CreatedAt   time.Time              `json:"created_at"`
+    UpdatedAt   time.Time              `json:"updated_at"`
+    Metadata    map[string]interface{} `json:"metadata"`
 }
 
-// 用户管理器实现
-type userManager struct {
-    registry     *UserRegistry
-    auth         *AuthenticationService
-    profile      *ProfileManager
-    mutex        sync.RWMutex
+// UserRole 用户角色
+type UserRole string
+
+const (
+    UserRoleStudent      UserRole = "student"
+    UserRoleTeacher      UserRole = "teacher"
+    UserRoleAdministrator UserRole = "administrator"
+    UserRoleParent       UserRole = "parent"
+)
+
+// UserStatus 用户状态
+type UserStatus string
+
+const (
+    UserStatusActive   UserStatus = "active"
+    UserStatusInactive UserStatus = "inactive"
+    UserStatusSuspended UserStatus = "suspended"
+    UserStatusPending  UserStatus = "pending"
+)
+
+// UserProfile 用户档案
+type UserProfile struct {
+    FirstName    string    `json:"first_name"`
+    LastName     string    `json:"last_name"`
+    AvatarURL    string    `json:"avatar_url"`
+    Bio          string    `json:"bio"`
+    GradeLevel   *GradeLevel `json:"grade_level"`
+    Subjects     []string  `json:"subjects"`
+    LearningGoals []string `json:"learning_goals"`
+    DateOfBirth  *time.Time `json:"date_of_birth"`
+    Location     string    `json:"location"`
+    Timezone     string    `json:"timezone"`
 }
 
-func (um *userManager) RegisterUser(user *User) error {
-    um.mutex.Lock()
-    defer um.mutex.Unlock()
-    
-    // 验证用户信息
-    if err := um.validateUser(user); err != nil {
-        return fmt.Errorf("user validation failed: %w", err)
+// GradeLevel 年级级别
+type GradeLevel struct {
+    Level     int    `json:"level"`
+    Name      string `json:"name"`
+    Category  string `json:"category"` // elementary, middle, high, college
+}
+
+// UserPreferences 用户偏好
+type UserPreferences struct {
+    Language      string                 `json:"language"`
+    Theme         string                 `json:"theme"`
+    Notifications NotificationSettings   `json:"notifications"`
+    Accessibility AccessibilitySettings  `json:"accessibility"`
+    Privacy       PrivacySettings        `json:"privacy"`
+    Custom        map[string]interface{} `json:"custom"`
+}
+
+// NotificationSettings 通知设置
+type NotificationSettings struct {
+    EmailEnabled     bool `json:"email_enabled"`
+    PushEnabled      bool `json:"push_enabled"`
+    SMSEnabled       bool `json:"sms_enabled"`
+    CourseUpdates    bool `json:"course_updates"`
+    AssignmentDue    bool `json:"assignment_due"`
+    GradeUpdates     bool `json:"grade_updates"`
+    DiscussionReplies bool `json:"discussion_replies"`
+}
+
+// AccessibilitySettings 无障碍设置
+type AccessibilitySettings struct {
+    HighContrast    bool `json:"high_contrast"`
+    LargeText       bool `json:"large_text"`
+    ScreenReader    bool `json:"screen_reader"`
+    KeyboardOnly    bool `json:"keyboard_only"`
+    ReducedMotion   bool `json:"reduced_motion"`
+}
+
+// PrivacySettings 隐私设置
+type PrivacySettings struct {
+    ProfileVisible  bool `json:"profile_visible"`
+    ProgressVisible bool `json:"progress_visible"`
+    ActivityVisible bool `json:"activity_visible"`
+    DataSharing     bool `json:"data_sharing"`
+}
+
+// CreateUser 创建用户
+func (us *UserService) CreateUser(ctx context.Context, req *CreateUserRequest) (*User, error) {
+    // 验证请求
+    if err := us.validateCreateRequest(req); err != nil {
+        return nil, fmt.Errorf("invalid request: %w", err)
     }
     
     // 检查用户是否已存在
-    if um.registry.Exists(user.Email) {
-        return errors.New("user already exists")
+    if exists, _ := us.repo.ExistsByEmail(ctx, req.Email); exists {
+        return nil, errors.New("user already exists")
     }
     
-    // 生成用户ID
-    if user.ID == "" {
-        user.ID = um.generateUserID(user)
+    // 创建用户
+    user := &User{
+        ID:        uuid.New().String(),
+        Email:     req.Email,
+        Username:  req.Username,
+        Role:      req.Role,
+        Status:    UserStatusPending,
+        CreatedAt: time.Now(),
+        UpdatedAt: time.Now(),
+        Metadata:  make(map[string]interface{}),
     }
     
-    // 设置时间戳
-    now := time.Now()
-    user.CreatedAt = now
-    user.UpdatedAt = now
-    
-    // 注册用户
-    if err := um.registry.Register(user); err != nil {
-        return fmt.Errorf("failed to register user: %w", err)
+    // 设置档案
+    if req.Profile != nil {
+        user.Profile = req.Profile
     }
     
-    // 创建用户档案
-    if err := um.profile.CreateProfile(user.ID); err != nil {
-        return fmt.Errorf("failed to create profile: %w", err)
+    // 设置偏好
+    if req.Preferences != nil {
+        user.Preferences = req.Preferences
+    } else {
+        user.Preferences = us.getDefaultPreferences()
     }
     
-    return nil
+    // 保存用户
+    if err := us.repo.Create(ctx, user); err != nil {
+        return nil, fmt.Errorf("failed to create user: %w", err)
+    }
+    
+    // 发送欢迎邮件
+    go us.sendWelcomeEmail(user)
+    
+    return user, nil
 }
 
-func (um *userManager) AuthenticateUser(credentials *Credentials) (*AuthResult, error) {
-    // 验证凭据
-    user, err := um.auth.ValidateCredentials(credentials)
-    if err != nil {
-        return nil, fmt.Errorf("authentication failed: %w", err)
-    }
-    
-    // 生成访问令牌
-    token, err := um.auth.GenerateToken(user)
-    if err != nil {
-        return nil, fmt.Errorf("token generation failed: %w", err)
-    }
-    
-    return &AuthResult{
-        User:  user,
-        Token: token,
-    }, nil
-}
-
-func (um *userManager) validateUser(user *User) error {
-    if user.Email == "" {
+// validateCreateRequest 验证创建请求
+func (us *UserService) validateCreateRequest(req *CreateUserRequest) error {
+    if req.Email == "" {
         return errors.New("email is required")
     }
     
-    if user.Username == "" {
-        return errors.New("username is required")
-    }
-    
-    if !um.isValidEmail(user.Email) {
+    if !us.isValidEmail(req.Email) {
         return errors.New("invalid email format")
     }
     
+    if req.Username == "" {
+        return errors.New("username is required")
+    }
+    
+    if len(req.Username) < 3 {
+        return errors.New("username must be at least 3 characters")
+    }
+    
+    if req.Role == "" {
+        return errors.New("role is required")
+    }
+    
     return nil
 }
 
-func (um *userManager) generateUserID(user *User) string {
-    // 基于用户信息生成唯一ID
-    data := fmt.Sprintf("%s%s%d", user.Email, user.Username, time.Now().UnixNano())
-    hash := sha256.Sum256([]byte(data))
-    return hex.EncodeToString(hash[:8])
+// isValidEmail 验证邮箱格式
+func (us *UserService) isValidEmail(email string) bool {
+    emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+    return emailRegex.MatchString(email)
+}
+
+// getDefaultPreferences 获取默认偏好
+func (us *UserService) getDefaultPreferences() *UserPreferences {
+    return &UserPreferences{
+        Language: "en",
+        Theme:    "light",
+        Notifications: NotificationSettings{
+            EmailEnabled:     true,
+            PushEnabled:      true,
+            SMSEnabled:       false,
+            CourseUpdates:    true,
+            AssignmentDue:    true,
+            GradeUpdates:     true,
+            DiscussionReplies: true,
+        },
+        Accessibility: AccessibilitySettings{
+            HighContrast:  false,
+            LargeText:     false,
+            ScreenReader:  false,
+            KeyboardOnly:  false,
+            ReducedMotion: false,
+        },
+        Privacy: PrivacySettings{
+            ProfileVisible:  true,
+            ProgressVisible: true,
+            ActivityVisible: false,
+            DataSharing:     false,
+        },
+        Custom: make(map[string]interface{}),
+    }
+}
+
+// CreateUserRequest 创建用户请求
+type CreateUserRequest struct {
+    Email       string           `json:"email"`
+    Username    string           `json:"username"`
+    Role        UserRole         `json:"role"`
+    Profile     *UserProfile     `json:"profile,omitempty"`
+    Preferences *UserPreferences `json:"preferences,omitempty"`
+}
+
+// sendWelcomeEmail 发送欢迎邮件
+func (us *UserService) sendWelcomeEmail(user *User) {
+    // 实现邮件发送逻辑
+    log.Printf("Sending welcome email to %s", user.Email)
 }
 ```
 
-### 3.2 课程管理系统
+#### 2.2.2 课程服务
 
 ```go
-// 课程管理接口
-type CourseManagement interface {
-    CreateCourse(course *Course) error
-    UpdateCourse(courseID string, updates map[string]interface{}) error
-    GetCourse(courseID string) (*Course, error)
-    SearchCourses(criteria *SearchCriteria) ([]*Course, error)
-    PublishCourse(courseID string) error
-    EnrollUser(courseID string, userID string) error
+// CourseService 课程服务
+type CourseService struct {
+    repo        CourseRepository
+    content     ContentService
+    enrollment  EnrollmentService
+    progress    ProgressService
+    config      *CourseServiceConfig
 }
 
-// 课程
+// CourseServiceConfig 课程服务配置
+type CourseServiceConfig struct {
+    MaxCoursesPerPage int           `json:"max_courses_per_page"`
+    EnablePrerequisites bool        `json:"enable_prerequisites"`
+    EnableCertificates  bool        `json:"enable_certificates"`
+    AutoEnrollment      bool        `json:"auto_enrollment"`
+}
+
+// Course 课程模型
 type Course struct {
-    ID              string            `json:"id"`
-    Title           string            `json:"title"`
-    Description     string            `json:"description"`
-    Instructor      string            `json:"instructor"`
-    Category        string            `json:"category"`
-    Level           string            `json:"level"`
-    Duration        int               `json:"duration"`
-    Modules         []*Module         `json:"modules"`
-    Prerequisites   []string          `json:"prerequisites"`
-    Status          string            `json:"status"`
-    CreatedAt       time.Time         `json:"created_at"`
-    UpdatedAt       time.Time         `json:"updated_at"`
+    ID              string                 `json:"id"`
+    Title           string                 `json:"title"`
+    Description     string                 `json:"description"`
+    InstructorID    string                 `json:"instructor_id"`
+    Category        string                 `json:"category"`
+    Level           CourseLevel            `json:"level"`
+    Duration        time.Duration          `json:"duration"`
+    Price           *Price                 `json:"price"`
+    Prerequisites   []string               `json:"prerequisites"`
+    LearningOutcomes []string              `json:"learning_outcomes"`
+    Modules         []*Module              `json:"modules"`
+    Status          CourseStatus           `json:"status"`
+    EnrollmentCount int                    `json:"enrollment_count"`
+    Rating          float64                `json:"rating"`
+    ReviewCount     int                    `json:"review_count"`
+    CreatedAt       time.Time              `json:"created_at"`
+    UpdatedAt       time.Time              `json:"updated_at"`
+    Metadata        map[string]interface{} `json:"metadata"`
 }
 
-// 模块
+// CourseLevel 课程级别
+type CourseLevel string
+
+const (
+    CourseLevelBeginner CourseLevel = "beginner"
+    CourseLevelIntermediate CourseLevel = "intermediate"
+    CourseLevelAdvanced CourseLevel = "advanced"
+)
+
+// CourseStatus 课程状态
+type CourseStatus string
+
+const (
+    CourseStatusDraft     CourseStatus = "draft"
+    CourseStatusPublished CourseStatus = "published"
+    CourseStatusArchived  CourseStatus = "archived"
+    CourseStatusSuspended CourseStatus = "suspended"
+)
+
+// Price 价格模型
+type Price struct {
+    Amount   float64 `json:"amount"`
+    Currency string  `json:"currency"`
+    Type     PriceType `json:"type"`
+}
+
+// PriceType 价格类型
+type PriceType string
+
+const (
+    PriceTypeFree  PriceType = "free"
+    PriceTypePaid  PriceType = "paid"
+    PriceTypeSubscription PriceType = "subscription"
+)
+
+// Module 课程模块
 type Module struct {
-    ID          string    `json:"id"`
-    Title       string    `json:"title"`
-    Content     []Content `json:"content"`
-    Quiz        *Quiz     `json:"quiz"`
-    Duration    int       `json:"duration"`
-    Order       int       `json:"order"`
+    ID          string        `json:"id"`
+    Title       string        `json:"title"`
+    Description string        `json:"description"`
+    Order       int           `json:"order"`
+    Duration    time.Duration `json:"duration"`
+    Lessons     []*Lesson     `json:"lessons"`
+    Quiz        *Quiz         `json:"quiz,omitempty"`
+    Assignment  *Assignment   `json:"assignment,omitempty"`
 }
 
-// 课程管理器实现
-type courseManager struct {
-    catalog      *CourseCatalog
-    content      *ContentManager
-    publishing   *PublishingService
-    enrollment   *EnrollmentService
-    mutex        sync.RWMutex
+// Lesson 课程章节
+type Lesson struct {
+    ID          string        `json:"id"`
+    Title       string        `json:"title"`
+    Description string        `json:"description"`
+    Order       int           `json:"order"`
+    Duration    time.Duration `json:"duration"`
+    Type        LessonType    `json:"type"`
+    Content     *Content      `json:"content"`
+    Resources   []*Resource   `json:"resources"`
 }
 
-func (cm *courseManager) CreateCourse(course *Course) error {
-    cm.mutex.Lock()
-    defer cm.mutex.Unlock()
-    
-    // 验证课程信息
-    if err := cm.validateCourse(course); err != nil {
-        return fmt.Errorf("course validation failed: %w", err)
+// LessonType 章节类型
+type LessonType string
+
+const (
+    LessonTypeVideo     LessonType = "video"
+    LessonTypeText      LessonType = "text"
+    LessonTypeAudio     LessonType = "audio"
+    LessonTypeInteractive LessonType = "interactive"
+    LessonTypeQuiz      LessonType = "quiz"
+)
+
+// Content 内容模型
+type Content struct {
+    ID       string                 `json:"id"`
+    Type     ContentType            `json:"type"`
+    URL      string                 `json:"url"`
+    Data     []byte                 `json:"data"`
+    Metadata map[string]interface{} `json:"metadata"`
+}
+
+// ContentType 内容类型
+type ContentType string
+
+const (
+    ContentTypeVideo     ContentType = "video"
+    ContentTypeDocument  ContentType = "document"
+    ContentTypeImage     ContentType = "image"
+    ContentTypeAudio     ContentType = "audio"
+    ContentTypeHTML      ContentType = "html"
+    ContentTypeMarkdown  ContentType = "markdown"
+)
+
+// Resource 资源模型
+type Resource struct {
+    ID          string      `json:"id"`
+    Title       string      `json:"title"`
+    Description string      `json:"description"`
+    Type        ResourceType `json:"type"`
+    URL         string      `json:"url"`
+    Size        int64       `json:"size"`
+    Format      string      `json:"format"`
+}
+
+// ResourceType 资源类型
+type ResourceType string
+
+const (
+    ResourceTypeDocument ResourceType = "document"
+    ResourceTypeVideo    ResourceType = "video"
+    ResourceTypeAudio    ResourceType = "audio"
+    ResourceTypeImage    ResourceType = "image"
+    ResourceTypeLink     ResourceType = "link"
+)
+
+// CreateCourse 创建课程
+func (cs *CourseService) CreateCourse(ctx context.Context, req *CreateCourseRequest) (*Course, error) {
+    // 验证请求
+    if err := cs.validateCreateCourseRequest(req); err != nil {
+        return nil, fmt.Errorf("invalid request: %w", err)
     }
-    
-    // 生成课程ID
-    if course.ID == "" {
-        course.ID = cm.generateCourseID(course)
-    }
-    
-    // 设置时间戳
-    now := time.Now()
-    course.CreatedAt = now
-    course.UpdatedAt = now
-    course.Status = "draft"
     
     // 创建课程
-    if err := cm.catalog.Create(course); err != nil {
-        return fmt.Errorf("failed to create course: %w", err)
+    course := &Course{
+        ID:              uuid.New().String(),
+        Title:           req.Title,
+        Description:     req.Description,
+        InstructorID:    req.InstructorID,
+        Category:        req.Category,
+        Level:           req.Level,
+        Duration:        req.Duration,
+        Price:           req.Price,
+        Prerequisites:   req.Prerequisites,
+        LearningOutcomes: req.LearningOutcomes,
+        Modules:         req.Modules,
+        Status:          CourseStatusDraft,
+        EnrollmentCount: 0,
+        Rating:          0.0,
+        ReviewCount:     0,
+        CreatedAt:       time.Now(),
+        UpdatedAt:       time.Now(),
+        Metadata:        make(map[string]interface{}),
     }
     
-    // 创建内容
-    for _, module := range course.Modules {
-        if err := cm.content.CreateModule(course.ID, module); err != nil {
-            return fmt.Errorf("failed to create module: %w", err)
-        }
+    // 保存课程
+    if err := cs.repo.Create(ctx, course); err != nil {
+        return nil, fmt.Errorf("failed to create course: %w", err)
+    }
+    
+    return course, nil
+}
+
+// validateCreateCourseRequest 验证创建课程请求
+func (cs *CourseService) validateCreateCourseRequest(req *CreateCourseRequest) error {
+    if req.Title == "" {
+        return errors.New("title is required")
+    }
+    
+    if req.Description == "" {
+        return errors.New("description is required")
+    }
+    
+    if req.InstructorID == "" {
+        return errors.New("instructor ID is required")
+    }
+    
+    if req.Category == "" {
+        return errors.New("category is required")
+    }
+    
+    if req.Level == "" {
+        return errors.New("level is required")
     }
     
     return nil
 }
 
-func (cm *courseManager) EnrollUser(courseID string, userID string) error {
-    cm.mutex.Lock()
-    defer cm.mutex.Unlock()
-    
-    // 检查课程是否存在
-    course, err := cm.catalog.Get(courseID)
-    if err != nil {
-        return fmt.Errorf("course not found: %w", err)
-    }
-    
-    // 检查课程状态
-    if course.Status != "published" {
-        return errors.New("course is not published")
-    }
-    
-    // 检查先修条件
-    if err := cm.checkPrerequisites(course, userID); err != nil {
-        return fmt.Errorf("prerequisites not met: %w", err)
-    }
-    
-    // 注册用户
-    if err := cm.enrollment.Enroll(courseID, userID); err != nil {
-        return fmt.Errorf("enrollment failed: %w", err)
-    }
-    
-    return nil
-}
-
-func (cm *courseManager) checkPrerequisites(course *Course, userID string) error {
-    for _, prereq := range course.Prerequisites {
-        if !cm.enrollment.HasCompleted(userID, prereq) {
-            return fmt.Errorf("prerequisite course %s not completed", prereq)
-        }
-    }
-    return nil
-}
-
-func (cm *courseManager) validateCourse(course *Course) error {
-    if course.Title == "" {
-        return errors.New("course title is required")
-    }
-    
-    if course.Instructor == "" {
-        return errors.New("instructor is required")
-    }
-    
-    if len(course.Modules) == 0 {
-        return errors.New("at least one module is required")
-    }
-    
-    return nil
+// CreateCourseRequest 创建课程请求
+type CreateCourseRequest struct {
+    Title            string      `json:"title"`
+    Description      string      `json:"description"`
+    InstructorID     string      `json:"instructor_id"`
+    Category         string      `json:"category"`
+    Level            CourseLevel `json:"level"`
+    Duration         time.Duration `json:"duration"`
+    Price            *Price      `json:"price,omitempty"`
+    Prerequisites    []string    `json:"prerequisites,omitempty"`
+    LearningOutcomes []string    `json:"learning_outcomes,omitempty"`
+    Modules          []*Module   `json:"modules,omitempty"`
 }
 ```
 
-### 3.3 学习引擎
+#### 2.2.3 学习引擎
 
 ```go
-// 学习引擎接口
-type LearningEngine interface {
-    TrackActivity(activity *LearningActivity) error
-    UpdateProgress(userID string, courseID string, moduleID string) error
-    GetProgress(userID string, courseID string) (*LearningProgress, error)
-    GenerateAssessment(userID string, courseID string) (*Assessment, error)
-    EvaluateSubmission(submission *Submission) (*Evaluation, error)
+// LearningEngine 学习引擎
+type LearningEngine struct {
+    progress    ProgressService
+    analytics   AnalyticsService
+    recommendation RecommendationService
+    adaptive    AdaptiveLearningService
+    config      *LearningEngineConfig
 }
 
-// 学习活动
-type LearningActivity struct {
-    ID          string    `json:"id"`
-    UserID      string    `json:"user_id"`
-    CourseID    string    `json:"course_id"`
-    ModuleID    string    `json:"module_id"`
-    Type        string    `json:"type"`
-    Duration    int       `json:"duration"`
-    Score       float64   `json:"score"`
-    Timestamp   time.Time `json:"timestamp"`
+// LearningEngineConfig 学习引擎配置
+type LearningEngineConfig struct {
+    EnableAdaptiveLearning bool    `json:"enable_adaptive_learning"`
+    ProgressThreshold      float64 `json:"progress_threshold"`
+    RecommendationCount    int     `json:"recommendation_count"`
+    AnalyticsEnabled       bool    `json:"analytics_enabled"`
 }
 
-// 学习进度
-type LearningProgress struct {
-    UserID      string            `json:"user_id"`
-    CourseID    string            `json:"course_id"`
-    Progress    float64           `json:"progress"`
-    Modules     []ModuleProgress  `json:"modules"`
-    LastActivity time.Time        `json:"last_activity"`
-    EstimatedCompletion time.Time `json:"estimated_completion"`
+// LearningSession 学习会话
+type LearningSession struct {
+    ID          string                 `json:"id"`
+    UserID      string                 `json:"user_id"`
+    CourseID    string                 `json:"course_id"`
+    ModuleID    string                 `json:"module_id"`
+    LessonID    string                 `json:"lesson_id"`
+    StartTime   time.Time              `json:"start_time"`
+    EndTime     *time.Time             `json:"end_time,omitempty"`
+    Duration    time.Duration          `json:"duration"`
+    Progress    float64                `json:"progress"`
+    Score       *float64               `json:"score,omitempty"`
+    Events      []*LearningEvent       `json:"events"`
+    Metadata    map[string]interface{} `json:"metadata"`
 }
 
-// 学习引擎实现
-type learningEngine struct {
-    tracker      *ActivityTracker
-    progress     *ProgressManager
-    assessment   *AssessmentEngine
-    analytics    *LearningAnalytics
+// LearningEvent 学习事件
+type LearningEvent struct {
+    ID        string           `json:"id"`
+    Type      LearningEventType `json:"type"`
+    Timestamp time.Time        `json:"timestamp"`
+    Data      interface{}      `json:"data"`
 }
 
-func (le *learningEngine) TrackActivity(activity *LearningActivity) error {
-    // 记录活动
-    if err := le.tracker.Record(activity); err != nil {
-        return fmt.Errorf("failed to record activity: %w", err)
+// LearningEventType 学习事件类型
+type LearningEventType string
+
+const (
+    LearningEventTypeStart     LearningEventType = "start"
+    LearningEventTypePause     LearningEventType = "pause"
+    LearningEventTypeResume    LearningEventType = "resume"
+    LearningEventTypeComplete  LearningEventType = "complete"
+    LearningEventTypeQuiz      LearningEventType = "quiz"
+    LearningEventTypeAssignment LearningEventType = "assignment"
+    LearningEventTypeDiscussion LearningEventType = "discussion"
+)
+
+// StartSession 开始学习会话
+func (le *LearningEngine) StartSession(ctx context.Context, req *StartSessionRequest) (*LearningSession, error) {
+    // 创建会话
+    session := &LearningSession{
+        ID:        uuid.New().String(),
+        UserID:    req.UserID,
+        CourseID:  req.CourseID,
+        ModuleID:  req.ModuleID,
+        LessonID:  req.LessonID,
+        StartTime: time.Now(),
+        Progress:  0.0,
+        Events:    make([]*LearningEvent, 0),
+        Metadata:  make(map[string]interface{}),
+    }
+    
+    // 记录开始事件
+    session.Events = append(session.Events, &LearningEvent{
+        ID:        uuid.New().String(),
+        Type:      LearningEventTypeStart,
+        Timestamp: session.StartTime,
+        Data:      req,
+    })
+    
+    // 保存会话
+    if err := le.progress.SaveSession(ctx, session); err != nil {
+        return nil, fmt.Errorf("failed to save session: %w", err)
+    }
+    
+    // 更新学习分析
+    if le.config.AnalyticsEnabled {
+        go le.analytics.RecordSessionStart(session)
+    }
+    
+    return session, nil
+}
+
+// UpdateProgress 更新学习进度
+func (le *LearningEngine) UpdateProgress(ctx context.Context, sessionID string, progress float64) error {
+    // 获取会话
+    session, err := le.progress.GetSession(ctx, sessionID)
+    if err != nil {
+        return fmt.Errorf("failed to get session: %w", err)
     }
     
     // 更新进度
-    if err := le.progress.Update(activity); err != nil {
-        return fmt.Errorf("failed to update progress: %w", err)
-    }
+    session.Progress = progress
+    session.Duration = time.Since(session.StartTime)
     
-    // 分析学习行为
-    le.analytics.Analyze(activity)
-    
-    return nil
-}
-
-func (le *learningEngine) UpdateProgress(userID string, courseID string, moduleID string) error {
-    // 获取当前进度
-    progress, err := le.progress.Get(userID, courseID)
-    if err != nil {
-        return fmt.Errorf("failed to get progress: %w", err)
-    }
-    
-    // 更新模块进度
-    for i, module := range progress.Modules {
-        if module.ModuleID == moduleID {
-            progress.Modules[i].Completed = true
-            progress.Modules[i].CompletedAt = time.Now()
-            break
-        }
-    }
-    
-    // 计算总体进度
-    completedModules := 0
-    for _, module := range progress.Modules {
-        if module.Completed {
-            completedModules++
-        }
-    }
-    
-    progress.Progress = float64(completedModules) / float64(len(progress.Modules))
-    progress.LastActivity = time.Now()
-    
-    // 保存进度
-    if err := le.progress.Save(progress); err != nil {
-        return fmt.Errorf("failed to save progress: %w", err)
-    }
-    
-    return nil
-}
-
-func (le *learningEngine) GenerateAssessment(userID string, courseID string) (*Assessment, error) {
-    // 获取课程内容
-    course, err := le.getCourse(courseID)
-    if err != nil {
-        return nil, fmt.Errorf("failed to get course: %w", err)
-    }
-    
-    // 获取用户学习历史
-    history, err := le.tracker.GetHistory(userID, courseID)
-    if err != nil {
-        return nil, fmt.Errorf("failed to get learning history: %w", err)
-    }
-    
-    // 生成个性化评估
-    assessment := le.assessment.Generate(course, history)
-    
-    return assessment, nil
-}
-```
-
-## 4. 数据模型
-
-### 4.1 数据库设计
-
-```sql
--- 用户表
-CREATE TABLE users (
-    id VARCHAR(64) PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    profile JSONB,
-    preferences JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 课程表
-CREATE TABLE courses (
-    id VARCHAR(64) PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    instructor VARCHAR(64) NOT NULL,
-    category VARCHAR(100) NOT NULL,
-    level VARCHAR(50) NOT NULL,
-    duration INTEGER NOT NULL,
-    prerequisites JSONB,
-    status VARCHAR(20) DEFAULT 'draft',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 模块表
-CREATE TABLE modules (
-    id VARCHAR(64) PRIMARY KEY,
-    course_id VARCHAR(64) REFERENCES courses(id),
-    title VARCHAR(255) NOT NULL,
-    content JSONB NOT NULL,
-    quiz JSONB,
-    duration INTEGER NOT NULL,
-    order_index INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 学习活动表
-CREATE TABLE learning_activities (
-    id VARCHAR(64) PRIMARY KEY,
-    user_id VARCHAR(64) REFERENCES users(id),
-    course_id VARCHAR(64) REFERENCES courses(id),
-    module_id VARCHAR(64) REFERENCES modules(id),
-    activity_type VARCHAR(50) NOT NULL,
-    duration INTEGER NOT NULL,
-    score DECIMAL(5,2),
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 学习进度表
-CREATE TABLE learning_progress (
-    id SERIAL PRIMARY KEY,
-    user_id VARCHAR(64) REFERENCES users(id),
-    course_id VARCHAR(64) REFERENCES courses(id),
-    progress DECIMAL(5,2) DEFAULT 0,
-    last_activity TIMESTAMP,
-    estimated_completion TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, course_id)
-);
-
--- 用户注册表
-CREATE TABLE enrollments (
-    id SERIAL PRIMARY KEY,
-    user_id VARCHAR(64) REFERENCES users(id),
-    course_id VARCHAR(64) REFERENCES courses(id),
-    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMP,
-    status VARCHAR(20) DEFAULT 'enrolled',
-    UNIQUE(user_id, course_id)
-);
-```
-
-### 4.2 数据访问层
-
-```go
-// 用户仓库
-type UserRepository interface {
-    Create(user *User) error
-    Update(user *User) error
-    FindByID(userID string) (*User, error)
-    FindByEmail(email string) (*User, error)
-    FindByUsername(username string) (*User, error)
-}
-
-// PostgreSQL实现
-type postgresUserRepository struct {
-    db *sql.DB
-}
-
-func (r *postgresUserRepository) Create(user *User) error {
-    query := `
-        INSERT INTO users (id, email, username, first_name, last_name, profile, preferences)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `
-    
-    profile, err := json.Marshal(user.Profile)
-    if err != nil {
-        return fmt.Errorf("failed to marshal profile: %w", err)
-    }
-    
-    preferences, err := json.Marshal(user.Preferences)
-    if err != nil {
-        return fmt.Errorf("failed to marshal preferences: %w", err)
-    }
-    
-    _, err = r.db.Exec(query,
-        user.ID,
-        user.Email,
-        user.Username,
-        user.FirstName,
-        user.LastName,
-        profile,
-        preferences,
-    )
-    
-    return err
-}
-
-func (r *postgresUserRepository) FindByID(userID string) (*User, error) {
-    query := `
-        SELECT id, email, username, first_name, last_name, profile, preferences, created_at, updated_at
-        FROM users WHERE id = $1
-    `
-    
-    var user User
-    var profile, preferences []byte
-    
-    err := r.db.QueryRow(query, userID).Scan(
-        &user.ID,
-        &user.Email,
-        &user.Username,
-        &user.FirstName,
-        &user.LastName,
-        &profile,
-        &preferences,
-        &user.CreatedAt,
-        &user.UpdatedAt,
-    )
-    
-    if err != nil {
-        return nil, err
-    }
-    
-    if err := json.Unmarshal(profile, &user.Profile); err != nil {
-        return nil, fmt.Errorf("failed to unmarshal profile: %w", err)
-    }
-    
-    if err := json.Unmarshal(preferences, &user.Preferences); err != nil {
-        return nil, fmt.Errorf("failed to unmarshal preferences: %w", err)
-    }
-    
-    return &user, nil
-}
-```
-
-## 5. 算法实现
-
-### 5.1 推荐算法
-
-```go
-// 推荐系统
-type RecommendationSystem struct {
-    collaborativeFilter *CollaborativeFilter
-    contentBased       *ContentBasedFilter
-    hybrid             *HybridRecommender
-}
-
-// 协同过滤
-type CollaborativeFilter struct {
-    userItemMatrix map[string]map[string]float64
-    similarity     *SimilarityCalculator
-}
-
-func (cf *CollaborativeFilter) GetRecommendations(userID string, numRecommendations int) ([]*Course, error) {
-    // 找到相似用户
-    similarUsers := cf.findSimilarUsers(userID)
-    
-    // 获取推荐课程
-    recommendations := make(map[string]float64)
-    
-    for _, similarUser := range similarUsers {
-        for courseID, rating := range cf.userItemMatrix[similarUser.UserID] {
-            if cf.userItemMatrix[userID][courseID] == 0 {
-                recommendations[courseID] += similarUser.Similarity * rating
-            }
-        }
-    }
-    
-    // 排序并返回推荐
-    return cf.rankRecommendations(recommendations, numRecommendations)
-}
-
-func (cf *CollaborativeFilter) findSimilarUsers(userID string) []SimilarUser {
-    var similarUsers []SimilarUser
-    
-    for otherUserID := range cf.userItemMatrix {
-        if otherUserID == userID {
-            continue
-        }
-        
-        similarity := cf.similarity.Calculate(userID, otherUserID)
-        if similarity > 0.5 {
-            similarUsers = append(similarUsers, SimilarUser{
-                UserID:     otherUserID,
-                Similarity: similarity,
-            })
-        }
-    }
-    
-    // 按相似度排序
-    sort.Slice(similarUsers, func(i, j int) bool {
-        return similarUsers[i].Similarity > similarUsers[j].Similarity
+    // 记录进度事件
+    session.Events = append(session.Events, &LearningEvent{
+        ID:        uuid.New().String(),
+        Type:      LearningEventTypeComplete,
+        Timestamp: time.Now(),
+        Data:      map[string]interface{}{"progress": progress},
     })
     
-    return similarUsers
-}
-
-// 内容推荐
-type ContentBasedFilter struct {
-    courseFeatures map[string]map[string]float64
-    userProfiles   map[string]map[string]float64
-}
-
-func (cbf *ContentBasedFilter) GetRecommendations(userID string, numRecommendations int) ([]*Course, error) {
-    // 获取用户兴趣档案
-    userProfile := cbf.userProfiles[userID]
-    if userProfile == nil {
-        return nil, errors.New("user profile not found")
+    // 保存更新
+    if err := le.progress.UpdateSession(ctx, session); err != nil {
+        return fmt.Errorf("failed to update session: %w", err)
     }
     
-    // 计算课程相似度
-    courseScores := make(map[string]float64)
-    
-    for courseID, features := range cbf.courseFeatures {
-        score := cbf.calculateSimilarity(userProfile, features)
-        courseScores[courseID] = score
+    // 检查是否完成
+    if progress >= 100.0 {
+        return le.completeSession(ctx, session)
     }
     
-    // 排序并返回推荐
-    return cbf.rankRecommendations(courseScores, numRecommendations)
+    return nil
 }
 
-func (cbf *ContentBasedFilter) calculateSimilarity(userProfile, courseFeatures map[string]float64) float64 {
-    dotProduct := 0.0
-    userNorm := 0.0
-    courseNorm := 0.0
+// completeSession 完成会话
+func (le *LearningEngine) completeSession(ctx context.Context, session *LearningSession) error {
+    endTime := time.Now()
+    session.EndTime = &endTime
+    session.Duration = endTime.Sub(session.StartTime)
+    session.Progress = 100.0
     
-    for feature, userScore := range userProfile {
-        if courseScore, exists := courseFeatures[feature]; exists {
-            dotProduct += userScore * courseScore
-        }
-        userNorm += userScore * userScore
+    // 记录完成事件
+    session.Events = append(session.Events, &LearningEvent{
+        ID:        uuid.New().String(),
+        Type:      LearningEventTypeComplete,
+        Timestamp: endTime,
+        Data:      map[string]interface{}{"completed": true},
+    })
+    
+    // 保存完成状态
+    if err := le.progress.UpdateSession(ctx, session); err != nil {
+        return fmt.Errorf("failed to update session: %w", err)
     }
     
-    for _, courseScore := range courseFeatures {
-        courseNorm += courseScore * courseScore
+    // 更新学习分析
+    if le.config.AnalyticsEnabled {
+        go le.analytics.RecordSessionComplete(session)
     }
     
-    if userNorm == 0 || courseNorm == 0 {
-        return 0
+    // 生成推荐
+    if le.config.EnableAdaptiveLearning {
+        go le.generateRecommendations(session.UserID, session.CourseID)
     }
     
-    return dotProduct / (math.Sqrt(userNorm) * math.Sqrt(courseNorm))
-}
-```
-
-### 5.2 学习分析算法
-
-```go
-// 学习分析器
-type LearningAnalyzer struct {
-    progressTracker *ProgressTracker
-    behaviorAnalyzer *BehaviorAnalyzer
-    performanceAnalyzer *PerformanceAnalyzer
+    return nil
 }
 
-// 学习行为分析
-type BehaviorAnalyzer struct {
-    patterns map[string]*LearningPattern
-    clusters map[string][]string
-}
-
-func (ba *BehaviorAnalyzer) AnalyzeBehavior(userID string, activities []LearningActivity) *LearningBehavior {
-    behavior := &LearningBehavior{
-        UserID: userID,
-        Patterns: make([]string, 0),
-        Metrics: make(map[string]float64),
+// generateRecommendations 生成推荐
+func (le *LearningEngine) generateRecommendations(userID, courseID string) {
+    // 获取用户学习历史
+    history, err := le.progress.GetUserHistory(context.Background(), userID)
+    if err != nil {
+        log.Printf("Failed to get user history: %v", err)
+        return
     }
     
     // 分析学习模式
-    behavior.Patterns = ba.identifyPatterns(activities)
+    patterns := le.analytics.AnalyzeLearningPatterns(history)
     
-    // 计算学习指标
-    behavior.Metrics["total_time"] = ba.calculateTotalTime(activities)
-    behavior.Metrics["avg_session_duration"] = ba.calculateAvgSessionDuration(activities)
-    behavior.Metrics["completion_rate"] = ba.calculateCompletionRate(activities)
-    behavior.Metrics["engagement_score"] = ba.calculateEngagementScore(activities)
+    // 生成推荐
+    recommendations := le.recommendation.GenerateRecommendations(userID, courseID, patterns)
     
-    return behavior
+    // 保存推荐
+    if err := le.recommendation.SaveRecommendations(userID, recommendations); err != nil {
+        log.Printf("Failed to save recommendations: %v", err)
+    }
 }
 
-func (ba *BehaviorAnalyzer) identifyPatterns(activities []LearningActivity) []string {
-    var patterns []string
-    
-    // 分析时间模式
-    if ba.hasConsistentSchedule(activities) {
-        patterns = append(patterns, "consistent_schedule")
-    }
-    
-    // 分析学习强度
-    if ba.hasHighIntensity(activities) {
-        patterns = append(patterns, "high_intensity")
-    }
-    
-    // 分析偏好模式
-    if ba.hasContentPreference(activities) {
-        patterns = append(patterns, "content_preference")
-    }
-    
-    return patterns
-}
-
-func (ba *BehaviorAnalyzer) calculateEngagementScore(activities []LearningActivity) float64 {
-    if len(activities) == 0 {
-        return 0
-    }
-    
-    score := 0.0
-    
-    // 活动频率
-    frequency := float64(len(activities)) / 30.0 // 30天内的活动
-    score += frequency * 0.3
-    
-    // 活动多样性
-    diversity := ba.calculateDiversity(activities)
-    score += diversity * 0.3
-    
-    // 活动质量
-    quality := ba.calculateQuality(activities)
-    score += quality * 0.4
-    
-    return math.Min(score, 1.0)
+// StartSessionRequest 开始会话请求
+type StartSessionRequest struct {
+    UserID   string `json:"user_id"`
+    CourseID string `json:"course_id"`
+    ModuleID string `json:"module_id"`
+    LessonID string `json:"lesson_id"`
 }
 ```
 
-## 6. 性能分析
-
-### 6.1 时间复杂度分析
-
-**定理 6.1** (推荐算法复杂度)
-协同过滤推荐算法的时间复杂度为 $O(n \cdot m)$，其中 $n$ 是用户数量，$m$ 是课程数量。
-
-**证明**：
-协同过滤包含：
-
-- 相似用户查找：$O(n)$
-- 推荐计算：$O(m)$
-总时间复杂度：$O(n \cdot m)$
-
-**定理 6.2** (学习进度更新复杂度)
-学习进度更新的时间复杂度为 $O(1)$。
-
-**证明**：
-进度更新包含：
-
-- 模块状态更新：$O(1)$
-- 总体进度计算：$O(1)$
-总时间复杂度：$O(1)$
-
-### 6.2 性能优化策略
+#### 2.2.4 推荐系统
 
 ```go
-// 缓存管理器
-type CacheManager struct {
-    userCache     *UserCache
-    courseCache   *CourseCache
-    progressCache *ProgressCache
+// RecommendationService 推荐服务
+type RecommendationService struct {
+    collaborative CollaborativeFilter
+    content      ContentBasedFilter
+    hybrid       HybridFilter
+    config       *RecommendationConfig
 }
 
-type UserCache struct {
-    cache    map[string]*User
-    ttl      time.Duration
-    maxSize  int
-    mutex    sync.RWMutex
+// RecommendationConfig 推荐配置
+type RecommendationConfig struct {
+    Algorithm        string  `json:"algorithm"`
+    MinScore         float64 `json:"min_score"`
+    MaxRecommendations int   `json:"max_recommendations"`
+    EnablePersonalization bool `json:"enable_personalization"`
 }
 
-func (uc *UserCache) Get(userID string) (*User, bool) {
-    uc.mutex.RLock()
-    defer uc.mutex.RUnlock()
-    
-    user, exists := uc.cache[userID]
-    if !exists {
-        return nil, false
-    }
-    
-    // 检查过期时间
-    if time.Since(user.UpdatedAt) > uc.ttl {
-        delete(uc.cache, userID)
-        return nil, false
-    }
-    
-    return user, true
+// Recommendation 推荐结果
+type Recommendation struct {
+    ID          string                 `json:"id"`
+    UserID      string                 `json:"user_id"`
+    CourseID    string                 `json:"course_id"`
+    Score       float64                `json:"score"`
+    Type        RecommendationType     `json:"type"`
+    Reason      string                 `json:"reason"`
+    CreatedAt   time.Time              `json:"created_at"`
+    Metadata    map[string]interface{} `json:"metadata"`
 }
 
-// 索引优化
-type CourseIndexer struct {
-    indexes map[string]*Index
-    mutex   sync.RWMutex
+// RecommendationType 推荐类型
+type RecommendationType string
+
+const (
+    RecommendationTypeCollaborative RecommendationType = "collaborative"
+    RecommendationTypeContent       RecommendationType = "content"
+    RecommendationTypeHybrid        RecommendationType = "hybrid"
+    RecommendationTypePopular       RecommendationType = "popular"
+    RecommendationTypeTrending      RecommendationType = "trending"
+)
+
+// GenerateRecommendations 生成推荐
+func (rs *RecommendationService) GenerateRecommendations(userID, courseID string, patterns *LearningPatterns) ([]*Recommendation, error) {
+    var recommendations []*Recommendation
+    
+    switch rs.config.Algorithm {
+    case "collaborative":
+        recs, err := rs.collaborative.Recommend(userID, rs.config.MaxRecommendations)
+        if err != nil {
+            return nil, err
+        }
+        recommendations = append(recommendations, recs...)
+        
+    case "content":
+        recs, err := rs.content.Recommend(userID, patterns, rs.config.MaxRecommendations)
+        if err != nil {
+            return nil, err
+        }
+        recommendations = append(recommendations, recs...)
+        
+    case "hybrid":
+        recs, err := rs.hybrid.Recommend(userID, patterns, rs.config.MaxRecommendations)
+        if err != nil {
+            return nil, err
+        }
+        recommendations = append(recommendations, recs...)
+        
+    default:
+        return nil, fmt.Errorf("unknown algorithm: %s", rs.config.Algorithm)
+    }
+    
+    // 过滤低分推荐
+    filtered := rs.filterRecommendations(recommendations)
+    
+    // 个性化调整
+    if rs.config.EnablePersonalization {
+        filtered = rs.personalizeRecommendations(filtered, patterns)
+    }
+    
+    return filtered, nil
 }
 
-func (ci *CourseIndexer) Index(course *Course) error {
-    ci.mutex.Lock()
-    defer ci.mutex.Unlock()
+// filterRecommendations 过滤推荐
+func (rs *RecommendationService) filterRecommendations(recommendations []*Recommendation) []*Recommendation {
+    var filtered []*Recommendation
     
-    // 类别索引
-    if err := ci.indexes["category"].Add(course.Category, course.ID); err != nil {
-        return fmt.Errorf("failed to index category: %w", err)
-    }
-    
-    // 难度索引
-    if err := ci.indexes["level"].Add(course.Level, course.ID); err != nil {
-        return fmt.Errorf("failed to index level: %w", err)
-    }
-    
-    // 标题搜索索引
-    words := strings.Fields(strings.ToLower(course.Title))
-    for _, word := range words {
-        if err := ci.indexes["title"].Add(word, course.ID); err != nil {
-            return fmt.Errorf("failed to index title: %w", err)
+    for _, rec := range recommendations {
+        if rec.Score >= rs.config.MinScore {
+            filtered = append(filtered, rec)
         }
     }
     
-    return nil
+    return filtered
+}
+
+// personalizeRecommendations 个性化推荐
+func (rs *RecommendationService) personalizeRecommendations(recommendations []*Recommendation, patterns *LearningPatterns) []*Recommendation {
+    for _, rec := range recommendations {
+        // 基于学习模式调整分数
+        if patterns.PreferredTime != "" {
+            rec.Score *= rs.getTimePreferenceBonus(patterns.PreferredTime)
+        }
+        
+        if patterns.PreferredDuration > 0 {
+            rec.Score *= rs.getDurationPreferenceBonus(patterns.PreferredDuration)
+        }
+        
+        if len(patterns.PreferredSubjects) > 0 {
+            rec.Score *= rs.getSubjectPreferenceBonus(rec.CourseID, patterns.PreferredSubjects)
+        }
+    }
+    
+    // 重新排序
+    sort.Slice(recommendations, func(i, j int) bool {
+        return recommendations[i].Score > recommendations[j].Score
+    })
+    
+    return recommendations
+}
+
+// getTimePreferenceBonus 获取时间偏好奖励
+func (rs *RecommendationService) getTimePreferenceBonus(preferredTime string) float64 {
+    // 简化实现
+    return 1.1
+}
+
+// getDurationPreferenceBonus 获取时长偏好奖励
+func (rs *RecommendationService) getDurationPreferenceBonus(preferredDuration time.Duration) float64 {
+    // 简化实现
+    return 1.05
+}
+
+// getSubjectPreferenceBonus 获取科目偏好奖励
+func (rs *RecommendationService) getSubjectPreferenceBonus(courseID string, preferredSubjects []string) float64 {
+    // 简化实现
+    return 1.2
+}
+
+// CollaborativeFilter 协同过滤接口
+type CollaborativeFilter interface {
+    Recommend(userID string, count int) ([]*Recommendation, error)
+}
+
+// ContentBasedFilter 基于内容的过滤接口
+type ContentBasedFilter interface {
+    Recommend(userID string, patterns *LearningPatterns, count int) ([]*Recommendation, error)
+}
+
+// HybridFilter 混合过滤接口
+type HybridFilter interface {
+    Recommend(userID string, patterns *LearningPatterns, count int) ([]*Recommendation, error)
+}
+
+// LearningPatterns 学习模式
+type LearningPatterns struct {
+    PreferredTime     string        `json:"preferred_time"`
+    PreferredDuration time.Duration `json:"preferred_duration"`
+    PreferredSubjects []string      `json:"preferred_subjects"`
+    LearningStyle     string        `json:"learning_style"`
+    Difficulty        string        `json:"difficulty"`
 }
 ```
 
-## 总结
+## 3. 数学建模
 
-本文档提供了在线学习平台的Go语言实现，包括：
+### 3.1 推荐算法模型
 
-1. **形式化定义**：使用数学符号定义在线学习系统
-2. **架构设计**：用户管理、课程管理、学习引擎架构
-3. **核心组件**：用户管理、课程管理、学习引擎的完整实现
-4. **数据模型**：用户、课程、学习活动数据管理
-5. **算法实现**：推荐算法和学习分析算法
-6. **性能分析**：时间复杂度和优化策略
+**协同过滤评分**：
+$$r_{u,i} = \frac{\sum_{v \in N(u)} sim(u,v) \cdot r_{v,i}}{\sum_{v \in N(u)} |sim(u,v)|}$$
 
-该实现提供了个性化、可扩展的在线学习平台解决方案。
+其中：
+- $r_{u,i}$ 为用户 $u$ 对项目 $i$ 的预测评分
+- $N(u)$ 为用户 $u$ 的邻居集合
+- $sim(u,v)$ 为用户 $u$ 和 $v$ 的相似度
+
+**余弦相似度**：
+$$sim(u,v) = \frac{\sum_{i} r_{u,i} \cdot r_{v,i}}{\sqrt{\sum_{i} r_{u,i}^2} \cdot \sqrt{\sum_{i} r_{v,i}^2}}$$
+
+### 3.2 学习进度模型
+
+**进度计算**：
+$$P(u,c) = \frac{\sum_{i=1}^{n} w_i \cdot p_i}{\sum_{i=1}^{n} w_i}$$
+
+其中：
+- $P(u,c)$ 为用户 $u$ 在课程 $c$ 中的总进度
+- $w_i$ 为模块 $i$ 的权重
+- $p_i$ 为模块 $i$ 的完成进度
+
+### 3.3 学习效果评估
+
+**学习效果评分**：
+$$E(u,c) = \alpha \cdot P(u,c) + \beta \cdot Q(u,c) + \gamma \cdot T(u,c)$$
+
+其中：
+- $P(u,c)$ 为进度分数
+- $Q(u,c)$ 为质量分数
+- $T(u,c)$ 为时间效率分数
+- $\alpha + \beta + \gamma = 1$
+
+## 4. 性能优化
+
+### 4.1 缓存策略
+
+```go
+// LearningCache 学习缓存
+type LearningCache struct {
+    userCache     *lru.Cache
+    courseCache   *lru.Cache
+    progressCache *lru.Cache
+    ttl           time.Duration
+}
+
+// CacheEntry 缓存条目
+type CacheEntry struct {
+    Data      interface{}
+    ExpiresAt time.Time
+}
+
+// GetUserProgress 获取用户进度
+func (lc *LearningCache) GetUserProgress(userID, courseID string) (*UserProgress, bool) {
+    key := fmt.Sprintf("progress:%s:%s", userID, courseID)
+    
+    if entry, found := lc.progressCache.Get(key); found {
+        cacheEntry := entry.(*CacheEntry)
+        if time.Now().Before(cacheEntry.ExpiresAt) {
+            return cacheEntry.Data.(*UserProgress), true
+        } else {
+            lc.progressCache.Remove(key)
+        }
+    }
+    
+    return nil, false
+}
+
+// SetUserProgress 设置用户进度
+func (lc *LearningCache) SetUserProgress(userID, courseID string, progress *UserProgress) {
+    key := fmt.Sprintf("progress:%s:%s", userID, courseID)
+    
+    entry := &CacheEntry{
+        Data:      progress,
+        ExpiresAt: time.Now().Add(lc.ttl),
+    }
+    
+    lc.progressCache.Add(key, entry)
+}
+```
+
+### 4.2 异步处理
+
+```go
+// AsyncProcessor 异步处理器
+type AsyncProcessor struct {
+    eventQueue   chan *LearningEvent
+    workers      int
+    ctx          context.Context
+    cancel       context.CancelFunc
+    wg           sync.WaitGroup
+}
+
+// NewAsyncProcessor 创建异步处理器
+func NewAsyncProcessor(workers int) *AsyncProcessor {
+    return &AsyncProcessor{
+        eventQueue: make(chan *LearningEvent, 1000),
+        workers:    workers,
+    }
+}
+
+// Start 启动处理器
+func (ap *AsyncProcessor) Start() {
+    ap.ctx, ap.cancel = context.WithCancel(context.Background())
+    
+    for i := 0; i < ap.workers; i++ {
+        ap.wg.Add(1)
+        go ap.worker()
+    }
+}
+
+// Stop 停止处理器
+func (ap *AsyncProcessor) Stop() {
+    ap.cancel()
+    ap.wg.Wait()
+}
+
+// worker 工作协程
+func (ap *AsyncProcessor) worker() {
+    defer ap.wg.Done()
+    
+    for {
+        select {
+        case <-ap.ctx.Done():
+            return
+        case event := <-ap.eventQueue:
+            ap.processEvent(event)
+        }
+    }
+}
+
+// processEvent 处理事件
+func (ap *AsyncProcessor) processEvent(event *LearningEvent) {
+    // 处理学习事件
+    switch event.Type {
+    case LearningEventTypeComplete:
+        ap.handleCompletion(event)
+    case LearningEventTypeQuiz:
+        ap.handleQuiz(event)
+    case LearningEventTypeAssignment:
+        ap.handleAssignment(event)
+    }
+}
+
+// handleCompletion 处理完成事件
+func (ap *AsyncProcessor) handleCompletion(event *LearningEvent) {
+    // 更新学习进度
+    // 生成推荐
+    // 发送通知
+}
+
+// handleQuiz 处理测验事件
+func (ap *AsyncProcessor) handleQuiz(event *LearningEvent) {
+    // 评分
+    // 更新进度
+    // 生成反馈
+}
+
+// handleAssignment 处理作业事件
+func (ap *AsyncProcessor) handleAssignment(event *LearningEvent) {
+    // 提交处理
+    // 评分
+    // 反馈生成
+}
+```
+
+## 5. 监控与分析
+
+### 5.1 学习分析
+
+```go
+// LearningAnalytics 学习分析
+type LearningAnalytics struct {
+    metrics    *LearningMetrics
+    insights   *LearningInsights
+    reports    *LearningReports
+    config     *AnalyticsConfig
+}
+
+// LearningMetrics 学习指标
+type LearningMetrics struct {
+    totalUsers       int64
+    activeUsers      int64
+    courseCompletions int64
+    avgCompletionTime time.Duration
+    avgScore         float64
+    retentionRate    float64
+    mu               sync.RWMutex
+}
+
+// RecordUserActivity 记录用户活动
+func (la *LearningAnalytics) RecordUserActivity(userID string, activity *UserActivity) {
+    la.metrics.mu.Lock()
+    defer la.metrics.mu.Unlock()
+    
+    // 更新指标
+    la.metrics.totalUsers++
+    
+    if activity.IsActive {
+        la.metrics.activeUsers++
+    }
+    
+    if activity.CourseCompleted {
+        la.metrics.courseCompletions++
+    }
+    
+    // 更新平均完成时间
+    if activity.CompletionTime > 0 {
+        total := la.metrics.avgCompletionTime * time.Duration(la.metrics.courseCompletions-1)
+        la.metrics.avgCompletionTime = (total + activity.CompletionTime) / time.Duration(la.metrics.courseCompletions)
+    }
+    
+    // 更新平均分数
+    if activity.Score > 0 {
+        total := la.metrics.avgScore * float64(la.metrics.courseCompletions-1)
+        la.metrics.avgScore = (total + activity.Score) / float64(la.metrics.courseCompletions)
+    }
+}
+
+// GetMetrics 获取指标
+func (la *LearningAnalytics) GetMetrics() map[string]interface{} {
+    la.metrics.mu.RLock()
+    defer la.metrics.mu.RUnlock()
+    
+    return map[string]interface{}{
+        "total_users":         la.metrics.totalUsers,
+        "active_users":        la.metrics.activeUsers,
+        "course_completions":  la.metrics.courseCompletions,
+        "avg_completion_time": la.metrics.avgCompletionTime,
+        "avg_score":           la.metrics.avgScore,
+        "retention_rate":      la.metrics.retentionRate,
+    }
+}
+
+// UserActivity 用户活动
+type UserActivity struct {
+    UserID            string        `json:"user_id"`
+    IsActive          bool          `json:"is_active"`
+    CourseCompleted   bool          `json:"course_completed"`
+    CompletionTime    time.Duration `json:"completion_time"`
+    Score             float64       `json:"score"`
+    SessionDuration   time.Duration `json:"session_duration"`
+    LoginCount        int           `json:"login_count"`
+}
+```
+
+## 6. 总结
+
+在线学习平台是教育科技领域的核心系统，通过个性化学习、智能推荐和实时分析，为学习者提供优质的数字化学习体验。本模块提供了：
+
+1. **完整的平台架构**：用户服务、课程服务、学习引擎、推荐系统
+2. **个性化学习**：自适应学习路径、智能推荐算法、学习分析
+3. **高性能实现**：缓存策略、异步处理、并发控制
+4. **数据分析**：学习指标、用户行为分析、效果评估
+
+通过Go语言的高性能和并发特性，实现了高效、可扩展的在线学习平台，为教育数字化转型提供了强有力的技术支撑。
 
 ---
 
 **相关链接**：
-
 - [02-教育管理系统](../02-Education-Management-System/README.md)
 - [03-智能评估系统](../03-Intelligent-Assessment-System/README.md)
 - [04-内容管理系统](../04-Content-Management-System/README.md)
