@@ -67,6 +67,7 @@ const (
 
 **定义 2.2.1** (医疗工作流)
 医疗工作流是一个五元组 $WF = (S, T, F, M_0, \lambda)$，其中：
+
 - $S$ 是状态集合
 - $T$ 是转换集合
 - $F \subseteq (S \times T) \cup (T \times S)$ 是流关系
@@ -74,7 +75,8 @@ const (
 - $\lambda: T \rightarrow \text{Action}$ 是动作标签函数
 
 **算法 2.2.1** (工作流执行)
-```
+
+```text
 输入: 工作流 WF, 初始状态 s0
 输出: 执行序列 seq
 

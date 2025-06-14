@@ -65,12 +65,14 @@ const (
 
 **定义 2.2.1** (漏洞检测算法)
 漏洞检测算法是一个函数 $D: \Sigma^* \times \Gamma \rightarrow \{0,1\}$，其中：
+
 - $\Sigma^*$ 是目标系统的状态空间
 - $\Gamma$ 是漏洞特征集合
 - 返回值表示是否存在漏洞
 
 **算法 2.2.1** (模式匹配检测)
-```
+
+```text
 输入: 目标状态 s, 漏洞模式集合 Γ
 输出: 检测结果 R
 
@@ -417,6 +419,7 @@ func (s *HTTPScanner) testInjection(service Service, payload string) bool {
 
 **定义 5.1.1** (威胁模型)
 威胁模型是一个四元组 $TM = (A, T, V, R)$，其中：
+
 - $A$ 是攻击者集合
 - $T$ 是威胁集合
 - $V$ 是漏洞集合
