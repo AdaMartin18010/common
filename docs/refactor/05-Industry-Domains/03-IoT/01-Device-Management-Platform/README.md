@@ -33,6 +33,7 @@
 $$s_i = (status, health, last_seen, metadata)$$
 
 其中：
+
 - $status \in \{online, offline, error, maintenance\}$
 - $health \in [0, 1]$ 表示健康度
 - $last_seen \in \mathbb{R}^+$ 表示最后活跃时间戳
@@ -51,6 +52,7 @@ $$F(d_i, s_1) = F(d_i, s_2) \Rightarrow s_1 = s_2$$
 ### 1.2 设备发现算法
 
 **算法 1.1** (设备发现算法)
+
 ```go
 // 设备发现算法的形式化描述
 func DeviceDiscovery(network Network, timeout Duration) DeviceSet {
@@ -68,6 +70,7 @@ func DeviceDiscovery(network Network, timeout Duration) DeviceSet {
 ```
 
 **复杂度分析**：
+
 - 时间复杂度：$O(n \cdot m)$，其中 $n$ 是网络设备数量，$m$ 是验证时间
 - 空间复杂度：$O(n)$，用于存储发现的设备
 
@@ -680,6 +683,7 @@ func (wrr *WeightedRoundRobinStrategy) Select(devices []*Device) *Device {
 
 **证明**：
 设备注册主要涉及哈希表操作和数据库插入：
+
 - 哈希表插入：$O(1)$
 - 数据库插入：$O(1)$ (假设索引优化)
 - 总时间复杂度：$O(1)$
@@ -689,6 +693,7 @@ func (wrr *WeightedRoundRobinStrategy) Select(devices []*Device) *Device {
 
 **证明**：
 设备发现包含两个主要步骤：
+
 1. 网络扫描：$O(n)$
 2. 设备验证：$O(n \cdot m)$
 总时间复杂度：$O(n \cdot m)$
@@ -1014,6 +1019,7 @@ scrape_configs:
 ---
 
 **相关链接**：
+
 - [02-数据采集系统](../02-Data-Collection-System/README.md)
 - [03-边缘计算](../03-Edge-Computing/README.md)
 - [04-传感器网络](../04-Sensor-Network/README.md)
