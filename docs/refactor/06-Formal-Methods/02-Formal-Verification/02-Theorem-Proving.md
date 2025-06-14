@@ -1054,7 +1054,8 @@ func ExampleDoubleNegation() {
 ---
 
 **相关链接**:
+
 - [01-模型检查 (Model Checking)](01-Model-Checking.md)
 - [03-静态分析 (Static Analysis)](03-Static-Analysis.md)
 - [04-动态分析 (Dynamic Analysis)](04-Dynamic-Analysis.md)
-- [01-数学基础 (Mathematical Foundation)](../01-Mathematical-Foundation/README.md) 
+- [01-数学基础 (Mathematical Foundation)](../01-Mathematical-Foundation/README.md)
