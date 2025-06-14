@@ -36,6 +36,7 @@
 $$s_i = (id, type, status, resources, health, metrics)$$
 
 其中：
+
 - $id \in \Sigma^*$ 是实例标识符
 - $type \in \{web, api, database, cache\}$ 是服务类型
 - $status \in \{running, stopped, failed, scaling\}$ 是实例状态
@@ -52,6 +53,7 @@ $$s_i = (id, type, status, resources, health, metrics)$$
 $$Cost(E^*(L, C)) \leq Cost(E'(L, C))$$
 
 这是因为：
+
 1. $E^*$ 考虑了资源利用率
 2. $E^*$ 最小化了过度配置
 3. $E^*$ 满足了SLA约束
@@ -61,6 +63,7 @@ $$Cost(E^*(L, C)) \leq Cost(E'(L, C))$$
 ### 1.2 负载均衡算法
 
 **算法 1.1** (加权轮询算法)
+
 ```go
 // 加权轮询的形式化描述
 func WeightedRoundRobin(services []Service, weights []int) Service {
@@ -82,6 +85,7 @@ func WeightedRoundRobin(services []Service, weights []int) Service {
 ```
 
 **复杂度分析**：
+
 - 时间复杂度：$O(n)$，其中 $n$ 是服务数量
 - 空间复杂度：$O(1)$
 
@@ -1022,6 +1026,7 @@ func (em *ElasticityManager) scaleUp(serviceID string, targetReplicas int) error
 
 **证明**：
 加权轮询算法包含：
+
 - 权重计算：$O(n)$，但可以缓存
 - 端点选择：$O(1)$
 - 状态更新：$O(1)$
@@ -1033,6 +1038,7 @@ func (em *ElasticityManager) scaleUp(serviceID string, targetReplicas int) error
 
 **证明**：
 服务发现使用哈希表存储：
+
 - 查询：$O(1)$
 - 注册：$O(1)$
 - 健康检查：$O(n)$，其中 $n$ 是端点数量
@@ -1381,6 +1387,7 @@ scrape_configs:
 ---
 
 **相关链接**：
+
 - [02-容器编排](../02-Container-Orchestration/README.md)
 - [03-服务网格](../03-Service-Mesh/README.md)
 - [04-分布式存储](../04-Distributed-Storage/README.md)

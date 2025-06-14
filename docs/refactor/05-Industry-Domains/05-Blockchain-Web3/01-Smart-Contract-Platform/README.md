@@ -35,6 +35,7 @@
 $$c_i = (address, code, state, balance, owner)$$
 
 其中：
+
 - $address \in \Sigma^{40}$ 是合约地址（20字节）
 - $code \in \Sigma^*$ 是合约字节码
 - $state \in \mathcal{P}(\Sigma^* \times \Sigma^*)$ 是合约状态
@@ -50,6 +51,7 @@ $$c_i = (address, code, state, balance, owner)$$
 $$E(t, s_1) = E(t, s_2)$$
 
 这是因为：
+
 1. 合约代码是静态的
 2. 执行环境是确定的
 3. 没有随机性来源
@@ -59,6 +61,7 @@ $$E(t, s_1) = E(t, s_2)$$
 ### 1.2 共识算法
 
 **算法 1.1** (权益证明算法)
+
 ```go
 // 权益证明的形式化描述
 func ProofOfStake(validators []Validator, block Block) Validator {
@@ -83,6 +86,7 @@ func ProofOfStake(validators []Validator, block Block) Validator {
 ```
 
 **复杂度分析**：
+
 - 时间复杂度：$O(n)$，其中 $n$ 是验证者数量
 - 空间复杂度：$O(1)$
 
@@ -942,6 +946,7 @@ func (tv *TransactionValidator) validateGasLimit(tx *Transaction) error {
 
 **证明**：
 交易验证包含以下操作：
+
 - 格式验证：$O(1)$
 - 签名验证：$O(1)$
 - 余额检查：$O(1)$
@@ -954,6 +959,7 @@ func (tv *TransactionValidator) validateGasLimit(tx *Transaction) error {
 
 **证明**：
 区块生成包含：
+
 1. 验证者选择：$O(n)$
 2. 交易打包：$O(m)$，其中 $m$ 是交易数量
 3. 区块哈希计算：$O(1)$
@@ -1308,6 +1314,7 @@ scrape_configs:
 ---
 
 **相关链接**：
+
 - [02-去中心化应用](../02-Decentralized-Applications/README.md)
 - [03-加密货币系统](../03-Cryptocurrency-System/README.md)
 - [04-NFT平台](../04-NFT-Platform/README.md)

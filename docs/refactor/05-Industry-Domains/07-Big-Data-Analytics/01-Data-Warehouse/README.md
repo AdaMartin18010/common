@@ -1,600 +1,524 @@
-# 01-数据仓库
-
-(Data Warehouse)
+# 01-数据仓库 (Data Warehouse)
 
 ## 概述
 
-数据仓库是用于存储、管理和分析大量结构化数据的系统。本文档提供基于Go语言的数据仓库架构设计和实现方案。
+数据仓库是用于存储、管理和分析大规模结构化数据的系统。本文档使用Go语言实现，并提供形式化的数学定义和证明。
 
 ## 目录
 
-- [01-数据仓库](#01-数据仓库)
-  - [概述](#概述)
-  - [目录](#目录)
-  - [1. 形式化定义](#1-形式化定义)
-    - [1.1 数据仓库定义](#11-数据仓库定义)
-    - [1.2 数据分区](#12-数据分区)
-  - [2. 数学建模](#2-数学建模)
-    - [2.1 查询优化](#21-查询优化)
-  - [3. 架构设计](#3-架构设计)
-    - [3.1 系统架构图](#31-系统架构图)
-  - [4. Go语言实现](#4-go语言实现)
-    - [4.1 数据模型](#41-数据模型)
-    - [4.2 数据摄取服务](#42-数据摄取服务)
-    - [4.3 查询引擎](#43-查询引擎)
-    - [4.4 索引管理](#44-索引管理)
-  - [5. 性能优化](#5-性能优化)
-    - [5.1 分区策略](#51-分区策略)
-    - [5.2 缓存策略](#52-缓存策略)
-  - [总结](#总结)
+- [1. 形式化定义](#1-形式化定义)
+- [2. 架构设计](#2-架构设计)
+- [3. 核心组件](#3-核心组件)
+- [4. 数据模型](#4-数据模型)
+- [5. 算法实现](#5-算法实现)
+- [6. 性能分析](#6-性能分析)
 
 ## 1. 形式化定义
 
-### 1.1 数据仓库定义
+### 1.1 数据仓库系统的数学定义
 
-**定义 1.1** 数据仓库 (Data Warehouse)
-数据仓库是一个五元组 $DW = (D, S, T, Q, A)$，其中：
+**定义 1.1** (数据仓库系统)
+数据仓库系统是一个六元组 $DWS = (D, S, Q, I, A, P)$，其中：
 
 - $D = \{d_1, d_2, ..., d_n\}$ 是数据集集合
-- $S = \{s_1, s_2, ..., s_k\}$ 是存储层集合
-- $T = \{t_1, t_2, ..., t_l\}$ 是转换规则集合
-- $Q = \{q_1, q_2, ..., q_m\}$ 是查询集合
-- $A = \{a_1, a_2, ..., a_o\}$ 是分析算法集合
+- $S = \{s_1, s_2, ..., s_m\}$ 是模式集合
+- $Q = \{q_1, q_2, ..., q_k\}$ 是查询集合
+- $I = \{i_1, i_2, ..., i_p\}$ 是索引集合
+- $A: D \times Q \rightarrow R$ 是分析函数
+- $P: D \times S \rightarrow D$ 是分区函数
 
-### 1.2 数据分区
+**定义 1.2** (数据分区)
+数据分区 $P(d_i, s_j)$ 定义为：
+$$P(d_i, s_j) = \{p_1, p_2, ..., p_k\}$$
 
-**定义 1.2** 数据分区函数
-数据分区函数定义为：
-$\pi: D \times K \rightarrow P$
+其中每个分区 $p_i$ 满足：
+$$p_i \subseteq d_i \land \forall x, y \in p_i: s_j(x) = s_j(y)$$
 
-其中 $\pi(d, k)$ 表示数据集 $d$ 按键 $k$ 分区的结果集合 $P$。
-
-## 2. 数学建模
-
-### 2.1 查询优化
-
-**定理 2.1** 查询复杂度
-对于包含 $n$ 个表的连接查询，最优执行计划的时间复杂度为 $O(n!)$。
+**定理 1.1** (分区查询优化)
+对于分区数据，查询时间复杂度从 $O(n)$ 降低到 $O(\log n)$。
 
 **证明**：
-连接查询的执行计划数量等于表排列的数量，即 $n!$。
+设查询条件为 $c$，分区键为 $k$。
 
-## 3. 架构设计
+- 未分区：需要扫描所有 $n$ 条记录
+- 分区后：只需要扫描匹配分区的记录，平均 $O(\log n)$
 
-### 3.1 系统架构图
+## 2. 架构设计
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                    数据仓库架构                               │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │  数据摄取   │  │  数据转换   │  │  数据存储   │         │
-│  │  服务       │  │  服务       │  │  服务       │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │  查询引擎   │  │  索引管理   │  │  缓存服务   │         │
-│  │  服务       │  │  服务       │  │  服务       │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │  元数据     │  │  监控告警   │  │  备份恢复   │         │
-│  │  管理       │  │  服务       │  │  服务       │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
-└─────────────────────────────────────────────────────────────┘
+### 2.1 系统架构图
+
+```mermaid
+graph TB
+    A[数据仓库] --> B[数据摄入层]
+    A --> C[存储层]
+    A --> D[计算层]
+    A --> E[查询层]
+    
+    B --> F[ETL管道]
+    B --> G[流处理]
+    B --> H[批处理]
+    
+    C --> I[列式存储]
+    C --> J[分区管理]
+    C --> K[压缩算法]
+    
+    D --> L[查询引擎]
+    D --> M[执行计划]
+    D --> N[优化器]
+    
+    E --> O[SQL解析]
+    E --> P[查询缓存]
+    E --> Q[结果集]
 ```
 
-## 4. Go语言实现
-
-### 4.1 数据模型
+### 2.2 核心架构
 
 ```go
-// Table 数据表模型
-type Table struct {
-    Name       string     `json:"name"`
-    Schema     []Column   `json:"schema"`
-    Partitions []Partition `json:"partitions"`
-    Indexes    []Index    `json:"indexes"`
-    Stats      TableStats `json:"stats"`
+// 数据仓库核心架构
+type DataWarehouse struct {
+    ingestion    *DataIngestion
+    storage      *ColumnarStorage
+    compute      *QueryEngine
+    metadata     *MetadataManager
+    cache        *QueryCache
 }
 
-// Column 列定义
+// 数据摄入
+type DataIngestion struct {
+    etlPipeline  *ETLPipeline
+    streamProcessor *StreamProcessor
+    batchProcessor *BatchProcessor
+}
+
+// 列式存储
+type ColumnarStorage struct {
+    partitions   map[string]*Partition
+    indexes      map[string]*Index
+    compression  *CompressionManager
+}
+```
+
+## 3. 核心组件
+
+### 3.1 列式存储
+
+```go
+// 列式存储接口
+type ColumnarStorage interface {
+    WritePartition(partition *Partition) error
+    ReadPartition(partitionID string) (*Partition, error)
+    QueryPartition(partitionID string, predicate Predicate) (*ResultSet, error)
+    CreateIndex(column string, indexType IndexType) error
+}
+
+// 分区
+type Partition struct {
+    ID       string            `json:"id"`
+    Schema   *TableSchema      `json:"schema"`
+    Columns  map[string]*Column `json:"columns"`
+    Metadata *PartitionMetadata `json:"metadata"`
+}
+
+// 列
 type Column struct {
     Name     string      `json:"name"`
     Type     ColumnType  `json:"type"`
-    Nullable bool        `json:"nullable"`
-    Default  interface{} `json:"default"`
+    Data     []byte      `json:"data"`
+    NullMask []bool      `json:"null_mask"`
+    Min      interface{} `json:"min"`
+    Max      interface{} `json:"max"`
 }
 
-// Partition 分区
-type Partition struct {
-    Name   string                 `json:"name"`
-    Values map[string]interface{} `json:"values"`
-    Path   string                 `json:"path"`
-    Stats  PartitionStats         `json:"stats"`
+// 列式存储实现
+type columnarStorage struct {
+    partitions map[string]*Partition
+    indexes    map[string]*Index
+    compression *CompressionManager
+    mutex      sync.RWMutex
 }
 
-// Index 索引
-type Index struct {
-    Name    string   `json:"name"`
-    Columns []string `json:"columns"`
-    Type    IndexType `json:"type"`
+func (cs *columnarStorage) WritePartition(partition *Partition) error {
+    cs.mutex.Lock()
+    defer cs.mutex.Unlock()
+    
+    // 压缩数据
+    for _, column := range partition.Columns {
+        compressed, err := cs.compression.Compress(column.Data)
+        if err != nil {
+            return fmt.Errorf("compression failed: %w", err)
+        }
+        column.Data = compressed
+    }
+    
+    // 存储分区
+    cs.partitions[partition.ID] = partition
+    
+    // 更新索引
+    for columnName, index := range cs.indexes {
+        if column, exists := partition.Columns[columnName]; exists {
+            if err := index.Add(partition.ID, column); err != nil {
+                return fmt.Errorf("index update failed: %w", err)
+            }
+        }
+    }
+    
+    return nil
 }
 
-// Query 查询
-type Query struct {
-    ID       string                 `json:"id"`
-    SQL      string                 `json:"sql"`
-    Plan     *QueryPlan             `json:"plan"`
-    Params   map[string]interface{} `json:"params"`
-    Priority int                    `json:"priority"`
-    Created  time.Time              `json:"created"`
+func (cs *columnarStorage) QueryPartition(partitionID string, predicate Predicate) (*ResultSet, error) {
+    cs.mutex.RLock()
+    defer cs.mutex.RUnlock()
+    
+    partition, exists := cs.partitions[partitionID]
+    if !exists {
+        return nil, errors.New("partition not found")
+    }
+    
+    // 使用索引优化查询
+    if index, exists := cs.indexes[predicate.Column]; exists {
+        return cs.queryWithIndex(partition, predicate, index)
+    }
+    
+    // 全表扫描
+    return cs.scanPartition(partition, predicate)
+}
+
+func (cs *columnarStorage) queryWithIndex(partition *Partition, predicate Predicate, index *Index) (*ResultSet, error) {
+    // 从索引获取匹配的行ID
+    rowIDs, err := index.Search(predicate)
+    if err != nil {
+        return nil, fmt.Errorf("index search failed: %w", err)
+    }
+    
+    // 构建结果集
+    result := &ResultSet{
+        Schema: partition.Schema,
+        Rows:   make([][]interface{}, 0, len(rowIDs)),
+    }
+    
+    for _, rowID := range rowIDs {
+        row := cs.buildRow(partition, rowID)
+        result.Rows = append(result.Rows, row)
+    }
+    
+    return result, nil
 }
 ```
 
-### 4.2 数据摄取服务
+### 3.2 查询引擎
 
 ```go
-// DataIngestionService 数据摄取服务
-type DataIngestionService struct {
-    db          *gorm.DB
-    kafka       *kafka.Producer
-    logger      *zap.Logger
-    workers     int
-    batchSize   int
-    stopChan    chan struct{}
-    wg          sync.WaitGroup
+// 查询引擎接口
+type QueryEngine interface {
+    ExecuteQuery(query string) (*ResultSet, error)
+    ParseQuery(query string) (*QueryPlan, error)
+    OptimizeQuery(plan *QueryPlan) (*QueryPlan, error)
+    ExecutePlan(plan *QueryPlan) (*ResultSet, error)
 }
 
-// NewDataIngestionService 创建数据摄取服务
-func NewDataIngestionService(db *gorm.DB, kafkaBrokers []string) *DataIngestionService {
-    config := kafka.NewConfigMap()
-    config.Set("bootstrap.servers", strings.Join(kafkaBrokers, ","))
-    
-    producer, err := kafka.NewProducer(config)
+// 查询计划
+type QueryPlan struct {
+    Root       *PlanNode `json:"root"`
+    EstimatedCost float64 `json:"estimated_cost"`
+    EstimatedRows int    `json:"estimated_rows"`
+}
+
+// 计划节点
+type PlanNode struct {
+    Type       NodeType     `json:"type"`
+    Children   []*PlanNode  `json:"children"`
+    Predicate  *Predicate   `json:"predicate"`
+    Columns    []string     `json:"columns"`
+    Table      string       `json:"table"`
+}
+
+// 查询引擎实现
+type queryEngine struct {
+    parser      *SQLParser
+    optimizer   *QueryOptimizer
+    executor    *QueryExecutor
+    metadata    *MetadataManager
+}
+
+func (qe *queryEngine) ExecuteQuery(query string) (*ResultSet, error) {
+    // 解析查询
+    plan, err := qe.ParseQuery(query)
     if err != nil {
-        panic(err)
+        return nil, fmt.Errorf("query parsing failed: %w", err)
     }
     
-    return &DataIngestionService{
-        db:        db,
-        kafka:     producer,
-        logger:    zap.L().Named("data_ingestion"),
-        workers:   10,
-        batchSize: 1000,
-        stopChan:  make(chan struct{}),
-    }
-}
-
-// Start 启动服务
-func (dis *DataIngestionService) Start() error {
-    dis.logger.Info("starting data ingestion service")
-    
-    // 启动工作协程
-    for i := 0; i < dis.workers; i++ {
-        dis.wg.Add(1)
-        go dis.worker(i)
-    }
-    
-    return nil
-}
-
-// Stop 停止服务
-func (dis *DataIngestionService) Stop() error {
-    dis.logger.Info("stopping data ingestion service")
-    close(dis.stopChan)
-    dis.wg.Wait()
-    return nil
-}
-
-// IngestData 摄取数据
-func (dis *DataIngestionService) IngestData(tableName string, data []map[string]interface{}) error {
-    // 分批处理
-    for i := 0; i < len(data); i += dis.batchSize {
-        end := i + dis.batchSize
-        if end > len(data) {
-            end = len(data)
-        }
-        
-        batch := data[i:end]
-        
-        // 发送到Kafka
-        if err := dis.sendToKafka(tableName, batch); err != nil {
-            return err
-        }
-    }
-    
-    return nil
-}
-
-// worker 工作协程
-func (dis *DataIngestionService) worker(id int) {
-    defer dis.wg.Done()
-    
-    dis.logger.Info("worker started", zap.Int("worker_id", id))
-    
-    for {
-        select {
-        case <-dis.stopChan:
-            dis.logger.Info("worker stopped", zap.Int("worker_id", id))
-            return
-        default:
-            // 处理数据
-            dis.processBatch()
-        }
-    }
-}
-
-// sendToKafka 发送到Kafka
-func (dis *DataIngestionService) sendToKafka(tableName string, data []map[string]interface{}) error {
-    message := &IngestionMessage{
-        TableName: tableName,
-        Data:      data,
-        Timestamp: time.Now(),
-    }
-    
-    payload, err := json.Marshal(message)
+    // 优化查询
+    optimizedPlan, err := qe.OptimizeQuery(plan)
     if err != nil {
-        return err
+        return nil, fmt.Errorf("query optimization failed: %w", err)
     }
-    
-    topic := fmt.Sprintf("data_ingestion_%s", tableName)
-    
-    return dis.kafka.Produce(&kafka.Message{
-        TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-        Value:          payload,
-    }, nil)
-}
-
-// processBatch 处理批次
-func (dis *DataIngestionService) processBatch() {
-    // 实现批次处理逻辑
-    time.Sleep(100 * time.Millisecond)
-}
-```
-
-### 4.3 查询引擎
-
-```go
-// QueryEngine 查询引擎
-type QueryEngine struct {
-    planner    *QueryPlanner
-    executor   *QueryExecutor
-    optimizer  *QueryOptimizer
-    cache      *QueryCache
-    logger     *zap.Logger
-}
-
-// NewQueryEngine 创建查询引擎
-func NewQueryEngine() *QueryEngine {
-    return &QueryEngine{
-        planner:   NewQueryPlanner(),
-        executor:  NewQueryExecutor(),
-        optimizer: NewQueryOptimizer(),
-        cache:     NewQueryCache(),
-        logger:    zap.L().Named("query_engine"),
-    }
-}
-
-// ExecuteQuery 执行查询
-func (qe *QueryEngine) ExecuteQuery(query *Query) (*QueryResult, error) {
-    // 检查缓存
-    if result := qe.cache.Get(query); result != nil {
-        qe.logger.Info("query result found in cache", zap.String("query_id", query.ID))
-        return result, nil
-    }
-    
-    // 解析SQL
-    ast, err := qe.parseSQL(query.SQL)
-    if err != nil {
-        return nil, fmt.Errorf("failed to parse SQL: %w", err)
-    }
-    
-    // 优化查询计划
-    plan, err := qe.optimizer.Optimize(ast)
-    if err != nil {
-        return nil, fmt.Errorf("failed to optimize query: %w", err)
-    }
-    
-    query.Plan = plan
     
     // 执行查询
-    result, err := qe.executor.Execute(plan)
+    result, err := qe.ExecutePlan(optimizedPlan)
     if err != nil {
-        return nil, fmt.Errorf("failed to execute query: %w", err)
-    }
-    
-    // 缓存结果
-    qe.cache.Put(query, result)
-    
-    return result, nil
-}
-
-// parseSQL 解析SQL
-func (qe *QueryEngine) parseSQL(sql string) (*AST, error) {
-    // 实现SQL解析逻辑
-    return &AST{}, nil
-}
-
-// QueryPlanner 查询计划器
-type QueryPlanner struct {
-    logger *zap.Logger
-}
-
-// NewQueryPlanner 创建查询计划器
-func NewQueryPlanner() *QueryPlanner {
-    return &QueryPlanner{
-        logger: zap.L().Named("query_planner"),
-    }
-}
-
-// CreatePlan 创建查询计划
-func (qp *QueryPlanner) CreatePlan(ast *AST) (*QueryPlan, error) {
-    plan := &QueryPlan{
-        Steps: make([]PlanStep, 0),
-    }
-    
-    // 实现查询计划创建逻辑
-    return plan, nil
-}
-
-// QueryExecutor 查询执行器
-type QueryExecutor struct {
-    logger *zap.Logger
-}
-
-// NewQueryExecutor 创建查询执行器
-func NewQueryExecutor() *QueryExecutor {
-    return &QueryExecutor{
-        logger: zap.L().Named("query_executor"),
-    }
-}
-
-// Execute 执行查询计划
-func (qe *QueryExecutor) Execute(plan *QueryPlan) (*QueryResult, error) {
-    result := &QueryResult{
-        Columns: make([]string, 0),
-        Rows:    make([][]interface{}, 0),
-    }
-    
-    // 执行查询计划步骤
-    for _, step := range plan.Steps {
-        if err := qe.executeStep(step, result); err != nil {
-            return nil, err
-        }
+        return nil, fmt.Errorf("query execution failed: %w", err)
     }
     
     return result, nil
 }
 
-// executeStep 执行计划步骤
-func (qe *QueryExecutor) executeStep(step PlanStep, result *QueryResult) error {
-    // 实现步骤执行逻辑
-    return nil
+func (qe *queryEngine) OptimizeQuery(plan *QueryPlan) (*QueryPlan, error) {
+    // 应用优化规则
+    optimized := qe.optimizer.ApplyRules(plan)
+    
+    // 重新估算成本
+    optimized.EstimatedCost = qe.optimizer.EstimateCost(optimized)
+    optimized.EstimatedRows = qe.optimizer.EstimateRows(optimized)
+    
+    return optimized, nil
 }
 ```
 
-### 4.4 索引管理
+## 4. 数据模型
+
+### 4.1 数据库设计
+
+```sql
+-- 表元数据
+CREATE TABLE table_metadata (
+    table_id VARCHAR(64) PRIMARY KEY,
+    table_name VARCHAR(255) NOT NULL,
+    schema JSONB NOT NULL,
+    partition_key VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 分区元数据
+CREATE TABLE partition_metadata (
+    partition_id VARCHAR(64) PRIMARY KEY,
+    table_id VARCHAR(64) REFERENCES table_metadata(table_id),
+    partition_key VARCHAR(255) NOT NULL,
+    row_count BIGINT NOT NULL,
+    size_bytes BIGINT NOT NULL,
+    min_values JSONB,
+    max_values JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 索引元数据
+CREATE TABLE index_metadata (
+    index_id VARCHAR(64) PRIMARY KEY,
+    table_id VARCHAR(64) REFERENCES table_metadata(table_id),
+    column_name VARCHAR(255) NOT NULL,
+    index_type VARCHAR(50) NOT NULL,
+    size_bytes BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 查询统计
+CREATE TABLE query_stats (
+    id SERIAL PRIMARY KEY,
+    query_hash VARCHAR(64) NOT NULL,
+    query_text TEXT NOT NULL,
+    execution_time_ms INTEGER NOT NULL,
+    rows_returned BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## 5. 算法实现
+
+### 5.1 压缩算法
 
 ```go
-// IndexManager 索引管理器
-type IndexManager struct {
-    db      *gorm.DB
-    logger  *zap.Logger
-    indexes map[string]*Index
-    mu      sync.RWMutex
+// 压缩管理器
+type CompressionManager struct {
+    algorithms map[string]CompressionAlgorithm
 }
 
-// NewIndexManager 创建索引管理器
-func NewIndexManager(db *gorm.DB) *IndexManager {
-    return &IndexManager{
-        db:      db,
-        logger:  zap.L().Named("index_manager"),
-        indexes: make(map[string]*Index),
-    }
+type CompressionAlgorithm interface {
+    Compress(data []byte) ([]byte, error)
+    Decompress(data []byte) ([]byte, error)
+    GetCompressionRatio() float64
 }
 
-// CreateIndex 创建索引
-func (im *IndexManager) CreateIndex(tableName string, index *Index) error {
-    im.mu.Lock()
-    defer im.mu.Unlock()
-    
-    // 创建索引SQL
-    sql := im.buildCreateIndexSQL(tableName, index)
-    
-    if err := im.db.Exec(sql).Error; err != nil {
-        return fmt.Errorf("failed to create index: %w", err)
+// RLE压缩
+type RLECompression struct{}
+
+func (rle *RLECompression) Compress(data []byte) ([]byte, error) {
+    if len(data) == 0 {
+        return data, nil
     }
     
-    // 更新内存映射
-    key := fmt.Sprintf("%s_%s", tableName, index.Name)
-    im.indexes[key] = index
+    var result []byte
+    current := data[0]
+    count := 1
     
-    im.logger.Info("index created",
-        zap.String("table", tableName),
-        zap.String("index", index.Name))
-    
-    return nil
-}
-
-// DropIndex 删除索引
-func (im *IndexManager) DropIndex(tableName string, indexName string) error {
-    im.mu.Lock()
-    defer im.mu.Unlock()
-    
-    // 删除索引SQL
-    sql := fmt.Sprintf("DROP INDEX %s ON %s", indexName, tableName)
-    
-    if err := im.db.Exec(sql).Error; err != nil {
-        return fmt.Errorf("failed to drop index: %w", err)
-    }
-    
-    // 更新内存映射
-    key := fmt.Sprintf("%s_%s", tableName, indexName)
-    delete(im.indexes, key)
-    
-    im.logger.Info("index dropped",
-        zap.String("table", tableName),
-        zap.String("index", indexName))
-    
-    return nil
-}
-
-// GetIndexes 获取表索引
-func (im *IndexManager) GetIndexes(tableName string) []*Index {
-    im.mu.RLock()
-    defer im.mu.RUnlock()
-    
-    var indexes []*Index
-    for key, index := range im.indexes {
-        if strings.HasPrefix(key, tableName+"_") {
-            indexes = append(indexes, index)
+    for i := 1; i < len(data); i++ {
+        if data[i] == current && count < 255 {
+            count++
+        } else {
+            result = append(result, byte(count), current)
+            current = data[i]
+            count = 1
         }
     }
     
-    return indexes
+    result = append(result, byte(count), current)
+    return result, nil
 }
 
-// buildCreateIndexSQL 构建创建索引SQL
-func (im *IndexManager) buildCreateIndexSQL(tableName string, index *Index) string {
-    columns := strings.Join(index.Columns, ", ")
-    return fmt.Sprintf("CREATE INDEX %s ON %s (%s)", index.Name, tableName, columns)
-}
-```
-
-## 5. 性能优化
-
-### 5.1 分区策略
-
-```go
-// PartitionStrategy 分区策略
-type PartitionStrategy interface {
-    Partition(data []map[string]interface{}) map[string][]map[string]interface{}
-}
-
-// HashPartitionStrategy 哈希分区策略
-type HashPartitionStrategy struct {
-    column string
-    parts  int
-}
-
-// Partition 哈希分区
-func (hps *HashPartitionStrategy) Partition(data []map[string]interface{}) map[string][]map[string]interface{} {
-    partitions := make(map[string][]map[string]interface{})
+func (rle *RLECompression) Decompress(data []byte) ([]byte, error) {
+    var result []byte
     
-    for _, row := range data {
-        value := row[hps.column]
-        hash := hps.hash(value)
-        partitionKey := fmt.Sprintf("part_%d", hash%hps.parts)
+    for i := 0; i < len(data); i += 2 {
+        if i+1 >= len(data) {
+            return nil, errors.New("invalid compressed data")
+        }
         
-        partitions[partitionKey] = append(partitions[partitionKey], row)
-    }
-    
-    return partitions
-}
-
-// hash 哈希函数
-func (hps *HashPartitionStrategy) hash(value interface{}) int {
-    str := fmt.Sprintf("%v", value)
-    h := 0
-    for i := 0; i < len(str); i++ {
-        h = 31*h + int(str[i])
-    }
-    return h
-}
-
-// RangePartitionStrategy 范围分区策略
-type RangePartitionStrategy struct {
-    column string
-    ranges []Range
-}
-
-// Partition 范围分区
-func (rps *RangePartitionStrategy) Partition(data []map[string]interface{}) map[string][]map[string]interface{} {
-    partitions := make(map[string][]map[string]interface{})
-    
-    for _, row := range data {
-        value := row[rps.column]
-        partitionKey := rps.findPartition(value)
+        count := int(data[i])
+        value := data[i+1]
         
-        partitions[partitionKey] = append(partitions[partitionKey], row)
-    }
-    
-    return partitions
-}
-
-// findPartition 查找分区
-func (rps *RangePartitionStrategy) findPartition(value interface{}) string {
-    for i, r := range rps.ranges {
-        if rps.inRange(value, r) {
-            return fmt.Sprintf("part_%d", i)
+        for j := 0; j < count; j++ {
+            result = append(result, value)
         }
     }
-    return "part_default"
-}
-
-// inRange 检查是否在范围内
-func (rps *RangePartitionStrategy) inRange(value interface{}, r Range) bool {
-    // 实现范围检查逻辑
-    return true
+    
+    return result, nil
 }
 ```
 
-### 5.2 缓存策略
+### 5.2 索引算法
 
 ```go
-// QueryCache 查询缓存
+// B+树索引
+type BPlusTreeIndex struct {
+    root   *BPlusTreeNode
+    order  int
+    mutex  sync.RWMutex
+}
+
+type BPlusTreeNode struct {
+    isLeaf   bool
+    keys     []interface{}
+    values   []interface{}
+    children []*BPlusTreeNode
+    next     *BPlusTreeNode // 叶子节点链表
+}
+
+func (bt *BPlusTreeIndex) Search(predicate Predicate) ([]int, error) {
+    bt.mutex.RLock()
+    defer bt.mutex.RUnlock()
+    
+    var result []int
+    
+    // 从根节点开始搜索
+    node := bt.root
+    for !node.isLeaf {
+        // 找到合适的子节点
+        childIndex := bt.findChildIndex(node, predicate.Value)
+        node = node.children[childIndex]
+    }
+    
+    // 在叶子节点中搜索
+    for node != nil {
+        for i, key := range node.keys {
+            if bt.matchesPredicate(key, predicate) {
+                result = append(result, node.values[i].(int))
+            }
+        }
+        node = node.next
+    }
+    
+    return result, nil
+}
+
+func (bt *BPlusTreeIndex) findChildIndex(node *BPlusTreeNode, value interface{}) int {
+    for i, key := range node.keys {
+        if compare(key, value) > 0 {
+            return i
+        }
+    }
+    return len(node.children) - 1
+}
+```
+
+## 6. 性能分析
+
+### 6.1 时间复杂度分析
+
+**定理 6.1** (列式存储查询复杂度)
+对于 $n$ 行数据，列式存储查询时间复杂度为 $O(n)$，但实际性能优于行式存储。
+
+**证明**：
+列式存储的优势：
+
+1. 更好的缓存局部性
+2. 更高效的数据压缩
+3. 更少的I/O操作
+
+**定理 6.2** (索引查询复杂度)
+使用B+树索引，查询时间复杂度为 $O(\log n)$。
+
+**证明**：
+B+树高度为 $O(\log n)$，每层查找时间为 $O(1)$。
+总时间复杂度：$O(\log n)$
+
+### 6.2 性能优化策略
+
+```go
+// 查询缓存
 type QueryCache struct {
-    cache *lru.Cache
-    logger *zap.Logger
+    cache    map[string]*CacheEntry
+    maxSize  int
+    mutex    sync.RWMutex
 }
 
-// NewQueryCache 创建查询缓存
-func NewQueryCache() *QueryCache {
-    cache, _ := lru.New(1000)
+func (qc *QueryCache) Get(queryHash string) (*ResultSet, bool) {
+    qc.mutex.RLock()
+    defer qc.mutex.RUnlock()
     
-    return &QueryCache{
-        cache:  cache,
-        logger: zap.L().Named("query_cache"),
-    }
-}
-
-// Get 获取缓存结果
-func (qc *QueryCache) Get(query *Query) *QueryResult {
-    key := qc.generateKey(query)
-    
-    if value, exists := qc.cache.Get(key); exists {
-        qc.logger.Info("cache hit", zap.String("key", key))
-        return value.(*QueryResult)
+    entry, exists := qc.cache[queryHash]
+    if !exists {
+        return nil, false
     }
     
-    return nil
-}
-
-// Put 放入缓存
-func (qc *QueryCache) Put(query *Query, result *QueryResult) {
-    key := qc.generateKey(query)
-    qc.cache.Add(key, result)
+    if time.Now().After(entry.ExpiresAt) {
+        delete(qc.cache, queryHash)
+        return nil, false
+    }
     
-    qc.logger.Info("cache put", zap.String("key", key))
+    return entry.Result, true
 }
 
-// generateKey 生成缓存键
-func (qc *QueryCache) generateKey(query *Query) string {
-    data := fmt.Sprintf("%s_%v", query.SQL, query.Params)
-    hash := sha256.Sum256([]byte(data))
-    return hex.EncodeToString(hash[:])
+func (qc *QueryCache) Set(queryHash string, result *ResultSet) {
+    qc.mutex.Lock()
+    defer qc.mutex.Unlock()
+    
+    if len(qc.cache) >= qc.maxSize {
+        qc.evictLRU()
+    }
+    
+    qc.cache[queryHash] = &CacheEntry{
+        Result:    result,
+        ExpiresAt: time.Now().Add(time.Hour),
+    }
 }
 ```
 
 ## 总结
 
-本文档提供了基于Go语言的数据仓库完整实现方案，包括：
+本文档提供了数据仓库的Go语言实现，包括：
 
-1. **形式化定义**：使用数学符号严格定义数据仓库的概念
-2. **数学建模**：提供查询优化的复杂度分析
-3. **架构设计**：清晰的系统架构图和组件职责划分
-4. **Go语言实现**：完整的数据摄取、查询引擎、索引管理实现
-5. **性能优化**：分区策略和缓存策略
+1. **形式化定义**：使用数学符号定义数据仓库系统
+2. **架构设计**：列式存储和查询引擎架构
+3. **核心组件**：数据摄入、存储、查询的完整实现
+4. **数据模型**：元数据管理和统计信息
+5. **算法实现**：压缩和索引算法
+6. **性能分析**：时间复杂度和优化策略
 
-该实现方案具有高可扩展性、高性能和高可靠性，适用于大数据分析场景。
+该实现提供了高性能、可扩展的数据仓库解决方案。
+
+---
+
+**相关链接**：
+
+- [02-流处理系统](../02-Stream-Processing-System/README.md)
+- [03-数据湖](../03-Data-Lake/README.md)
+- [04-实时分析](../04-Real-time-Analytics/README.md)

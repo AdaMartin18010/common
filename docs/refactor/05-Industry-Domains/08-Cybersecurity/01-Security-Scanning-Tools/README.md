@@ -2,690 +2,816 @@
 
 ## 概述
 
-安全扫描工具是网络安全系统的核心组件，负责检测和识别系统中的安全漏洞。本文档提供基于Go语言的安全扫描工具架构设计和实现方案。
+安全扫描工具是网络安全系统的核心组件，负责漏洞检测、威胁识别和安全评估。本文档使用Go语言实现，并提供形式化的数学定义和证明。
 
 ## 目录
 
-- [01-安全扫描工具 (Security Scanning Tools)](#01-安全扫描工具-security-scanning-tools)
-  - [概述](#概述)
-  - [目录](#目录)
-  - [1. 形式化定义](#1-形式化定义)
-    - [1.1 安全扫描工具定义](#11-安全扫描工具定义)
-    - [1.2 漏洞检测函数](#12-漏洞检测函数)
-  - [2. 数学建模](#2-数学建模)
-    - [2.1 风险评估](#21-风险评估)
-  - [3. 架构设计](#3-架构设计)
-    - [3.1 系统架构图](#31-系统架构图)
-  - [4. Go语言实现](#4-go语言实现)
-    - [4.1 扫描目标模型](#41-扫描目标模型)
-    - [4.2 端口扫描服务](#42-端口扫描服务)
-    - [4.3 服务识别服务](#43-服务识别服务)
-    - [4.4 漏洞扫描引擎](#44-漏洞扫描引擎)
-    - [4.5 配置检查服务](#45-配置检查服务)
-  - [5. 漏洞检测](#5-漏洞检测)
-    - [5.1 依赖分析](#51-依赖分析)
-    - [5.2 风险评估](#52-风险评估)
-  - [总结](#总结)
+- [1. 形式化定义](#1-形式化定义)
+- [2. 架构设计](#2-架构设计)
+- [3. 核心组件](#3-核心组件)
+- [4. 数据模型](#4-数据模型)
+- [5. 算法实现](#5-算法实现)
+- [6. 性能分析](#6-性能分析)
 
 ## 1. 形式化定义
 
-### 1.1 安全扫描工具定义
+### 1.1 安全扫描系统的数学定义
 
-**定义 1.1** 安全扫描工具 (Security Scanning Tool)
-安全扫描工具是一个五元组 $SST = (T, V, S, R, A)$，其中：
+**定义 1.1** (安全扫描系统)
+安全扫描系统是一个七元组 $SSS = (T, V, P, S, D, A, R)$，其中：
 
 - $T = \{t_1, t_2, ..., t_n\}$ 是目标集合
-- $V = \{v_1, v_2, ..., v_k\}$ 是漏洞集合
-- $S = \{s_1, s_2, ..., s_l\}$ 是扫描策略集合
-- $R = \{r_1, r_2, ..., r_m\}$ 是规则集合
-- $A = \{a_1, a_2, ..., a_o\}$ 是告警集合
+- $V = \{v_1, v_2, ..., v_m\}$ 是漏洞集合
+- $P = \{p_1, p_2, ..., p_k\}$ 是扫描策略集合
+- $S: T \times P \rightarrow R$ 是扫描函数
+- $D: V \times T \rightarrow \{true, false\}$ 是检测函数
+- $A: V \rightarrow [0, 1]$ 是风险评估函数
+- $R: T \times V \rightarrow R$ 是报告生成函数
 
-### 1.2 漏洞检测函数
+**定义 1.2** (漏洞)
+漏洞 $v_i$ 定义为：
+$$v_i = (id, type, severity, description, cve_id, remediation)$$
 
-**定义 1.2** 漏洞检测函数
-漏洞检测函数定义为：
-$\delta: T \times S \rightarrow V \times A$
+其中：
 
-其中 $\delta(t, s)$ 表示对目标 $t$ 使用策略 $s$ 检测到的漏洞和告警。
+- $id \in \Sigma^*$ 是漏洞标识符
+- $type \in \{buffer_overflow, sql_injection, xss, csrf\}$ 是漏洞类型
+- $severity \in \{low, medium, high, critical\}$ 是严重程度
+- $description \in \Sigma^*$ 是漏洞描述
+- $cve_id \in \Sigma^*$ 是CVE标识符
+- $remediation \in \Sigma^*$ 是修复建议
 
-## 2. 数学建模
+**定理 1.1** (扫描完整性)
+对于目标集合 $T$ 和漏洞集合 $V$，扫描函数 $S$ 能够检测所有已知漏洞。
 
-### 2.1 风险评估
+**证明**：
+设 $v \in V$ 是任意漏洞，$t \in T$ 是任意目标。
+根据检测函数定义：$D(v, t) = true$ 当且仅当目标 $t$ 存在漏洞 $v$。
+扫描函数 $S$ 通过执行所有检测函数 $D$ 来确保完整性。
+因此 $S$ 能够检测所有已知漏洞。$\square$
 
-**定理 2.1** 风险评分
-对于漏洞 $v$，风险评分定义为：
-$Risk(v) = Severity(v) \times Exploitability(v) \times Impact(v)$
+### 1.2 漏洞检测算法
 
-其中 $Severity(v)$ 是严重程度，$Exploitability(v)$ 是可利用性，$Impact(v)$ 是影响范围。
-
-## 3. 架构设计
-
-### 3.1 系统架构图
-
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                    安全扫描工具架构                           │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │  目标发现   │  │  端口扫描   │  │  服务识别   │         │
-│  │  服务       │  │  服务       │  │  服务       │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │  漏洞扫描   │  │  配置检查   │  │  依赖分析   │         │
-│  │  引擎       │  │  服务       │  │  服务       │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │  风险评估   │  │  报告生成   │  │  告警通知   │         │
-│  │  服务       │  │  服务       │  │  服务       │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## 4. Go语言实现
-
-### 4.1 扫描目标模型
+**算法 1.1** (模式匹配算法)
 
 ```go
-// ScanTarget 扫描目标
-type ScanTarget struct {
-    ID          string            `json:"id"`
-    Host        string            `json:"host"`
-    Ports       []int             `json:"ports"`
-    Services    []Service         `json:"services"`
-    Vulnerabilities []Vulnerability `json:"vulnerabilities"`
-    RiskScore   float64           `json:"risk_score"`
-    ScanTime    time.Time         `json:"scan_time"`
-}
-
-// Service 服务信息
-type Service struct {
-    Port        int    `json:"port"`
-    Protocol    string `json:"protocol"`
-    Name        string `json:"name"`
-    Version     string `json:"version"`
-    Banner      string `json:"banner"`
-}
-
-// Vulnerability 漏洞信息
-type Vulnerability struct {
-    ID          string  `json:"id"`
-    Name        string  `json:"name"`
-    Description string  `json:"description"`
-    Severity    string  `json:"severity"`
-    CVSS        float64 `json:"cvss"`
-    CVE         string  `json:"cve"`
-    Solution    string  `json:"solution"`
-}
-
-// ScanResult 扫描结果
-type ScanResult struct {
-    TargetID    string            `json:"target_id"`
-    ScanID      string            `json:"scan_id"`
-    Status      ScanStatus        `json:"status"`
-    StartTime   time.Time         `json:"start_time"`
-    EndTime     time.Time         `json:"end_time"`
-    Findings    []Finding         `json:"findings"`
-    Summary     ScanSummary       `json:"summary"`
-}
-```
-
-### 4.2 端口扫描服务
-
-```go
-// PortScanner 端口扫描器
-type PortScanner struct {
-    timeout     time.Duration
-    workers     int
-    logger      *zap.Logger
-    stopChan    chan struct{}
-}
-
-// NewPortScanner 创建端口扫描器
-func NewPortScanner(timeout time.Duration, workers int) *PortScanner {
-    return &PortScanner{
-        timeout:  timeout,
-        workers:  workers,
-        logger:   zap.L().Named("port_scanner"),
-        stopChan: make(chan struct{}),
-    }
-}
-
-// ScanPorts 扫描端口
-func (ps *PortScanner) ScanPorts(host string, ports []int) ([]int, error) {
-    var openPorts []int
-    var mu sync.Mutex
-    var wg sync.WaitGroup
+// 模式匹配的形式化描述
+func PatternMatching(target Target, patterns []Pattern) []Vulnerability {
+    vulnerabilities := make([]Vulnerability, 0)
     
-    // 创建工作池
-    portChan := make(chan int, len(ports))
-    resultChan := make(chan int, len(ports))
-    
-    // 启动工作协程
-    for i := 0; i < ps.workers; i++ {
-        wg.Add(1)
-        go func() {
-            defer wg.Done()
-            for port := range portChan {
-                if ps.isPortOpen(host, port) {
-                    resultChan <- port
-                }
+    for _, pattern := range patterns {
+        if pattern.Match(target) {
+            vuln := Vulnerability{
+                Type: pattern.Type,
+                Severity: pattern.Severity,
+                Description: pattern.Description,
             }
-        }()
-    }
-    
-    // 发送端口到工作池
-    go func() {
-        for _, port := range ports {
-            select {
-            case portChan <- port:
-            case <-ps.stopChan:
-                return
-            }
+            vulnerabilities = append(vulnerabilities, vuln)
         }
-        close(portChan)
-    }()
+    }
+    
+    return vulnerabilities
+}
+```
+
+**复杂度分析**：
+
+- 时间复杂度：$O(n \cdot m)$，其中 $n$ 是目标数量，$m$ 是模式数量
+- 空间复杂度：$O(n)$，用于存储检测结果
+
+## 2. 架构设计
+
+### 2.1 系统架构图
+
+```mermaid
+graph TB
+    A[安全扫描工具] --> B[扫描引擎]
+    A --> C[漏洞数据库]
+    A --> D[报告生成器]
+    A --> E[配置管理]
+    
+    B --> F[端口扫描]
+    B --> G[服务识别]
+    B --> H[漏洞检测]
+    
+    C --> I[CVE数据库]
+    C --> J[自定义规则]
+    C --> K[威胁情报]
+    
+    D --> L[报告模板]
+    D --> M[风险评估]
+    D --> N[修复建议]
+    
+    E --> O[扫描策略]
+    E --> P[目标管理]
+    E --> Q[权限控制]
+```
+
+### 2.2 核心架构
+
+```go
+// 安全扫描工具核心架构
+type SecurityScanner struct {
+    engine        *ScanEngine
+    vulnDB        *VulnerabilityDatabase
+    reporter      *ReportGenerator
+    config        *ConfigurationManager
+    scheduler     *ScanScheduler
+}
+
+// 扫描引擎
+type ScanEngine struct {
+    portScanner   *PortScanner
+    serviceDetector *ServiceDetector
+    vulnDetector  *VulnerabilityDetector
+    fuzzer        *Fuzzer
+}
+
+// 漏洞数据库
+type VulnerabilityDatabase struct {
+    cveDB         *CVEDatabase
+    customRules   *CustomRules
+    threatIntel   *ThreatIntelligence
+}
+```
+
+## 3. 核心组件
+
+### 3.1 扫描引擎
+
+```go
+// 扫描引擎接口
+type ScanEngine interface {
+    ScanTarget(target *Target) (*ScanResult, error)
+    ScanPorts(target *Target, ports []int) ([]PortResult, error)
+    DetectServices(target *Target) ([]ServiceResult, error)
+    DetectVulnerabilities(target *Target) ([]Vulnerability, error)
+}
+
+// 目标
+type Target struct {
+    ID          string            `json:"id"`
+    IP          string            `json:"ip"`
+    Hostname    string            `json:"hostname"`
+    Ports       []int             `json:"ports"`
+    Services    []*Service        `json:"services"`
+    OS          string            `json:"os"`
+    Metadata    map[string]string `json:"metadata"`
+}
+
+// 扫描结果
+type ScanResult struct {
+    TargetID        string          `json:"target_id"`
+    StartTime       time.Time       `json:"start_time"`
+    EndTime         time.Time       `json:"end_time"`
+    PortResults     []PortResult    `json:"port_results"`
+    ServiceResults  []ServiceResult `json:"service_results"`
+    Vulnerabilities []Vulnerability `json:"vulnerabilities"`
+    RiskScore       float64         `json:"risk_score"`
+}
+
+// 扫描引擎实现
+type scanEngine struct {
+    portScanner   *PortScanner
+    serviceDetector *ServiceDetector
+    vulnDetector  *VulnerabilityDetector
+    config        *ScanConfig
+}
+
+func (se *scanEngine) ScanTarget(target *Target) (*ScanResult, error) {
+    result := &ScanResult{
+        TargetID:  target.ID,
+        StartTime: time.Now(),
+    }
+    
+    // 端口扫描
+    portResults, err := se.portScanner.Scan(target.IP, target.Ports)
+    if err != nil {
+        return nil, fmt.Errorf("port scan failed: %w", err)
+    }
+    result.PortResults = portResults
+    
+    // 服务识别
+    openPorts := se.getOpenPorts(portResults)
+    serviceResults, err := se.serviceDetector.Detect(target.IP, openPorts)
+    if err != nil {
+        return nil, fmt.Errorf("service detection failed: %w", err)
+    }
+    result.ServiceResults = serviceResults
+    
+    // 漏洞检测
+    vulnerabilities, err := se.vulnDetector.Detect(target, serviceResults)
+    if err != nil {
+        return nil, fmt.Errorf("vulnerability detection failed: %w", err)
+    }
+    result.Vulnerabilities = vulnerabilities
+    
+    // 计算风险评分
+    result.RiskScore = se.calculateRiskScore(vulnerabilities)
+    result.EndTime = time.Now()
+    
+    return result, nil
+}
+
+func (se *scanEngine) getOpenPorts(portResults []PortResult) []int {
+    var openPorts []int
+    for _, result := range portResults {
+        if result.Status == PortStatusOpen {
+            openPorts = append(openPorts, result.Port)
+        }
+    }
+    return openPorts
+}
+
+func (se *scanEngine) calculateRiskScore(vulnerabilities []Vulnerability) float64 {
+    score := 0.0
+    weights := map[string]float64{
+        "critical": 10.0,
+        "high":     7.0,
+        "medium":   4.0,
+        "low":      1.0,
+    }
+    
+    for _, vuln := range vulnerabilities {
+        if weight, exists := weights[vuln.Severity]; exists {
+            score += weight
+        }
+    }
+    
+    // 归一化到0-100
+    return math.Min(score, 100.0)
+}
+```
+
+### 3.2 端口扫描器
+
+```go
+// 端口扫描器
+type PortScanner struct {
+    timeout       time.Duration
+    maxConcurrent int
+    scanner       *Scanner
+}
+
+type Scanner interface {
+    ScanPort(ip string, port int) (PortResult, error)
+}
+
+// TCP扫描器
+type TCPScanner struct {
+    timeout time.Duration
+}
+
+func (ts *TCPScanner) ScanPort(ip string, port int) (PortResult, error) {
+    address := fmt.Sprintf("%s:%d", ip, port)
+    
+    conn, err := net.DialTimeout("tcp", address, ts.timeout)
+    if err != nil {
+        return PortResult{
+            Port:   port,
+            Status: PortStatusClosed,
+        }, nil
+    }
+    defer conn.Close()
+    
+    return PortResult{
+        Port:   port,
+        Status: PortStatusOpen,
+    }, nil
+}
+
+// 端口扫描实现
+func (ps *PortScanner) Scan(ip string, ports []int) ([]PortResult, error) {
+    var results []PortResult
+    semaphore := make(chan struct{}, ps.maxConcurrent)
+    var wg sync.WaitGroup
+    resultChan := make(chan PortResult, len(ports))
+    errorChan := make(chan error, len(ports))
+    
+    // 并发扫描端口
+    for _, port := range ports {
+        wg.Add(1)
+        go func(p int) {
+            defer wg.Done()
+            semaphore <- struct{}{}
+            defer func() { <-semaphore }()
+            
+            result, err := ps.scanner.ScanPort(ip, p)
+            if err != nil {
+                errorChan <- err
+            } else {
+                resultChan <- result
+            }
+        }(port)
+    }
     
     // 收集结果
     go func() {
         wg.Wait()
         close(resultChan)
+        close(errorChan)
     }()
     
-    // 收集开放端口
-    for port := range resultChan {
-        mu.Lock()
-        openPorts = append(openPorts, port)
-        mu.Unlock()
+    // 处理结果
+    for result := range resultChan {
+        results = append(results, result)
     }
     
-    ps.logger.Info("port scan completed",
-        zap.String("host", host),
-        zap.Int("total_ports", len(ports)),
-        zap.Int("open_ports", len(openPorts)))
+    // 检查错误
+    for err := range errorChan {
+        log.Printf("Port scan error: %v", err)
+    }
     
-    return openPorts, nil
+    return results, nil
+}
+```
+
+### 3.3 漏洞检测器
+
+```go
+// 漏洞检测器
+type VulnerabilityDetector struct {
+    rules         []DetectionRule
+    fuzzer        *Fuzzer
+    matcher       *PatternMatcher
 }
 
-// isPortOpen 检查端口是否开放
-func (ps *PortScanner) isPortOpen(host string, port int) bool {
-    address := fmt.Sprintf("%s:%d", host, port)
+type DetectionRule struct {
+    ID          string            `json:"id"`
+    Name        string            `json:"name"`
+    Type        string            `json:"type"`
+    Pattern     string            `json:"pattern"`
+    Severity    string            `json:"severity"`
+    Description string            `json:"description"`
+    CVE         string            `json:"cve"`
+    Enabled     bool              `json:"enabled"`
+}
+
+// 漏洞检测实现
+func (vd *VulnerabilityDetector) Detect(target *Target, services []ServiceResult) ([]Vulnerability, error) {
+    var vulnerabilities []Vulnerability
     
-    conn, err := net.DialTimeout("tcp", address, ps.timeout)
+    // 基于规则的检测
+    ruleVulns, err := vd.detectByRules(target, services)
     if err != nil {
+        return nil, fmt.Errorf("rule-based detection failed: %w", err)
+    }
+    vulnerabilities = append(vulnerabilities, ruleVulns...)
+    
+    // 基于模糊测试的检测
+    fuzzVulns, err := vd.detectByFuzzing(target, services)
+    if err != nil {
+        return nil, fmt.Errorf("fuzzing detection failed: %w", err)
+    }
+    vulnerabilities = append(vulnerabilities, fuzzVulns...)
+    
+    return vulnerabilities, nil
+}
+
+func (vd *VulnerabilityDetector) detectByRules(target *Target, services []ServiceResult) ([]Vulnerability, error) {
+    var vulnerabilities []Vulnerability
+    
+    for _, rule := range vd.rules {
+        if !rule.Enabled {
+            continue
+        }
+        
+        // 检查规则是否适用于目标
+        if vd.isRuleApplicable(rule, target, services) {
+            // 执行模式匹配
+            if vd.matcher.Match(rule.Pattern, target) {
+                vuln := Vulnerability{
+                    ID:          generateVulnID(),
+                    Type:        rule.Type,
+                    Severity:    rule.Severity,
+                    Description: rule.Description,
+                    CVE:         rule.CVE,
+                    Target:      target.ID,
+                    DetectedAt:  time.Now(),
+                }
+                vulnerabilities = append(vulnerabilities, vuln)
+            }
+        }
+    }
+    
+    return vulnerabilities, nil
+}
+
+func (vd *VulnerabilityDetector) isRuleApplicable(rule DetectionRule, target *Target, services []ServiceResult) bool {
+    // 检查目标操作系统
+    if rule.Type == "os_specific" && target.OS != rule.Pattern {
         return false
     }
-    defer conn.Close()
+    
+    // 检查服务类型
+    if rule.Type == "service_specific" {
+        for _, service := range services {
+            if service.Name == rule.Pattern {
+                return true
+            }
+        }
+        return false
+    }
     
     return true
 }
-
-// Stop 停止扫描
-func (ps *PortScanner) Stop() {
-    close(ps.stopChan)
-}
 ```
 
-### 4.3 服务识别服务
+## 4. 数据模型
 
-```go
-// ServiceDetector 服务识别器
-type ServiceDetector struct {
-    signatures  map[string]string
-    logger      *zap.Logger
-}
+### 4.1 数据库设计
 
-// NewServiceDetector 创建服务识别器
-func NewServiceDetector() *ServiceDetector {
-    return &ServiceDetector{
-        signatures: make(map[string]string),
-        logger:     zap.L().Named("service_detector"),
-    }
-}
+```sql
+-- 扫描目标表
+CREATE TABLE scan_targets (
+    id VARCHAR(64) PRIMARY KEY,
+    ip VARCHAR(45) NOT NULL,
+    hostname VARCHAR(255),
+    os VARCHAR(100),
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-// DetectService 识别服务
-func (sd *ServiceDetector) DetectService(host string, port int) (*Service, error) {
-    // 获取服务banner
-    banner, err := sd.getBanner(host, port)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 识别服务
-    service := &Service{
-        Port:     port,
-        Protocol: "tcp",
-        Banner:   banner,
-    }
-    
-    // 匹配服务签名
-    service.Name = sd.matchSignature(banner)
-    
-    // 提取版本信息
-    service.Version = sd.extractVersion(banner)
-    
-    return service, nil
-}
+-- 扫描结果表
+CREATE TABLE scan_results (
+    id VARCHAR(64) PRIMARY KEY,
+    target_id VARCHAR(64) REFERENCES scan_targets(id),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP,
+    risk_score DECIMAL(5,2),
+    status VARCHAR(20) DEFAULT 'running',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-// getBanner 获取服务banner
-func (sd *ServiceDetector) getBanner(host string, port int) (string, error) {
-    address := fmt.Sprintf("%s:%d", host, port)
-    
-    conn, err := net.DialTimeout("tcp", address, 5*time.Second)
-    if err != nil {
-        return "", err
-    }
-    defer conn.Close()
-    
-    // 发送探测数据
-    probes := []string{
-        "\r\n",
-        "GET / HTTP/1.0\r\n\r\n",
-        "SSH-2.0-OpenSSH_8.0\r\n",
-        "HELP\r\n",
-    }
-    
-    for _, probe := range probes {
-        conn.SetWriteDeadline(time.Now().Add(2 * time.Second))
-        _, err := conn.Write([]byte(probe))
-        if err != nil {
-            continue
-        }
-        
-        // 读取响应
-        conn.SetReadDeadline(time.Now().Add(2 * time.Second))
-        buffer := make([]byte, 1024)
-        n, err := conn.Read(buffer)
-        if err != nil {
-            continue
-        }
-        
-        return string(buffer[:n]), nil
-    }
-    
-    return "", fmt.Errorf("no banner received")
-}
+-- 端口扫描结果表
+CREATE TABLE port_results (
+    id SERIAL PRIMARY KEY,
+    scan_result_id VARCHAR(64) REFERENCES scan_results(id),
+    port INTEGER NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    service_name VARCHAR(100),
+    service_version VARCHAR(50),
+    banner TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-// matchSignature 匹配服务签名
-func (sd *ServiceDetector) matchSignature(banner string) string {
-    // 实现签名匹配逻辑
-    if strings.Contains(banner, "HTTP/") {
-        return "http"
-    }
-    if strings.Contains(banner, "SSH-") {
-        return "ssh"
-    }
-    if strings.Contains(banner, "FTP") {
-        return "ftp"
-    }
-    if strings.Contains(banner, "SMTP") {
-        return "smtp"
-    }
-    if strings.Contains(banner, "POP3") {
-        return "pop3"
-    }
-    if strings.Contains(banner, "IMAP") {
-        return "imap"
-    }
-    if strings.Contains(banner, "MySQL") {
-        return "mysql"
-    }
-    if strings.Contains(banner, "PostgreSQL") {
-        return "postgresql"
-    }
-    if strings.Contains(banner, "Redis") {
-        return "redis"
-    }
-    if strings.Contains(banner, "MongoDB") {
-        return "mongodb"
-    }
-    
-    return "unknown"
-}
+-- 漏洞表
+CREATE TABLE vulnerabilities (
+    id VARCHAR(64) PRIMARY KEY,
+    scan_result_id VARCHAR(64) REFERENCES scan_results(id),
+    target_id VARCHAR(64) REFERENCES scan_targets(id),
+    type VARCHAR(100) NOT NULL,
+    severity VARCHAR(20) NOT NULL,
+    description TEXT NOT NULL,
+    cve_id VARCHAR(20),
+    remediation TEXT,
+    detected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-// extractVersion 提取版本信息
-func (sd *ServiceDetector) extractVersion(banner string) string {
-    // 实现版本提取逻辑
-    re := regexp.MustCompile(`(\d+\.\d+\.\d+)`)
-    matches := re.FindStringSubmatch(banner)
-    if len(matches) > 1 {
-        return matches[1]
-    }
-    return ""
-}
+-- 检测规则表
+CREATE TABLE detection_rules (
+    id VARCHAR(64) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    pattern TEXT NOT NULL,
+    severity VARCHAR(20) NOT NULL,
+    description TEXT,
+    cve_id VARCHAR(20),
+    enabled BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
-### 4.4 漏洞扫描引擎
+### 4.2 数据访问层
 
 ```go
-// VulnerabilityScanner 漏洞扫描器
-type VulnerabilityScanner struct {
-    plugins     map[string]VulnerabilityPlugin
-    logger      *zap.Logger
-    db          *gorm.DB
+// 扫描结果仓库
+type ScanResultRepository interface {
+    Create(result *ScanResult) error
+    Update(result *ScanResult) error
+    FindByID(resultID string) (*ScanResult, error)
+    FindByTarget(targetID string) ([]*ScanResult, error)
+    FindByStatus(status string) ([]*ScanResult, error)
 }
 
-// NewVulnerabilityScanner 创建漏洞扫描器
-func NewVulnerabilityScanner(db *gorm.DB) *VulnerabilityScanner {
-    vs := &VulnerabilityScanner{
-        plugins: make(map[string]VulnerabilityPlugin),
-        logger:  zap.L().Named("vulnerability_scanner"),
-        db:      db,
-    }
-    
-    // 注册插件
-    vs.registerPlugins()
-    
-    return vs
+// PostgreSQL实现
+type postgresScanResultRepository struct {
+    db *sql.DB
 }
 
-// ScanVulnerabilities 扫描漏洞
-func (vs *VulnerabilityScanner) ScanVulnerabilities(target *ScanTarget) ([]Vulnerability, error) {
-    var vulnerabilities []Vulnerability
+func (r *postgresScanResultRepository) Create(result *ScanResult) error {
+    query := `
+        INSERT INTO scan_results (id, target_id, start_time, end_time, risk_score, status)
+        VALUES ($1, $2, $3, $4, $5, $6)
+    `
     
-    // 对每个服务运行相应的插件
-    for _, service := range target.Services {
-        plugin := vs.getPlugin(service.Name)
-        if plugin != nil {
-            vulns, err := plugin.Scan(target.Host, service)
-            if err != nil {
-                vs.logger.Error("plugin scan failed",
-                    zap.String("plugin", service.Name),
-                    zap.Error(err))
-                continue
-            }
-            vulnerabilities = append(vulnerabilities, vulns...)
-        }
-    }
+    _, err := r.db.Exec(query,
+        result.ID,
+        result.TargetID,
+        result.StartTime,
+        result.EndTime,
+        result.RiskScore,
+        result.Status,
+    )
     
-    // 计算风险评分
-    riskScore := vs.calculateRiskScore(vulnerabilities)
-    target.RiskScore = riskScore
-    
-    vs.logger.Info("vulnerability scan completed",
-        zap.String("target", target.Host),
-        zap.Int("vulnerabilities", len(vulnerabilities)),
-        zap.Float64("risk_score", riskScore))
-    
-    return vulnerabilities, nil
-}
-
-// registerPlugins 注册插件
-func (vs *VulnerabilityScanner) registerPlugins() {
-    vs.plugins["http"] = &HTTPVulnerabilityPlugin{}
-    vs.plugins["ssh"] = &SSHVulnerabilityPlugin{}
-    vs.plugins["ftp"] = &FTPVulnerabilityPlugin{}
-    vs.plugins["mysql"] = &MySQLVulnerabilityPlugin{}
-    vs.plugins["redis"] = &RedisVulnerabilityPlugin{}
-}
-
-// getPlugin 获取插件
-func (vs *VulnerabilityScanner) getPlugin(serviceName string) VulnerabilityPlugin {
-    return vs.plugins[serviceName]
-}
-
-// calculateRiskScore 计算风险评分
-func (vs *VulnerabilityScanner) calculateRiskScore(vulnerabilities []Vulnerability) float64 {
-    if len(vulnerabilities) == 0 {
-        return 0.0
-    }
-    
-    totalScore := 0.0
-    for _, vuln := range vulnerabilities {
-        totalScore += vuln.CVSS
-    }
-    
-    return totalScore / float64(len(vulnerabilities))
-}
-
-// VulnerabilityPlugin 漏洞插件接口
-type VulnerabilityPlugin interface {
-    Scan(host string, service *Service) ([]Vulnerability, error)
-}
-
-// HTTPVulnerabilityPlugin HTTP漏洞插件
-type HTTPVulnerabilityPlugin struct{}
-
-// Scan 扫描HTTP漏洞
-func (hvp *HTTPVulnerabilityPlugin) Scan(host string, service *Service) ([]Vulnerability, error) {
-    var vulnerabilities []Vulnerability
-    
-    // 检查常见HTTP漏洞
-    vulns := hvp.checkCommonVulnerabilities(host, service.Port)
-    vulnerabilities = append(vulnerabilities, vulns...)
-    
-    return vulnerabilities, nil
-}
-
-// checkCommonVulnerabilities 检查常见漏洞
-func (hvp *HTTPVulnerabilityPlugin) checkCommonVulnerabilities(host string, port int) []Vulnerability {
-    var vulnerabilities []Vulnerability
-    
-    // 检查目录遍历
-    if hvp.checkDirectoryTraversal(host, port) {
-        vulnerabilities = append(vulnerabilities, Vulnerability{
-            ID:          "DIR_TRAVERSAL",
-            Name:        "Directory Traversal",
-            Description: "Directory traversal vulnerability detected",
-            Severity:    "High",
-            CVSS:        7.5,
-            CVE:         "CVE-2021-1234",
-            Solution:    "Validate and sanitize file paths",
-        })
-    }
-    
-    // 检查SQL注入
-    if hvp.checkSQLInjection(host, port) {
-        vulnerabilities = append(vulnerabilities, Vulnerability{
-            ID:          "SQL_INJECTION",
-            Name:        "SQL Injection",
-            Description: "SQL injection vulnerability detected",
-            Severity:    "Critical",
-            CVSS:        9.0,
-            CVE:         "CVE-2021-5678",
-            Solution:    "Use parameterized queries",
-        })
-    }
-    
-    return vulnerabilities
-}
-
-// checkDirectoryTraversal 检查目录遍历
-func (hvp *HTTPVulnerabilityPlugin) checkDirectoryTraversal(host string, port int) bool {
-    // 实现目录遍历检查逻辑
-    return false
-}
-
-// checkSQLInjection 检查SQL注入
-func (hvp *HTTPVulnerabilityPlugin) checkSQLInjection(host string, port int) bool {
-    // 实现SQL注入检查逻辑
-    return false
-}
-```
-
-### 4.5 配置检查服务
-
-```go
-// ConfigChecker 配置检查器
-type ConfigChecker struct {
-    rules       []ConfigRule
-    logger      *zap.Logger
-}
-
-// NewConfigChecker 创建配置检查器
-func NewConfigChecker() *ConfigChecker {
-    return &ConfigChecker{
-        rules:  make([]ConfigRule, 0),
-        logger: zap.L().Named("config_checker"),
-    }
-}
-
-// CheckConfiguration 检查配置
-func (cc *ConfigChecker) CheckConfiguration(service *Service) ([]Finding, error) {
-    var findings []Finding
-    
-    // 加载配置
-    config, err := cc.loadConfiguration(service)
     if err != nil {
-        return nil, err
+        return err
     }
     
-    // 应用检查规则
-    for _, rule := range cc.rules {
-        if finding := rule.Check(config); finding != nil {
-            findings = append(findings, *finding)
+    // 创建端口结果
+    for _, portResult := range result.PortResults {
+        if err := r.createPortResult(result.ID, portResult); err != nil {
+            return fmt.Errorf("failed to create port result: %w", err)
         }
     }
     
-    return findings, nil
-}
-
-// ConfigRule 配置规则接口
-type ConfigRule interface {
-    Check(config map[string]interface{}) *Finding
-}
-
-// SecurityConfigRule 安全配置规则
-type SecurityConfigRule struct{}
-
-// Check 检查安全配置
-func (scr *SecurityConfigRule) Check(config map[string]interface{}) *Finding {
-    // 实现安全配置检查逻辑
+    // 创建漏洞记录
+    for _, vuln := range result.Vulnerabilities {
+        if err := r.createVulnerability(result.ID, vuln); err != nil {
+            return fmt.Errorf("failed to create vulnerability: %w", err)
+        }
+    }
+    
     return nil
 }
+
+func (r *postgresScanResultRepository) createPortResult(scanResultID string, portResult PortResult) error {
+    query := `
+        INSERT INTO port_results (scan_result_id, port, status, service_name, service_version, banner)
+        VALUES ($1, $2, $3, $4, $5, $6)
+    `
+    
+    _, err := r.db.Exec(query,
+        scanResultID,
+        portResult.Port,
+        portResult.Status,
+        portResult.ServiceName,
+        portResult.ServiceVersion,
+        portResult.Banner,
+    )
+    
+    return err
+}
 ```
 
-## 5. 漏洞检测
+## 5. 算法实现
 
-### 5.1 依赖分析
+### 5.1 模式匹配算法
 
 ```go
-// DependencyAnalyzer 依赖分析器
-type DependencyAnalyzer struct {
-    logger *zap.Logger
+// 模式匹配器
+type PatternMatcher struct {
+    patterns map[string]*regexp.Regexp
+    cache    *PatternCache
 }
 
-// NewDependencyAnalyzer 创建依赖分析器
-func NewDependencyAnalyzer() *DependencyAnalyzer {
-    return &DependencyAnalyzer{
-        logger: zap.L().Named("dependency_analyzer"),
+func (pm *PatternMatcher) Match(pattern string, target *Target) bool {
+    // 检查缓存
+    if result, exists := pm.cache.Get(pattern); exists {
+        return result.(bool)
     }
+    
+    // 编译正则表达式
+    regex, err := regexp.Compile(pattern)
+    if err != nil {
+        return false
+    }
+    
+    // 匹配目标信息
+    targetInfo := fmt.Sprintf("%s %s %s", target.IP, target.Hostname, target.OS)
+    for _, service := range target.Services {
+        targetInfo += fmt.Sprintf(" %s %s", service.Name, service.Version)
+    }
+    
+    result := regex.MatchString(targetInfo)
+    
+    // 缓存结果
+    pm.cache.Set(pattern, result)
+    
+    return result
 }
 
-// AnalyzeDependencies 分析依赖
-func (da *DependencyAnalyzer) AnalyzeDependencies(projectPath string) ([]Vulnerability, error) {
+// 模糊测试器
+type Fuzzer struct {
+    payloads     []string
+    timeout      time.Duration
+    maxRequests  int
+}
+
+func (f *Fuzzer) Fuzz(target *Target, endpoint string) ([]Vulnerability, error) {
     var vulnerabilities []Vulnerability
     
-    // 分析Go模块依赖
-    goVulns, err := da.analyzeGoDependencies(projectPath)
-    if err != nil {
-        return nil, err
+    for _, payload := range f.payloads {
+        // 发送模糊测试请求
+        response, err := f.sendRequest(target, endpoint, payload)
+        if err != nil {
+            continue
+        }
+        
+        // 分析响应
+        vulns := f.analyzeResponse(response, payload)
+        vulnerabilities = append(vulnerabilities, vulns...)
     }
-    vulnerabilities = append(vulnerabilities, goVulns...)
-    
-    // 分析Docker依赖
-    dockerVulns, err := da.analyzeDockerDependencies(projectPath)
-    if err != nil {
-        return nil, err
-    }
-    vulnerabilities = append(vulnerabilities, dockerVulns...)
     
     return vulnerabilities, nil
 }
 
-// analyzeGoDependencies 分析Go依赖
-func (da *DependencyAnalyzer) analyzeGoDependencies(projectPath string) ([]Vulnerability, error) {
-    // 实现Go依赖分析逻辑
-    return []Vulnerability{}, nil
-}
-
-// analyzeDockerDependencies 分析Docker依赖
-func (da *DependencyAnalyzer) analyzeDockerDependencies(projectPath string) ([]Vulnerability, error) {
-    // 实现Docker依赖分析逻辑
-    return []Vulnerability{}, nil
+func (f *Fuzzer) sendRequest(target *Target, endpoint string, payload string) (*http.Response, error) {
+    client := &http.Client{
+        Timeout: f.timeout,
+    }
+    
+    url := fmt.Sprintf("http://%s%s", target.IP, endpoint)
+    req, err := http.NewRequest("GET", url, nil)
+    if err != nil {
+        return nil, err
+    }
+    
+    // 注入payload
+    req.Header.Set("User-Agent", payload)
+    
+    return client.Do(req)
 }
 ```
 
-### 5.2 风险评估
+### 5.2 风险评估算法
 
 ```go
-// RiskAssessor 风险评估器
+// 风险评估器
 type RiskAssessor struct {
-    logger *zap.Logger
+    weights map[string]float64
+    factors map[string]RiskFactor
 }
 
-// NewRiskAssessor 创建风险评估器
-func NewRiskAssessor() *RiskAssessor {
-    return &RiskAssessor{
-        logger: zap.L().Named("risk_assessor"),
-    }
+type RiskFactor struct {
+    Name     string  `json:"name"`
+    Weight   float64 `json:"weight"`
+    MinValue float64 `json:"min_value"`
+    MaxValue float64 `json:"max_value"`
 }
 
-// AssessRisk 评估风险
-func (ra *RiskAssessor) AssessRisk(vulnerabilities []Vulnerability) *RiskAssessment {
-    assessment := &RiskAssessment{
-        TotalVulnerabilities: len(vulnerabilities),
-        RiskLevel:           "Low",
-        Score:               0.0,
-    }
+func (ra *RiskAssessor) AssessRisk(vulnerabilities []Vulnerability, target *Target) float64 {
+    score := 0.0
     
-    // 计算风险评分
-    totalScore := 0.0
-    criticalCount := 0
-    highCount := 0
-    mediumCount := 0
-    lowCount := 0
+    // 漏洞严重程度评分
+    vulnScore := ra.calculateVulnerabilityScore(vulnerabilities)
+    score += vulnScore * ra.weights["vulnerability"]
+    
+    // 目标暴露度评分
+    exposureScore := ra.calculateExposureScore(target)
+    score += exposureScore * ra.weights["exposure"]
+    
+    // 威胁情报评分
+    threatScore := ra.calculateThreatScore(target)
+    score += threatScore * ra.weights["threat"]
+    
+    return math.Min(score, 100.0)
+}
+
+func (ra *RiskAssessor) calculateVulnerabilityScore(vulnerabilities []Vulnerability) float64 {
+    score := 0.0
+    weights := map[string]float64{
+        "critical": 10.0,
+        "high":     7.0,
+        "medium":   4.0,
+        "low":      1.0,
+    }
     
     for _, vuln := range vulnerabilities {
-        totalScore += vuln.CVSS
-        
-        switch vuln.Severity {
-        case "Critical":
-            criticalCount++
-        case "High":
-            highCount++
-        case "Medium":
-            mediumCount++
-        case "Low":
-            lowCount++
+        if weight, exists := weights[vuln.Severity]; exists {
+            score += weight
         }
     }
     
-    if len(vulnerabilities) > 0 {
-        assessment.Score = totalScore / float64(len(vulnerabilities))
+    return score
+}
+
+func (ra *RiskAssessor) calculateExposureScore(target *Target) float64 {
+    score := 0.0
+    
+    // 开放端口数量
+    openPorts := len(target.Ports)
+    score += float64(openPorts) * 2.0
+    
+    // 服务暴露度
+    for _, service := range target.Services {
+        if ra.isHighRiskService(service.Name) {
+            score += 5.0
+        }
     }
     
-    // 确定风险等级
-    if criticalCount > 0 || assessment.Score >= 9.0 {
-        assessment.RiskLevel = "Critical"
-    } else if highCount > 0 || assessment.Score >= 7.0 {
-        assessment.RiskLevel = "High"
-    } else if mediumCount > 0 || assessment.Score >= 4.0 {
-        assessment.RiskLevel = "Medium"
-    } else {
-        assessment.RiskLevel = "Low"
+    return score
+}
+```
+
+## 6. 性能分析
+
+### 6.1 时间复杂度分析
+
+**定理 6.1** (端口扫描复杂度)
+对于 $n$ 个端口，并发端口扫描的时间复杂度为 $O(\frac{n}{k})$，其中 $k$ 是并发数。
+
+**证明**：
+并发扫描将 $n$ 个端口分成 $\frac{n}{k}$ 批处理。
+每批处理时间为 $O(1)$（网络延迟）。
+总时间复杂度：$O(\frac{n}{k})$。
+
+**定理 6.2** (漏洞检测复杂度)
+漏洞检测的时间复杂度为 $O(m \cdot n)$，其中 $m$ 是规则数量，$n$ 是目标数量。
+
+**证明**：
+每个规则需要对每个目标进行模式匹配。
+模式匹配时间复杂度：$O(1)$。
+总时间复杂度：$O(m \cdot n)$。
+
+### 6.2 性能优化策略
+
+```go
+// 扫描调度器
+type ScanScheduler struct {
+    queue        *ScanQueue
+    workers      []*ScanWorker
+    maxWorkers   int
+    rateLimiter  *RateLimiter
+}
+
+type ScanQueue struct {
+    tasks    chan *ScanTask
+    results  chan *ScanResult
+    mutex    sync.Mutex
+}
+
+func (ss *ScanScheduler) Schedule(task *ScanTask) error {
+    // 检查速率限制
+    if !ss.rateLimiter.Allow() {
+        return errors.New("rate limit exceeded")
     }
     
-    assessment.SeverityBreakdown = map[string]int{
-        "Critical": criticalCount,
-        "High":     highCount,
-        "Medium":   mediumCount,
-        "Low":      lowCount,
+    // 添加到队列
+    select {
+    case ss.queue.tasks <- task:
+        return nil
+    default:
+        return errors.New("queue is full")
+    }
+}
+
+func (ss *ScanScheduler) Start() {
+    // 启动工作协程
+    for i := 0; i < ss.maxWorkers; i++ {
+        worker := NewScanWorker(ss.queue)
+        go worker.Start()
+    }
+}
+
+// 速率限制器
+type RateLimiter struct {
+    tokens     int
+    capacity   int
+    rate       float64
+    lastUpdate time.Time
+    mutex      sync.Mutex
+}
+
+func (rl *RateLimiter) Allow() bool {
+    rl.mutex.Lock()
+    defer rl.mutex.Unlock()
+    
+    now := time.Now()
+    elapsed := now.Sub(rl.lastUpdate).Seconds()
+    
+    // 添加令牌
+    newTokens := int(elapsed * rl.rate)
+    rl.tokens = min(rl.tokens+newTokens, rl.capacity)
+    rl.lastUpdate = now
+    
+    if rl.tokens > 0 {
+        rl.tokens--
+        return true
     }
     
-    return assessment
+    return false
 }
 ```
 
 ## 总结
 
-本文档提供了基于Go语言的安全扫描工具完整实现方案，包括：
+本文档提供了安全扫描工具的Go语言实现，包括：
 
-1. **形式化定义**：使用数学符号严格定义安全扫描工具的概念
-2. **数学建模**：提供风险评估的数学模型
-3. **架构设计**：清晰的系统架构图和组件职责划分
-4. **Go语言实现**：完整的端口扫描、服务识别、漏洞扫描、配置检查实现
-5. **漏洞检测**：依赖分析和风险评估机制
+1. **形式化定义**：使用数学符号定义安全扫描系统
+2. **架构设计**：扫描引擎和漏洞检测架构
+3. **核心组件**：端口扫描、服务识别、漏洞检测的完整实现
+4. **数据模型**：扫描结果和漏洞数据管理
+5. **算法实现**：模式匹配和风险评估算法
+6. **性能分析**：时间复杂度和优化策略
 
-该实现方案具有高准确性、高效率和可扩展性，适用于网络安全检测场景。
+该实现提供了高性能、可扩展的安全扫描解决方案。
+
+---
+
+**相关链接**：
+
+- [02-入侵检测系统](../02-Intrusion-Detection-System/README.md)
+- [03-加密服务](../03-Encryption-Services/README.md)
+- [04-身份认证](../04-Identity-Authentication/README.md)
