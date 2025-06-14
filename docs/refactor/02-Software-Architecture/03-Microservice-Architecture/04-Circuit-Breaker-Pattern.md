@@ -16,6 +16,7 @@
 熔断器模式是一种容错设计模式，用于防止系统级联故障。当依赖的服务出现故障时，熔断器会快速失败，避免资源浪费和系统雪崩。
 
 **核心思想**：
+
 ```math
 熔断器状态转换函数：
 f: (S, E) \rightarrow S'
@@ -853,4 +854,4 @@ func (cbm *CircuitBreakerMonitor) GetAlerts() <-chan *CircuitBreakerAlert {
 
 - [服务发现模式](../02-Service-Discovery/README.md)
 - [负载均衡](../03-Load-Balancing.md)
-- [API网关模式](../05-API-Gateway-Pattern.md) 
+- [API网关模式](../05-API-Gateway-Pattern.md)
