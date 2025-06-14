@@ -34,6 +34,7 @@
 $$t_i = (model, dataset, hyperparams, config)$$
 
 其中：
+
 - $model \in M$ 是待训练的模型
 - $dataset \in D$ 是训练数据集
 - $hyperparams \in H$ 是超参数配置
@@ -59,6 +60,7 @@ $$L(\theta_{t+1}) \leq L(\theta_t) - \eta\|L'(\theta_t)\|^2 + \frac{L\eta^2}{2}\
 ### 1.2 超参数优化算法
 
 **算法 1.1** (贝叶斯优化算法)
+
 ```go
 // 贝叶斯优化的形式化描述
 func BayesianOptimization(objective ObjectiveFunction, bounds Bounds, maxIterations int) HyperParameters {
@@ -82,6 +84,7 @@ func BayesianOptimization(objective ObjectiveFunction, bounds Bounds, maxIterati
 ```
 
 **复杂度分析**：
+
 - 时间复杂度：$O(n^3 + n \cdot d)$，其中 $n$ 是观测数量，$d$ 是超参数维度
 - 空间复杂度：$O(n^2)$，用于存储核矩阵
 
@@ -927,6 +930,7 @@ func (wp *WeightPruning) Prune(tensor *Tensor, sparsity float64) (*Tensor, error
 
 **证明**：
 每个训练样本需要：
+
 - 前向传播：$O(p)$
 - 反向传播：$O(p)$
 - 参数更新：$O(p)$
@@ -1190,7 +1194,7 @@ scrape_configs:
 ---
 
 **相关链接**：
+
 - [02-推理服务](../02-Inference-Service/README.md)
 - [03-数据处理管道](../03-Data-Processing-Pipeline/README.md)
 - [04-特征工程](../04-Feature-Engineering/README.md)
-
