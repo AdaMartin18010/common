@@ -2,1175 +2,1167 @@
 
 ## 目录
 
-1. [概述](#1-概述)
-2. [形式化定义](#2-形式化定义)
-3. [数学基础](#3-数学基础)
-4. [系统架构](#4-系统架构)
-5. [核心算法](#5-核心算法)
-6. [Go语言实现](#6-go语言实现)
-7. [性能优化](#7-性能优化)
-8. [安全考虑](#8-安全考虑)
-9. [总结](#9-总结)
+- [01-设备管理平台 (Device Management Platform)](#01-设备管理平台-device-management-platform)
+  - [目录](#目录)
+  - [1. 概述](#1-概述)
+    - [1.1 定义](#11-定义)
+    - [1.2 核心功能](#12-核心功能)
+    - [1.3 技术挑战](#13-技术挑战)
+  - [2. 形式化定义](#2-形式化定义)
+    - [2.1 设备模型](#21-设备模型)
+    - [2.2 设备管理平台](#22-设备管理平台)
+    - [2.3 操作语义](#23-操作语义)
+  - [3. 数学基础](#3-数学基础)
+    - [3.1 图论模型](#31-图论模型)
+    - [3.2 概率模型](#32-概率模型)
+    - [3.3 队列理论](#33-队列理论)
+  - [4. 架构设计](#4-架构设计)
+    - [4.1 系统架构](#41-系统架构)
+    - [4.2 微服务架构](#42-微服务架构)
+  - [5. Go语言实现](#5-go语言实现)
+    - [5.1 核心数据结构](#51-核心数据结构)
+    - [5.2 设备注册服务](#52-设备注册服务)
+    - [5.3 配置管理服务](#53-配置管理服务)
+    - [5.4 监控服务](#54-监控服务)
+    - [5.5 设备过滤器](#55-设备过滤器)
+    - [5.6 主程序示例](#56-主程序示例)
+  - [6. 性能分析](#6-性能分析)
+    - [6.1 时间复杂度分析](#61-时间复杂度分析)
+    - [6.2 空间复杂度分析](#62-空间复杂度分析)
+    - [6.3 并发性能](#63-并发性能)
+  - [7. 应用场景](#7-应用场景)
+    - [7.1 智能家居](#71-智能家居)
+    - [7.2 工业物联网](#72-工业物联网)
+    - [7.3 智慧城市](#73-智慧城市)
+    - [7.4 农业物联网](#74-农业物联网)
+  - [8. 总结](#8-总结)
+
+---
 
 ## 1. 概述
 
 ### 1.1 定义
 
-设备管理平台（Device Management Platform）是物联网系统的核心组件，负责设备的注册、监控、配置和生命周期管理。
+设备管理平台是物联网系统的核心组件，负责管理、监控和控制分布式设备网络。
+它提供设备注册、状态监控、配置管理、固件更新、安全认证等功能。
 
-**形式化定义**：
-```
-D = (R, M, C, L, S, A)
-```
-其中：
-- R：设备注册系统（Registration System）
-- M：设备监控系统（Monitoring System）
-- C：设备配置系统（Configuration System）
-- L：设备生命周期管理（Lifecycle Management）
-- S：设备安全系统（Security System）
-- A：设备分析系统（Analytics System）
+### 1.2 核心功能
 
-### 1.2 核心概念
+- **设备注册与发现**: 自动发现和注册新设备
+- **状态监控**: 实时监控设备状态和健康度
+- **配置管理**: 远程配置设备参数
+- **固件更新**: 安全可靠的固件分发
+- **安全认证**: 设备身份验证和授权
+- **数据收集**: 收集设备遥测数据
 
-| 概念 | 定义 | 数学表示 |
-|------|------|----------|
-| 设备注册 | 设备身份认证和注册 | Register: Device → Certificate |
-| 设备监控 | 实时状态监控 | Monitor: Device → Status |
-| 设备配置 | 远程配置管理 | Configure: Device × Config → Result |
-| 设备固件 | 固件更新管理 | Firmware: Device × Version → Update |
+### 1.3 技术挑战
 
-### 1.3 平台架构
+- **大规模管理**: 支持数百万设备并发管理
+- **实时性**: 低延迟的状态更新和命令下发
+- **可靠性**: 高可用性和故障恢复
+- **安全性**: 设备认证和数据加密
+- **可扩展性**: 水平扩展和负载均衡
 
-```
-┌─────────────────────────────────────┐
-│            API Gateway              │
-├─────────────────────────────────────┤
-│         Device Registry             │
-├─────────────────────────────────────┤
-│         Device Monitor              │
-├─────────────────────────────────────┤
-│         Configuration Manager       │
-├─────────────────────────────────────┤
-│         Security Manager            │
-├─────────────────────────────────────┤
-│         Analytics Engine            │
-└─────────────────────────────────────┘
-```
+---
 
 ## 2. 形式化定义
 
-### 2.1 设备空间
+### 2.1 设备模型
 
-**定义 2.1** 设备空间是一个五元组 (D, S, C, T, R)：
-- D：设备集合，D = {d₁, d₂, ..., dₙ}
-- S：状态集合，S = {online, offline, error, maintenance}
-- C：配置集合，C = {c₁, c₂, ..., cₘ}
-- T：时间域，T = ℝ⁺
-- R：注册关系，R ⊆ D × Certificate
+**定义 2.1.1 (设备)**
+设备是一个三元组 $D = (id, state, config)$，其中：
 
-**公理 2.1** 设备唯一性：
-```
-∀d₁, d₂ ∈ D : d₁ ≠ d₂ ⇒ d₁.id ≠ d₂.id
-```
+- $id \in \Sigma^*$ 是设备的唯一标识符
+- $state \in S$ 是设备状态，$S$ 是状态空间
+- $config \in C$ 是设备配置，$C$ 是配置空间
 
-**公理 2.2** 状态完整性：
-```
-∀d ∈ D, ∀t ∈ T : ∃s ∈ S : status(d, t) = s
-```
+**定义 2.1.2 (设备状态)**
+设备状态是一个五元组 $state = (status, health, lastSeen, metrics, alerts)$，其中：
 
-### 2.2 设备注册函数
+- $status \in \{online, offline, error, maintenance\}$
+- $health \in [0, 1]$ 是健康度评分
+- $lastSeen \in \mathbb{R}$ 是最后通信时间戳
+- $metrics \in M$ 是性能指标集合
+- $alerts \in A$ 是告警集合
 
-**定义 2.2** 设备注册函数 register: D × Credentials → Certificate 满足：
+### 2.2 设备管理平台
 
-1. **唯一性**：∀d ∈ D : register(d, cred) ≠ register(d', cred')
-2. **安全性**：register(d, cred) = cert ⇒ verify(cert, d) = true
-3. **可撤销性**：revoke(cert) ⇒ ¬valid(cert)
+**定义 2.2.1 (设备管理平台)**
+设备管理平台是一个七元组 $P = (D, R, C, M, S, A, F)$，其中：
 
-### 2.3 设备监控函数
+- $D = \{d_1, d_2, ..., d_n\}$ 是设备集合
+- $R$ 是注册服务
+- $C$ 是配置管理服务
+- $M$ 是监控服务
+- $S$ 是安全服务
+- $A$ 是告警服务
+- $F$ 是固件管理服务
 
-**定义 2.3** 设备监控函数 monitor: D × T → Status 满足：
+### 2.3 操作语义
 
-1. **实时性**：∀t ∈ T : |monitor(d, t) - actual_status(d, t)| < ε
-2. **连续性**：monitor(d, t) 在 T 上连续
-3. **可靠性**：P(monitor(d, t) = actual_status(d, t)) > 0.99
+**定义 2.3.1 (设备注册)**
+注册操作 $register: \Sigma^* \times C \rightarrow D$ 定义为：
+$$register(id, config) = (id, initial\_state, config)$$
 
-**定理 2.1** 监控延迟定理：
-```
-∀d ∈ D, ∀t ∈ T : delay(monitor(d, t)) ≤ max_delay
-```
+**定义 2.3.2 (状态更新)**
+状态更新操作 $update\_state: D \times S \rightarrow D$ 定义为：
+$$update\_state((id, state, config), new\_state) = (id, new\_state, config)$$
 
-**证明**：
-```
-设网络延迟为 network_delay，处理延迟为 process_delay
-总延迟 = network_delay + process_delay
-
-由于网络延迟 ≤ max_network_delay
-处理延迟 ≤ max_process_delay
-
-所以总延迟 ≤ max_network_delay + max_process_delay = max_delay
-```
+---
 
 ## 3. 数学基础
 
-### 3.1 图论基础
+### 3.1 图论模型
 
-**定义 3.1** 设备网络图 G = (V, E)：
-- V：设备节点集合
-- E：连接边集合
+**定理 3.1.1 (设备网络连通性)**
+设备网络 $G = (V, E)$ 中，如果每个设备 $v \in V$ 的度数 $deg(v) \geq 1$，则网络是连通的。
 
-**定理 3.1** 网络连通性：
+**证明**:
+假设网络不连通，则存在至少两个连通分量。设 $C_1$ 和 $C_2$ 是两个不同的连通分量。
+对于任意 $v_1 \in C_1$ 和 $v_2 \in C_2$，由于 $deg(v_1) \geq 1$ 和 $deg(v_2) \geq 1$，
+存在边 $(v_1, u_1)$ 和 $(v_2, u_2)$，其中 $u_1 \in C_1$ 和 $u_2 \in C_2$。
+这与 $C_1$ 和 $C_2$ 是连通分量的定义矛盾。因此网络是连通的。
+
+### 3.2 概率模型
+
+**定义 3.2.1 (设备可用性)**
+设备 $d$ 在时间 $t$ 的可用性定义为：
+$$A(d, t) = \frac{MTTF(d)}{MTTF(d) + MTTR(d)}$$
+其中 $MTTF$ 是平均无故障时间，$MTTR$ 是平均修复时间。
+
+**定理 3.2.1 (系统可用性)**
+对于 $n$ 个设备的系统，系统可用性为：
+$$A_{system} = \prod_{i=1}^{n} A(d_i, t)$$
+
+### 3.3 队列理论
+
+**定义 3.3.1 (设备请求队列)**
+设备请求队列是一个 M/M/1 队列，其中：
+
+- 到达率 $\lambda$ 是设备请求到达速率
+- 服务率 $\mu$ 是平台处理速率
+- 队列长度 $L = \frac{\lambda}{\mu - \lambda}$
+
+---
+
+## 4. 架构设计
+
+### 4.1 系统架构
+
+```mermaid
+graph TB
+    subgraph "设备管理平台"
+        A[API网关]
+        B[设备注册服务]
+        C[配置管理服务]
+        D[监控服务]
+        E[安全服务]
+        F[告警服务]
+        G[固件管理服务]
+    end
+    
+    subgraph "存储层"
+        H[(设备数据库)]
+        I[(配置数据库)]
+        J[(监控数据库)]
+        K[(日志数据库)]
+    end
+    
+    subgraph "设备层"
+        L[设备1]
+        M[设备2]
+        N[设备n]
+    end
+    
+    A --> B
+    A --> C
+    A --> D
+    A --> E
+    A --> F
+    A --> G
+    
+    B --> H
+    C --> I
+    D --> J
+    E --> K
+    
+    L --> A
+    M --> A
+    N --> A
 ```
-∀v₁, v₂ ∈ V : ∃path(v₁, v₂) ⇒ network_connected
-```
 
-### 3.2 概率论基础
-
-**定义 3.2** 设备可用性：
-```
-Availability(d) = MTBF / (MTBF + MTTR)
-```
-其中：
-- MTBF：平均无故障时间
-- MTTR：平均修复时间
-
-**定理 3.2** 系统可用性：
-```
-Availability(system) = ∏(Availability(d) : d ∈ system)
-```
-
-### 3.3 信息论基础
-
-**定义 3.3** 设备信息熵：
-```
-H(Device) = -Σ(p(state) × log(p(state)))
-```
-
-**定理 3.3** 信息压缩：
-```
-compression_ratio = H(original) / H(compressed)
-```
-
-## 4. 系统架构
-
-### 4.1 分层架构
-
-```
-┌─────────────────────────────────────┐
-│            API Gateway              │
-├─────────────────────────────────────┤
-│         Device Registry             │
-├─────────────────────────────────────┤
-│         Device Monitor              │
-├─────────────────────────────────────┤
-│         Configuration Manager       │
-├─────────────────────────────────────┤
-│         Security Manager            │
-├─────────────────────────────────────┤
-│         Analytics Engine            │
-├─────────────────────────────────────┤
-│         Message Broker              │
-└─────────────────────────────────────┘
-```
-
-### 4.2 组件设计
-
-#### 4.2.1 设备注册器
+### 4.2 微服务架构
 
 ```go
-type DeviceRegistry struct {
-    devices    map[string]*Device
-    certificates map[string]*Certificate
-    validators []DeviceValidator
-    mu         sync.RWMutex
+// 设备管理平台微服务架构
+type DeviceManagementPlatform struct {
+    registryService    *RegistryService
+    configService      *ConfigService
+    monitoringService  *MonitoringService
+    securityService    *SecurityService
+    alertService       *AlertService
+    firmwareService    *FirmwareService
+    apiGateway         *APIGateway
 }
 
-type DeviceValidator interface {
-    Validate(device *Device) error
-    GetName() string
+// 服务接口定义
+type RegistryService interface {
+    RegisterDevice(ctx context.Context, device *Device) error
+    DeregisterDevice(ctx context.Context, deviceID string) error
+    GetDevice(ctx context.Context, deviceID string) (*Device, error)
+    ListDevices(ctx context.Context, filter *DeviceFilter) ([]*Device, error)
 }
-```
 
-#### 4.2.2 设备监控器
-
-```go
-type DeviceMonitor struct {
-    devices    map[string]*DeviceStatus
-    metrics    *MetricsCollector
-    alerts     chan DeviceAlert
-    watchers   []DeviceWatcher
+type ConfigService interface {
+    UpdateConfig(ctx context.Context, deviceID string, config *DeviceConfig) error
+    GetConfig(ctx context.Context, deviceID string) (*DeviceConfig, error)
+    ValidateConfig(ctx context.Context, config *DeviceConfig) error
 }
-```
 
-## 5. 核心算法
-
-### 5.1 设备注册算法
-
-**算法 5.1** 设备注册：
-
-```go
-func (r *DeviceRegistry) RegisterDevice(device *Device, credentials *Credentials) (*Certificate, error) {
-    // 验证设备
-    for _, validator := range r.validators {
-        if err := validator.Validate(device); err != nil {
-            return nil, fmt.Errorf("validation failed: %w", err)
-        }
-    }
-    
-    // 生成证书
-    certificate := r.generateCertificate(device, credentials)
-    
-    // 存储设备
-    r.devices[device.ID] = device
-    r.certificates[device.ID] = certificate
-    
-    return certificate, nil
+type MonitoringService interface {
+    UpdateStatus(ctx context.Context, deviceID string, status *DeviceStatus) error
+    GetStatus(ctx context.Context, deviceID string) (*DeviceStatus, error)
+    GetMetrics(ctx context.Context, deviceID string, timeRange *TimeRange) ([]*Metric, error)
 }
 ```
 
-**复杂度分析**：
-- 时间复杂度：O(n)，其中n是验证器数量
-- 空间复杂度：O(1)
+---
 
-### 5.2 设备发现算法
+## 5. Go语言实现
 
-**算法 5.2** 设备发现：
-
-```go
-func (r *DeviceRegistry) DiscoverDevices(network string) []*Device {
-    var devices []*Device
-    
-    // 扫描网络
-    for _, device := range r.devices {
-        if device.Network == network && device.Status == "online" {
-            devices = append(devices, device)
-        }
-    }
-    
-    return devices
-}
-```
-
-### 5.3 设备监控算法
-
-**算法 5.3** 设备监控：
-
-```go
-func (m *DeviceMonitor) MonitorDevice(deviceID string) {
-    ticker := time.NewTicker(time.Second * 30)
-    defer ticker.Stop()
-    
-    for range ticker.C {
-        status := m.checkDeviceStatus(deviceID)
-        m.updateDeviceStatus(deviceID, status)
-        
-        // 检查告警条件
-        if m.shouldAlert(status) {
-            m.sendAlert(deviceID, status)
-        }
-    }
-}
-```
-
-## 6. Go语言实现
-
-### 6.1 基础数据结构
+### 5.1 核心数据结构
 
 ```go
 package devicemanagement
 
 import (
     "context"
-    "crypto/rand"
-    "crypto/rsa"
-    "crypto/x509"
-    "encoding/json"
-    "fmt"
     "sync"
     "time"
+    "crypto/rand"
+    "encoding/hex"
+    "encoding/json"
+    "fmt"
+    "log"
+    "math"
+    "sort"
 )
 
-// Device 设备
+// Device 表示物联网设备
 type Device struct {
     ID          string                 `json:"id"`
     Name        string                 `json:"name"`
     Type        string                 `json:"type"`
-    Model       string                 `json:"model"`
-    Manufacturer string                `json:"manufacturer"`
-    Version     string                 `json:"version"`
-    Network     string                 `json:"network"`
-    IP          string                 `json:"ip"`
-    MAC         string                 `json:"mac"`
-    Status      string                 `json:"status"`
-    LastSeen    time.Time              `json:"last_seen"`
-    Properties  map[string]interface{} `json:"properties"`
+    Status      DeviceStatus           `json:"status"`
+    Config      *DeviceConfig          `json:"config"`
     Metadata    map[string]interface{} `json:"metadata"`
+    CreatedAt   time.Time              `json:"created_at"`
+    UpdatedAt   time.Time              `json:"updated_at"`
+    LastSeen    time.Time              `json:"last_seen"`
+    Health      float64                `json:"health"`
+    Alerts      []Alert                `json:"alerts"`
+    mutex       sync.RWMutex           `json:"-"`
 }
 
 // DeviceStatus 设备状态
 type DeviceStatus struct {
-    DeviceID    string                 `json:"device_id"`
-    Status      string                 `json:"status"`
-    Timestamp   time.Time              `json:"timestamp"`
+    Status      string                 `json:"status"`      // online, offline, error, maintenance
+    Health      float64                `json:"health"`      // 0.0 - 1.0
     Metrics     map[string]float64     `json:"metrics"`
-    Alerts      []string               `json:"alerts"`
-    Health      float64                `json:"health"`
-}
-
-// Certificate 设备证书
-type Certificate struct {
-    DeviceID    string    `json:"device_id"`
-    PublicKey   []byte    `json:"public_key"`
-    PrivateKey  []byte    `json:"private_key"`
-    IssuedAt    time.Time `json:"issued_at"`
-    ExpiresAt   time.Time `json:"expires_at"`
-    Revoked     bool      `json:"revoked"`
-}
-
-// Credentials 设备凭据
-type Credentials struct {
-    Username string `json:"username"`
-    Password string `json:"password"`
-    Token    string `json:"token"`
+    LastSeen    time.Time              `json:"last_seen"`
+    Alerts      []Alert                `json:"alerts"`
+    mutex       sync.RWMutex           `json:"-"`
 }
 
 // DeviceConfig 设备配置
 type DeviceConfig struct {
-    DeviceID    string                 `json:"device_id"`
-    ConfigID    string                 `json:"config_id"`
     Parameters  map[string]interface{} `json:"parameters"`
-    Version     int                    `json:"version"`
-    AppliedAt   time.Time              `json:"applied_at"`
-    Status      string                 `json:"status"`
+    Firmware    *FirmwareInfo          `json:"firmware"`
+    Security    *SecurityConfig        `json:"security"`
+    Network     *NetworkConfig         `json:"network"`
+    mutex       sync.RWMutex           `json:"-"`
 }
 
-// DeviceAlert 设备告警
-type DeviceAlert struct {
-    ID          string                 `json:"id"`
-    DeviceID    string                 `json:"device_id"`
-    Level       AlertLevel             `json:"level"`
-    Message     string                 `json:"message"`
-    Timestamp   time.Time              `json:"timestamp"`
-    Data        map[string]interface{} `json:"data"`
+// Alert 告警信息
+type Alert struct {
+    ID          string    `json:"id"`
+    Type        string    `json:"type"`
+    Severity    string    `json:"severity"` // info, warning, error, critical
+    Message     string    `json:"message"`
+    Timestamp   time.Time `json:"timestamp"`
+    Resolved    bool      `json:"resolved"`
 }
 
-// AlertLevel 告警级别
-type AlertLevel int
+// FirmwareInfo 固件信息
+type FirmwareInfo struct {
+    Version     string    `json:"version"`
+    URL         string    `json:"url"`
+    Checksum    string    `json:"checksum"`
+    Size        int64     `json:"size"`
+    ReleaseDate time.Time `json:"release_date"`
+}
 
-const (
-    AlertLevelInfo AlertLevel = iota
-    AlertLevelWarning
-    AlertLevelError
-    AlertLevelCritical
-)
+// SecurityConfig 安全配置
+type SecurityConfig struct {
+    Certificate string            `json:"certificate"`
+    PrivateKey  string            `json:"private_key"`
+    Permissions map[string]string `json:"permissions"`
+}
+
+// NetworkConfig 网络配置
+type NetworkConfig struct {
+    IPAddress   string `json:"ip_address"`
+    Port        int    `json:"port"`
+    Protocol    string `json:"protocol"`
+    Endpoint    string `json:"endpoint"`
+}
 ```
 
-### 6.2 设备注册系统
+### 5.2 设备注册服务
 
 ```go
-// DeviceRegistry 设备注册器
-type DeviceRegistry struct {
-    devices      map[string]*Device
-    certificates map[string]*Certificate
-    validators   []DeviceValidator
-    mu           sync.RWMutex
+// RegistryService 设备注册服务
+type RegistryService struct {
+    devices     map[string]*Device
+    mutex       sync.RWMutex
+    metrics     *RegistryMetrics
 }
 
-// DeviceValidator 设备验证器接口
-type DeviceValidator interface {
-    Validate(device *Device) error
-    GetName() string
+// RegistryMetrics 注册服务指标
+type RegistryMetrics struct {
+    TotalDevices    int64     `json:"total_devices"`
+    OnlineDevices   int64     `json:"online_devices"`
+    OfflineDevices  int64     `json:"offline_devices"`
+    ErrorDevices    int64     `json:"error_devices"`
+    LastUpdated     time.Time `json:"last_updated"`
+    mutex           sync.RWMutex
 }
 
-// NewDeviceRegistry 创建设备注册器
-func NewDeviceRegistry() *DeviceRegistry {
-    return &DeviceRegistry{
-        devices:      make(map[string]*Device),
-        certificates: make(map[string]*Certificate),
-        validators:   make([]DeviceValidator, 0),
+// NewRegistryService 创建注册服务
+func NewRegistryService() *RegistryService {
+    return &RegistryService{
+        devices: make(map[string]*Device),
+        metrics: &RegistryMetrics{
+            LastUpdated: time.Now(),
+        },
     }
 }
 
 // RegisterDevice 注册设备
-func (r *DeviceRegistry) RegisterDevice(device *Device, credentials *Credentials) (*Certificate, error) {
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    
-    // 检查设备是否已存在
-    if _, exists := r.devices[device.ID]; exists {
-        return nil, fmt.Errorf("device already exists: %s", device.ID)
+func (rs *RegistryService) RegisterDevice(ctx context.Context, device *Device) error {
+    if device.ID == "" {
+        device.ID = generateDeviceID()
     }
     
-    // 验证设备
-    for _, validator := range r.validators {
-        if err := validator.Validate(device); err != nil {
-            return nil, fmt.Errorf("validation failed by %s: %w", validator.GetName(), err)
-        }
-    }
-    
-    // 生成证书
-    certificate, err := r.generateCertificate(device, credentials)
-    if err != nil {
-        return nil, fmt.Errorf("failed to generate certificate: %w", err)
-    }
-    
-    // 存储设备
-    device.Status = "registered"
+    device.CreatedAt = time.Now()
+    device.UpdatedAt = time.Now()
     device.LastSeen = time.Now()
-    r.devices[device.ID] = device
-    r.certificates[device.ID] = certificate
     
-    return certificate, nil
-}
-
-// generateCertificate 生成设备证书
-func (r *DeviceRegistry) generateCertificate(device *Device, credentials *Credentials) (*Certificate, error) {
-    // 生成RSA密钥对
-    privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
-    if err != nil {
-        return nil, err
+    rs.mutex.Lock()
+    defer rs.mutex.Unlock()
+    
+    if _, exists := rs.devices[device.ID]; exists {
+        return fmt.Errorf("device %s already exists", device.ID)
     }
     
-    // 创建证书
-    certificate := &Certificate{
-        DeviceID:   device.ID,
-        PublicKey:  x509.MarshalPKCS1PublicKey(&privateKey.PublicKey),
-        PrivateKey: x509.MarshalPKCS1PrivateKey(privateKey),
-        IssuedAt:   time.Now(),
-        ExpiresAt:  time.Now().AddDate(1, 0, 0), // 1年有效期
-        Revoked:    false,
-    }
+    rs.devices[device.ID] = device
+    rs.updateMetrics()
     
-    return certificate, nil
+    log.Printf("Device %s registered successfully", device.ID)
+    return nil
 }
 
-// GetDevice 获取设备
-func (r *DeviceRegistry) GetDevice(deviceID string) (*Device, error) {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
+// DeregisterDevice 注销设备
+func (rs *RegistryService) DeregisterDevice(ctx context.Context, deviceID string) error {
+    rs.mutex.Lock()
+    defer rs.mutex.Unlock()
     
-    device, exists := r.devices[deviceID]
+    if _, exists := rs.devices[deviceID]; !exists {
+        return fmt.Errorf("device %s not found", deviceID)
+    }
+    
+    delete(rs.devices, deviceID)
+    rs.updateMetrics()
+    
+    log.Printf("Device %s deregistered successfully", deviceID)
+    return nil
+}
+
+// GetDevice 获取设备信息
+func (rs *RegistryService) GetDevice(ctx context.Context, deviceID string) (*Device, error) {
+    rs.mutex.RLock()
+    defer rs.mutex.RUnlock()
+    
+    device, exists := rs.devices[deviceID]
     if !exists {
-        return nil, fmt.Errorf("device not found: %s", deviceID)
+        return nil, fmt.Errorf("device %s not found", deviceID)
     }
     
     return device, nil
 }
 
-// UpdateDevice 更新设备
-func (r *DeviceRegistry) UpdateDevice(device *Device) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    
-    if _, exists := r.devices[device.ID]; !exists {
-        return fmt.Errorf("device not found: %s", device.ID)
-    }
-    
-    device.LastSeen = time.Now()
-    r.devices[device.ID] = device
-    
-    return nil
-}
-
-// RemoveDevice 移除设备
-func (r *DeviceRegistry) RemoveDevice(deviceID string) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    
-    if _, exists := r.devices[deviceID]; !exists {
-        return fmt.Errorf("device not found: %s", deviceID)
-    }
-    
-    delete(r.devices, deviceID)
-    delete(r.certificates, deviceID)
-    
-    return nil
-}
-
 // ListDevices 列出设备
-func (r *DeviceRegistry) ListDevices() []*Device {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
-    
-    devices := make([]*Device, 0, len(r.devices))
-    for _, device := range r.devices {
-        devices = append(devices, device)
-    }
-    
-    return devices
-}
-
-// DiscoverDevices 发现设备
-func (r *DeviceRegistry) DiscoverDevices(network string) []*Device {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
+func (rs *RegistryService) ListDevices(ctx context.Context, filter *DeviceFilter) ([]*Device, error) {
+    rs.mutex.RLock()
+    defer rs.mutex.RUnlock()
     
     var devices []*Device
-    for _, device := range r.devices {
-        if device.Network == network && device.Status == "online" {
+    for _, device := range rs.devices {
+        if filter == nil || filter.Matches(device) {
             devices = append(devices, device)
         }
     }
     
-    return devices
+    // 排序
+    sort.Slice(devices, func(i, j int) bool {
+        return devices[i].CreatedAt.Before(devices[j].CreatedAt)
+    })
+    
+    return devices, nil
 }
 
-// AddValidator 添加验证器
-func (r *DeviceRegistry) AddValidator(validator DeviceValidator) {
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    r.validators = append(r.validators, validator)
-}
-
-// BasicDeviceValidator 基础设备验证器
-type BasicDeviceValidator struct{}
-
-// NewBasicDeviceValidator 创建基础设备验证器
-func NewBasicDeviceValidator() *BasicDeviceValidator {
-    return &BasicDeviceValidator{}
-}
-
-// Validate 验证设备
-func (v *BasicDeviceValidator) Validate(device *Device) error {
-    if device.ID == "" {
-        return fmt.Errorf("device ID is required")
+// UpdateDeviceStatus 更新设备状态
+func (rs *RegistryService) UpdateDeviceStatus(ctx context.Context, deviceID string, status *DeviceStatus) error {
+    rs.mutex.Lock()
+    defer rs.mutex.Unlock()
+    
+    device, exists := rs.devices[deviceID]
+    if !exists {
+        return fmt.Errorf("device %s not found", deviceID)
     }
     
-    if device.Name == "" {
-        return fmt.Errorf("device name is required")
-    }
+    device.mutex.Lock()
+    device.Status = *status
+    device.UpdatedAt = time.Now()
+    device.LastSeen = time.Now()
+    device.mutex.Unlock()
     
-    if device.Type == "" {
-        return fmt.Errorf("device type is required")
-    }
-    
-    if device.IP == "" {
-        return fmt.Errorf("device IP is required")
-    }
-    
+    rs.updateMetrics()
     return nil
 }
 
-// GetName 获取验证器名称
-func (v *BasicDeviceValidator) GetName() string {
-    return "basic_validator"
+// GetMetrics 获取服务指标
+func (rs *RegistryService) GetMetrics() *RegistryMetrics {
+    rs.metrics.mutex.RLock()
+    defer rs.metrics.mutex.RUnlock()
+    
+    return rs.metrics
+}
+
+// updateMetrics 更新指标
+func (rs *RegistryService) updateMetrics() {
+    rs.metrics.mutex.Lock()
+    defer rs.metrics.mutex.Unlock()
+    
+    rs.metrics.TotalDevices = int64(len(rs.devices))
+    rs.metrics.OnlineDevices = 0
+    rs.metrics.OfflineDevices = 0
+    rs.metrics.ErrorDevices = 0
+    
+    for _, device := range rs.devices {
+        device.mutex.RLock()
+        switch device.Status.Status {
+        case "online":
+            rs.metrics.OnlineDevices++
+        case "offline":
+            rs.metrics.OfflineDevices++
+        case "error":
+            rs.metrics.ErrorDevices++
+        }
+        device.mutex.RUnlock()
+    }
+    
+    rs.metrics.LastUpdated = time.Now()
+}
+
+// generateDeviceID 生成设备ID
+func generateDeviceID() string {
+    bytes := make([]byte, 16)
+    rand.Read(bytes)
+    return hex.EncodeToString(bytes)
 }
 ```
 
-### 6.3 设备监控系统
+### 5.3 配置管理服务
 
 ```go
-// DeviceMonitor 设备监控器
-type DeviceMonitor struct {
-    devices    map[string]*DeviceStatus
-    metrics    *MetricsCollector
-    alerts     chan DeviceAlert
-    watchers   []DeviceWatcher
-    registry   *DeviceRegistry
-    mu         sync.RWMutex
+// ConfigService 配置管理服务
+type ConfigService struct {
+    registry    *RegistryService
+    cache       map[string]*DeviceConfig
+    mutex       sync.RWMutex
 }
 
-// DeviceWatcher 设备观察者接口
-type DeviceWatcher interface {
-    OnDeviceStatusChange(status *DeviceStatus)
-    OnDeviceAlert(alert *DeviceAlert)
-    GetName() string
-}
-
-// NewDeviceMonitor 创建设备监控器
-func NewDeviceMonitor(registry *DeviceRegistry) *DeviceMonitor {
-    return &DeviceMonitor{
-        devices:  make(map[string]*DeviceStatus),
-        metrics:  NewMetricsCollector(),
-        alerts:   make(chan DeviceAlert, 1000),
-        watchers: make([]DeviceWatcher, 0),
+// NewConfigService 创建配置服务
+func NewConfigService(registry *RegistryService) *ConfigService {
+    return &ConfigService{
         registry: registry,
+        cache:    make(map[string]*DeviceConfig),
     }
 }
 
-// StartMonitoring 开始监控
-func (m *DeviceMonitor) StartMonitoring(ctx context.Context) {
-    ticker := time.NewTicker(time.Second * 30)
-    defer ticker.Stop()
-    
-    for {
-        select {
-        case <-ctx.Done():
-            return
-        case <-ticker.C:
-            m.monitorAllDevices()
-        }
-    }
-}
-
-// monitorAllDevices 监控所有设备
-func (m *DeviceMonitor) monitorAllDevices() {
-    devices := m.registry.ListDevices()
-    
-    for _, device := range devices {
-        go m.monitorDevice(device.ID)
-    }
-}
-
-// monitorDevice 监控单个设备
-func (m *DeviceMonitor) monitorDevice(deviceID string) {
-    status := m.checkDeviceStatus(deviceID)
-    m.updateDeviceStatus(deviceID, status)
-    
-    // 检查告警条件
-    if m.shouldAlert(status) {
-        alert := m.createAlert(deviceID, status)
-        m.sendAlert(alert)
-    }
-}
-
-// checkDeviceStatus 检查设备状态
-func (m *DeviceMonitor) checkDeviceStatus(deviceID string) *DeviceStatus {
-    device, err := m.registry.GetDevice(deviceID)
-    if err != nil {
-        return &DeviceStatus{
-            DeviceID:  deviceID,
-            Status:    "error",
-            Timestamp: time.Now(),
-            Health:    0.0,
-        }
+// UpdateConfig 更新设备配置
+func (cs *ConfigService) UpdateConfig(ctx context.Context, deviceID string, config *DeviceConfig) error {
+    // 验证配置
+    if err := cs.ValidateConfig(ctx, config); err != nil {
+        return fmt.Errorf("invalid config: %w", err)
     }
     
-    // 检查设备连通性
-    isOnline := m.pingDevice(device.IP)
-    
-    // 收集设备指标
-    metrics := m.collectDeviceMetrics(deviceID)
-    
-    // 计算健康度
-    health := m.calculateHealth(metrics)
-    
-    status := &DeviceStatus{
-        DeviceID:  deviceID,
-        Status:    m.determineStatus(isOnline, health),
-        Timestamp: time.Now(),
-        Metrics:   metrics,
-        Health:    health,
-    }
-    
-    return status
-}
-
-// pingDevice 检查设备连通性
-func (m *DeviceMonitor) pingDevice(ip string) bool {
-    // 这里应该实现实际的ping逻辑
-    // 示例实现
-    return true
-}
-
-// collectDeviceMetrics 收集设备指标
-func (m *DeviceMonitor) collectDeviceMetrics(deviceID string) map[string]float64 {
-    // 这里应该实现实际的指标收集逻辑
-    // 示例实现
-    return map[string]float64{
-        "cpu_usage":    45.5,
-        "memory_usage": 60.2,
-        "disk_usage":   30.1,
-        "temperature":  45.0,
-    }
-}
-
-// calculateHealth 计算健康度
-func (m *DeviceMonitor) calculateHealth(metrics map[string]float64) float64 {
-    // 简单的健康度计算
-    cpuUsage := metrics["cpu_usage"]
-    memoryUsage := metrics["memory_usage"]
-    temperature := metrics["temperature"]
-    
-    health := 100.0
-    
-    // CPU使用率影响
-    if cpuUsage > 80 {
-        health -= (cpuUsage - 80) * 0.5
-    }
-    
-    // 内存使用率影响
-    if memoryUsage > 80 {
-        health -= (memoryUsage - 80) * 0.5
-    }
-    
-    // 温度影响
-    if temperature > 60 {
-        health -= (temperature - 60) * 1.0
-    }
-    
-    if health < 0 {
-        health = 0
-    }
-    
-    return health
-}
-
-// determineStatus 确定设备状态
-func (m *DeviceMonitor) determineStatus(isOnline bool, health float64) string {
-    if !isOnline {
-        return "offline"
-    }
-    
-    if health < 20 {
-        return "critical"
-    } else if health < 50 {
-        return "warning"
-    } else if health < 80 {
-        return "degraded"
-    } else {
-        return "online"
-    }
-}
-
-// updateDeviceStatus 更新设备状态
-func (m *DeviceMonitor) updateDeviceStatus(deviceID string, status *DeviceStatus) {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    
-    oldStatus, exists := m.devices[deviceID]
-    m.devices[deviceID] = status
-    
-    // 通知观察者状态变化
-    if !exists || oldStatus.Status != status.Status {
-        for _, watcher := range m.watchers {
-            watcher.OnDeviceStatusChange(status)
-        }
-    }
-}
-
-// shouldAlert 检查是否应该告警
-func (m *DeviceMonitor) shouldAlert(status *DeviceStatus) bool {
-    return status.Status == "critical" || status.Status == "warning"
-}
-
-// createAlert 创建告警
-func (m *DeviceMonitor) createAlert(deviceID string, status *DeviceStatus) *DeviceAlert {
-    level := AlertLevelInfo
-    if status.Status == "critical" {
-        level = AlertLevelCritical
-    } else if status.Status == "warning" {
-        level = AlertLevelWarning
-    }
-    
-    return &DeviceAlert{
-        ID:        generateID(),
-        DeviceID:  deviceID,
-        Level:     level,
-        Message:   fmt.Sprintf("Device %s status: %s, health: %.1f", deviceID, status.Status, status.Health),
-        Timestamp: time.Now(),
-        Data:      map[string]interface{}{"status": status},
-    }
-}
-
-// sendAlert 发送告警
-func (m *DeviceMonitor) sendAlert(alert *DeviceAlert) {
-    // 发送到告警通道
-    select {
-    case m.alerts <- *alert:
-    default:
-        // 通道已满，记录日志
-    }
-    
-    // 通知观察者
-    for _, watcher := range m.watchers {
-        watcher.OnDeviceAlert(alert)
-    }
-}
-
-// GetDeviceStatus 获取设备状态
-func (m *DeviceMonitor) GetDeviceStatus(deviceID string) (*DeviceStatus, error) {
-    m.mu.RLock()
-    defer m.mu.RUnlock()
-    
-    status, exists := m.devices[deviceID]
-    if !exists {
-        return nil, fmt.Errorf("device status not found: %s", deviceID)
-    }
-    
-    return status, nil
-}
-
-// GetAlerts 获取告警通道
-func (m *DeviceMonitor) GetAlerts() <-chan DeviceAlert {
-    return m.alerts
-}
-
-// AddWatcher 添加观察者
-func (m *DeviceMonitor) AddWatcher(watcher DeviceWatcher) {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    m.watchers = append(m.watchers, watcher)
-}
-```
-
-### 6.4 设备配置系统
-
-```go
-// ConfigurationManager 配置管理器
-type ConfigurationManager struct {
-    configs   map[string]*DeviceConfig
-    registry  *DeviceRegistry
-    mu        sync.RWMutex
-}
-
-// NewConfigurationManager 创建配置管理器
-func NewConfigurationManager(registry *DeviceRegistry) *ConfigurationManager {
-    return &ConfigurationManager{
-        configs:  make(map[string]*DeviceConfig),
-        registry: registry,
-    }
-}
-
-// ApplyConfiguration 应用配置
-func (c *ConfigurationManager) ApplyConfiguration(deviceID string, parameters map[string]interface{}) (*DeviceConfig, error) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    
-    // 检查设备是否存在
-    if _, err := c.registry.GetDevice(deviceID); err != nil {
-        return nil, fmt.Errorf("device not found: %s", deviceID)
-    }
-    
-    // 创建配置
-    config := &DeviceConfig{
-        DeviceID:   deviceID,
-        ConfigID:   generateID(),
-        Parameters: parameters,
-        Version:    1,
-        AppliedAt:  time.Now(),
-        Status:     "applying",
-    }
-    
-    // 应用配置到设备
-    if err := c.applyToDevice(deviceID, parameters); err != nil {
-        config.Status = "failed"
-        return config, err
-    }
-    
-    config.Status = "applied"
-    c.configs[config.ConfigID] = config
-    
-    return config, nil
-}
-
-// applyToDevice 应用配置到设备
-func (c *ConfigurationManager) applyToDevice(deviceID string, parameters map[string]interface{}) error {
-    // 这里应该实现实际的设备配置逻辑
-    // 例如通过SSH、HTTP API等
-    
-    // 示例实现
-    device, err := c.registry.GetDevice(deviceID)
+    // 获取设备
+    device, err := cs.registry.GetDevice(ctx, deviceID)
     if err != nil {
         return err
     }
     
-    // 模拟配置应用
-    fmt.Printf("Applying configuration to device %s (%s): %+v\n", deviceID, device.IP, parameters)
+    // 更新配置
+    device.mutex.Lock()
+    device.Config = config
+    device.UpdatedAt = time.Now()
+    device.mutex.Unlock()
     
+    // 更新缓存
+    cs.mutex.Lock()
+    cs.cache[deviceID] = config
+    cs.mutex.Unlock()
+    
+    log.Printf("Config updated for device %s", deviceID)
     return nil
 }
 
-// GetConfiguration 获取配置
-func (c *ConfigurationManager) GetConfiguration(configID string) (*DeviceConfig, error) {
-    c.mu.RLock()
-    defer c.mu.RUnlock()
-    
-    config, exists := c.configs[configID]
-    if !exists {
-        return nil, fmt.Errorf("configuration not found: %s", configID)
-    }
-    
-    return config, nil
-}
-
-// ListDeviceConfigurations 列出设备配置
-func (c *ConfigurationManager) ListDeviceConfigurations(deviceID string) []*DeviceConfig {
-    c.mu.RLock()
-    defer c.mu.RUnlock()
-    
-    var configs []*DeviceConfig
-    for _, config := range c.configs {
-        if config.DeviceID == deviceID {
-            configs = append(configs, config)
-        }
-    }
-    
-    return configs
-}
-```
-
-### 6.5 设备安全系统
-
-```go
-// SecurityManager 安全管理器
-type SecurityManager struct {
-    certificates map[string]*Certificate
-    policies     map[string]*SecurityPolicy
-    registry     *DeviceRegistry
-    mu           sync.RWMutex
-}
-
-// SecurityPolicy 安全策略
-type SecurityPolicy struct {
-    ID          string                 `json:"id"`
-    Name        string                 `json:"name"`
-    Rules       []SecurityRule         `json:"rules"`
-    Priority    int                    `json:"priority"`
-    Enabled     bool                   `json:"enabled"`
-}
-
-// SecurityRule 安全规则
-type SecurityRule struct {
-    ID          string                 `json:"id"`
-    Type        string                 `json:"type"`
-    Condition   map[string]interface{} `json:"condition"`
-    Action      string                 `json:"action"`
-    Priority    int                    `json:"priority"`
-}
-
-// NewSecurityManager 创建安全管理器
-func NewSecurityManager(registry *DeviceRegistry) *SecurityManager {
-    return &SecurityManager{
-        certificates: make(map[string]*Certificate),
-        policies:     make(map[string]*SecurityPolicy),
-        registry:     registry,
-    }
-}
-
-// AuthenticateDevice 设备认证
-func (s *SecurityManager) AuthenticateDevice(deviceID string, token string) error {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    
-    certificate, exists := s.certificates[deviceID]
-    if !exists {
-        return fmt.Errorf("device certificate not found: %s", deviceID)
-    }
-    
-    if certificate.Revoked {
-        return fmt.Errorf("device certificate is revoked: %s", deviceID)
-    }
-    
-    if time.Now().After(certificate.ExpiresAt) {
-        return fmt.Errorf("device certificate is expired: %s", deviceID)
-    }
-    
-    // 验证token
-    if !s.validateToken(deviceID, token) {
-        return fmt.Errorf("invalid token for device: %s", deviceID)
-    }
-    
-    return nil
-}
-
-// validateToken 验证token
-func (s *SecurityManager) validateToken(deviceID, token string) bool {
-    // 这里应该实现实际的token验证逻辑
-    // 示例实现
-    return token != ""
-}
-
-// ApplySecurityPolicy 应用安全策略
-func (s *SecurityManager) ApplySecurityPolicy(deviceID string, policyID string) error {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    
-    policy, exists := s.policies[policyID]
-    if !exists {
-        return fmt.Errorf("security policy not found: %s", policyID)
-    }
-    
-    if !policy.Enabled {
-        return fmt.Errorf("security policy is disabled: %s", policyID)
-    }
-    
-    // 应用策略规则
-    for _, rule := range policy.Rules {
-        if err := s.applySecurityRule(deviceID, rule); err != nil {
-            return fmt.Errorf("failed to apply rule %s: %w", rule.ID, err)
-        }
-    }
-    
-    return nil
-}
-
-// applySecurityRule 应用安全规则
-func (s *SecurityManager) applySecurityRule(deviceID string, rule SecurityRule) error {
-    // 这里应该实现实际的安全规则应用逻辑
-    // 例如防火墙规则、访问控制等
-    
-    fmt.Printf("Applying security rule %s to device %s: %+v\n", rule.ID, deviceID, rule)
-    
-    return nil
-}
-
-// RevokeCertificate 撤销证书
-func (s *SecurityManager) RevokeCertificate(deviceID string) error {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    
-    certificate, exists := s.certificates[deviceID]
-    if !exists {
-        return fmt.Errorf("device certificate not found: %s", deviceID)
-    }
-    
-    certificate.Revoked = true
-    
-    return nil
-}
-```
-
-## 7. 性能优化
-
-### 7.1 并发监控
-
-```go
-// ConcurrentDeviceMonitor 并发设备监控器
-type ConcurrentDeviceMonitor struct {
-    monitor *DeviceMonitor
-    workers int
-    jobQueue chan string
-}
-
-// NewConcurrentDeviceMonitor 创建并发设备监控器
-func NewConcurrentDeviceMonitor(monitor *DeviceMonitor, workers int) *ConcurrentDeviceMonitor {
-    cm := &ConcurrentDeviceMonitor{
-        monitor:  monitor,
-        workers:  workers,
-        jobQueue: make(chan string, 1000),
-    }
-    
-    // 启动工作协程
-    for i := 0; i < workers; i++ {
-        go cm.worker()
-    }
-    
-    return cm
-}
-
-// worker 工作协程
-func (cm *ConcurrentDeviceMonitor) worker() {
-    for deviceID := range cm.jobQueue {
-        cm.monitor.monitorDevice(deviceID)
-    }
-}
-
-// MonitorDevice 监控设备
-func (cm *ConcurrentDeviceMonitor) MonitorDevice(deviceID string) {
-    cm.jobQueue <- deviceID
-}
-```
-
-### 7.2 缓存优化
-
-```go
-// CachedDeviceRegistry 缓存设备注册器
-type CachedDeviceRegistry struct {
-    registry *DeviceRegistry
-    cache    *LRUCache
-}
-
-// NewCachedDeviceRegistry 创建缓存设备注册器
-func NewCachedDeviceRegistry(registry *DeviceRegistry, maxSize int) *CachedDeviceRegistry {
-    return &CachedDeviceRegistry{
-        registry: registry,
-        cache:    NewLRUCache(maxSize),
-    }
-}
-
-// GetDevice 获取设备（带缓存）
-func (c *CachedDeviceRegistry) GetDevice(deviceID string) (*Device, error) {
+// GetConfig 获取设备配置
+func (cs *ConfigService) GetConfig(ctx context.Context, deviceID string) (*DeviceConfig, error) {
     // 先从缓存获取
-    if cached := c.cache.Get(deviceID); cached != nil {
-        return cached.(*Device), nil
+    cs.mutex.RLock()
+    if config, exists := cs.cache[deviceID]; exists {
+        cs.mutex.RUnlock()
+        return config, nil
     }
+    cs.mutex.RUnlock()
     
-    // 从注册器获取
-    device, err := c.registry.GetDevice(deviceID)
+    // 从设备获取
+    device, err := cs.registry.GetDevice(ctx, deviceID)
     if err != nil {
         return nil, err
     }
     
-    // 放入缓存
-    c.cache.Put(deviceID, device)
+    device.mutex.RLock()
+    config := device.Config
+    device.mutex.RUnlock()
     
-    return device, nil
+    // 更新缓存
+    cs.mutex.Lock()
+    cs.cache[deviceID] = config
+    cs.mutex.Unlock()
+    
+    return config, nil
+}
+
+// ValidateConfig 验证配置
+func (cs *ConfigService) ValidateConfig(ctx context.Context, config *DeviceConfig) error {
+    if config == nil {
+        return fmt.Errorf("config cannot be nil")
+    }
+    
+    // 验证固件信息
+    if config.Firmware != nil {
+        if config.Firmware.Version == "" {
+            return fmt.Errorf("firmware version cannot be empty")
+        }
+        if config.Firmware.URL == "" {
+            return fmt.Errorf("firmware URL cannot be empty")
+        }
+    }
+    
+    // 验证安全配置
+    if config.Security != nil {
+        if config.Security.Certificate == "" {
+            return fmt.Errorf("security certificate cannot be empty")
+        }
+    }
+    
+    // 验证网络配置
+    if config.Network != nil {
+        if config.Network.IPAddress == "" {
+            return fmt.Errorf("network IP address cannot be empty")
+        }
+        if config.Network.Port <= 0 || config.Network.Port > 65535 {
+            return fmt.Errorf("invalid network port")
+        }
+    }
+    
+    return nil
 }
 ```
 
-## 8. 安全考虑
-
-### 8.1 加密通信
+### 5.4 监控服务
 
 ```go
-// SecureDeviceManager 安全设备管理器
-type SecureDeviceManager struct {
-    registry *DeviceRegistry
-    monitor  *DeviceMonitor
-    crypto   *CryptoProvider
+// MonitoringService 监控服务
+type MonitoringService struct {
+    registry    *RegistryService
+    metrics     map[string][]*Metric
+    alerts      map[string][]Alert
+    mutex       sync.RWMutex
 }
 
-// CryptoProvider 加密提供者
-type CryptoProvider struct {
-    key []byte
+// Metric 性能指标
+type Metric struct {
+    Name        string    `json:"name"`
+    Value       float64   `json:"value"`
+    Unit        string    `json:"unit"`
+    Timestamp   time.Time `json:"timestamp"`
+    Tags        map[string]string `json:"tags"`
 }
 
-// EncryptMessage 加密消息
-func (c *CryptoProvider) EncryptMessage(message []byte) ([]byte, error) {
-    // 实现AES加密
-    return nil, nil
+// NewMonitoringService 创建监控服务
+func NewMonitoringService(registry *RegistryService) *MonitoringService {
+    return &MonitoringService{
+        registry: registry,
+        metrics:  make(map[string][]*Metric),
+        alerts:   make(map[string][]Alert),
+    }
 }
 
-// DecryptMessage 解密消息
-func (c *CryptoProvider) DecryptMessage(data []byte) ([]byte, error) {
-    // 实现AES解密
-    return nil, nil
+// UpdateStatus 更新设备状态
+func (ms *MonitoringService) UpdateStatus(ctx context.Context, deviceID string, status *DeviceStatus) error {
+    // 更新设备状态
+    if err := ms.registry.UpdateDeviceStatus(ctx, deviceID, status); err != nil {
+        return err
+    }
+    
+    // 处理告警
+    ms.processAlerts(deviceID, status)
+    
+    // 存储指标
+    ms.storeMetrics(deviceID, status.Metrics)
+    
+    return nil
+}
+
+// GetStatus 获取设备状态
+func (ms *MonitoringService) GetStatus(ctx context.Context, deviceID string) (*DeviceStatus, error) {
+    device, err := ms.registry.GetDevice(ctx, deviceID)
+    if err != nil {
+        return nil, err
+    }
+    
+    device.mutex.RLock()
+    status := device.Status
+    device.mutex.RUnlock()
+    
+    return &status, nil
+}
+
+// GetMetrics 获取设备指标
+func (ms *MonitoringService) GetMetrics(ctx context.Context, deviceID string, timeRange *TimeRange) ([]*Metric, error) {
+    ms.mutex.RLock()
+    defer ms.mutex.RUnlock()
+    
+    deviceMetrics, exists := ms.metrics[deviceID]
+    if !exists {
+        return []*Metric{}, nil
+    }
+    
+    if timeRange == nil {
+        return deviceMetrics, nil
+    }
+    
+    var filteredMetrics []*Metric
+    for _, metric := range deviceMetrics {
+        if metric.Timestamp.After(timeRange.Start) && metric.Timestamp.Before(timeRange.End) {
+            filteredMetrics = append(filteredMetrics, metric)
+        }
+    }
+    
+    return filteredMetrics, nil
+}
+
+// processAlerts 处理告警
+func (ms *MonitoringService) processAlerts(deviceID string, status *DeviceStatus) {
+    ms.mutex.Lock()
+    defer ms.mutex.Unlock()
+    
+    var newAlerts []Alert
+    
+    // 检查健康度
+    if status.Health < 0.5 {
+        newAlerts = append(newAlerts, Alert{
+            ID:        generateAlertID(),
+            Type:      "health",
+            Severity:  "warning",
+            Message:   fmt.Sprintf("Device health is low: %.2f", status.Health),
+            Timestamp: time.Now(),
+        })
+    }
+    
+    // 检查离线状态
+    if status.Status == "offline" {
+        newAlerts = append(newAlerts, Alert{
+            ID:        generateAlertID(),
+            Type:      "status",
+            Severity:  "error",
+            Message:   "Device is offline",
+            Timestamp: time.Now(),
+        })
+    }
+    
+    // 检查错误状态
+    if status.Status == "error" {
+        newAlerts = append(newAlerts, Alert{
+            ID:        generateAlertID(),
+            Type:      "status",
+            Severity:  "critical",
+            Message:   "Device is in error state",
+            Timestamp: time.Now(),
+        })
+    }
+    
+    // 添加新告警
+    ms.alerts[deviceID] = append(ms.alerts[deviceID], newAlerts...)
+}
+
+// storeMetrics 存储指标
+func (ms *MonitoringService) storeMetrics(deviceID string, metrics map[string]float64) {
+    ms.mutex.Lock()
+    defer ms.mutex.Unlock()
+    
+    timestamp := time.Now()
+    for name, value := range metrics {
+        metric := &Metric{
+            Name:      name,
+            Value:     value,
+            Unit:      getMetricUnit(name),
+            Timestamp: timestamp,
+            Tags: map[string]string{
+                "device_id": deviceID,
+            },
+        }
+        
+        ms.metrics[deviceID] = append(ms.metrics[deviceID], metric)
+    }
+    
+    // 限制指标数量，保留最近1000个
+    if len(ms.metrics[deviceID]) > 1000 {
+        ms.metrics[deviceID] = ms.metrics[deviceID][len(ms.metrics[deviceID])-1000:]
+    }
+}
+
+// getMetricUnit 获取指标单位
+func getMetricUnit(name string) string {
+    switch name {
+    case "cpu_usage":
+        return "%"
+    case "memory_usage":
+        return "%"
+    case "temperature":
+        return "°C"
+    case "battery_level":
+        return "%"
+    default:
+        return ""
+    }
+}
+
+// generateAlertID 生成告警ID
+func generateAlertID() string {
+    bytes := make([]byte, 8)
+    rand.Read(bytes)
+    return hex.EncodeToString(bytes)
+}
+
+// TimeRange 时间范围
+type TimeRange struct {
+    Start time.Time `json:"start"`
+    End   time.Time `json:"end"`
 }
 ```
 
-### 8.2 访问控制
+### 5.5 设备过滤器
 
 ```go
-// AccessControl 访问控制
-type AccessControl struct {
-    permissions map[string][]string
-    roles       map[string][]string
+// DeviceFilter 设备过滤器
+type DeviceFilter struct {
+    Type        string            `json:"type"`
+    Status      string            `json:"status"`
+    HealthMin   float64           `json:"health_min"`
+    HealthMax   float64           `json:"health_max"`
+    Tags        map[string]string `json:"tags"`
+    CreatedAfter time.Time        `json:"created_after"`
+    CreatedBefore time.Time       `json:"created_before"`
 }
 
-// CheckPermission 检查权限
-func (ac *AccessControl) CheckPermission(userID, action, resource string) bool {
-    // 实现基于角色的访问控制
+// Matches 检查设备是否匹配过滤器
+func (df *DeviceFilter) Matches(device *Device) bool {
+    device.mutex.RLock()
+    defer device.mutex.RUnlock()
+    
+    // 检查类型
+    if df.Type != "" && device.Type != df.Type {
+        return false
+    }
+    
+    // 检查状态
+    if df.Status != "" && device.Status.Status != df.Status {
+        return false
+    }
+    
+    // 检查健康度
+    if df.HealthMin > 0 && device.Health < df.HealthMin {
+        return false
+    }
+    if df.HealthMax > 0 && device.Health > df.HealthMax {
+        return false
+    }
+    
+    // 检查标签
+    if len(df.Tags) > 0 {
+        for key, value := range df.Tags {
+            if deviceTag, exists := device.Metadata[key]; !exists || deviceTag != value {
+                return false
+            }
+        }
+    }
+    
+    // 检查创建时间
+    if !df.CreatedAfter.IsZero() && device.CreatedAt.Before(df.CreatedAfter) {
+        return false
+    }
+    if !df.CreatedBefore.IsZero() && device.CreatedAt.After(df.CreatedBefore) {
+        return false
+    }
+    
     return true
 }
 ```
 
-## 9. 总结
+### 5.6 主程序示例
 
-### 9.1 核心特性
+```go
+// main.go
+package main
 
-1. **形式化定义**：基于数学公理的设备管理体系
-2. **设备注册**：安全的设备身份认证和注册
-3. **实时监控**：高性能的设备状态监控
-4. **配置管理**：灵活的远程配置管理
-5. **安全机制**：完善的设备安全保护
+import (
+    "context"
+    "log"
+    "net/http"
+    "os"
+    "os/signal"
+    "syscall"
+    "time"
+    
+    "github.com/gin-gonic/gin"
+    "github.com/gin-contrib/cors"
+)
 
-### 9.2 应用场景
+func main() {
+    // 创建服务
+    registry := NewRegistryService()
+    configService := NewConfigService(registry)
+    monitoringService := NewMonitoringService(registry)
+    
+    // 创建平台
+    platform := &DeviceManagementPlatform{
+        registry:   registry,
+        config:     configService,
+        monitoring: monitoringService,
+    }
+    
+    // 设置路由
+    router := gin.Default()
+    
+    // CORS配置
+    router.Use(cors.Default())
+    
+    // API路由
+    api := router.Group("/api/v1")
+    {
+        // 设备管理
+        devices := api.Group("/devices")
+        {
+            devices.POST("/", platform.RegisterDevice)
+            devices.GET("/", platform.ListDevices)
+            devices.GET("/:id", platform.GetDevice)
+            devices.DELETE("/:id", platform.DeregisterDevice)
+            devices.PUT("/:id/status", platform.UpdateDeviceStatus)
+            devices.PUT("/:id/config", platform.UpdateConfig)
+            devices.GET("/:id/config", platform.GetConfig)
+            devices.GET("/:id/metrics", platform.GetMetrics)
+        }
+        
+        // 监控
+        monitoring := api.Group("/monitoring")
+        {
+            monitoring.GET("/metrics", platform.GetPlatformMetrics)
+            monitoring.GET("/alerts", platform.GetAlerts)
+        }
+    }
+    
+    // 启动服务器
+    server := &http.Server{
+        Addr:    ":8080",
+        Handler: router,
+    }
+    
+    // 优雅关闭
+    go func() {
+        if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+            log.Fatalf("Failed to start server: %v", err)
+        }
+    }()
+    
+    // 等待中断信号
+    quit := make(chan os.Signal, 1)
+    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+    <-quit
+    
+    log.Println("Shutting down server...")
+    
+    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+    defer cancel()
+    
+    if err := server.Shutdown(ctx); err != nil {
+        log.Fatal("Server forced to shutdown:", err)
+    }
+    
+    log.Println("Server exited")
+}
 
-- **智能家居**：设备连接、状态监控
-- **工业物联网**：设备管理、远程控制
-- **智慧城市**：传感器管理、数据采集
-- **车联网**：车辆监控、远程诊断
+// DeviceManagementPlatform 设备管理平台
+type DeviceManagementPlatform struct {
+    registry   *RegistryService
+    config     *ConfigService
+    monitoring *MonitoringService
+}
 
-### 9.3 扩展方向
+// RegisterDevice 注册设备
+func (p *DeviceManagementPlatform) RegisterDevice(c *gin.Context) {
+    var device Device
+    if err := c.ShouldBindJSON(&device); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+    
+    if err := p.registry.RegisterDevice(c.Request.Context(), &device); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.JSON(http.StatusCreated, device)
+}
 
-1. **边缘计算**：本地设备管理、边缘处理
-2. **AI集成**：智能设备诊断、预测维护
-3. **区块链**：设备身份认证、数据可信
-4. **5G集成**：低延迟通信、大规模连接
+// ListDevices 列出设备
+func (p *DeviceManagementPlatform) ListDevices(c *gin.Context) {
+    var filter DeviceFilter
+    if err := c.ShouldBindQuery(&filter); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+    
+    devices, err := p.registry.ListDevices(c.Request.Context(), &filter)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.JSON(http.StatusOK, devices)
+}
+
+// GetDevice 获取设备
+func (p *DeviceManagementPlatform) GetDevice(c *gin.Context) {
+    deviceID := c.Param("id")
+    
+    device, err := p.registry.GetDevice(c.Request.Context(), deviceID)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.JSON(http.StatusOK, device)
+}
+
+// DeregisterDevice 注销设备
+func (p *DeviceManagementPlatform) DeregisterDevice(c *gin.Context) {
+    deviceID := c.Param("id")
+    
+    if err := p.registry.DeregisterDevice(c.Request.Context(), deviceID); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.JSON(http.StatusOK, gin.H{"message": "Device deregistered successfully"})
+}
+
+// UpdateDeviceStatus 更新设备状态
+func (p *DeviceManagementPlatform) UpdateDeviceStatus(c *gin.Context) {
+    deviceID := c.Param("id")
+    
+    var status DeviceStatus
+    if err := c.ShouldBindJSON(&status); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+    
+    if err := p.monitoring.UpdateStatus(c.Request.Context(), deviceID, &status); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
+}
+
+// UpdateConfig 更新配置
+func (p *DeviceManagementPlatform) UpdateConfig(c *gin.Context) {
+    deviceID := c.Param("id")
+    
+    var config DeviceConfig
+    if err := c.ShouldBindJSON(&config); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+    
+    if err := p.config.UpdateConfig(c.Request.Context(), deviceID, &config); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.JSON(http.StatusOK, gin.H{"message": "Config updated successfully"})
+}
+
+// GetConfig 获取配置
+func (p *DeviceManagementPlatform) GetConfig(c *gin.Context) {
+    deviceID := c.Param("id")
+    
+    config, err := p.config.GetConfig(c.Request.Context(), deviceID)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.JSON(http.StatusOK, config)
+}
+
+// GetMetrics 获取指标
+func (p *DeviceManagementPlatform) GetMetrics(c *gin.Context) {
+    deviceID := c.Param("id")
+    
+    var timeRange TimeRange
+    if err := c.ShouldBindQuery(&timeRange); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+    
+    metrics, err := p.monitoring.GetMetrics(c.Request.Context(), deviceID, &timeRange)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.JSON(http.StatusOK, metrics)
+}
+
+// GetPlatformMetrics 获取平台指标
+func (p *DeviceManagementPlatform) GetPlatformMetrics(c *gin.Context) {
+    metrics := p.registry.GetMetrics()
+    c.JSON(http.StatusOK, metrics)
+}
+
+// GetAlerts 获取告警
+func (p *DeviceManagementPlatform) GetAlerts(c *gin.Context) {
+    // 实现告警查询逻辑
+    c.JSON(http.StatusOK, gin.H{"alerts": []Alert{}})
+}
+```
 
 ---
 
-**相关链接**：
+## 6. 性能分析
+
+### 6.1 时间复杂度分析
+
+**设备注册**: $O(1)$ - 哈希表插入
+**设备查询**: $O(1)$ - 哈希表查找
+**设备列表**: $O(n \log n)$ - 排序
+**状态更新**: $O(1)$ - 哈希表更新
+**指标存储**: $O(1)$ - 数组追加
+
+### 6.2 空间复杂度分析
+
+**设备存储**: $O(n)$ - n个设备
+**指标存储**: $O(n \times m)$ - n个设备，每个设备m个指标
+**告警存储**: $O(n \times a)$ - n个设备，每个设备a个告警
+**配置缓存**: $O(n)$ - n个设备配置
+
+### 6.3 并发性能
+
+**读写锁**: 支持并发读取，互斥写入
+**无锁数据结构**: 使用原子操作优化性能
+**连接池**: 数据库连接复用
+**缓存策略**: 减少数据库访问
+
+---
+
+## 7. 应用场景
+
+### 7.1 智能家居
+
+- 管理智能灯泡、开关、传感器
+- 远程控制和自动化
+- 能耗监控和优化
+
+### 7.2 工业物联网
+
+- 生产线设备监控
+- 预测性维护
+- 质量控制
+
+### 7.3 智慧城市
+
+- 交通信号灯管理
+- 环境监测
+- 公共设施监控
+
+### 7.4 农业物联网
+
+- 土壤监测
+- 灌溉控制
+- 作物管理
+
+---
+
+## 8. 总结
+
+设备管理平台是物联网系统的核心组件，提供了完整的设备生命周期管理功能。通过形式化定义和数学建模，我们建立了严格的系统规范。Go语言实现展示了高性能、高并发的特性，适合大规模物联网应用。
+
+**关键特性**:
+
+- 形式化定义和数学证明
+- 微服务架构设计
+- 高性能Go语言实现
+- 完整的API接口
+- 监控和告警机制
+- 可扩展的架构
+
+**未来改进**:
+
+- 分布式存储支持
+- 流式数据处理
+- 机器学习集成
+- 边缘计算支持
+- 区块链集成
+
+通过这个设备管理平台，可以构建可靠、高效、可扩展的物联网系统。
+
+---
+
+**参考文献**:
+
+1. IoT Device Management, OMA Device Management
+2. MQTT Protocol Specification, OASIS
+3. CoAP Protocol Specification, IETF
+4. LwM2M Protocol Specification, OMA
+
+**相关链接**:
+
 - [02-数据采集系统](./02-Data-Collection-System.md)
 - [03-边缘计算](./03-Edge-Computing.md)
-- [04-传感器网络](./04-Sensor-Network.md) 
+- [04-传感器网络](./04-Sensor-Network.md)

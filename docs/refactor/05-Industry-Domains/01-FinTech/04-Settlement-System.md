@@ -20,7 +20,7 @@
 
 **形式化定义**：
 
-```
+```latex
 S = (P, T, A, R, C)
 ```
 
@@ -54,13 +54,13 @@ S = (P, T, A, R, C)
 
 **公理 2.1** 清算完整性：
 
-```
+```latex
 ∀t ∈ T : ∃p₁, p₂ ∈ P : t.from = p₁ ∧ t.to = p₂
 ```
 
 **公理 2.2** 账户一致性：
 
-```
+```latex
 ∀a ∈ A : balance(a) = Σ(inflows(a)) - Σ(outflows(a))
 ```
 
@@ -77,20 +77,22 @@ S = (P, T, A, R, C)
 
 **定义 2.3** 净额清算模型 N = (P, T, C, M)：
 
+```latex
 - P：参与者集合
 - T：交易集合
 - C：清算周期
 - M：净额矩阵 M[i][j] = net_amount(i, j)
+```
 
 **定理 2.1** 净额清算定理：
 
-```
+```latex
 ∀i, j ∈ P : M[i][j] = -M[j][i]
 ```
 
 **证明**：
 
-```
+```latex
 M[i][j] = Σ(t.amount : t.from = i ∧ t.to = j)
 M[j][i] = Σ(t.amount : t.from = j ∧ t.to = i)
 由于 t.from = i ∧ t.to = j 等价于 t.from = j ∧ t.to = i
@@ -109,7 +111,7 @@ M[j][i] = Σ(t.amount : t.from = j ∧ t.to = i)
 
 **定理 3.1** 清算网络流量守恒：
 
-```
+```latex
 ∀v ∈ V : Σ(w(e) : e.into(v)) = Σ(w(e) : e.outof(v))
 ```
 
@@ -117,7 +119,7 @@ M[j][i] = Σ(t.amount : t.from = j ∧ t.to = i)
 
 **定义 3.2** 清算矩阵 A ∈ ℝ^(n×n)：
 
-```
+```latex
 A[i][j] = {
     amount if ∃t : t.from = i ∧ t.to = j
     0 otherwise
@@ -126,7 +128,7 @@ A[i][j] = {
 
 **定理 3.2** 清算矩阵性质：
 
-```
+```latex
 1. A[i][i] = 0 (无自环)
 2. A[i][j] ≥ 0 (非负权重)
 3. Σ(A[i][:]) = total_outflow(i)
@@ -137,7 +139,7 @@ A[i][j] = {
 
 **定义 3.3** 清算优化问题：
 
-```
+```latex
 minimize: Σ(cost(t) : t ∈ T)
 subject to: balance(p) ≥ 0 ∀p ∈ P
             liquidity_constraints
@@ -148,7 +150,7 @@ subject to: balance(p) ≥ 0 ∀p ∈ P
 
 ### 4.1 分层架构
 
-```
+```text
 ┌─────────────────────────────────────┐
 │            API Gateway              │
 ├─────────────────────────────────────┤
