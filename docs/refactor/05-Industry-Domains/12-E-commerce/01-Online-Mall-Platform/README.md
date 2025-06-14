@@ -1092,4 +1092,4 @@ func (s *RecommendationService) RecordBehavior(ctx context.Context, behavior Use
 6. **支付系统**：多种支付方式集成
 7. **推荐系统**：个性化商品推荐
 
-该实现遵循了电子商务的最佳实践，提供了安全、可靠、高性能的在线商城解决方案。 
+该实现遵循了电子商务的最佳实践，提供了安全、可靠、高性能的在线商城解决方案。

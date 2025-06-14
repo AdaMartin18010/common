@@ -30,6 +30,7 @@ func main() {
 ```
 
 **程序分析**:
+
 - `package main`: 声明这是一个可执行程序的主包
 - `import "fmt"`: 导入格式化输出包
 - `func main()`: 程序入口函数
@@ -52,6 +53,7 @@ GOOS=linux GOARCH=amd64 go build hello.go
 ### 1.3 Go语言特点
 
 **优势**:
+
 1. **简洁语法** - 自动分号插入，清晰的代码结构
 2. **强类型** - 编译时类型检查，减少运行时错误
 3. **垃圾回收** - 自动内存管理
@@ -69,6 +71,7 @@ package main
 ```
 
 **包的作用**:
+
 - 组织代码结构
 - 控制可见性
 - 避免命名冲突
@@ -364,6 +367,7 @@ func main() {
 ### 5.1 创建自定义包
 
 **greeting/greeting.go**:
+
 ```go
 package greeting
 
@@ -396,6 +400,7 @@ func (g *Greeter) Greet() string {
 ```
 
 **main.go**:
+
 ```go
 package main
 
@@ -420,6 +425,7 @@ func main() {
 ### 5.2 Go Modules
 
 **go.mod**:
+
 ```go
 module hello-world
 
@@ -432,6 +438,7 @@ require (
 ```
 
 **使用外部包**:
+
 ```go
 package main
 
@@ -622,6 +629,7 @@ func main() {
 ### 6.5 测试Hello World
 
 **hello_test.go**:
+
 ```go
 package main
 
@@ -668,6 +676,7 @@ func BenchmarkGreet(b *testing.B) {
 ```
 
 **运行测试**:
+
 ```bash
 # 运行所有测试
 go test
@@ -699,7 +708,8 @@ go test -cover
 ---
 
 **相关链接**:
+
 - [02-数据结构 (Data Structures)](02-Data-Structures.md)
 - [03-算法实现 (Algorithm Implementation)](03-Algorithm-Implementation.md)
 - [04-并发编程 (Concurrent Programming)](04-Concurrent-Programming.md)
-- [02-应用示例 (Application Examples)](../02-Application-Examples/README.md) 
+- [02-应用示例 (Application Examples)](../02-Application-Examples/README.md)

@@ -6,12 +6,33 @@
 
 ## 目录
 
-1. [图的基本概念 (Basic Concepts)](#1-图的基本概念-basic-concepts)
-2. [图的表示 (Graph Representation)](#2-图的表示-graph-representation)
-3. [图遍历算法 (Graph Traversal)](#3-图遍历算法-graph-traversal)
-4. [最短路径算法 (Shortest Path)](#4-最短路径算法-shortest-path)
-5. [最小生成树 (Minimum Spanning Tree)](#5-最小生成树-minimum-spanning-tree)
-6. [网络流 (Network Flow)](#6-网络流-network-flow)
+- [03-图论 (Graph Theory)](#03-图论-graph-theory)
+  - [概述](#概述)
+  - [目录](#目录)
+  - [1. 图的基本概念 (Basic Concepts)](#1-图的基本概念-basic-concepts)
+    - [1.1 定义](#11-定义)
+    - [1.2 基本性质](#12-基本性质)
+    - [1.3 Go语言实现](#13-go语言实现)
+  - [2. 图的表示 (Graph Representation)](#2-图的表示-graph-representation)
+    - [2.1 邻接矩阵](#21-邻接矩阵)
+    - [2.2 Go语言实现](#22-go语言实现)
+  - [3. 图遍历算法 (Graph Traversal)](#3-图遍历算法-graph-traversal)
+    - [3.1 深度优先搜索 (DFS)](#31-深度优先搜索-dfs)
+    - [3.2 广度优先搜索 (BFS)](#32-广度优先搜索-bfs)
+    - [3.3 Go语言实现](#33-go语言实现)
+  - [4. 最短路径算法 (Shortest Path)](#4-最短路径算法-shortest-path)
+    - [4.1 Dijkstra算法](#41-dijkstra算法)
+    - [4.2 Bellman-Ford算法](#42-bellman-ford算法)
+    - [4.3 Go语言实现](#43-go语言实现)
+  - [5. 最小生成树 (Minimum Spanning Tree)](#5-最小生成树-minimum-spanning-tree)
+    - [5.1 Kruskal算法](#51-kruskal算法)
+    - [5.2 Prim算法](#52-prim算法)
+    - [5.3 Go语言实现](#53-go语言实现)
+  - [6. 网络流 (Network Flow)](#6-网络流-network-flow)
+    - [6.1 最大流问题](#61-最大流问题)
+    - [6.2 Ford-Fulkerson算法](#62-ford-fulkerson算法)
+    - [6.3 Go语言实现](#63-go语言实现)
+  - [总结](#总结)
 
 ---
 
@@ -31,6 +52,7 @@
 ### 1.2 基本性质
 
 **定义 1.2.1** (度数)
+
 - 入度: $deg^-(v) = |\{u : (u, v) \in E\}|$
 - 出度: $deg^+(v) = |\{u : (v, u) \in E\}|$
 - 度数: $deg(v) = deg^-(v) + deg^+(v)$
@@ -213,7 +235,7 @@ func (g *AdjacencyListGraph) Degree(vertexID int) (inDegree, outDegree int) {
 
 **定义 2.1.1** (邻接矩阵)
 对于图 $G = (V, E)$，邻接矩阵 $A$ 定义为：
-$A[i][j] = \begin{cases} 
+$A[i][j] = \begin{cases}
 1 & \text{if } (i,j) \in E \\
 0 & \text{otherwise}
 \end{cases}$
@@ -305,6 +327,7 @@ func NewIncidenceMatrix(vertices []*Vertex, edges []*Edge) *IncidenceMatrix {
 ### 3.1 深度优先搜索 (DFS)
 
 **算法 3.1.1** (DFS)
+
 ```python
 def DFS(G, start):
     visited = set()
@@ -325,6 +348,7 @@ def DFS(G, start):
 ### 3.2 广度优先搜索 (BFS)
 
 **算法 3.2.1** (BFS)
+
 ```python
 def BFS(G, start):
     visited = set()
@@ -489,6 +513,7 @@ func ConnectedComponents(g Graph) [][]int {
 ### 4.1 Dijkstra算法
 
 **算法 4.1.1** (Dijkstra)
+
 ```python
 def Dijkstra(G, start):
     distances = {v: float('inf') for v in G.vertices()}
@@ -514,6 +539,7 @@ def Dijkstra(G, start):
 ### 4.2 Bellman-Ford算法
 
 **算法 4.2.1** (Bellman-Ford)
+
 ```python
 def BellmanFord(G, start):
     distances = {v: float('inf') for v in G.vertices()}
@@ -699,6 +725,7 @@ func FloydWarshall(g Graph) [][]float64 {
 ### 5.1 Kruskal算法
 
 **算法 5.1.1** (Kruskal)
+
 ```python
 def Kruskal(G):
     edges = sorted(G.edges(), key=lambda e: e.weight)
@@ -718,6 +745,7 @@ def Kruskal(G):
 ### 5.2 Prim算法
 
 **算法 5.2.1** (Prim)
+
 ```python
 def Prim(G, start):
     mst = []
@@ -908,12 +936,14 @@ func Prim(g Graph, startID int) []*Edge {
 
 **定义 6.1.2** (流)
 流 $f: V \times V \rightarrow \mathbb{R}$ 满足：
+
 1. 容量约束: $0 \leq f(u, v) \leq c(u, v)$
 2. 流量守恒: $\sum_{v \in V} f(v, u) = \sum_{v \in V} f(u, v)$
 
 ### 6.2 Ford-Fulkerson算法
 
 **算法 6.2.1** (Ford-Fulkerson)
+
 ```python
 def FordFulkerson(G, source, sink):
     flow = 0
@@ -1114,7 +1144,8 @@ func (fn *FlowNetwork) findAugmentingPath() ([]int, float64) {
 ---
 
 **相关链接**:
+
 - [01-集合论 (Set Theory)](01-Set-Theory.md)
 - [02-逻辑学 (Logic)](02-Logic.md)
 - [04-概率论 (Probability Theory)](04-Probability-Theory.md)
-- [02-形式化验证 (Formal Verification)](../02-Formal-Verification/README.md) 
+- [02-形式化验证 (Formal Verification)](../02-Formal-Verification/README.md)

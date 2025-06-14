@@ -6,12 +6,40 @@
 
 ## 目录
 
-1. [概率空间 (Probability Space)](#1-概率空间-probability-space)
-2. [随机变量 (Random Variables)](#2-随机变量-random-variables)
-3. [分布函数 (Distribution Functions)](#3-分布函数-distribution-functions)
-4. [期望与方差 (Expectation and Variance)](#4-期望与方差-expectation-and-variance)
-5. [大数定律与中心极限定理 (Law of Large Numbers and Central Limit Theorem)](#5-大数定律与中心极限定理-law-of-large-numbers-and-central-limit-theorem)
-6. [Go语言中的概率实现](#6-go语言中的概率实现)
+- [04-概率论 (Probability Theory)](#04-概率论-probability-theory)
+  - [概述](#概述)
+  - [目录](#目录)
+  - [1. 概率空间 (Probability Space)](#1-概率空间-probability-space)
+    - [1.1 基本概念](#11-基本概念)
+    - [1.2 概率公理](#12-概率公理)
+    - [1.3 Go语言实现](#13-go语言实现)
+  - [2. 随机变量 (Random Variables)](#2-随机变量-random-variables)
+    - [2.1 定义](#21-定义)
+    - [2.2 概率质量函数 (PMF)](#22-概率质量函数-pmf)
+    - [2.3 概率密度函数 (PDF)](#23-概率密度函数-pdf)
+    - [2.4 Go语言实现](#24-go语言实现)
+  - [3. 分布函数 (Distribution Functions)](#3-分布函数-distribution-functions)
+    - [3.1 常见离散分布](#31-常见离散分布)
+      - [3.1.1 伯努利分布](#311-伯努利分布)
+      - [3.1.2 二项分布](#312-二项分布)
+      - [3.1.3 泊松分布](#313-泊松分布)
+    - [3.2 常见连续分布](#32-常见连续分布)
+      - [3.2.1 均匀分布](#321-均匀分布)
+      - [3.2.2 正态分布](#322-正态分布)
+      - [3.2.3 指数分布](#323-指数分布)
+    - [3.3 Go语言实现](#33-go语言实现)
+  - [4. 期望与方差 (Expectation and Variance)](#4-期望与方差-expectation-and-variance)
+    - [4.1 期望](#41-期望)
+    - [4.2 方差](#42-方差)
+    - [4.3 Go语言实现](#43-go语言实现)
+  - [5. 大数定律与中心极限定理 (Law of Large Numbers and Central Limit Theorem)](#5-大数定律与中心极限定理-law-of-large-numbers-and-central-limit-theorem)
+    - [5.1 大数定律](#51-大数定律)
+    - [5.2 中心极限定理](#52-中心极限定理)
+    - [5.3 Go语言实现](#53-go语言实现)
+  - [6. Go语言中的概率实现](#6-go语言中的概率实现)
+    - [6.1 随机数生成器](#61-随机数生成器)
+    - [6.2 概率统计工具](#62-概率统计工具)
+  - [总结](#总结)
 
 ---
 
@@ -27,18 +55,21 @@
 
 **定义 1.1.3** (σ-代数)
 σ-代数 $\mathcal{F}$ 是 $\Omega$ 的子集族，满足：
+
 1. $\Omega \in \mathcal{F}$
 2. 如果 $A \in \mathcal{F}$，则 $A^c \in \mathcal{F}$
 3. 如果 $A_1, A_2, ... \in \mathcal{F}$，则 $\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$
 
 **定义 1.1.4** (概率测度)
 概率测度 $P: \mathcal{F} \rightarrow [0,1]$ 满足：
+
 1. $P(\Omega) = 1$
 2. 对于互斥事件 $A_1, A_2, ...$，$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
 
 ### 1.2 概率公理
 
 **公理 1.2.1** (Kolmogorov公理)
+
 1. 非负性: $P(A) \geq 0$ 对所有 $A \in \mathcal{F}$
 2. 规范性: $P(\Omega) = 1$
 3. 可列可加性: 对于互斥事件 $A_1, A_2, ...$，$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
@@ -183,6 +214,7 @@ func (ps *ProbabilitySpace) ConditionalProbability(eventA, eventB *Event) float6
 对于离散随机变量 $X$，概率质量函数 $p_X(x) = P(X = x)$。
 
 **性质**:
+
 1. $p_X(x) \geq 0$ 对所有 $x$
 2. $\sum_x p_X(x) = 1$
 
@@ -193,6 +225,7 @@ func (ps *ProbabilitySpace) ConditionalProbability(eventA, eventB *Event) float6
 $P(a \leq X \leq b) = \int_a^b f_X(x) dx$
 
 **性质**:
+
 1. $f_X(x) \geq 0$ 对所有 $x$
 2. $\int_{-\infty}^{\infty} f_X(x) dx = 1$
 
@@ -699,6 +732,7 @@ func (e *Exponential) Variance() float64 {
 对于连续随机变量 $X$，期望 $E[X] = \int_{-\infty}^{\infty} x \cdot f_X(x) dx$
 
 **性质**:
+
 1. 线性性: $E[aX + b] = aE[X] + b$
 2. 可加性: $E[X + Y] = E[X] + E[Y]$
 
@@ -708,6 +742,7 @@ func (e *Exponential) Variance() float64 {
 方差 $Var(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2$
 
 **性质**:
+
 1. $Var(aX + b) = a^2 Var(X)$
 2. $Var(X + Y) = Var(X) + Var(Y)$ (如果 $X$ 和 $Y$ 独立)
 
@@ -1234,7 +1269,8 @@ func erf(x float64) float64 {
 ---
 
 **相关链接**:
+
 - [01-集合论 (Set Theory)](01-Set-Theory.md)
 - [02-逻辑学 (Logic)](02-Logic.md)
 - [03-图论 (Graph Theory)](03-Graph-Theory.md)
-- [02-形式化验证 (Formal Verification)](../02-Formal-Verification/README.md) 
+- [02-形式化验证 (Formal Verification)](../02-Formal-Verification/README.md)

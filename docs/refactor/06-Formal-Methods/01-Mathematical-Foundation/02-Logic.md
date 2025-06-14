@@ -6,10 +6,25 @@
 
 ## 目录
 
-1. [命题逻辑 (Propositional Logic)](#1-命题逻辑-propositional-logic)
-2. [谓词逻辑 (Predicate Logic)](#2-谓词逻辑-predicate-logic)
-3. [形式化证明 (Formal Proofs)](#3-形式化证明-formal-proofs)
-4. [Go语言中的逻辑实现](#4-go语言中的逻辑实现)
+- [02-逻辑学 (Logic)](#02-逻辑学-logic)
+  - [概述](#概述)
+  - [目录](#目录)
+  - [1. 命题逻辑 (Propositional Logic)](#1-命题逻辑-propositional-logic)
+    - [1.1 基本概念](#11-基本概念)
+    - [1.2 真值表](#12-真值表)
+    - [1.3 Go语言实现](#13-go语言实现)
+    - [1.4 逻辑等价律](#14-逻辑等价律)
+  - [2. 谓词逻辑 (Predicate Logic)](#2-谓词逻辑-predicate-logic)
+    - [2.1 基本概念](#21-基本概念)
+    - [2.2 Go语言实现](#22-go语言实现)
+    - [2.3 量词等价律](#23-量词等价律)
+  - [3. 形式化证明 (Formal Proofs)](#3-形式化证明-formal-proofs)
+    - [3.1 自然演绎系统](#31-自然演绎系统)
+    - [3.2 Go语言实现](#32-go语言实现)
+  - [4. Go语言中的逻辑实现](#4-go语言中的逻辑实现)
+    - [4.1 类型安全的逻辑编程](#41-类型安全的逻辑编程)
+    - [4.2 约束逻辑编程](#42-约束逻辑编程)
+  - [总结](#总结)
 
 ---
 
@@ -21,6 +36,7 @@
 命题是一个具有确定真值的陈述句，用符号 $P, Q, R$ 等表示。
 
 **定义 1.1.2** (逻辑连接词)
+
 - 否定 (Negation): $\neg P$
 - 合取 (Conjunction): $P \land Q$
 - 析取 (Disjunction): $P \lor Q$
@@ -161,6 +177,7 @@ $\neg(P \lor Q) \equiv \neg P \land \neg Q$
 谓词是描述对象性质的函数，用 $P(x), Q(x,y)$ 等表示。
 
 **定义 2.1.2** (量词)
+
 - 全称量词 (Universal): $\forall x P(x)$
 - 存在量词 (Existential): $\exists x P(x)$
 
@@ -264,6 +281,7 @@ $\equiv \exists x \neg P(x)$
 ### 3.1 自然演绎系统
 
 **定义 3.1.1** (推理规则)
+
 1. **引入规则** (Introduction Rules)
    - $\land$-I: 从 $A$ 和 $B$ 推出 $A \land B$
    - $\lor$-I: 从 $A$ 推出 $A \lor B$
@@ -785,7 +803,8 @@ func ExampleLinearProgramming() {
 ---
 
 **相关链接**:
+
 - [01-集合论 (Set Theory)](01-Set-Theory.md)
 - [03-图论 (Graph Theory)](03-Graph-Theory.md)
 - [04-概率论 (Probability Theory)](04-Probability-Theory.md)
-- [02-形式化验证 (Formal Verification)](../02-Formal-Verification/README.md) 
+- [02-形式化验证 (Formal Verification)](../02-Formal-Verification/README.md)

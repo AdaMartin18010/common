@@ -6,11 +6,26 @@
 
 ## 目录
 
-1. [状态机模型 (State Machine Models)](#1-状态机模型-state-machine-models)
-2. [时态逻辑 (Temporal Logic)](#2-时态逻辑-temporal-logic)
-3. [模型检查算法 (Model Checking Algorithms)](#3-模型检查算法-model-checking-algorithms)
-4. [符号模型检查 (Symbolic Model Checking)](#4-符号模型检查-symbolic-model-checking)
-5. [Go语言实现](#5-go语言实现)
+- [01-模型检查 (Model Checking)](#01-模型检查-model-checking)
+  - [概述](#概述)
+  - [目录](#目录)
+  - [1. 状态机模型 (State Machine Models)](#1-状态机模型-state-machine-models)
+    - [1.1 基本概念](#11-基本概念)
+    - [1.2 Go语言实现](#12-go语言实现)
+  - [2. 时态逻辑 (Temporal Logic)](#2-时态逻辑-temporal-logic)
+    - [2.1 线性时态逻辑 (LTL)](#21-线性时态逻辑-ltl)
+    - [2.2 计算树逻辑 (CTL)](#22-计算树逻辑-ctl)
+    - [2.3 Go语言实现](#23-go语言实现)
+  - [3. 模型检查算法 (Model Checking Algorithms)](#3-模型检查算法-model-checking-algorithms)
+    - [3.1 LTL模型检查](#31-ltl模型检查)
+    - [3.2 CTL模型检查](#32-ctl模型检查)
+    - [3.3 Go语言实现](#33-go语言实现)
+  - [4. 符号模型检查 (Symbolic Model Checking)](#4-符号模型检查-symbolic-model-checking)
+    - [4.1 二元决策图 (BDD)](#41-二元决策图-bdd)
+    - [4.2 Go语言实现](#42-go语言实现)
+  - [5. Go语言实现](#5-go语言实现)
+    - [5.1 完整的模型检查系统](#51-完整的模型检查系统)
+  - [总结](#总结)
 
 ---
 
@@ -20,6 +35,7 @@
 
 **定义 1.1.1** (状态机)
 状态机是一个五元组 $M = (S, S_0, \Sigma, \delta, F)$，其中：
+
 - $S$ 是状态集
 - $S_0 \subseteq S$ 是初始状态集
 - $\Sigma$ 是输入字母表
@@ -28,6 +44,7 @@
 
 **定义 1.1.2** (Kripke结构)
 Kripke结构是一个四元组 $K = (S, S_0, R, L)$，其中：
+
 - $S$ 是状态集
 - $S_0 \subseteq S$ 是初始状态集
 - $R \subseteq S \times S$ 是转移关系
@@ -195,6 +212,7 @@ LTL公式的语法：
 $\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid X \phi \mid F \phi \mid G \phi \mid \phi U \phi \mid \phi R \phi$
 
 其中：
+
 - $X \phi$: 下一个状态满足 $\phi$
 - $F \phi$: 将来某个状态满足 $\phi$
 - $G \phi$: 所有将来状态都满足 $\phi$
@@ -208,6 +226,7 @@ CTL公式的语法：
 $\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid EX \phi \mid AX \phi \mid EF \phi \mid AF \phi \mid EG \phi \mid AG \phi \mid E[\phi U \psi] \mid A[\phi U \psi]$
 
 其中：
+
 - $EX \phi$: 存在一个后继状态满足 $\phi$
 - $AX \phi$: 所有后继状态都满足 $\phi$
 - $EF \phi$: 存在一条路径，将来某个状态满足 $\phi$
@@ -516,6 +535,7 @@ func (eg *CTLExistsGlobally) String() string {
 ### 3.1 LTL模型检查
 
 **算法 3.1.1** (LTL模型检查)
+
 1. 将LTL公式转换为Büchi自动机
 2. 将系统模型转换为Büchi自动机
 3. 计算两个自动机的乘积
@@ -1126,7 +1146,8 @@ func (ci *CTLImplication) String() string {
 ---
 
 **相关链接**:
+
 - [02-定理证明 (Theorem Proving)](02-Theorem-Proving.md)
 - [03-静态分析 (Static Analysis)](03-Static-Analysis.md)
 - [04-动态分析 (Dynamic Analysis)](04-Dynamic-Analysis.md)
-- [01-数学基础 (Mathematical Foundation)](../01-Mathematical-Foundation/README.md) 
+- [01-数学基础 (Mathematical Foundation)](../01-Mathematical-Foundation/README.md)
