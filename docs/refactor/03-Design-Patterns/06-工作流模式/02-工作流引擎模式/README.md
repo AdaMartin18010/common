@@ -3,16 +3,41 @@
 ## 目录
 
 - [02-工作流引擎模式 (Workflow Engine Pattern)](#02-工作流引擎模式-workflow-engine-pattern)
-  - [目录](#目录)
-  - [1. 概念与定义](#1-概念与定义)
-  - [2. 形式化定义](#2-形式化定义)
-  - [3. 数学证明](#3-数学证明)
-  - [4. 设计原则](#4-设计原则)
-  - [5. Go语言实现](#5-go语言实现)
-  - [6. 应用场景](#6-应用场景)
-  - [7. 性能分析](#7-性能分析)
-  - [8. 最佳实践](#8-最佳实践)
-  - [9. 相关模式](#9-相关模式)
+	- [目录](#目录)
+	- [1. 概念与定义](#1-概念与定义)
+		- [1.1 基本概念](#11-基本概念)
+		- [1.2 核心组件](#12-核心组件)
+		- [1.3 模式结构](#13-模式结构)
+	- [2. 形式化定义](#2-形式化定义)
+		- [2.1 工作流数学模型](#21-工作流数学模型)
+		- [2.2 工作流执行函数](#22-工作流执行函数)
+		- [2.3 工作流状态转换](#23-工作流状态转换)
+	- [3. 数学证明](#3-数学证明)
+		- [3.1 工作流终止性定理](#31-工作流终止性定理)
+		- [3.2 工作流一致性定理](#32-工作流一致性定理)
+	- [4. 设计原则](#4-设计原则)
+		- [4.1 单一职责原则](#41-单一职责原则)
+		- [4.2 开闭原则](#42-开闭原则)
+		- [4.3 依赖倒置原则](#43-依赖倒置原则)
+	- [5. Go语言实现](#5-go语言实现)
+		- [5.1 基础实现](#51-基础实现)
+		- [5.2 泛型实现](#52-泛型实现)
+		- [5.3 并发安全实现](#53-并发安全实现)
+	- [6. 应用场景](#6-应用场景)
+		- [6.1 订单处理工作流](#61-订单处理工作流)
+		- [6.2 审批工作流](#62-审批工作流)
+	- [7. 性能分析](#7-性能分析)
+		- [7.1 时间复杂度](#71-时间复杂度)
+		- [7.2 空间复杂度](#72-空间复杂度)
+		- [7.3 并发性能](#73-并发性能)
+	- [8. 最佳实践](#8-最佳实践)
+		- [8.1 工作流设计原则](#81-工作流设计原则)
+		- [8.2 性能优化](#82-性能优化)
+		- [8.3 监控和调试](#83-监控和调试)
+	- [9. 相关模式](#9-相关模式)
+		- [9.1 状态机模式](#91-状态机模式)
+		- [9.2 命令模式](#92-命令模式)
+		- [9.3 观察者模式](#93-观察者模式)
 
 ## 1. 概念与定义
 
@@ -32,7 +57,7 @@
 
 ### 1.3 模式结构
 
-```
+```text
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │ WorkflowEngine  │    │WorkflowDefinition│    │    Activity     │
 ├─────────────────┤    ├─────────────────┤    ├─────────────────┤
@@ -70,6 +95,7 @@
 $$execute(a, context) = (result, next\_activities)$$
 
 其中：
+
 - $result$ 是执行结果
 - $next\_activities$ 是下一个要执行的活动集合
 
@@ -88,6 +114,7 @@ $$\delta: (A \times Context) \rightarrow (A' \times Context')$$
 **定理**: 如果工作流 $W$ 是有限且无环的，则工作流执行必然终止。
 
 **证明**:
+
 1. 设工作流 $W$ 包含 $n$ 个活动
 2. 每次执行最多访问 $n$ 个活动
 3. 由于无环，每个活动最多被访问一次
@@ -99,6 +126,7 @@ $$\delta: (A \times Context) \rightarrow (A' \times Context')$$
 **定理**: 如果工作流定义是有效的，则所有执行路径都会产生一致的结果。
 
 **证明**:
+
 1. 设工作流定义 $W$ 是有效的
 2. 对于任意两个执行路径 $P_1$ 和 $P_2$
 3. 由于工作流定义的一致性约束
@@ -127,198 +155,198 @@ $$\delta: (A \times Context) \rightarrow (A' \times Context')$$
 package workflow
 
 import (
-	"context"
-	"fmt"
-	"sync"
-	"time"
+ "context"
+ "fmt"
+ "sync"
+ "time"
 )
 
 // Activity 活动接口
 type Activity interface {
-	Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error)
-	GetName() string
-	GetType() string
+ Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error)
+ GetName() string
+ GetType() string
 }
 
 // Transition 转换定义
 type Transition struct {
-	From       string
-	To         string
-	Condition  func(data map[string]interface{}) bool
+ From       string
+ To         string
+ Condition  func(data map[string]interface{}) bool
 }
 
 // WorkflowDefinition 工作流定义
 type WorkflowDefinition struct {
-	Name        string
-	Activities  map[string]Activity
-	Transitions []Transition
-	Initial     string
-	Final       []string
+ Name        string
+ Activities  map[string]Activity
+ Transitions []Transition
+ Initial     string
+ Final       []string
 }
 
 // WorkflowInstance 工作流实例
 type WorkflowInstance struct {
-	ID           string
-	Definition   *WorkflowDefinition
-	CurrentState string
-	Context      map[string]interface{}
-	History      []ExecutionStep
-	Status       string
-	mu           sync.RWMutex
+ ID           string
+ Definition   *WorkflowDefinition
+ CurrentState string
+ Context      map[string]interface{}
+ History      []ExecutionStep
+ Status       string
+ mu           sync.RWMutex
 }
 
 // ExecutionStep 执行步骤
 type ExecutionStep struct {
-	ActivityName string
-	StartTime    time.Time
-	EndTime      time.Time
-	Result       map[string]interface{}
-	Error        error
+ ActivityName string
+ StartTime    time.Time
+ EndTime      time.Time
+ Result       map[string]interface{}
+ Error        error
 }
 
 // WorkflowEngine 工作流引擎
 type WorkflowEngine struct {
-	instances map[string]*WorkflowInstance
-	mu        sync.RWMutex
+ instances map[string]*WorkflowInstance
+ mu        sync.RWMutex
 }
 
 // NewWorkflowEngine 创建工作流引擎
 func NewWorkflowEngine() *WorkflowEngine {
-	return &WorkflowEngine{
-		instances: make(map[string]*WorkflowInstance),
-	}
+ return &WorkflowEngine{
+  instances: make(map[string]*WorkflowInstance),
+ }
 }
 
 // CreateInstance 创建工作流实例
 func (e *WorkflowEngine) CreateInstance(definition *WorkflowDefinition, initialData map[string]interface{}) (*WorkflowInstance, error) {
-	instance := &WorkflowInstance{
-		ID:           generateID(),
-		Definition:   definition,
-		CurrentState: definition.Initial,
-		Context:      initialData,
-		History:      make([]ExecutionStep, 0),
-		Status:       "created",
-	}
-	
-	e.mu.Lock()
-	e.instances[instance.ID] = instance
-	e.mu.Unlock()
-	
-	return instance, nil
+ instance := &WorkflowInstance{
+  ID:           generateID(),
+  Definition:   definition,
+  CurrentState: definition.Initial,
+  Context:      initialData,
+  History:      make([]ExecutionStep, 0),
+  Status:       "created",
+ }
+ 
+ e.mu.Lock()
+ e.instances[instance.ID] = instance
+ e.mu.Unlock()
+ 
+ return instance, nil
 }
 
 // Execute 执行工作流
 func (e *WorkflowEngine) Execute(ctx context.Context, instanceID string) error {
-	e.mu.RLock()
-	instance, exists := e.instances[instanceID]
-	e.mu.RUnlock()
-	
-	if !exists {
-		return fmt.Errorf("工作流实例 %s 不存在", instanceID)
-	}
-	
-	instance.mu.Lock()
-	instance.Status = "running"
-	instance.mu.Unlock()
-	
-	defer func() {
-		instance.mu.Lock()
-		if instance.Status == "running" {
-			instance.Status = "completed"
-		}
-		instance.mu.Unlock()
-	}()
-	
-	for {
-		select {
-		case <-ctx.Done():
-			instance.mu.Lock()
-			instance.Status = "cancelled"
-			instance.mu.Unlock()
-			return ctx.Err()
-		default:
-		}
-		
-		instance.mu.RLock()
-		currentState := instance.CurrentState
-		context := instance.Context
-		instance.mu.RUnlock()
-		
-		// 检查是否到达终止状态
-		if e.isFinalState(instance, currentState) {
-			break
-		}
-		
-		// 执行当前活动
-		activity, exists := instance.Definition.Activities[currentState]
-		if !exists {
-			return fmt.Errorf("活动 %s 不存在", currentState)
-		}
-		
-		step := ExecutionStep{
-			ActivityName: currentState,
-			StartTime:    time.Now(),
-		}
-		
-		result, err := activity.Execute(ctx, context)
-		step.EndTime = time.Now()
-		step.Result = result
-		step.Error = err
-		
-		instance.mu.Lock()
-		instance.History = append(instance.History, step)
-		instance.Context = result
-		instance.mu.Unlock()
-		
-		if err != nil {
-			instance.mu.Lock()
-			instance.Status = "failed"
-			instance.mu.Unlock()
-			return fmt.Errorf("活动 %s 执行失败: %v", currentState, err)
-		}
-		
-		// 确定下一个状态
-		nextState := e.determineNextState(instance, currentState, result)
-		if nextState == "" {
-			instance.mu.Lock()
-			instance.Status = "completed"
-			instance.mu.Unlock()
-			break
-		}
-		
-		instance.mu.Lock()
-		instance.CurrentState = nextState
-		instance.mu.Unlock()
-	}
-	
-	return nil
+ e.mu.RLock()
+ instance, exists := e.instances[instanceID]
+ e.mu.RUnlock()
+ 
+ if !exists {
+  return fmt.Errorf("工作流实例 %s 不存在", instanceID)
+ }
+ 
+ instance.mu.Lock()
+ instance.Status = "running"
+ instance.mu.Unlock()
+ 
+ defer func() {
+  instance.mu.Lock()
+  if instance.Status == "running" {
+   instance.Status = "completed"
+  }
+  instance.mu.Unlock()
+ }()
+ 
+ for {
+  select {
+  case <-ctx.Done():
+   instance.mu.Lock()
+   instance.Status = "cancelled"
+   instance.mu.Unlock()
+   return ctx.Err()
+  default:
+  }
+  
+  instance.mu.RLock()
+  currentState := instance.CurrentState
+  context := instance.Context
+  instance.mu.RUnlock()
+  
+  // 检查是否到达终止状态
+  if e.isFinalState(instance, currentState) {
+   break
+  }
+  
+  // 执行当前活动
+  activity, exists := instance.Definition.Activities[currentState]
+  if !exists {
+   return fmt.Errorf("活动 %s 不存在", currentState)
+  }
+  
+  step := ExecutionStep{
+   ActivityName: currentState,
+   StartTime:    time.Now(),
+  }
+  
+  result, err := activity.Execute(ctx, context)
+  step.EndTime = time.Now()
+  step.Result = result
+  step.Error = err
+  
+  instance.mu.Lock()
+  instance.History = append(instance.History, step)
+  instance.Context = result
+  instance.mu.Unlock()
+  
+  if err != nil {
+   instance.mu.Lock()
+   instance.Status = "failed"
+   instance.mu.Unlock()
+   return fmt.Errorf("活动 %s 执行失败: %v", currentState, err)
+  }
+  
+  // 确定下一个状态
+  nextState := e.determineNextState(instance, currentState, result)
+  if nextState == "" {
+   instance.mu.Lock()
+   instance.Status = "completed"
+   instance.mu.Unlock()
+   break
+  }
+  
+  instance.mu.Lock()
+  instance.CurrentState = nextState
+  instance.mu.Unlock()
+ }
+ 
+ return nil
 }
 
 // isFinalState 检查是否为终止状态
 func (e *WorkflowEngine) isFinalState(instance *WorkflowInstance, state string) bool {
-	for _, final := range instance.Definition.Final {
-		if final == state {
-			return true
-		}
-	}
-	return false
+ for _, final := range instance.Definition.Final {
+  if final == state {
+   return true
+  }
+ }
+ return false
 }
 
 // determineNextState 确定下一个状态
 func (e *WorkflowEngine) determineNextState(instance *WorkflowInstance, currentState string, data map[string]interface{}) string {
-	for _, transition := range instance.Definition.Transitions {
-		if transition.From == currentState {
-			if transition.Condition == nil || transition.Condition(data) {
-				return transition.To
-			}
-		}
-	}
-	return ""
+ for _, transition := range instance.Definition.Transitions {
+  if transition.From == currentState {
+   if transition.Condition == nil || transition.Condition(data) {
+    return transition.To
+   }
+  }
+ }
+ return ""
 }
 
 // generateID 生成唯一ID
 func generateID() string {
-	return fmt.Sprintf("wf_%d", time.Now().UnixNano())
+ return fmt.Sprintf("wf_%d", time.Now().UnixNano())
 }
 ```
 
@@ -328,192 +356,192 @@ func generateID() string {
 package workflow
 
 import (
-	"context"
-	"fmt"
-	"sync"
+ "context"
+ "fmt"
+ "sync"
 )
 
 // WorkflowEngine[T] 泛型工作流引擎
 type WorkflowEngine[T any] struct {
-	instances map[string]*WorkflowInstance[T]
-	mu        sync.RWMutex
+ instances map[string]*WorkflowInstance[T]
+ mu        sync.RWMutex
 }
 
 // WorkflowInstance[T] 泛型工作流实例
 type WorkflowInstance[T any] struct {
-	ID           string
-	Definition   *WorkflowDefinition[T]
-	CurrentState string
-	Context      T
-	History      []ExecutionStep[T]
-	Status       string
-	mu           sync.RWMutex
+ ID           string
+ Definition   *WorkflowDefinition[T]
+ CurrentState string
+ Context      T
+ History      []ExecutionStep[T]
+ Status       string
+ mu           sync.RWMutex
 }
 
 // ExecutionStep[T] 泛型执行步骤
 type ExecutionStep[T any] struct {
-	ActivityName string
-	StartTime    time.Time
-	EndTime      time.Time
-	Result       T
-	Error        error
+ ActivityName string
+ StartTime    time.Time
+ EndTime      time.Time
+ Result       T
+ Error        error
 }
 
 // Activity[T] 泛型活动接口
 type Activity[T any] interface {
-	Execute(ctx context.Context, data T) (T, error)
-	GetName() string
-	GetType() string
+ Execute(ctx context.Context, data T) (T, error)
+ GetName() string
+ GetType() string
 }
 
 // WorkflowDefinition[T] 泛型工作流定义
 type WorkflowDefinition[T any] struct {
-	Name        string
-	Activities  map[string]Activity[T]
-	Transitions []Transition[T]
-	Initial     string
-	Final       []string
+ Name        string
+ Activities  map[string]Activity[T]
+ Transitions []Transition[T]
+ Initial     string
+ Final       []string
 }
 
 // Transition[T] 泛型转换定义
 type Transition[T any] struct {
-	From       string
-	To         string
-	Condition  func(data T) bool
+ From       string
+ To         string
+ Condition  func(data T) bool
 }
 
 // NewWorkflowEngine[T] 创建泛型工作流引擎
 func NewWorkflowEngine[T any]() *WorkflowEngine[T] {
-	return &WorkflowEngine[T]{
-		instances: make(map[string]*WorkflowInstance[T]),
-	}
+ return &WorkflowEngine[T]{
+  instances: make(map[string]*WorkflowInstance[T]),
+ }
 }
 
 // CreateInstance[T] 创建泛型工作流实例
 func (e *WorkflowEngine[T]) CreateInstance(definition *WorkflowDefinition[T], initialData T) (*WorkflowInstance[T], error) {
-	instance := &WorkflowInstance[T]{
-		ID:           generateID(),
-		Definition:   definition,
-		CurrentState: definition.Initial,
-		Context:      initialData,
-		History:      make([]ExecutionStep[T], 0),
-		Status:       "created",
-	}
-	
-	e.mu.Lock()
-	e.instances[instance.ID] = instance
-	e.mu.Unlock()
-	
-	return instance, nil
+ instance := &WorkflowInstance[T]{
+  ID:           generateID(),
+  Definition:   definition,
+  CurrentState: definition.Initial,
+  Context:      initialData,
+  History:      make([]ExecutionStep[T], 0),
+  Status:       "created",
+ }
+ 
+ e.mu.Lock()
+ e.instances[instance.ID] = instance
+ e.mu.Unlock()
+ 
+ return instance, nil
 }
 
 // Execute[T] 执行泛型工作流
 func (e *WorkflowEngine[T]) Execute(ctx context.Context, instanceID string) error {
-	e.mu.RLock()
-	instance, exists := e.instances[instanceID]
-	e.mu.RUnlock()
-	
-	if !exists {
-		return fmt.Errorf("工作流实例 %s 不存在", instanceID)
-	}
-	
-	instance.mu.Lock()
-	instance.Status = "running"
-	instance.mu.Unlock()
-	
-	defer func() {
-		instance.mu.Lock()
-		if instance.Status == "running" {
-			instance.Status = "completed"
-		}
-		instance.mu.Unlock()
-	}()
-	
-	for {
-		select {
-		case <-ctx.Done():
-			instance.mu.Lock()
-			instance.Status = "cancelled"
-			instance.mu.Unlock()
-			return ctx.Err()
-		default:
-		}
-		
-		instance.mu.RLock()
-		currentState := instance.CurrentState
-		context := instance.Context
-		instance.mu.RUnlock()
-		
-		// 检查是否到达终止状态
-		if e.isFinalState(instance, currentState) {
-			break
-		}
-		
-		// 执行当前活动
-		activity, exists := instance.Definition.Activities[currentState]
-		if !exists {
-			return fmt.Errorf("活动 %s 不存在", currentState)
-		}
-		
-		step := ExecutionStep[T]{
-			ActivityName: currentState,
-			StartTime:    time.Now(),
-		}
-		
-		result, err := activity.Execute(ctx, context)
-		step.EndTime = time.Now()
-		step.Result = result
-		step.Error = err
-		
-		instance.mu.Lock()
-		instance.History = append(instance.History, step)
-		instance.Context = result
-		instance.mu.Unlock()
-		
-		if err != nil {
-			instance.mu.Lock()
-			instance.Status = "failed"
-			instance.mu.Unlock()
-			return fmt.Errorf("活动 %s 执行失败: %v", currentState, err)
-		}
-		
-		// 确定下一个状态
-		nextState := e.determineNextState(instance, currentState, result)
-		if nextState == "" {
-			instance.mu.Lock()
-			instance.Status = "completed"
-			instance.mu.Unlock()
-			break
-		}
-		
-		instance.mu.Lock()
-		instance.CurrentState = nextState
-		instance.mu.Unlock()
-	}
-	
-	return nil
+ e.mu.RLock()
+ instance, exists := e.instances[instanceID]
+ e.mu.RUnlock()
+ 
+ if !exists {
+  return fmt.Errorf("工作流实例 %s 不存在", instanceID)
+ }
+ 
+ instance.mu.Lock()
+ instance.Status = "running"
+ instance.mu.Unlock()
+ 
+ defer func() {
+  instance.mu.Lock()
+  if instance.Status == "running" {
+   instance.Status = "completed"
+  }
+  instance.mu.Unlock()
+ }()
+ 
+ for {
+  select {
+  case <-ctx.Done():
+   instance.mu.Lock()
+   instance.Status = "cancelled"
+   instance.mu.Unlock()
+   return ctx.Err()
+  default:
+  }
+  
+  instance.mu.RLock()
+  currentState := instance.CurrentState
+  context := instance.Context
+  instance.mu.RUnlock()
+  
+  // 检查是否到达终止状态
+  if e.isFinalState(instance, currentState) {
+   break
+  }
+  
+  // 执行当前活动
+  activity, exists := instance.Definition.Activities[currentState]
+  if !exists {
+   return fmt.Errorf("活动 %s 不存在", currentState)
+  }
+  
+  step := ExecutionStep[T]{
+   ActivityName: currentState,
+   StartTime:    time.Now(),
+  }
+  
+  result, err := activity.Execute(ctx, context)
+  step.EndTime = time.Now()
+  step.Result = result
+  step.Error = err
+  
+  instance.mu.Lock()
+  instance.History = append(instance.History, step)
+  instance.Context = result
+  instance.mu.Unlock()
+  
+  if err != nil {
+   instance.mu.Lock()
+   instance.Status = "failed"
+   instance.mu.Unlock()
+   return fmt.Errorf("活动 %s 执行失败: %v", currentState, err)
+  }
+  
+  // 确定下一个状态
+  nextState := e.determineNextState(instance, currentState, result)
+  if nextState == "" {
+   instance.mu.Lock()
+   instance.Status = "completed"
+   instance.mu.Unlock()
+   break
+  }
+  
+  instance.mu.Lock()
+  instance.CurrentState = nextState
+  instance.mu.Unlock()
+ }
+ 
+ return nil
 }
 
 // isFinalState[T] 检查是否为终止状态
 func (e *WorkflowEngine[T]) isFinalState(instance *WorkflowInstance[T], state string) bool {
-	for _, final := range instance.Definition.Final {
-		if final == state {
-			return true
-		}
-	}
-	return false
+ for _, final := range instance.Definition.Final {
+  if final == state {
+   return true
+  }
+ }
+ return false
 }
 
 // determineNextState[T] 确定下一个状态
 func (e *WorkflowEngine[T]) determineNextState(instance *WorkflowInstance[T], currentState string, data T) string {
-	for _, transition := range instance.Definition.Transitions {
-		if transition.From == currentState {
-			if transition.Condition == nil || transition.Condition(data) {
-				return transition.To
-			}
-		}
-	}
-	return ""
+ for _, transition := range instance.Definition.Transitions {
+  if transition.From == currentState {
+   if transition.Condition == nil || transition.Condition(data) {
+    return transition.To
+   }
+  }
+ }
+ return ""
 }
 ```
 
@@ -523,302 +551,302 @@ func (e *WorkflowEngine[T]) determineNextState(instance *WorkflowInstance[T], cu
 package workflow
 
 import (
-	"context"
-	"fmt"
-	"sync"
-	"time"
+ "context"
+ "fmt"
+ "sync"
+ "time"
 )
 
 // ConcurrentWorkflowEngine 并发工作流引擎
 type ConcurrentWorkflowEngine struct {
-	instances map[string]*WorkflowInstance
-	mu        sync.RWMutex
-	workers   chan struct{}
-	eventChan chan WorkflowEvent
-	stopChan  chan struct{}
-	wg        sync.WaitGroup
+ instances map[string]*WorkflowInstance
+ mu        sync.RWMutex
+ workers   chan struct{}
+ eventChan chan WorkflowEvent
+ stopChan  chan struct{}
+ wg        sync.WaitGroup
 }
 
 // WorkflowEvent 工作流事件
 type WorkflowEvent struct {
-	Type       string
-	InstanceID string
-	Data       interface{}
-	Response   chan WorkflowResponse
+ Type       string
+ InstanceID string
+ Data       interface{}
+ Response   chan WorkflowResponse
 }
 
 // WorkflowResponse 工作流响应
 type WorkflowResponse struct {
-	Result interface{}
-	Error  error
+ Result interface{}
+ Error  error
 }
 
 // NewConcurrentWorkflowEngine 创建并发工作流引擎
 func NewConcurrentWorkflowEngine(maxWorkers int) *ConcurrentWorkflowEngine {
-	cwe := &ConcurrentWorkflowEngine{
-		instances: make(map[string]*WorkflowInstance),
-		workers:   make(chan struct{}, maxWorkers),
-		eventChan: make(chan WorkflowEvent, 100),
-		stopChan:  make(chan struct{}),
-	}
-	
-	cwe.wg.Add(1)
-	go cwe.eventLoop()
-	
-	return cwe
+ cwe := &ConcurrentWorkflowEngine{
+  instances: make(map[string]*WorkflowInstance),
+  workers:   make(chan struct{}, maxWorkers),
+  eventChan: make(chan WorkflowEvent, 100),
+  stopChan:  make(chan struct{}),
+ }
+ 
+ cwe.wg.Add(1)
+ go cwe.eventLoop()
+ 
+ return cwe
 }
 
 // eventLoop 事件循环
 func (cwe *ConcurrentWorkflowEngine) eventLoop() {
-	defer cwe.wg.Done()
-	
-	for {
-		select {
-		case event := <-cwe.eventChan:
-			cwe.handleEvent(event)
-		case <-cwe.stopChan:
-			return
-		}
-	}
+ defer cwe.wg.Done()
+ 
+ for {
+  select {
+  case event := <-cwe.eventChan:
+   cwe.handleEvent(event)
+  case <-cwe.stopChan:
+   return
+  }
+ }
 }
 
 // handleEvent 处理事件
 func (cwe *ConcurrentWorkflowEngine) handleEvent(event WorkflowEvent) {
-	switch event.Type {
-	case "execute":
-		cwe.workers <- struct{}{} // 获取工作协程
-		go func() {
-			defer func() { <-cwe.workers }() // 释放工作协程
-			cwe.executeWorkflow(event)
-		}()
-	case "pause":
-		cwe.pauseWorkflow(event)
-	case "resume":
-		cwe.resumeWorkflow(event)
-	case "cancel":
-		cwe.cancelWorkflow(event)
-	}
+ switch event.Type {
+ case "execute":
+  cwe.workers <- struct{}{} // 获取工作协程
+  go func() {
+   defer func() { <-cwe.workers }() // 释放工作协程
+   cwe.executeWorkflow(event)
+  }()
+ case "pause":
+  cwe.pauseWorkflow(event)
+ case "resume":
+  cwe.resumeWorkflow(event)
+ case "cancel":
+  cwe.cancelWorkflow(event)
+ }
 }
 
 // executeWorkflow 执行工作流
 func (cwe *ConcurrentWorkflowEngine) executeWorkflow(event WorkflowEvent) {
-	cwe.mu.RLock()
-	instance, exists := cwe.instances[event.InstanceID]
-	cwe.mu.RUnlock()
-	
-	if !exists {
-		response := WorkflowResponse{
-			Error: fmt.Errorf("工作流实例 %s 不存在", event.InstanceID),
-		}
-		event.Response <- response
-		return
-	}
-	
-	ctx := context.Background()
-	err := cwe.executeInstance(ctx, instance)
-	
-	response := WorkflowResponse{
-		Error: err,
-	}
-	event.Response <- response
+ cwe.mu.RLock()
+ instance, exists := cwe.instances[event.InstanceID]
+ cwe.mu.RUnlock()
+ 
+ if !exists {
+  response := WorkflowResponse{
+   Error: fmt.Errorf("工作流实例 %s 不存在", event.InstanceID),
+  }
+  event.Response <- response
+  return
+ }
+ 
+ ctx := context.Background()
+ err := cwe.executeInstance(ctx, instance)
+ 
+ response := WorkflowResponse{
+  Error: err,
+ }
+ event.Response <- response
 }
 
 // executeInstance 执行实例
 func (cwe *ConcurrentWorkflowEngine) executeInstance(ctx context.Context, instance *WorkflowInstance) error {
-	instance.mu.Lock()
-	instance.Status = "running"
-	instance.mu.Unlock()
-	
-	defer func() {
-		instance.mu.Lock()
-		if instance.Status == "running" {
-			instance.Status = "completed"
-		}
-		instance.mu.Unlock()
-	}()
-	
-	for {
-		select {
-		case <-ctx.Done():
-			instance.mu.Lock()
-			instance.Status = "cancelled"
-			instance.mu.Unlock()
-			return ctx.Err()
-		default:
-		}
-		
-		instance.mu.RLock()
-		currentState := instance.CurrentState
-		context := instance.Context
-		instance.mu.RUnlock()
-		
-		// 检查是否到达终止状态
-		if cwe.isFinalState(instance, currentState) {
-			break
-		}
-		
-		// 执行当前活动
-		activity, exists := instance.Definition.Activities[currentState]
-		if !exists {
-			return fmt.Errorf("活动 %s 不存在", currentState)
-		}
-		
-		step := ExecutionStep{
-			ActivityName: currentState,
-			StartTime:    time.Now(),
-		}
-		
-		result, err := activity.Execute(ctx, context)
-		step.EndTime = time.Now()
-		step.Result = result
-		step.Error = err
-		
-		instance.mu.Lock()
-		instance.History = append(instance.History, step)
-		instance.Context = result
-		instance.mu.Unlock()
-		
-		if err != nil {
-			instance.mu.Lock()
-			instance.Status = "failed"
-			instance.mu.Unlock()
-			return fmt.Errorf("活动 %s 执行失败: %v", currentState, err)
-		}
-		
-		// 确定下一个状态
-		nextState := cwe.determineNextState(instance, currentState, result)
-		if nextState == "" {
-			instance.mu.Lock()
-			instance.Status = "completed"
-			instance.mu.Unlock()
-			break
-		}
-		
-		instance.mu.Lock()
-		instance.CurrentState = nextState
-		instance.mu.Unlock()
-	}
-	
-	return nil
+ instance.mu.Lock()
+ instance.Status = "running"
+ instance.mu.Unlock()
+ 
+ defer func() {
+  instance.mu.Lock()
+  if instance.Status == "running" {
+   instance.Status = "completed"
+  }
+  instance.mu.Unlock()
+ }()
+ 
+ for {
+  select {
+  case <-ctx.Done():
+   instance.mu.Lock()
+   instance.Status = "cancelled"
+   instance.mu.Unlock()
+   return ctx.Err()
+  default:
+  }
+  
+  instance.mu.RLock()
+  currentState := instance.CurrentState
+  context := instance.Context
+  instance.mu.RUnlock()
+  
+  // 检查是否到达终止状态
+  if cwe.isFinalState(instance, currentState) {
+   break
+  }
+  
+  // 执行当前活动
+  activity, exists := instance.Definition.Activities[currentState]
+  if !exists {
+   return fmt.Errorf("活动 %s 不存在", currentState)
+  }
+  
+  step := ExecutionStep{
+   ActivityName: currentState,
+   StartTime:    time.Now(),
+  }
+  
+  result, err := activity.Execute(ctx, context)
+  step.EndTime = time.Now()
+  step.Result = result
+  step.Error = err
+  
+  instance.mu.Lock()
+  instance.History = append(instance.History, step)
+  instance.Context = result
+  instance.mu.Unlock()
+  
+  if err != nil {
+   instance.mu.Lock()
+   instance.Status = "failed"
+   instance.mu.Unlock()
+   return fmt.Errorf("活动 %s 执行失败: %v", currentState, err)
+  }
+  
+  // 确定下一个状态
+  nextState := cwe.determineNextState(instance, currentState, result)
+  if nextState == "" {
+   instance.mu.Lock()
+   instance.Status = "completed"
+   instance.mu.Unlock()
+   break
+  }
+  
+  instance.mu.Lock()
+  instance.CurrentState = nextState
+  instance.mu.Unlock()
+ }
+ 
+ return nil
 }
 
 // isFinalState 检查是否为终止状态
 func (cwe *ConcurrentWorkflowEngine) isFinalState(instance *WorkflowInstance, state string) bool {
-	for _, final := range instance.Definition.Final {
-		if final == state {
-			return true
-		}
-	}
-	return false
+ for _, final := range instance.Definition.Final {
+  if final == state {
+   return true
+  }
+ }
+ return false
 }
 
 // determineNextState 确定下一个状态
 func (cwe *ConcurrentWorkflowEngine) determineNextState(instance *WorkflowInstance, currentState string, data map[string]interface{}) string {
-	for _, transition := range instance.Definition.Transitions {
-		if transition.From == currentState {
-			if transition.Condition == nil || transition.Condition(data) {
-				return transition.To
-			}
-		}
-	}
-	return ""
+ for _, transition := range instance.Definition.Transitions {
+  if transition.From == currentState {
+   if transition.Condition == nil || transition.Condition(data) {
+    return transition.To
+   }
+  }
+ }
+ return ""
 }
 
 // pauseWorkflow 暂停工作流
 func (cwe *ConcurrentWorkflowEngine) pauseWorkflow(event WorkflowEvent) {
-	cwe.mu.RLock()
-	instance, exists := cwe.instances[event.InstanceID]
-	cwe.mu.RUnlock()
-	
-	if !exists {
-		response := WorkflowResponse{
-			Error: fmt.Errorf("工作流实例 %s 不存在", event.InstanceID),
-		}
-		event.Response <- response
-		return
-	}
-	
-	instance.mu.Lock()
-	instance.Status = "paused"
-	instance.mu.Unlock()
-	
-	response := WorkflowResponse{}
-	event.Response <- response
+ cwe.mu.RLock()
+ instance, exists := cwe.instances[event.InstanceID]
+ cwe.mu.RUnlock()
+ 
+ if !exists {
+  response := WorkflowResponse{
+   Error: fmt.Errorf("工作流实例 %s 不存在", event.InstanceID),
+  }
+  event.Response <- response
+  return
+ }
+ 
+ instance.mu.Lock()
+ instance.Status = "paused"
+ instance.mu.Unlock()
+ 
+ response := WorkflowResponse{}
+ event.Response <- response
 }
 
 // resumeWorkflow 恢复工作流
 func (cwe *ConcurrentWorkflowEngine) resumeWorkflow(event WorkflowEvent) {
-	cwe.mu.RLock()
-	instance, exists := cwe.instances[event.InstanceID]
-	cwe.mu.RUnlock()
-	
-	if !exists {
-		response := WorkflowResponse{
-			Error: fmt.Errorf("工作流实例 %s 不存在", event.InstanceID),
-		}
-		event.Response <- response
-		return
-	}
-	
-	instance.mu.Lock()
-	instance.Status = "running"
-	instance.mu.Unlock()
-	
-	response := WorkflowResponse{}
-	event.Response <- response
+ cwe.mu.RLock()
+ instance, exists := cwe.instances[event.InstanceID]
+ cwe.mu.RUnlock()
+ 
+ if !exists {
+  response := WorkflowResponse{
+   Error: fmt.Errorf("工作流实例 %s 不存在", event.InstanceID),
+  }
+  event.Response <- response
+  return
+ }
+ 
+ instance.mu.Lock()
+ instance.Status = "running"
+ instance.mu.Unlock()
+ 
+ response := WorkflowResponse{}
+ event.Response <- response
 }
 
 // cancelWorkflow 取消工作流
 func (cwe *ConcurrentWorkflowEngine) cancelWorkflow(event WorkflowEvent) {
-	cwe.mu.RLock()
-	instance, exists := cwe.instances[event.InstanceID]
-	cwe.mu.RUnlock()
-	
-	if !exists {
-		response := WorkflowResponse{
-			Error: fmt.Errorf("工作流实例 %s 不存在", event.InstanceID),
-		}
-		event.Response <- response
-		return
-	}
-	
-	instance.mu.Lock()
-	instance.Status = "cancelled"
-	instance.mu.Unlock()
-	
-	response := WorkflowResponse{}
-	event.Response <- response
+ cwe.mu.RLock()
+ instance, exists := cwe.instances[event.InstanceID]
+ cwe.mu.RUnlock()
+ 
+ if !exists {
+  response := WorkflowResponse{
+   Error: fmt.Errorf("工作流实例 %s 不存在", event.InstanceID),
+  }
+  event.Response <- response
+  return
+ }
+ 
+ instance.mu.Lock()
+ instance.Status = "cancelled"
+ instance.mu.Unlock()
+ 
+ response := WorkflowResponse{}
+ event.Response <- response
 }
 
 // SendEvent 发送事件
 func (cwe *ConcurrentWorkflowEngine) SendEvent(eventType, instanceID string, data interface{}) error {
-	responseChan := make(chan WorkflowResponse, 1)
-	
-	event := WorkflowEvent{
-		Type:       eventType,
-		InstanceID: instanceID,
-		Data:       data,
-		Response:   responseChan,
-	}
-	
-	select {
-	case cwe.eventChan <- event:
-	case <-time.After(5 * time.Second):
-		return fmt.Errorf("发送事件超时")
-	}
-	
-	select {
-	case response := <-responseChan:
-		return response.Error
-	case <-time.After(10 * time.Second):
-		return fmt.Errorf("等待响应超时")
-	}
+ responseChan := make(chan WorkflowResponse, 1)
+ 
+ event := WorkflowEvent{
+  Type:       eventType,
+  InstanceID: instanceID,
+  Data:       data,
+  Response:   responseChan,
+ }
+ 
+ select {
+ case cwe.eventChan <- event:
+ case <-time.After(5 * time.Second):
+  return fmt.Errorf("发送事件超时")
+ }
+ 
+ select {
+ case response := <-responseChan:
+  return response.Error
+ case <-time.After(10 * time.Second):
+  return fmt.Errorf("等待响应超时")
+ }
 }
 
 // Stop 停止引擎
 func (cwe *ConcurrentWorkflowEngine) Stop() {
-	close(cwe.stopChan)
-	cwe.wg.Wait()
+ close(cwe.stopChan)
+ cwe.wg.Wait()
 }
 ```
 
@@ -830,119 +858,119 @@ func (cwe *ConcurrentWorkflowEngine) Stop() {
 package order
 
 import (
-	"context"
-	"fmt"
-	"time"
+ "context"
+ "fmt"
+ "time"
 )
 
 // OrderData 订单数据
 type OrderData struct {
-	OrderID     string
-	CustomerID  string
-	Amount      float64
-	Status      string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+ OrderID     string
+ CustomerID  string
+ Amount      float64
+ Status      string
+ CreatedAt   time.Time
+ UpdatedAt   time.Time
 }
 
 // ValidateOrderActivity 订单验证活动
 type ValidateOrderActivity struct{}
 
 func (a *ValidateOrderActivity) Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error) {
-	orderID := data["orderID"].(string)
-	fmt.Printf("验证订单: %s\n", orderID)
-	
-	// 模拟验证逻辑
-	if orderID == "" {
-		return data, fmt.Errorf("订单ID不能为空")
-	}
-	
-	data["validated"] = true
-	return data, nil
+ orderID := data["orderID"].(string)
+ fmt.Printf("验证订单: %s\n", orderID)
+ 
+ // 模拟验证逻辑
+ if orderID == "" {
+  return data, fmt.Errorf("订单ID不能为空")
+ }
+ 
+ data["validated"] = true
+ return data, nil
 }
 
 func (a *ValidateOrderActivity) GetName() string {
-	return "validate_order"
+ return "validate_order"
 }
 
 func (a *ValidateOrderActivity) GetType() string {
-	return "validation"
+ return "validation"
 }
 
 // ProcessPaymentActivity 支付处理活动
 type ProcessPaymentActivity struct{}
 
 func (a *ProcessPaymentActivity) Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error) {
-	amount := data["amount"].(float64)
-	fmt.Printf("处理支付: %.2f\n", amount)
-	
-	// 模拟支付处理
-	if amount > 1000 {
-		return data, fmt.Errorf("金额过大，需要人工审核")
-	}
-	
-	data["paymentProcessed"] = true
-	return data, nil
+ amount := data["amount"].(float64)
+ fmt.Printf("处理支付: %.2f\n", amount)
+ 
+ // 模拟支付处理
+ if amount > 1000 {
+  return data, fmt.Errorf("金额过大，需要人工审核")
+ }
+ 
+ data["paymentProcessed"] = true
+ return data, nil
 }
 
 func (a *ProcessPaymentActivity) GetName() string {
-	return "process_payment"
+ return "process_payment"
 }
 
 func (a *ProcessPaymentActivity) GetType() string {
-	return "payment"
+ return "payment"
 }
 
 // ShipOrderActivity 发货活动
 type ShipOrderActivity struct{}
 
 func (a *ShipOrderActivity) Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error) {
-	orderID := data["orderID"].(string)
-	fmt.Printf("发货订单: %s\n", orderID)
-	
-	data["shipped"] = true
-	data["trackingNumber"] = fmt.Sprintf("TRK_%s", orderID)
-	return data, nil
+ orderID := data["orderID"].(string)
+ fmt.Printf("发货订单: %s\n", orderID)
+ 
+ data["shipped"] = true
+ data["trackingNumber"] = fmt.Sprintf("TRK_%s", orderID)
+ return data, nil
 }
 
 func (a *ShipOrderActivity) GetName() string {
-	return "ship_order"
+ return "ship_order"
 }
 
 func (a *ShipOrderActivity) GetType() string {
-	return "shipping"
+ return "shipping"
 }
 
 // CreateOrderWorkflow 创建订单工作流
 func CreateOrderWorkflow() *WorkflowDefinition {
-	definition := &WorkflowDefinition{
-		Name: "order_processing",
-		Activities: map[string]Activity{
-			"validate_order":   &ValidateOrderActivity{},
-			"process_payment":  &ProcessPaymentActivity{},
-			"ship_order":       &ShipOrderActivity{},
-		},
-		Transitions: []Transition{
-			{
-				From: "validate_order",
-				To:   "process_payment",
-				Condition: func(data map[string]interface{}) bool {
-					return data["validated"] == true
-				},
-			},
-			{
-				From: "process_payment",
-				To:   "ship_order",
-				Condition: func(data map[string]interface{}) bool {
-					return data["paymentProcessed"] == true
-				},
-			},
-		},
-		Initial: "validate_order",
-		Final:   []string{"ship_order"},
-	}
-	
-	return definition
+ definition := &WorkflowDefinition{
+  Name: "order_processing",
+  Activities: map[string]Activity{
+   "validate_order":   &ValidateOrderActivity{},
+   "process_payment":  &ProcessPaymentActivity{},
+   "ship_order":       &ShipOrderActivity{},
+  },
+  Transitions: []Transition{
+   {
+    From: "validate_order",
+    To:   "process_payment",
+    Condition: func(data map[string]interface{}) bool {
+     return data["validated"] == true
+    },
+   },
+   {
+    From: "process_payment",
+    To:   "ship_order",
+    Condition: func(data map[string]interface{}) bool {
+     return data["paymentProcessed"] == true
+    },
+   },
+  },
+  Initial: "validate_order",
+  Final:   []string{"ship_order"},
+ }
+ 
+ return definition
 }
 ```
 
@@ -952,126 +980,126 @@ func CreateOrderWorkflow() *WorkflowDefinition {
 package approval
 
 import (
-	"context"
-	"fmt"
+ "context"
+ "fmt"
 )
 
 // ApprovalData 审批数据
 type ApprovalData struct {
-	RequestID   string
-	RequesterID string
-	Amount      float64
-	Type        string
-	Status      string
-	Approvers   []string
-	CurrentStep int
+ RequestID   string
+ RequesterID string
+ Amount      float64
+ Type        string
+ Status      string
+ Approvers   []string
+ CurrentStep int
 }
 
 // SubmitRequestActivity 提交申请活动
 type SubmitRequestActivity struct{}
 
 func (a *SubmitRequestActivity) Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error) {
-	requestID := data["requestID"].(string)
-	fmt.Printf("提交申请: %s\n", requestID)
-	
-	data["submitted"] = true
-	data["currentStep"] = 0
-	return data, nil
+ requestID := data["requestID"].(string)
+ fmt.Printf("提交申请: %s\n", requestID)
+ 
+ data["submitted"] = true
+ data["currentStep"] = 0
+ return data, nil
 }
 
 func (a *SubmitRequestActivity) GetName() string {
-	return "submit_request"
+ return "submit_request"
 }
 
 func (a *SubmitRequestActivity) GetType() string {
-	return "submission"
+ return "submission"
 }
 
 // ManagerApprovalActivity 经理审批活动
 type ManagerApprovalActivity struct{}
 
 func (a *ManagerApprovalActivity) Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error) {
-	requestID := data["requestID"].(string)
-	amount := data["amount"].(float64)
-	fmt.Printf("经理审批申请: %s, 金额: %.2f\n", requestID, amount)
-	
-	// 模拟审批逻辑
-	if amount > 5000 {
-		data["managerApproved"] = false
-		data["rejectionReason"] = "金额超过经理审批权限"
-	} else {
-		data["managerApproved"] = true
-	}
-	
-	return data, nil
+ requestID := data["requestID"].(string)
+ amount := data["amount"].(float64)
+ fmt.Printf("经理审批申请: %s, 金额: %.2f\n", requestID, amount)
+ 
+ // 模拟审批逻辑
+ if amount > 5000 {
+  data["managerApproved"] = false
+  data["rejectionReason"] = "金额超过经理审批权限"
+ } else {
+  data["managerApproved"] = true
+ }
+ 
+ return data, nil
 }
 
 func (a *ManagerApprovalActivity) GetName() string {
-	return "manager_approval"
+ return "manager_approval"
 }
 
 func (a *ManagerApprovalActivity) GetType() string {
-	return "approval"
+ return "approval"
 }
 
 // DirectorApprovalActivity 总监审批活动
 type DirectorApprovalActivity struct{}
 
 func (a *DirectorApprovalActivity) Execute(ctx context.Context, data map[string]interface{}) (map[string]interface{}, error) {
-	requestID := data["requestID"].(string)
-	amount := data["amount"].(float64)
-	fmt.Printf("总监审批申请: %s, 金额: %.2f\n", requestID, amount)
-	
-	// 模拟审批逻辑
-	if amount > 50000 {
-		data["directorApproved"] = false
-		data["rejectionReason"] = "金额超过总监审批权限"
-	} else {
-		data["directorApproved"] = true
-	}
-	
-	return data, nil
+ requestID := data["requestID"].(string)
+ amount := data["amount"].(float64)
+ fmt.Printf("总监审批申请: %s, 金额: %.2f\n", requestID, amount)
+ 
+ // 模拟审批逻辑
+ if amount > 50000 {
+  data["directorApproved"] = false
+  data["rejectionReason"] = "金额超过总监审批权限"
+ } else {
+  data["directorApproved"] = true
+ }
+ 
+ return data, nil
 }
 
 func (a *DirectorApprovalActivity) GetName() string {
-	return "director_approval"
+ return "director_approval"
 }
 
 func (a *DirectorApprovalActivity) GetType() string {
-	return "approval"
+ return "approval"
 }
 
 // CreateApprovalWorkflow 创建审批工作流
 func CreateApprovalWorkflow() *WorkflowDefinition {
-	definition := &WorkflowDefinition{
-		Name: "approval_workflow",
-		Activities: map[string]Activity{
-			"submit_request":     &SubmitRequestActivity{},
-			"manager_approval":   &ManagerApprovalActivity{},
-			"director_approval":  &DirectorApprovalActivity{},
-		},
-		Transitions: []Transition{
-			{
-				From: "submit_request",
-				To:   "manager_approval",
-				Condition: func(data map[string]interface{}) bool {
-					return data["submitted"] == true
-				},
-			},
-			{
-				From: "manager_approval",
-				To:   "director_approval",
-				Condition: func(data map[string]interface{}) bool {
-					amount := data["amount"].(float64)
-					return data["managerApproved"] == true && amount > 5000
-				},
-			},
-		},
-		Initial: "submit_request",
-		Final:   []string{"manager_approval", "director_approval"},
-	}
-	
-	return definition
+ definition := &WorkflowDefinition{
+  Name: "approval_workflow",
+  Activities: map[string]Activity{
+   "submit_request":     &SubmitRequestActivity{},
+   "manager_approval":   &ManagerApprovalActivity{},
+   "director_approval":  &DirectorApprovalActivity{},
+  },
+  Transitions: []Transition{
+   {
+    From: "submit_request",
+    To:   "manager_approval",
+    Condition: func(data map[string]interface{}) bool {
+     return data["submitted"] == true
+    },
+   },
+   {
+    From: "manager_approval",
+    To:   "director_approval",
+    Condition: func(data map[string]interface{}) bool {
+     amount := data["amount"].(float64)
+     return data["managerApproved"] == true && amount > 5000
+    },
+   },
+  },
+  Initial: "submit_request",
+  Final:   []string{"manager_approval", "director_approval"},
+ }
+ 
+ return definition
 }
 ```
 
@@ -1134,7 +1162,8 @@ func CreateApprovalWorkflow() *WorkflowDefinition {
 ---
 
 **相关链接**:
+
 - [01-状态机模式](../01-状态机模式/README.md)
 - [03-任务队列模式](../03-任务队列模式/README.md)
 - [04-编排vs协同模式](../04-编排vs协同模式/README.md)
-- [返回上级目录](../../README.md) 
+- [返回上级目录](../../README.md)
