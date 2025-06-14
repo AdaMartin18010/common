@@ -6,979 +6,647 @@
 
 ### 1.1 定义与目标
 
-安全扫描工具是网络安全基础设施的核心组件，用于主动发现和识别系统中的安全漏洞、配置错误和潜在威胁。
+安全扫描工具是网络安全体系中的核心组件，用于主动发现和识别系统中的安全漏洞、配置错误和潜在威胁。
 
 **形式化定义**：
-设 $S$ 为扫描目标系统，$V$ 为漏洞集合，$C$ 为配置集合，$T$ 为威胁集合，则安全扫描函数 $f$ 定义为：
+设 $S$ 为系统集合，$V$ 为漏洞集合，$C$ 为配置集合，安全扫描函数 $f: S \rightarrow P(V \cup C)$ 定义为：
+$$f(s) = \{v \in V | \exists p \in P(s): v(p) = true\} \cup \{c \in C | \neg valid(c, s)\}$$
 
-$$f: S \rightarrow (V, C, T)$$
-
-其中：
-
-- $V = \{v_1, v_2, ..., v_n\}$ 为发现的漏洞集合
-- $C = \{c_1, c_2, ..., c_m\}$ 为配置问题集合  
-- $T = \{t_1, t_2, ..., t_k\}$ 为威胁集合
+其中 $P(s)$ 表示系统 $s$ 的所有可能路径，$v(p)$ 表示漏洞 $v$ 在路径 $p$ 上的存在性，$valid(c, s)$ 表示配置 $c$ 在系统 $s$ 中的有效性。
 
 ### 1.2 核心特性
 
-1. **完整性**：$\forall s \in S, f(s) \neq \emptyset$
-2. **准确性**：$P(f(s) = \text{true positive}) > 0.95$
-3. **实时性**：$T(f(s)) < \text{threshold}$
-4. **可扩展性**：$|S| \rightarrow \infty$ 时仍保持性能
+- **完整性**：覆盖所有可能的攻击向量
+- **准确性**：最小化误报和漏报
+- **性能**：高效扫描大规模系统
+- **可扩展性**：支持新的漏洞类型和扫描策略
 
 ### 2. 架构设计
 
 ### 2.1 分层架构
 
-```text
-┌─────────────────────────────────────┐
-│           扫描调度层                  │
-├─────────────────────────────────────┤
-│           扫描引擎层                  │
-├─────────────────────────────────────┤
-│           插件管理层                  │
-├─────────────────────────────────────┤
-│           结果处理层                  │
-└─────────────────────────────────────┘
-```
-
-### 2.2 核心组件
-
-#### 2.2.1 扫描调度器
-
 ```go
-// ScannerScheduler 扫描调度器
-type ScannerScheduler struct {
-    queue       *PriorityQueue
-    workers     []*ScannerWorker
-    config      *ScannerConfig
-    metrics     *ScannerMetrics
-    mu          sync.RWMutex
+// 安全扫描器核心架构
+type SecurityScanner struct {
+    // 扫描引擎层
+    engine *ScanEngine
+    
+    // 漏洞数据库层
+    vulnDB *VulnerabilityDatabase
+    
+    // 报告生成层
+    reporter *ReportGenerator
+    
+    // 配置管理层
+    config *ScannerConfig
 }
 
-// ScannerConfig 扫描配置
-type ScannerConfig struct {
-    MaxConcurrentScans int           `json:"max_concurrent_scans"`
-    ScanTimeout        time.Duration `json:"scan_timeout"`
-    RetryAttempts      int           `json:"retry_attempts"`
-    RateLimit          int           `json:"rate_limit"`
+// 扫描引擎接口
+type ScanEngine interface {
+    Scan(target Target) (*ScanResult, error)
+    RegisterPlugin(plugin ScanPlugin) error
+    GetStatus() ScanStatus
 }
 
-// ScanRequest 扫描请求
-type ScanRequest struct {
-    ID          string                 `json:"id"`
-    Target      string                 `json:"target"`
-    ScanType    ScanType               `json:"scan_type"`
-    Priority    Priority               `json:"priority"`
-    Parameters  map[string]interface{} `json:"parameters"`
-    CreatedAt   time.Time              `json:"created_at"`
-    ScheduledAt *time.Time             `json:"scheduled_at,omitempty"`
-}
-
-// ScanType 扫描类型
-type ScanType string
-
-const (
-    ScanTypeVulnerability ScanType = "vulnerability"
-    ScanTypePort          ScanType = "port"
-    ScanTypeWeb           ScanType = "web"
-    ScanTypeNetwork       ScanType = "network"
-    ScanTypeConfiguration ScanType = "configuration"
-)
-
-// Priority 优先级
-type Priority int
-
-const (
-    PriorityLow    Priority = 1
-    PriorityMedium Priority = 2
-    PriorityHigh   Priority = 3
-    PriorityCritical Priority = 4
-)
-
-// ScheduleScan 调度扫描
-func (s *ScannerScheduler) ScheduleScan(req *ScanRequest) error {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    
-    // 验证请求
-    if err := s.validateRequest(req); err != nil {
-        return fmt.Errorf("invalid scan request: %w", err)
-    }
-    
-    // 添加到队列
-    s.queue.Push(req)
-    
-    // 更新指标
-    s.metrics.IncQueuedScans()
-    
-    return nil
-}
-
-// validateRequest 验证扫描请求
-func (s *ScannerScheduler) validateRequest(req *ScanRequest) error {
-    if req.Target == "" {
-        return errors.New("target is required")
-    }
-    
-    if req.ScanType == "" {
-        return errors.New("scan type is required")
-    }
-    
-    // 验证目标格式
-    if !s.isValidTarget(req.Target) {
-        return errors.New("invalid target format")
-    }
-    
-    return nil
-}
-
-// isValidTarget 验证目标格式
-func (s *ScannerScheduler) isValidTarget(target string) bool {
-    // IP地址验证
-    if net.ParseIP(target) != nil {
-        return true
-    }
-    
-    // 域名验证
-    if strings.Contains(target, ".") && !strings.Contains(target, ":") {
-        return true
-    }
-    
-    // URL验证
-    if strings.HasPrefix(target, "http://") || strings.HasPrefix(target, "https://") {
-        return true
-    }
-    
-    return false
-}
-```
-
-#### 2.2.2 扫描引擎
-
-```go
-// ScannerEngine 扫描引擎
-type ScannerEngine struct {
-    plugins     map[ScanType][]ScannerPlugin
-    config      *EngineConfig
-    results     chan *ScanResult
-    errors      chan *ScanError
-    ctx         context.Context
-    cancel      context.CancelFunc
-}
-
-// EngineConfig 引擎配置
-type EngineConfig struct {
-    MaxConcurrency int           `json:"max_concurrency"`
-    Timeout        time.Duration `json:"timeout"`
-    RetryCount     int           `json:"retry_count"`
-    RateLimit      int           `json:"rate_limit"`
-}
-
-// ScannerPlugin 扫描插件接口
-type ScannerPlugin interface {
+// 扫描插件接口
+type ScanPlugin interface {
     Name() string
     Version() string
-    Scan(ctx context.Context, target string, params map[string]interface{}) (*ScanResult, error)
-    Validate(target string) error
-}
-
-// ScanResult 扫描结果
-type ScanResult struct {
-    ID          string                 `json:"id"`
-    Target      string                 `json:"target"`
-    ScanType    ScanType               `json:"scan_type"`
-    Plugin      string                 `json:"plugin"`
-    Findings    []Finding              `json:"findings"`
-    Metadata    map[string]interface{} `json:"metadata"`
-    StartedAt   time.Time              `json:"started_at"`
-    CompletedAt time.Time              `json:"completed_at"`
-    Duration    time.Duration          `json:"duration"`
-}
-
-// Finding 发现结果
-type Finding struct {
-    ID          string                 `json:"id"`
-    Type        FindingType            `json:"type"`
-    Severity    Severity               `json:"severity"`
-    Title       string                 `json:"title"`
-    Description string                 `json:"description"`
-    Evidence    string                 `json:"evidence"`
-    Location    string                 `json:"location"`
-    CVE         []string               `json:"cve,omitempty"`
-    CVSS        *CVSSScore             `json:"cvss,omitempty"`
-    Remediation string                 `json:"remediation"`
-    Tags        []string               `json:"tags"`
-    CreatedAt   time.Time              `json:"created_at"`
-}
-
-// FindingType 发现类型
-type FindingType string
-
-const (
-    FindingTypeVulnerability FindingType = "vulnerability"
-    FindingTypeMisconfiguration FindingType = "misconfiguration"
-    FindingTypeInformation   FindingType = "information"
-    FindingTypeWarning       FindingType = "warning"
-)
-
-// Severity 严重程度
-type Severity string
-
-const (
-    SeverityCritical Severity = "critical"
-    SeverityHigh     Severity = "high"
-    SeverityMedium   Severity = "medium"
-    SeverityLow      Severity = "low"
-    SeverityInfo     Severity = "info"
-)
-
-// CVSSScore CVSS评分
-type CVSSScore struct {
-    BaseScore    float64 `json:"base_score"`
-    TemporalScore float64 `json:"temporal_score"`
-    EnvironmentalScore float64 `json:"environmental_score"`
-    Vector       string  `json:"vector"`
-}
-
-// ExecuteScan 执行扫描
-func (e *ScannerEngine) ExecuteScan(req *ScanRequest) (*ScanResult, error) {
-    ctx, cancel := context.WithTimeout(e.ctx, e.config.Timeout)
-    defer cancel()
-    
-    // 获取插件
-    plugins, exists := e.plugins[req.ScanType]
-    if !exists {
-        return nil, fmt.Errorf("no plugins found for scan type: %s", req.ScanType)
-    }
-    
-    // 创建结果
-    result := &ScanResult{
-        ID:        req.ID,
-        Target:    req.Target,
-        ScanType:  req.ScanType,
-        StartedAt: time.Now(),
-        Findings:  make([]Finding, 0),
-        Metadata:  make(map[string]interface{}),
-    }
-    
-    // 并发执行插件
-    var wg sync.WaitGroup
-    resultChan := make(chan *ScanResult, len(plugins))
-    errorChan := make(chan error, len(plugins))
-    
-    for _, plugin := range plugins {
-        wg.Add(1)
-        go func(p ScannerPlugin) {
-            defer wg.Done()
-            
-            // 验证目标
-            if err := p.Validate(req.Target); err != nil {
-                errorChan <- fmt.Errorf("plugin %s validation failed: %w", p.Name(), err)
-                return
-            }
-            
-            // 执行扫描
-            pluginResult, err := p.Scan(ctx, req.Target, req.Parameters)
-            if err != nil {
-                errorChan <- fmt.Errorf("plugin %s scan failed: %w", p.Name(), err)
-                return
-            }
-            
-            resultChan <- pluginResult
-        }(plugin)
-    }
-    
-    // 等待所有插件完成
-    go func() {
-        wg.Wait()
-        close(resultChan)
-        close(errorChan)
-    }()
-    
-    // 收集结果
-    for pluginResult := range resultChan {
-        result.Findings = append(result.Findings, pluginResult.Findings...)
-        for k, v := range pluginResult.Metadata {
-            result.Metadata[k] = v
-        }
-    }
-    
-    // 检查错误
-    var errors []error
-    for err := range errorChan {
-        errors = append(errors, err)
-    }
-    
-    if len(errors) > 0 {
-        return result, fmt.Errorf("scan completed with errors: %v", errors)
-    }
-    
-    result.CompletedAt = time.Now()
-    result.Duration = result.CompletedAt.Sub(result.StartedAt)
-    
-    return result, nil
+    Scan(target Target) (*PluginResult, error)
+    GetMetadata() PluginMetadata
 }
 ```
 
-### 2.3 插件系统
+### 2.2 组件交互图
 
-#### 2.3.1 漏洞扫描插件
+```mermaid
+graph TB
+    A[扫描请求] --> B[扫描调度器]
+    B --> C[端口扫描器]
+    B --> D[服务识别器]
+    B --> E[漏洞检测器]
+    C --> F[结果聚合器]
+    D --> F
+    E --> F
+    F --> G[报告生成器]
+    G --> H[扫描报告]
+```
+
+## 3. 核心算法实现
+
+### 3.1 端口扫描算法
+
+#### 3.1.1 TCP SYN扫描
 
 ```go
-// VulnerabilityScanner 漏洞扫描插件
-type VulnerabilityScanner struct {
-    cveDB       *CVEDatabase
-    signatures  []VulnerabilitySignature
-    config      *VulnScannerConfig
+// TCP SYN扫描实现
+type TCPSynScanner struct {
+    timeout time.Duration
+    workers int
 }
 
-// VulnScannerConfig 漏洞扫描配置
-type VulnScannerConfig struct {
-    EnableCVE     bool     `json:"enable_cve"`
-    EnableExploit bool     `json:"enable_exploit"`
-    SeverityFilter []Severity `json:"severity_filter"`
-    Timeout       time.Duration `json:"timeout"`
-}
-
-// VulnerabilitySignature 漏洞特征
-type VulnerabilitySignature struct {
-    ID          string                 `json:"id"`
-    Name        string                 `json:"name"`
-    Description string                 `json:"description"`
-    Pattern     string                 `json:"pattern"`
-    Severity    Severity               `json:"severity"`
-    CVEs        []string               `json:"cves"`
-    Exploit     *ExploitInfo           `json:"exploit,omitempty"`
-}
-
-// ExploitInfo 利用信息
-type ExploitInfo struct {
-    Available bool   `json:"available"`
-    Type      string `json:"type"`
-    Complexity string `json:"complexity"`
-    Impact    string `json:"impact"`
-}
-
-// Scan 执行漏洞扫描
-func (v *VulnerabilityScanner) Scan(ctx context.Context, target string, params map[string]interface{}) (*ScanResult, error) {
-    result := &ScanResult{
-        Target:   target,
-        ScanType: ScanTypeVulnerability,
-        Plugin:   v.Name(),
-        Findings: make([]Finding, 0),
-        Metadata: make(map[string]interface{}),
+func (s *TCPSynScanner) Scan(target string, ports []int) (*PortScanResult, error) {
+    result := &PortScanResult{
+        Target: target,
+        Ports:  make(map[int]PortStatus),
     }
     
-    // 端口扫描
-    openPorts, err := v.scanPorts(ctx, target)
-    if err != nil {
-        return nil, fmt.Errorf("port scan failed: %w", err)
+    // 创建扫描任务队列
+    tasks := make(chan int, len(ports))
+    results := make(chan PortResult, len(ports))
+    
+    // 启动工作协程
+    var wg sync.WaitGroup
+    for i := 0; i < s.workers; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            for port := range tasks {
+                status := s.scanPort(target, port)
+                results <- PortResult{Port: port, Status: status}
+            }
+        }()
     }
     
-    result.Metadata["open_ports"] = openPorts
-    
-    // 服务识别
-    services, err := v.identifyServices(ctx, target, openPorts)
-    if err != nil {
-        return nil, fmt.Errorf("service identification failed: %w", err)
+    // 发送任务
+    for _, port := range ports {
+        tasks <- port
     }
+    close(tasks)
     
-    result.Metadata["services"] = services
+    // 等待完成并收集结果
+    go func() {
+        wg.Wait()
+        close(results)
+    }()
     
-    // 漏洞检测
-    for _, service := range services {
-        findings, err := v.detectVulnerabilities(ctx, target, service)
-        if err != nil {
-            continue // 继续检测其他服务
-        }
-        
-        result.Findings = append(result.Findings, findings...)
+    for res := range results {
+        result.Ports[res.Port] = res.Status
     }
     
     return result, nil
 }
 
-// scanPorts 端口扫描
-func (v *VulnerabilityScanner) scanPorts(ctx context.Context, target string) ([]int, error) {
-    var openPorts []int
-    
-    // 常见端口列表
-    commonPorts := []int{21, 22, 23, 25, 53, 80, 110, 143, 443, 993, 995, 3306, 5432, 6379, 27017}
-    
-    for _, port := range commonPorts {
-        select {
-        case <-ctx.Done():
-            return openPorts, ctx.Err()
-        default:
-            if v.isPortOpen(target, port) {
-                openPorts = append(openPorts, port)
-            }
-        }
-    }
-    
-    return openPorts, nil
-}
-
-// isPortOpen 检查端口是否开放
-func (v *VulnerabilityScanner) isPortOpen(target string, port int) bool {
-    timeout := time.Duration(v.config.Timeout)
-    conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", target, port), timeout)
+func (s *TCPSynScanner) scanPort(target string, port int) PortStatus {
+    conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", target, port), s.timeout)
     if err != nil {
-        return false
-    }
-    defer conn.Close()
-    return true
-}
-
-// identifyServices 识别服务
-func (v *VulnerabilityScanner) identifyServices(ctx context.Context, target string, ports []int) ([]Service, error) {
-    var services []Service
-    
-    for _, port := range ports {
-        select {
-        case <-ctx.Done():
-            return services, ctx.Err()
-        default:
-            service, err := v.identifyService(target, port)
-            if err != nil {
-                continue
-            }
-            services = append(services, service)
-        }
-    }
-    
-    return services, nil
-}
-
-// Service 服务信息
-type Service struct {
-    Port        int    `json:"port"`
-    Protocol    string `json:"protocol"`
-    Name        string `json:"name"`
-    Version     string `json:"version"`
-    Banner      string `json:"banner"`
-}
-
-// identifyService 识别单个服务
-func (v *VulnerabilityScanner) identifyService(target string, port int) (Service, error) {
-    service := Service{
-        Port:     port,
-        Protocol: "tcp",
-    }
-    
-    // 连接并获取banner
-    conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", target, port), v.config.Timeout)
-    if err != nil {
-        return service, err
+        return PortStatusClosed
     }
     defer conn.Close()
     
-    // 发送探测数据
-    probes := []string{
-        "\r\n\r\n",
-        "GET / HTTP/1.0\r\n\r\n",
-        "SSH-2.0-OpenSSH_8.0\r\n",
-    }
-    
-    for _, probe := range probes {
-        conn.SetWriteDeadline(time.Now().Add(v.config.Timeout))
-        _, err := conn.Write([]byte(probe))
-        if err != nil {
-            continue
-        }
-        
-        // 读取响应
-        conn.SetReadDeadline(time.Now().Add(v.config.Timeout))
-        buffer := make([]byte, 1024)
-        n, err := conn.Read(buffer)
-        if err != nil {
-            continue
-        }
-        
-        response := string(buffer[:n])
-        service.Banner = response
-        
-        // 基于响应识别服务
-        if strings.Contains(response, "SSH") {
-            service.Name = "SSH"
-            service.Version = v.extractVersion(response, "SSH")
-        } else if strings.Contains(response, "HTTP") {
-            service.Name = "HTTP"
-            service.Version = v.extractVersion(response, "HTTP")
-        } else if strings.Contains(response, "FTP") {
-            service.Name = "FTP"
-            service.Version = v.extractVersion(response, "FTP")
-        }
-        
-        break
-    }
-    
-    return service, nil
+    return PortStatusOpen
+}
+```
+
+#### 3.1.2 算法复杂度分析
+
+**时间复杂度**：$O(n \cdot m)$，其中 $n$ 为目标端口数，$m$ 为平均连接超时时间。
+
+**空间复杂度**：$O(n)$，用于存储端口状态结果。
+
+**并发优化**：使用工作池模式，时间复杂度优化为 $O(\frac{n \cdot m}{w})$，其中 $w$ 为工作协程数。
+
+### 3.2 服务识别算法
+
+#### 3.2.1 指纹识别
+
+```go
+// 服务指纹识别
+type ServiceFingerprinter struct {
+    signatures map[string]*ServiceSignature
 }
 
-// extractVersion 提取版本信息
-func (v *VulnerabilityScanner) extractVersion(banner, service string) string {
-    re := regexp.MustCompile(fmt.Sprintf(`%s/(\d+\.\d+(?:\.\d+)?)`, service))
-    matches := re.FindStringSubmatch(banner)
-    if len(matches) > 1 {
-        return matches[1]
-    }
-    return ""
+type ServiceSignature struct {
+    Service     string
+    Version     string
+    Confidence  float64
+    Patterns    []Pattern
 }
 
-// detectVulnerabilities 检测漏洞
-func (v *VulnerabilityScanner) detectVulnerabilities(ctx context.Context, target string, service Service) ([]Finding, error) {
-    var findings []Finding
+type Pattern struct {
+    Type    PatternType
+    Content string
+    Offset  int
+}
+
+func (f *ServiceFingerprinter) IdentifyService(port int, banner string) *ServiceInfo {
+    var bestMatch *ServiceSignature
+    maxConfidence := 0.0
     
-    // 基于服务类型和版本检测漏洞
-    if service.Name == "SSH" {
-        sshFindings, err := v.detectSSHVulnerabilities(target, service)
-        if err == nil {
-            findings = append(findings, sshFindings...)
-        }
-    } else if service.Name == "HTTP" {
-        httpFindings, err := v.detectHTTPVulnerabilities(target, service)
-        if err == nil {
-            findings = append(findings, httpFindings...)
+    for _, sig := range f.signatures {
+        confidence := f.calculateMatch(banner, sig)
+        if confidence > maxConfidence {
+            maxConfidence = confidence
+            bestMatch = sig
         }
     }
     
-    return findings, nil
-}
-
-// detectSSHVulnerabilities 检测SSH漏洞
-func (v *VulnerabilityScanner) detectSSHVulnerabilities(target string, service Service) ([]Finding, error) {
-    var findings []Finding
-    
-    // 检查弱加密算法
-    if v.hasWeakCrypto(service.Banner) {
-        findings = append(findings, Finding{
-            ID:          uuid.New().String(),
-            Type:        FindingTypeVulnerability,
-            Severity:    SeverityMedium,
-            Title:       "Weak SSH Encryption Algorithm",
-            Description: "SSH service is using weak encryption algorithms",
-            Evidence:    service.Banner,
-            Location:    fmt.Sprintf("%s:%d", target, service.Port),
-            Remediation: "Configure SSH to use strong encryption algorithms only",
-            Tags:        []string{"ssh", "encryption", "weak-crypto"},
-            CreatedAt:   time.Now(),
-        })
-    }
-    
-    // 检查默认端口
-    if service.Port == 22 {
-        findings = append(findings, Finding{
-            ID:          uuid.New().String(),
-            Type:        FindingTypeInformation,
-            Severity:    SeverityInfo,
-            Title:       "SSH Running on Default Port",
-            Description: "SSH service is running on the default port 22",
-            Evidence:    fmt.Sprintf("Port %d", service.Port),
-            Location:    fmt.Sprintf("%s:%d", target, service.Port),
-            Remediation: "Consider changing SSH to a non-standard port",
-            Tags:        []string{"ssh", "default-port"},
-            CreatedAt:   time.Now(),
-        })
-    }
-    
-    return findings, nil
-}
-
-// hasWeakCrypto 检查是否使用弱加密
-func (v *VulnerabilityScanner) hasWeakCrypto(banner string) bool {
-    weakAlgorithms := []string{"des", "3des", "md5", "sha1"}
-    bannerLower := strings.ToLower(banner)
-    
-    for _, algo := range weakAlgorithms {
-        if strings.Contains(bannerLower, algo) {
-            return true
+    if bestMatch != nil && maxConfidence > 0.7 {
+        return &ServiceInfo{
+            Service:    bestMatch.Service,
+            Version:    bestMatch.Version,
+            Confidence: maxConfidence,
+            Port:       port,
         }
-    }
-    
-    return false
-}
-
-// detectHTTPVulnerabilities 检测HTTP漏洞
-func (v *VulnerabilityScanner) detectHTTPVulnerabilities(target string, service Service) ([]Finding, error) {
-    var findings []Finding
-    
-    // 检查HTTP版本
-    if strings.Contains(service.Banner, "HTTP/1.0") {
-        findings = append(findings, Finding{
-            ID:          uuid.New().String(),
-            Type:        FindingTypeVulnerability,
-            Severity:    SeverityMedium,
-            Title:       "Outdated HTTP Version",
-            Description: "Server is using HTTP/1.0 which lacks security features",
-            Evidence:    service.Banner,
-            Location:    fmt.Sprintf("%s:%d", target, service.Port),
-            Remediation: "Upgrade to HTTP/1.1 or HTTP/2",
-            Tags:        []string{"http", "version", "outdated"},
-            CreatedAt:   time.Now(),
-        })
-    }
-    
-    return findings, nil
-}
-
-// Name 插件名称
-func (v *VulnerabilityScanner) Name() string {
-    return "vulnerability-scanner"
-}
-
-// Version 插件版本
-func (v *VulnerabilityScanner) Version() string {
-    return "1.0.0"
-}
-
-// Validate 验证目标
-func (v *VulnerabilityScanner) Validate(target string) error {
-    if target == "" {
-        return errors.New("target is required")
-    }
-    
-    // 验证IP地址或域名格式
-    if net.ParseIP(target) == nil && !strings.Contains(target, ".") {
-        return errors.New("invalid target format")
     }
     
     return nil
 }
+
+func (f *ServiceFingerprinter) calculateMatch(banner string, sig *ServiceSignature) float64 {
+    totalScore := 0.0
+    totalWeight := 0.0
+    
+    for _, pattern := range sig.Patterns {
+        weight := f.getPatternWeight(pattern.Type)
+        score := f.matchPattern(banner, pattern)
+        totalScore += score * weight
+        totalWeight += weight
+    }
+    
+    if totalWeight == 0 {
+        return 0
+    }
+    
+    return totalScore / totalWeight
+}
 ```
 
-## 3. 数学建模
+### 3.3 漏洞检测算法
 
-### 3.1 漏洞评分模型
-
-**CVSS评分计算**：
-
-$$CVSS_{Base} = \min(10, \text{Impact} + \text{Exploitability})$$
-
-其中：
-
-- $\text{Impact} = 10.41 \times (1 - (1 - \text{ConfImpact}) \times (1 - \text{IntegImpact}) \times (1 - \text{AvailImpact}))$
-- $\text{Exploitability} = 20 \times \text{AccessVector} \times \text{AccessComplexity} \times \text{Authentication}$
-
-### 3.2 扫描效率模型
-
-**扫描时间估计**：
-
-$$T_{scan} = \sum_{i=1}^{n} (T_{connect_i} + T_{probe_i} + T_{analyze_i})$$
-
-其中：
-
-- $T_{connect_i}$ 为连接时间
-- $T_{probe_i}$ 为探测时间
-- $T_{analyze_i}$ 为分析时间
-
-### 3.3 误报率模型
-
-**精确度计算**：
-
-$$Precision = \frac{TP}{TP + FP}$$
-
-**召回率计算**：
-
-$$Recall = \frac{TP}{TP + FN}$$
-
-其中：
-
-- $TP$ 为真正例
-- $FP$ 为假正例
-- $FN$ 为假负例
-
-## 4. 性能优化
-
-### 4.1 并发控制
+#### 3.3.1 基于签名的检测
 
 ```go
-// RateLimiter 速率限制器
-type RateLimiter struct {
-    tokens     chan struct{}
-    rate       int
-    burst      int
-    interval   time.Duration
-    lastRefill time.Time
-    mu         sync.Mutex
+// 漏洞检测引擎
+type VulnerabilityDetector struct {
+    rules []VulnerabilityRule
+    cache *ResultCache
 }
 
-// NewRateLimiter 创建速率限制器
-func NewRateLimiter(rate int, burst int) *RateLimiter {
-    rl := &RateLimiter{
-        tokens:   make(chan struct{}, burst),
-        rate:     rate,
-        burst:    burst,
-        interval: time.Second / time.Duration(rate),
-    }
-    
-    // 初始化令牌
-    for i := 0; i < burst; i++ {
-        rl.tokens <- struct{}{}
-    }
-    
-    return rl
+type VulnerabilityRule struct {
+    ID          string
+    Name        string
+    Description string
+    Severity    SeverityLevel
+    CVE         string
+    Patterns    []DetectionPattern
+    Conditions  []Condition
 }
 
-// Allow 检查是否允许请求
-func (rl *RateLimiter) Allow() bool {
-    select {
-    case <-rl.tokens:
-        return true
-    default:
-        return false
+func (d *VulnerabilityDetector) Detect(target Target) ([]Vulnerability, error) {
+    var vulnerabilities []Vulnerability
+    
+    // 检查缓存
+    if cached := d.cache.Get(target.ID); cached != nil {
+        return cached, nil
     }
-}
-
-// Wait 等待令牌可用
-func (rl *RateLimiter) Wait(ctx context.Context) error {
-    rl.refill()
     
-    select {
-    case <-rl.tokens:
-        return nil
-    case <-ctx.Done():
-        return ctx.Err()
-    }
-}
-
-// refill 补充令牌
-func (rl *RateLimiter) refill() {
-    rl.mu.Lock()
-    defer rl.mu.Unlock()
+    // 并行检测所有规则
+    var wg sync.WaitGroup
+    results := make(chan []Vulnerability, len(d.rules))
     
-    now := time.Now()
-    elapsed := now.Sub(rl.lastRefill)
-    tokensToAdd := int(elapsed / rl.interval)
-    
-    if tokensToAdd > 0 {
-        for i := 0; i < tokensToAdd && len(rl.tokens) < rl.burst; i++ {
-            select {
-            case rl.tokens <- struct{}{}:
-            default:
-                break
+    for _, rule := range d.rules {
+        wg.Add(1)
+        go func(r VulnerabilityRule) {
+            defer wg.Done()
+            if vulns := d.checkRule(target, r); len(vulns) > 0 {
+                results <- vulns
             }
+        }(rule)
+    }
+    
+    // 收集结果
+    go func() {
+        wg.Wait()
+        close(results)
+    }()
+    
+    for vulns := range results {
+        vulnerabilities = append(vulnerabilities, vulns...)
+    }
+    
+    // 缓存结果
+    d.cache.Set(target.ID, vulnerabilities)
+    
+    return vulnerabilities, nil
+}
+
+func (d *VulnerabilityDetector) checkRule(target Target, rule VulnerabilityRule) []Vulnerability {
+    var vulns []Vulnerability
+    
+    // 检查所有条件
+    allConditionsMet := true
+    for _, condition := range rule.Conditions {
+        if !d.evaluateCondition(target, condition) {
+            allConditionsMet = false
+            break
         }
-        rl.lastRefill = now
+    }
+    
+    if !allConditionsMet {
+        return vulns
+    }
+    
+    // 检查所有模式
+    for _, pattern := range rule.Patterns {
+        if d.matchPattern(target, pattern) {
+            vulns = append(vulns, Vulnerability{
+                Rule:      rule,
+                Target:    target,
+                Evidence:  d.collectEvidence(target, pattern),
+                Timestamp: time.Now(),
+            })
+        }
+    }
+    
+    return vulns
+}
+```
+
+## 4. 高级特性
+
+### 4.1 智能扫描策略
+
+```go
+// 自适应扫描策略
+type AdaptiveScanStrategy struct {
+    baseStrategy ScanStrategy
+    learning     *LearningEngine
+    history      *ScanHistory
+}
+
+func (s *AdaptiveScanStrategy) OptimizeStrategy(target Target) ScanStrategy {
+    // 分析历史数据
+    historicalData := s.history.GetTargetHistory(target.ID)
+    
+    // 学习最优参数
+    optimalParams := s.learning.OptimizeParameters(historicalData)
+    
+    // 生成优化策略
+    return &OptimizedStrategy{
+        BaseStrategy: s.baseStrategy,
+        Parameters:   optimalParams,
+    }
+}
+
+// 机器学习优化
+type LearningEngine struct {
+    model *MLModel
+}
+
+func (l *LearningEngine) OptimizeParameters(history []ScanResult) ScanParameters {
+    features := l.extractFeatures(history)
+    predictions := l.model.Predict(features)
+    
+    return ScanParameters{
+        Timeout:     predictions.OptimalTimeout,
+        Concurrency: predictions.OptimalConcurrency,
+        Depth:       predictions.OptimalDepth,
     }
 }
 ```
 
-### 4.2 缓存机制
+### 4.2 分布式扫描
 
 ```go
-// ScanCache 扫描缓存
-type ScanCache struct {
-    cache    *lru.Cache
-    ttl      time.Duration
-    maxSize  int
+// 分布式扫描协调器
+type DistributedScanner struct {
+    coordinator *ScanCoordinator
+    workers     []*ScanWorker
+    scheduler   *TaskScheduler
 }
 
-// CacheEntry 缓存条目
-type CacheEntry struct {
-    Result    *ScanResult
-    ExpiresAt time.Time
-}
-
-// NewScanCache 创建扫描缓存
-func NewScanCache(maxSize int, ttl time.Duration) (*ScanCache, error) {
-    cache, err := lru.New(maxSize)
-    if err != nil {
-        return nil, err
+func (d *DistributedScanner) Scan(targets []Target) (*DistributedScanResult, error) {
+    // 任务分解
+    tasks := d.scheduler.DecomposeTasks(targets)
+    
+    // 任务分发
+    for _, task := range tasks {
+        worker := d.scheduler.SelectWorker(task)
+        worker.AssignTask(task)
     }
     
-    return &ScanCache{
-        cache:   cache,
-        ttl:     ttl,
-        maxSize: maxSize,
-    }, nil
+    // 结果聚合
+    results := d.coordinator.AggregateResults()
+    
+    return results, nil
 }
 
-// Get 获取缓存结果
-func (c *ScanCache) Get(key string) (*ScanResult, bool) {
-    if entry, found := c.cache.Get(key); found {
-        cacheEntry := entry.(*CacheEntry)
-        if time.Now().Before(cacheEntry.ExpiresAt) {
-            return cacheEntry.Result, true
-        } else {
-            c.cache.Remove(key)
+// 负载均衡算法
+func (s *TaskScheduler) SelectWorker(task ScanTask) *ScanWorker {
+    var bestWorker *ScanWorker
+    minLoad := math.MaxFloat64
+    
+    for _, worker := range s.workers {
+        load := worker.GetCurrentLoad()
+        if load < minLoad {
+            minLoad = load
+            bestWorker = worker
         }
     }
-    return nil, false
-}
-
-// Set 设置缓存结果
-func (c *ScanCache) Set(key string, result *ScanResult) {
-    entry := &CacheEntry{
-        Result:    result,
-        ExpiresAt: time.Now().Add(c.ttl),
-    }
-    c.cache.Add(key, entry)
+    
+    return bestWorker
 }
 ```
 
-## 5. 监控与指标
+## 5. 性能优化
 
-### 5.1 性能指标
+### 5.1 并发控制
 
 ```go
-// ScannerMetrics 扫描指标
-type ScannerMetrics struct {
-    totalScans       int64
-    successfulScans  int64
-    failedScans      int64
-    scanDuration     time.Duration
-    findingsCount    int64
-    falsePositives   int64
-    mu               sync.RWMutex
+// 智能并发控制器
+type ConcurrencyController struct {
+    maxWorkers    int
+    currentLoad   int32
+    rateLimiter   *RateLimiter
+    loadBalancer  *LoadBalancer
 }
 
-// IncTotalScans 增加总扫描数
-func (m *ScannerMetrics) IncTotalScans() {
-    atomic.AddInt64(&m.totalScans, 1)
-}
-
-// IncSuccessfulScans 增加成功扫描数
-func (m *ScannerMetrics) IncSuccessfulScans() {
-    atomic.AddInt64(&m.successfulScans, 1)
-}
-
-// IncFailedScans 增加失败扫描数
-func (m *ScannerMetrics) IncFailedScans() {
-    atomic.AddInt64(&m.failedScans, 1)
-}
-
-// RecordScanDuration 记录扫描时长
-func (m *ScannerMetrics) RecordScanDuration(duration time.Duration) {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    m.scanDuration = duration
-}
-
-// GetMetrics 获取指标
-func (m *ScannerMetrics) GetMetrics() map[string]interface{} {
-    m.mu.RLock()
-    defer m.mu.RUnlock()
-    
-    successRate := float64(0)
-    if m.totalScans > 0 {
-        successRate = float64(m.successfulScans) / float64(m.totalScans) * 100
+func (c *ConcurrencyController) ExecuteTask(task func() error) error {
+    // 检查负载
+    if atomic.LoadInt32(&c.currentLoad) >= int32(c.maxWorkers) {
+        return ErrTooManyConcurrentTasks
     }
     
-    return map[string]interface{}{
-        "total_scans":      m.totalScans,
-        "successful_scans": m.successfulScans,
-        "failed_scans":     m.failedScans,
-        "success_rate":     successRate,
-        "avg_duration":     m.scanDuration,
-        "findings_count":   m.findingsCount,
-        "false_positives":  m.falsePositives,
+    // 速率限制
+    if !c.rateLimiter.Allow() {
+        return ErrRateLimitExceeded
+    }
+    
+    // 执行任务
+    atomic.AddInt32(&c.currentLoad, 1)
+    defer atomic.AddInt32(&c.currentLoad, -1)
+    
+    return task()
+}
+```
+
+### 5.2 内存优化
+
+```go
+// 内存池管理
+type MemoryPool struct {
+    pools map[int]*sync.Pool
+}
+
+func (m *MemoryPool) Get(size int) interface{} {
+    pool, exists := m.pools[size]
+    if !exists {
+        pool = &sync.Pool{
+            New: func() interface{} {
+                return make([]byte, size)
+            },
+        }
+        m.pools[size] = pool
+    }
+    
+    return pool.Get()
+}
+
+func (m *MemoryPool) Put(size int, obj interface{}) {
+    if pool, exists := m.pools[size]; exists {
+        pool.Put(obj)
     }
 }
 ```
 
 ## 6. 安全考虑
 
-### 6.1 权限控制
+### 6.1 扫描伦理
 
 ```go
-// PermissionManager 权限管理器
-type PermissionManager struct {
-    policies map[string]*ScanPolicy
-    mu       sync.RWMutex
+// 扫描权限验证
+type ScanPermissionValidator struct {
+    whitelist    map[string]bool
+    blacklist    map[string]bool
+    rateLimits   map[string]*RateLimit
 }
 
-// ScanPolicy 扫描策略
-type ScanPolicy struct {
-    ID          string   `json:"id"`
-    Name        string   `json:"name"`
-    Targets     []string `json:"targets"`
-    ScanTypes   []ScanType `json:"scan_types"`
-    Permissions []Permission `json:"permissions"`
-    CreatedBy   string   `json:"created_by"`
-    CreatedAt   time.Time `json:"created_at"`
-}
-
-// Permission 权限
-type Permission struct {
-    Resource string   `json:"resource"`
-    Actions  []string `json:"actions"`
-}
-
-// CheckPermission 检查权限
-func (pm *PermissionManager) CheckPermission(userID, target string, scanType ScanType) error {
-    pm.mu.RLock()
-    defer pm.mu.RUnlock()
+func (v *ScanPermissionValidator) ValidatePermission(target Target, requester string) error {
+    // 检查白名单
+    if !v.whitelist[target.ID] {
+        return ErrTargetNotWhitelisted
+    }
     
-    // 检查用户策略
-    for _, policy := range pm.policies {
-        if pm.userHasPolicy(userID, policy.ID) {
-            if pm.policyAllows(policy, target, scanType) {
-                return nil
-            }
+    // 检查黑名单
+    if v.blacklist[target.ID] {
+        return ErrTargetBlacklisted
+    }
+    
+    // 检查速率限制
+    if limit := v.rateLimits[requester]; limit != nil {
+        if !limit.Allow() {
+            return ErrRateLimitExceeded
         }
     }
     
-    return errors.New("permission denied")
-}
-
-// userHasPolicy 检查用户是否有策略
-func (pm *PermissionManager) userHasPolicy(userID, policyID string) bool {
-    // 实现用户策略检查逻辑
-    return true // 简化实现
-}
-
-// policyAllows 检查策略是否允许
-func (pm *PermissionManager) policyAllows(policy *ScanPolicy, target string, scanType ScanType) bool {
-    // 检查目标
-    targetAllowed := false
-    for _, allowedTarget := range policy.Targets {
-        if pm.matchesTarget(target, allowedTarget) {
-            targetAllowed = true
-            break
-        }
-    }
-    
-    if !targetAllowed {
-        return false
-    }
-    
-    // 检查扫描类型
-    typeAllowed := false
-    for _, allowedType := range policy.ScanTypes {
-        if scanType == allowedType {
-            typeAllowed = true
-            break
-        }
-    }
-    
-    return typeAllowed
-}
-
-// matchesTarget 检查目标是否匹配
-func (pm *PermissionManager) matchesTarget(target, pattern string) bool {
-    // 支持通配符匹配
-    if strings.Contains(pattern, "*") {
-        regexPattern := strings.ReplaceAll(pattern, "*", ".*")
-        matched, _ := regexp.MatchString(regexPattern, target)
-        return matched
-    }
-    
-    return target == pattern
+    return nil
 }
 ```
 
-## 7. 总结
+### 6.2 数据保护
 
-安全扫描工具是网络安全基础设施的重要组成部分，通过系统化的漏洞发现和风险评估，为组织提供主动的安全防护能力。本模块提供了：
+```go
+// 敏感数据处理
+type SensitiveDataProcessor struct {
+    encryption   *EncryptionService
+    anonymizer   *DataAnonymizer
+    retention    *RetentionPolicy
+}
 
-1. **完整的架构设计**：分层架构、插件系统、并发控制
-2. **形式化数学建模**：CVSS评分、扫描效率、误报率计算
-3. **高性能实现**：速率限制、缓存机制、指标监控
-4. **安全考虑**：权限控制、输入验证、错误处理
+func (p *SensitiveDataProcessor) ProcessScanData(data *ScanData) (*ProcessedData, error) {
+    // 数据脱敏
+    anonymized := p.anonymizer.Anonymize(data)
+    
+    // 数据加密
+    encrypted := p.encryption.Encrypt(anonymized)
+    
+    // 应用保留策略
+    p.retention.Apply(encrypted)
+    
+    return &ProcessedData{
+        Data:      encrypted,
+        Processed: time.Now(),
+    }, nil
+}
+```
 
-通过Go语言的内存安全和并发特性，实现了高效、可靠的安全扫描工具，为网络安全防护提供了强有力的技术支撑。
+## 7. 监控与告警
+
+### 7.1 实时监控
+
+```go
+// 扫描监控系统
+type ScanMonitor struct {
+    metrics    *MetricsCollector
+    alerts     *AlertManager
+    dashboard  *Dashboard
+}
+
+func (m *ScanMonitor) MonitorScan(scanID string) {
+    // 收集指标
+    metrics := m.metrics.Collect(scanID)
+    
+    // 检查告警条件
+    if alerts := m.checkAlertConditions(metrics); len(alerts) > 0 {
+        m.alerts.SendAlerts(alerts)
+    }
+    
+    // 更新仪表板
+    m.dashboard.Update(metrics)
+}
+
+func (m *ScanMonitor) checkAlertConditions(metrics *ScanMetrics) []Alert {
+    var alerts []Alert
+    
+    // 检查扫描失败率
+    if metrics.FailureRate > 0.1 {
+        alerts = append(alerts, Alert{
+            Type:    AlertTypeHighFailureRate,
+            Message: fmt.Sprintf("Scan failure rate: %.2f%%", metrics.FailureRate*100),
+            Level:   AlertLevelWarning,
+        })
+    }
+    
+    // 检查性能问题
+    if metrics.AverageResponseTime > 5*time.Second {
+        alerts = append(alerts, Alert{
+            Type:    AlertTypePerformanceIssue,
+            Message: fmt.Sprintf("High response time: %v", metrics.AverageResponseTime),
+            Level:   AlertLevelWarning,
+        })
+    }
+    
+    return alerts
+}
+```
+
+## 8. 集成与扩展
+
+### 8.1 插件系统
+
+```go
+// 插件管理器
+type PluginManager struct {
+    plugins map[string]ScanPlugin
+    loader  *PluginLoader
+}
+
+func (p *PluginManager) LoadPlugin(path string) error {
+    plugin, err := p.loader.Load(path)
+    if err != nil {
+        return err
+    }
+    
+    p.plugins[plugin.Name()] = plugin
+    return nil
+}
+
+func (p *PluginManager) ExecutePlugin(name string, target Target) (*PluginResult, error) {
+    plugin, exists := p.plugins[name]
+    if !exists {
+        return nil, ErrPluginNotFound
+    }
+    
+    return plugin.Scan(target)
+}
+```
+
+### 8.2 API集成
+
+```go
+// RESTful API服务
+type ScanAPIServer struct {
+    scanner *SecurityScanner
+    router  *mux.Router
+}
+
+func (s *ScanAPIServer) Start() error {
+    s.setupRoutes()
+    
+    return http.ListenAndServe(":8080", s.router)
+}
+
+func (s *ScanAPIServer) setupRoutes() {
+    s.router.HandleFunc("/api/v1/scan", s.handleScanRequest).Methods("POST")
+    s.router.HandleFunc("/api/v1/scan/{id}", s.handleScanStatus).Methods("GET")
+    s.router.HandleFunc("/api/v1/scan/{id}/report", s.handleScanReport).Methods("GET")
+}
+
+func (s *ScanAPIServer) handleScanRequest(w http.ResponseWriter, r *http.Request) {
+    var req ScanRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+    
+    result, err := s.scanner.Scan(req.Target)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    
+    json.NewEncoder(w).Encode(result)
+}
+```
+
+## 9. 总结
+
+安全扫描工具是现代网络安全体系的重要组成部分。通过Go语言的高并发特性和内存安全机制，我们可以构建高效、可靠的安全扫描系统。
+
+### 9.1 关键优势
+
+1. **高性能**：Go的goroutine和channel机制提供优秀的并发性能
+2. **内存安全**：避免缓冲区溢出等常见安全问题
+3. **可扩展性**：模块化设计支持插件扩展
+4. **可维护性**：清晰的代码结构和类型系统
+
+### 9.2 未来发展方向
+
+1. **AI集成**：机器学习算法优化扫描策略
+2. **云原生**：容器化和微服务架构
+3. **实时性**：流式处理和实时告警
+4. **标准化**：行业标准接口和协议支持
 
 ---
 
@@ -987,3 +655,4 @@ func (pm *PermissionManager) matchesTarget(target, pattern string) bool {
 - [02-入侵检测系统](../02-Intrusion-Detection-System/README.md)
 - [03-加密服务](../03-Encryption-Services/README.md)
 - [04-身份认证](../04-Identity-Authentication/README.md)
+- [返回上级目录](../../README.md)

@@ -12,6 +12,7 @@
 $$f: U \times P \rightarrow O \times T$$
 
 其中：
+
 - $U = \{u_1, u_2, ..., u_n\}$ 为用户集合（买家+卖家）
 - $P = \{p_1, p_2, ..., p_m\}$ 为商品集合
 - $O = \{o_1, o_2, ..., o_k\}$ 为订单集合
@@ -31,7 +32,7 @@ $$\text{OptimalPrice}(p) = \arg\max_{price} \text{Revenue}(price) \times \text{D
 
 ### 2.1 微服务架构
 
-```
+```text
 ┌─────────────────────────────────────┐
 │           用户服务层                  │
 ├─────────────────────────────────────┤
@@ -974,6 +975,7 @@ func (pp *PaymentProcessor) ProcessWithRetry(ctx context.Context, provider Payme
 $$r_{u,i} = \frac{\sum_{v \in N(u)} sim(u,v) \cdot r_{v,i}}{\sum_{v \in N(u)} |sim(u,v)|}$$
 
 其中：
+
 - $r_{u,i}$ 为用户 $u$ 对商品 $i$ 的预测评分
 - $N(u)$ 为用户 $u$ 的邻居集合
 - $sim(u,v)$ 为用户 $u$ 和 $v$ 的相似度
@@ -987,6 +989,7 @@ $$sim(i,j) = \frac{\sum_{u} r_{u,i} \cdot r_{u,j}}{\sqrt{\sum_{u} r_{u,i}^2} \cd
 $$EOQ = \sqrt{\frac{2DS}{H}}$$
 
 其中：
+
 - $D$ 为年需求量
 - $S$ 为订货成本
 - $H$ 为库存持有成本
@@ -995,6 +998,7 @@ $$EOQ = \sqrt{\frac{2DS}{H}}$$
 $$SS = z \cdot \sigma_L \cdot \sqrt{L}$$
 
 其中：
+
 - $z$ 为服务水平系数
 - $\sigma_L$ 为提前期需求标准差
 - $L$ 为提前期
@@ -1008,6 +1012,7 @@ $$\epsilon = \frac{\Delta Q / Q}{\Delta P / P}$$
 $$P^* = \frac{MC}{1 - \frac{1}{|\epsilon|}}$$
 
 其中：
+
 - $MC$ 为边际成本
 - $\epsilon$ 为价格弹性
 
@@ -1165,6 +1170,7 @@ func (em *ECommerceMetrics) GetMetrics() map[string]interface{} {
 ---
 
 **相关链接**：
+
 - [02-支付处理系统](../02-Payment-Processing-System/README.md)
 - [03-库存管理系统](../03-Inventory-Management-System/README.md)
-- [04-推荐引擎](../04-Recommendation-Engine/README.md) 
+- [04-推荐引擎](../04-Recommendation-Engine/README.md)
