@@ -186,6 +186,7 @@ func (s *PatientManagementService) UpdatePatient(id string, updates map[string]i
 #### 3.1.2 算法复杂度分析
 
 **时间复杂度**：
+
 - 患者注册：$O(1)$
 - 患者查询：$O(\log n)$（使用索引）
 - 患者更新：$O(1)$
@@ -798,6 +799,7 @@ func (c *MultiLevelCache) Get(key string) (interface{}, error) {
 ---
 
 **相关链接**：
+
 - [02-健康监测设备](../02-Health-Monitoring-Devices/README.md)
 - [03-药物研发平台](../03-Drug-Development-Platform/README.md)
 - [04-医疗影像处理](../04-Medical-Image-Processing/README.md)

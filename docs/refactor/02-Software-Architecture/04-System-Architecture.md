@@ -16,6 +16,7 @@
 系统架构是软件系统的整体结构，定义了系统的主要组件、组件间的关系以及设计原则。它决定了系统的质量属性，如性能、可靠性、可维护性和可扩展性。
 
 **形式化定义**：
+
 ```math
 系统架构定义为六元组：
 SA = (C, R, P, Q, D, E)
@@ -1204,4 +1205,4 @@ func (am *ArchitectureMonitor) GetAlerts() <-chan *ArchitectureAlert {
 
 - [组件架构](../02-Component-Architecture/01-Component-Foundation.md)
 - [微服务架构](../03-Microservice-Architecture/01-Microservice-Foundation.md)
-- [负载均衡](../03-Microservice-Architecture/03-Load-Balancing.md) 
+- [负载均衡](../03-Microservice-Architecture/03-Load-Balancing.md)
