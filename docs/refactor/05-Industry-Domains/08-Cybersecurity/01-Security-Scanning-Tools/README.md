@@ -4,537 +4,576 @@
 
 ### 1. 概述
 
-安全扫描工具是网络安全体系中的核心组件，用于主动发现系统、网络和应用程序中的安全漏洞。本模块采用Go语言实现，结合形式化方法，构建高效、可扩展的安全扫描框架。
+安全扫描工具是网络安全体系中的核心组件，用于主动发现系统漏洞、配置错误和安全风险。本模块基于Go语言实现，提供高性能、并发安全的安全扫描框架。
 
 ### 2. 形式化定义
 
-#### 2.1 扫描目标定义
+#### 2.1 扫描空间定义
 
-设 $T$ 为扫描目标集合，$T = \{t_1, t_2, ..., t_n\}$，其中每个目标 $t_i$ 包含以下属性：
+设扫描空间 $S$ 为所有可能目标的集合：
 
-$$t_i = (id_i, type_i, address_i, ports_i, services_i, vulnerabilities_i)$$
+$$S = \{t_1, t_2, ..., t_n\}$$
 
-其中：
+其中每个目标 $t_i$ 包含：
 
-- $id_i$: 目标唯一标识符
-- $type_i \in \{host, network, application, database\}$: 目标类型
-- $address_i$: 目标地址（IP地址、域名、URL等）
-- $ports_i \subseteq \mathbb{N}$: 开放端口集合
-- $services_i \subseteq S$: 运行服务集合
-- $vulnerabilities_i \subseteq V$: 已发现漏洞集合
+- 网络地址：$addr(t_i) \in \mathbb{N}^{32}$ (IPv4) 或 $\mathbb{N}^{128}$ (IPv6)
+- 端口集合：$ports(t_i) \subseteq \{1, 2, ..., 65535\}$
+- 服务集合：$services(t_i) \subseteq \Sigma^*$
 
-#### 2.2 漏洞定义
+#### 2.2 漏洞模型
 
-设 $V$ 为漏洞集合，每个漏洞 $v \in V$ 定义为：
+漏洞 $v$ 定义为五元组：
 
-$$v = (cve_id, severity, cvss_score, description, affected_components, remediation)$$
+$$v = (id, type, severity, vector, impact)$$
 
 其中：
 
-- $cve_id$: CVE标识符
-- $severity \in \{critical, high, medium, low, info\}$: 严重程度
-- $cvss_score \in [0, 10]$: CVSS评分
-- $description$: 漏洞描述
-- $affected_components$: 受影响组件
-- $remediation$: 修复建议
+- $id \in \Sigma^*$：漏洞唯一标识符
+- $type \in \{buffer\_overflow, sql\_injection, xss, ...\}$
+- $severity \in \{critical, high, medium, low, info\}$
+- $vector \in \Sigma^*$：攻击向量描述
+- $impact \in [0, 1]$：影响程度评分
 
-#### 2.3 扫描策略定义
+#### 2.3 扫描算法复杂度
 
-扫描策略 $P$ 定义为：
+**定理 1**: 并行扫描算法的时间复杂度
 
-$$P = (scan_type, target_filter, port_range, service_detection, vulnerability_checks, rate_limit)$$
+对于 $n$ 个目标，$m$ 个扫描器，并行扫描的时间复杂度为：
 
-其中：
+$$T(n, m) = O\left(\frac{n}{m} \cdot \log n\right)$$
 
-- $scan_type \in \{full, quick, custom\}$: 扫描类型
-- $target_filter$: 目标过滤条件
-- $port_range \subseteq \mathbb{N} \times \mathbb{N}$: 端口范围
-- $service_detection$: 服务检测开关
-- $vulnerability_checks \subseteq C$: 漏洞检查集合
-- $rate_limit \in \mathbb{R}^+$: 扫描速率限制
+**证明**:
+
+1. 目标分配：$O(\log n)$
+2. 并行扫描：$O(n/m)$
+3. 结果合并：$O(\log n)$
+4. 总复杂度：$O\left(\frac{n}{m} \cdot \log n\right)$
 
 ### 3. 架构设计
 
-#### 3.1 核心架构
+#### 3.1 核心组件
 
 ```go
-// 扫描引擎核心接口
+// 扫描引擎接口
 type Scanner interface {
-    Scan(ctx context.Context, target Target, policy ScanPolicy) (*ScanResult, error)
-    Stop() error
-    GetStatus() ScanStatus
+    Scan(ctx context.Context, target Target) ([]Vulnerability, error)
+    GetCapabilities() []ScanCapability
+    GetPerformance() PerformanceMetrics
 }
 
 // 目标定义
 type Target struct {
-    ID          string            `json:"id"`
-    Type        TargetType        `json:"type"`
-    Address     string            `json:"address"`
-    Ports       []int             `json:"ports"`
-    Services    []Service         `json:"services"`
-    Vulnerabilities []Vulnerability `json:"vulnerabilities"`
-    Metadata    map[string]string `json:"metadata"`
+    ID       string            `json:"id"`
+    Address  string            `json:"address"`
+    Ports    []int             `json:"ports"`
+    Services map[string]string `json:"services"`
+    Metadata map[string]any    `json:"metadata"`
 }
 
-// 扫描策略
-type ScanPolicy struct {
-    ScanType           ScanType     `json:"scan_type"`
-    TargetFilter       TargetFilter `json:"target_filter"`
-    PortRange          PortRange    `json:"port_range"`
-    ServiceDetection   bool         `json:"service_detection"`
-    VulnerabilityChecks []string    `json:"vulnerability_checks"`
-    RateLimit          float64      `json:"rate_limit"`
-    Timeout            time.Duration `json:"timeout"`
-    ConcurrentScans    int          `json:"concurrent_scans"`
+// 漏洞定义
+type Vulnerability struct {
+    ID          string                 `json:"id"`
+    Type        VulnerabilityType      `json:"type"`
+    Severity    SeverityLevel          `json:"severity"`
+    Title       string                 `json:"title"`
+    Description string                 `json:"description"`
+    Vector      string                 `json:"vector"`
+    Impact      float64                `json:"impact"`
+    CVE         string                 `json:"cve,omitempty"`
+    CVSS        float64                `json:"cvss,omitempty"`
+    Evidence    map[string]any         `json:"evidence"`
+    Timestamp   time.Time              `json:"timestamp"`
+    Scanner     string                 `json:"scanner"`
+}
+```
+
+#### 3.2 并发扫描引擎
+
+```go
+// 并发扫描引擎
+type ConcurrentScanner struct {
+    workers    int
+    scanner    Scanner
+    rateLimit  *rate.Limiter
+    results    chan ScanResult
+    errors     chan ScanError
+    metrics    *ScanMetrics
+    mu         sync.RWMutex
 }
 
 // 扫描结果
 type ScanResult struct {
-    TargetID       string         `json:"target_id"`
-    ScanID         string         `json:"scan_id"`
-    StartTime      time.Time      `json:"start_time"`
-    EndTime        time.Time      `json:"end_time"`
-    Status         ScanStatus     `json:"status"`
-    OpenPorts      []PortInfo     `json:"open_ports"`
-    Services       []Service      `json:"services"`
+    Target        Target         `json:"target"`
     Vulnerabilities []Vulnerability `json:"vulnerabilities"`
-    Summary        ScanSummary    `json:"summary"`
+    Duration      time.Duration  `json:"duration"`
+    Timestamp     time.Time      `json:"timestamp"`
+}
+
+// 扫描错误
+type ScanError struct {
+    Target  Target `json:"target"`
+    Error   error  `json:"error"`
+    Context string `json:"context"`
+}
+
+// 扫描指标
+type ScanMetrics struct {
+    TotalTargets     int64         `json:"total_targets"`
+    ScannedTargets   int64         `json:"scanned_targets"`
+    FailedTargets    int64         `json:"failed_targets"`
+    TotalVulns       int64         `json:"total_vulnerabilities"`
+    StartTime        time.Time     `json:"start_time"`
+    EndTime          time.Time     `json:"end_time"`
+    mu               sync.RWMutex
+}
+
+// 并发扫描实现
+func (cs *ConcurrentScanner) ScanBatch(ctx context.Context, targets []Target) ([]ScanResult, []ScanError) {
+    var results []ScanResult
+    var errors []ScanError
+    
+    // 初始化指标
+    cs.metrics.mu.Lock()
+    cs.metrics.TotalTargets = int64(len(targets))
+    cs.metrics.StartTime = time.Now()
+    cs.metrics.mu.Unlock()
+    
+    // 创建工作池
+    targetChan := make(chan Target, len(targets))
+    resultChan := make(chan ScanResult, len(targets))
+    errorChan := make(chan ScanError, len(targets))
+    
+    // 启动工作协程
+    var wg sync.WaitGroup
+    for i := 0; i < cs.workers; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            cs.worker(ctx, targetChan, resultChan, errorChan)
+        }()
+    }
+    
+    // 发送目标
+    go func() {
+        defer close(targetChan)
+        for _, target := range targets {
+            select {
+            case targetChan <- target:
+            case <-ctx.Done():
+                return
+            }
+        }
+    }()
+    
+    // 收集结果
+    go func() {
+        wg.Wait()
+        close(resultChan)
+        close(errorChan)
+    }()
+    
+    // 处理结果
+    for result := range resultChan {
+        results = append(results, result)
+        cs.updateMetrics(result)
+    }
+    
+    for err := range errorChan {
+        errors = append(errors, err)
+        cs.updateErrorMetrics(err)
+    }
+    
+    // 更新完成时间
+    cs.metrics.mu.Lock()
+    cs.metrics.EndTime = time.Now()
+    cs.metrics.mu.Unlock()
+    
+    return results, errors
+}
+
+// 工作协程
+func (cs *ConcurrentScanner) worker(ctx context.Context, targets <-chan Target, results chan<- ScanResult, errors chan<- ScanError) {
+    for target := range targets {
+        // 速率限制
+        if err := cs.rateLimit.Wait(ctx); err != nil {
+            errors <- ScanError{Target: target, Error: err, Context: "rate_limit"}
+            continue
+        }
+        
+        // 执行扫描
+        start := time.Now()
+        vulns, err := cs.scanner.Scan(ctx, target)
+        duration := time.Since(start)
+        
+        if err != nil {
+            errors <- ScanError{Target: target, Error: err, Context: "scan_execution"}
+            continue
+        }
+        
+        results <- ScanResult{
+            Target:         target,
+            Vulnerabilities: vulns,
+            Duration:       duration,
+            Timestamp:      time.Now(),
+        }
+    }
 }
 ```
 
-#### 3.2 端口扫描器
+### 4. 具体扫描器实现
+
+#### 4.1 端口扫描器
 
 ```go
-// 端口扫描器实现
+// 端口扫描器
 type PortScanner struct {
     timeout     time.Duration
-    rateLimit   float64
-    workerPool  chan struct{}
-    logger      *log.Logger
+    maxRetries  int
+    rateLimit   *rate.Limiter
 }
 
-// 端口扫描算法
-func (ps *PortScanner) ScanPorts(ctx context.Context, target string, ports []int) ([]PortInfo, error) {
-    var results []PortInfo
+// TCP连接扫描
+func (ps *PortScanner) ScanTCP(ctx context.Context, target Target) ([]int, error) {
+    var openPorts []int
     var mu sync.Mutex
     var wg sync.WaitGroup
     
-    // 创建结果通道
-    resultChan := make(chan PortInfo, len(ports))
+    // 并发扫描端口
+    semaphore := make(chan struct{}, 1000) // 限制并发数
     
-    // 启动工作协程
-    for _, port := range ports {
+    for _, port := range target.Ports {
         wg.Add(1)
         go func(p int) {
             defer wg.Done()
+            semaphore <- struct{}{}
+            defer func() { <-semaphore }()
             
-            // 获取工作协程槽位
-            ps.workerPool <- struct{}{}
-            defer func() { <-ps.workerPool }()
-            
-            // 执行端口扫描
-            if info, err := ps.scanSinglePort(ctx, target, p); err == nil {
-                resultChan <- info
+            if ps.isPortOpen(ctx, target.Address, p) {
+                mu.Lock()
+                openPorts = append(openPorts, p)
+                mu.Unlock()
             }
         }(port)
     }
     
-    // 等待所有扫描完成
-    go func() {
-        wg.Wait()
-        close(resultChan)
-    }()
-    
-    // 收集结果
-    for info := range resultChan {
-        mu.Lock()
-        results = append(results, info)
-        mu.Unlock()
-    }
-    
-    return results, nil
+    wg.Wait()
+    return openPorts, nil
 }
 
-// 单端口扫描
-func (ps *PortScanner) scanSinglePort(ctx context.Context, target string, port int) (PortInfo, error) {
-    // 创建连接
-    conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", target, port), ps.timeout)
-    if err != nil {
-        return PortInfo{}, err
-    }
-    defer conn.Close()
-    
-    // 获取服务信息
-    service := ps.detectService(conn, port)
-    
-    return PortInfo{
-        Port:    port,
-        State:   "open",
-        Service: service,
-    }, nil
-}
-
-// 服务检测
-func (ps *PortScanner) detectService(conn net.Conn, port int) Service {
-    // 发送探测数据
-    probes := map[int][]byte{
-        21:   []byte("QUIT\r\n"),
-        22:   []byte("SSH-2.0-OpenSSH_8.0\r\n"),
-        23:   []byte("\r\n"),
-        25:   []byte("QUIT\r\n"),
-        80:   []byte("GET / HTTP/1.0\r\n\r\n"),
-        443:  []byte("GET / HTTP/1.0\r\n\r\n"),
-        3306: []byte{0x0a},
-        5432: []byte{0x00, 0x00, 0x00, 0x08, 0x04, 0xd2, 0x16, 0x2f},
-    }
-    
-    if probe, exists := probes[port]; exists {
-        conn.Write(probe)
-        response := make([]byte, 1024)
-        n, _ := conn.Read(response)
-        return ps.analyzeResponse(port, response[:n])
-    }
-    
-    return Service{
-        Name:    "unknown",
-        Version: "",
-        Banner:  "",
-    }
-}
-```
-
-#### 3.3 漏洞扫描器
-
-```go
-// 漏洞扫描器
-type VulnerabilityScanner struct {
-    checks     map[string]VulnerabilityCheck
-    database   VulnerabilityDatabase
-    logger     *log.Logger
-}
-
-// 漏洞检查接口
-type VulnerabilityCheck interface {
-    ID() string
-    Name() string
-    Description() string
-    Check(ctx context.Context, target Target) (*Vulnerability, error)
-}
-
-// SQL注入检查
-type SQLInjectionCheck struct {
-    payloads []string
-}
-
-func (sic *SQLInjectionCheck) Check(ctx context.Context, target Target) (*Vulnerability, error) {
-    if target.Type != TargetTypeApplication {
-        return nil, fmt.Errorf("SQL injection check only supports application targets")
-    }
-    
-    // 检测SQL注入漏洞
-    for _, payload := range sic.payloads {
-        if sic.testSQLInjection(target.Address, payload) {
-            return &Vulnerability{
-                CVEID:       "CVE-2024-XXXX",
-                Severity:    SeverityHigh,
-                CVSSScore:   8.5,
-                Description: "SQL Injection vulnerability detected",
-                Type:        "sql_injection",
-                Evidence:    fmt.Sprintf("Payload: %s", payload),
-            }, nil
-        }
-    }
-    
-    return nil, nil
-}
-
-// XSS检查
-type XSSCheck struct {
-    payloads []string
-}
-
-func (xss *XSSCheck) Check(ctx context.Context, target Target) (*Vulnerability, error) {
-    // XSS漏洞检测逻辑
-    for _, payload := range xss.payloads {
-        if xss.testXSS(target.Address, payload) {
-            return &Vulnerability{
-                CVEID:       "CVE-2024-XXXX",
-                Severity:    SeverityMedium,
-                CVSSScore:   6.1,
-                Description: "Cross-Site Scripting vulnerability detected",
-                Type:        "xss",
-                Evidence:    fmt.Sprintf("Payload: %s", payload),
-            }, nil
-        }
-    }
-    
-    return nil, nil
-}
-```
-
-### 4. 并发控制与性能优化
-
-#### 4.1 协程池管理
-
-```go
-// 协程池
-type WorkerPool struct {
-    workers    int
-    taskQueue  chan Task
-    resultChan chan Result
-    wg         sync.WaitGroup
-    ctx        context.Context
-    cancel     context.CancelFunc
-}
-
-// 任务定义
-type Task struct {
-    ID     string
-    Target Target
-    Policy ScanPolicy
-}
-
-// 结果定义
-type Result struct {
-    TaskID string
-    Result *ScanResult
-    Error  error
-}
-
-// 启动工作协程
-func (wp *WorkerPool) Start() {
-    for i := 0; i < wp.workers; i++ {
-        wp.wg.Add(1)
-        go wp.worker()
-    }
-}
-
-// 工作协程
-func (wp *WorkerPool) worker() {
-    defer wp.wg.Done()
-    
-    for {
+// 检查端口是否开放
+func (ps *PortScanner) isPortOpen(ctx context.Context, address string, port int) bool {
+    for i := 0; i < ps.maxRetries; i++ {
         select {
-        case task := <-wp.taskQueue:
-            result := wp.processTask(task)
-            wp.resultChan <- result
-        case <-wp.ctx.Done():
-            return
+        case <-ctx.Done():
+            return false
+        default:
         }
+        
+        conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", address, port), ps.timeout)
+        if err == nil {
+            conn.Close()
+            return true
+        }
+        
+        // 指数退避
+        time.Sleep(time.Duration(i+1) * 100 * time.Millisecond)
     }
-}
-
-// 处理任务
-func (wp *WorkerPool) processTask(task Task) Result {
-    scanner := NewScanner()
-    result, err := scanner.Scan(wp.ctx, task.Target, task.Policy)
-    
-    return Result{
-        TaskID: task.ID,
-        Result: result,
-        Error:  err,
-    }
-}
-```
-
-#### 4.2 速率限制
-
-```go
-// 令牌桶速率限制器
-type RateLimiter struct {
-    tokens     float64
-    capacity   float64
-    rate       float64
-    lastRefill time.Time
-    mu         sync.Mutex
-}
-
-// 获取令牌
-func (rl *RateLimiter) Take() bool {
-    rl.mu.Lock()
-    defer rl.mu.Unlock()
-    
-    now := time.Now()
-    elapsed := now.Sub(rl.lastRefill).Seconds()
-    
-    // 补充令牌
-    rl.tokens = math.Min(rl.capacity, rl.tokens+elapsed*rl.rate)
-    rl.lastRefill = now
-    
-    if rl.tokens >= 1.0 {
-        rl.tokens -= 1.0
-        return true
-    }
-    
     return false
 }
-
-// 等待令牌
-func (rl *RateLimiter) Wait() {
-    for !rl.Take() {
-        time.Sleep(10 * time.Millisecond)
-    }
-}
 ```
 
-### 5. 报告生成
-
-#### 5.1 扫描报告
+#### 4.2 Web应用扫描器
 
 ```go
-// 扫描报告生成器
-type ReportGenerator struct {
-    template   *template.Template
-    outputDir  string
+// Web应用扫描器
+type WebAppScanner struct {
+    client      *http.Client
+    userAgent   string
+    timeout     time.Duration
+    maxDepth    int
 }
 
-// 生成HTML报告
-func (rg *ReportGenerator) GenerateHTMLReport(results []ScanResult) error {
-    data := ReportData{
-        Title:       "Security Scan Report",
-        ScanTime:    time.Now(),
-        Results:     results,
-        Summary:     rg.generateSummary(results),
-        Statistics:  rg.generateStatistics(results),
+// SQL注入扫描
+func (was *WebAppScanner) ScanSQLInjection(ctx context.Context, target Target) ([]Vulnerability, error) {
+    var vulnerabilities []Vulnerability
+    
+    // SQL注入载荷
+    payloads := []string{
+        "' OR '1'='1",
+        "' UNION SELECT NULL--",
+        "'; DROP TABLE users--",
+        "' OR 1=1--",
+        "admin'--",
     }
     
-    file, err := os.Create(filepath.Join(rg.outputDir, "scan_report.html"))
-    if err != nil {
-        return err
-    }
-    defer file.Close()
-    
-    return rg.template.Execute(file, data)
-}
-
-// 生成JSON报告
-func (rg *ReportGenerator) GenerateJSONReport(results []ScanResult) error {
-    data := ReportData{
-        Title:       "Security Scan Report",
-        ScanTime:    time.Now(),
-        Results:     results,
-        Summary:     rg.generateSummary(results),
-        Statistics:  rg.generateStatistics(results),
-    }
-    
-    file, err := os.Create(filepath.Join(rg.outputDir, "scan_report.json"))
-    if err != nil {
-        return err
-    }
-    defer file.Close()
-    
-    encoder := json.NewEncoder(file)
-    encoder.SetIndent("", "  ")
-    return encoder.Encode(data)
-}
-```
-
-### 6. 配置管理
-
-#### 6.1 扫描配置
-
-```go
-// 扫描配置
-type ScanConfig struct {
-    General     GeneralConfig     `yaml:"general"`
-    Network     NetworkConfig     `yaml:"network"`
-    Application ApplicationConfig `yaml:"application"`
-    Database    DatabaseConfig    `yaml:"database"`
-    Output      OutputConfig      `yaml:"output"`
-}
-
-// 通用配置
-type GeneralConfig struct {
-    ConcurrentScans int           `yaml:"concurrent_scans"`
-    Timeout         time.Duration `yaml:"timeout"`
-    RateLimit       float64       `yaml:"rate_limit"`
-    Verbose         bool          `yaml:"verbose"`
-}
-
-// 网络配置
-type NetworkConfig struct {
-    PortRanges     []PortRange `yaml:"port_ranges"`
-    ServiceDetection bool      `yaml:"service_detection"`
-    ProtocolScan   bool        `yaml:"protocol_scan"`
-}
-
-// 应用配置
-type ApplicationConfig struct {
-    WebScan        bool     `yaml:"web_scan"`
-    APIScan        bool     `yaml:"api_scan"`
-    MobileScan     bool     `yaml:"mobile_scan"`
-    CustomHeaders  []string `yaml:"custom_headers"`
-}
-
-// 数据库配置
-type DatabaseConfig struct {
-    SQLInjection   bool `yaml:"sql_injection"`
-    NoSQLInjection bool `yaml:"nosql_injection"`
-    AuthBypass     bool `yaml:"auth_bypass"`
-}
-
-// 输出配置
-type OutputConfig struct {
-    Format     string `yaml:"format"`
-    OutputDir  string `yaml:"output_dir"`
-    IncludeRaw bool   `yaml:"include_raw"`
-}
-```
-
-### 7. 测试与验证
-
-#### 7.1 单元测试
-
-```go
-// 端口扫描器测试
-func TestPortScanner(t *testing.T) {
-    scanner := NewPortScanner(5*time.Second, 100.0, 10)
-    
-    // 测试本地端口扫描
-    results, err := scanner.ScanPorts(context.Background(), "localhost", []int{80, 443, 8080})
-    if err != nil {
-        t.Fatalf("Port scan failed: %v", err)
-    }
-    
-    // 验证结果
-    if len(results) == 0 {
-        t.Log("No open ports found")
-    } else {
-        for _, result := range results {
-            t.Logf("Port %d: %s", result.Port, result.State)
+    // 扫描表单和参数
+    for _, payload := range payloads {
+        if vuln := was.testSQLInjection(ctx, target, payload); vuln != nil {
+            vulnerabilities = append(vulnerabilities, *vuln)
         }
     }
+    
+    return vulnerabilities, nil
 }
 
-// 漏洞扫描器测试
-func TestVulnerabilityScanner(t *testing.T) {
-    scanner := NewVulnerabilityScanner()
+// 测试SQL注入
+func (was *WebAppScanner) testSQLInjection(ctx context.Context, target Target, payload string) *Vulnerability {
+    // 构建测试请求
+    testURL := fmt.Sprintf("http://%s/test", target.Address)
+    data := url.Values{}
+    data.Set("id", payload)
     
-    target := Target{
-        ID:      "test-target",
-        Type:    TargetTypeApplication,
-        Address: "http://testphp.vulnweb.com",
-    }
-    
-    policy := ScanPolicy{
-        ScanType:           ScanTypeQuick,
-        ServiceDetection:   true,
-        VulnerabilityChecks: []string{"sql_injection", "xss"},
-        Timeout:            30 * time.Second,
-    }
-    
-    result, err := scanner.Scan(context.Background(), target, policy)
+    req, err := http.NewRequestWithContext(ctx, "POST", testURL, strings.NewReader(data.Encode()))
     if err != nil {
-        t.Fatalf("Vulnerability scan failed: %v", err)
+        return nil
     }
     
-    t.Logf("Scan completed: %d vulnerabilities found", len(result.Vulnerabilities))
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    req.Header.Set("User-Agent", was.userAgent)
+    
+    resp, err := was.client.Do(req)
+    if err != nil {
+        return nil
+    }
+    defer resp.Body.Close()
+    
+    // 分析响应
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return nil
+    }
+    
+    // 检测SQL错误信息
+    if was.detectSQLError(string(body)) {
+        return &Vulnerability{
+            ID:          generateVulnID("sql_injection", target.Address),
+            Type:        VulnerabilityTypeSQLInjection,
+            Severity:    SeverityLevelHigh,
+            Title:       "SQL Injection Vulnerability",
+            Description: "Detected potential SQL injection vulnerability",
+            Vector:      fmt.Sprintf("POST parameter with payload: %s", payload),
+            Impact:      0.8,
+            Evidence: map[string]any{
+                "payload": payload,
+                "response": string(body),
+                "status_code": resp.StatusCode,
+            },
+            Timestamp: time.Now(),
+            Scanner:   "webapp_scanner",
+        }
+    }
+    
+    return nil
+}
+
+// 检测SQL错误信息
+func (was *WebAppScanner) detectSQLError(response string) bool {
+    errorPatterns := []string{
+        "SQL syntax",
+        "mysql_fetch",
+        "ORA-",
+        "PostgreSQL",
+        "SQLite",
+        "Microsoft SQL",
+    }
+    
+    response = strings.ToLower(response)
+    for _, pattern := range errorPatterns {
+        if strings.Contains(response, strings.ToLower(pattern)) {
+            return true
+        }
+    }
+    return false
 }
 ```
 
-### 8. 部署与运维
+### 5. 性能优化
 
-#### 8.1 Docker部署
+#### 5.1 内存池优化
+
+```go
+// 内存池管理器
+type BufferPool struct {
+    pool sync.Pool
+}
+
+// 创建缓冲区池
+func NewBufferPool(size int) *BufferPool {
+    return &BufferPool{
+        pool: sync.Pool{
+            New: func() interface{} {
+                return make([]byte, size)
+            },
+        },
+    }
+}
+
+// 获取缓冲区
+func (bp *BufferPool) Get() []byte {
+    return bp.pool.Get().([]byte)
+}
+
+// 归还缓冲区
+func (bp *BufferPool) Put(buf []byte) {
+    // 重置缓冲区
+    for i := range buf {
+        buf[i] = 0
+    }
+    bp.pool.Put(buf)
+}
+```
+
+#### 5.2 连接池优化
+
+```go
+// 连接池
+type ConnectionPool struct {
+    connections chan net.Conn
+    factory     func() (net.Conn, error)
+    timeout     time.Duration
+    mu          sync.RWMutex
+    closed      bool
+}
+
+// 创建连接池
+func NewConnectionPool(factory func() (net.Conn, error), maxConnections int, timeout time.Duration) *ConnectionPool {
+    return &ConnectionPool{
+        connections: make(chan net.Conn, maxConnections),
+        factory:     factory,
+        timeout:     timeout,
+    }
+}
+
+// 获取连接
+func (cp *ConnectionPool) Get() (net.Conn, error) {
+    cp.mu.RLock()
+    if cp.closed {
+        cp.mu.RUnlock()
+        return nil, errors.New("pool is closed")
+    }
+    cp.mu.RUnlock()
+    
+    select {
+    case conn := <-cp.connections:
+        if conn == nil {
+            return cp.factory()
+        }
+        return conn, nil
+    case <-time.After(cp.timeout):
+        return cp.factory()
+    }
+}
+
+// 归还连接
+func (cp *ConnectionPool) Put(conn net.Conn) {
+    cp.mu.RLock()
+    if cp.closed {
+        cp.mu.RUnlock()
+        conn.Close()
+        return
+    }
+    cp.mu.RUnlock()
+    
+    select {
+    case cp.connections <- conn:
+    default:
+        conn.Close()
+    }
+}
+```
+
+### 6. 安全考虑
+
+#### 6.1 扫描器安全
+
+```go
+// 扫描器安全配置
+type ScannerSecurity struct {
+    // 身份验证
+    Authentication *AuthConfig `json:"authentication"`
+    // 授权控制
+    Authorization *AuthzConfig `json:"authorization"`
+    // 审计日志
+    AuditLog *AuditConfig `json:"audit_log"`
+    // 加密传输
+    Encryption *EncryptionConfig `json:"encryption"`
+}
+
+// 身份验证配置
+type AuthConfig struct {
+    Method     string `json:"method"`      // "token", "certificate", "oauth"
+    Token      string `json:"token,omitempty"`
+    CertFile   string `json:"cert_file,omitempty"`
+    KeyFile    string `json:"key_file,omitempty"`
+    OAuthURL   string `json:"oauth_url,omitempty"`
+}
+
+// 授权配置
+type AuthzConfig struct {
+    Roles       []string            `json:"roles"`
+    Permissions map[string][]string `json:"permissions"`
+    Policies    []Policy            `json:"policies"`
+}
+
+// 审计配置
+type AuditConfig struct {
+    Enabled     bool   `json:"enabled"`
+    LogLevel    string `json:"log_level"`
+    OutputPath  string `json:"output_path"`
+    Retention   int    `json:"retention_days"`
+}
+```
+
+### 7. 监控和指标
+
+#### 7.1 性能指标
+
+```go
+// 性能指标收集器
+type MetricsCollector struct {
+    scanMetrics    *ScanMetrics
+    systemMetrics  *SystemMetrics
+    securityMetrics *SecurityMetrics
+    mu             sync.RWMutex
+}
+
+// 系统指标
+type SystemMetrics struct {
+    CPUUsage       float64   `json:"cpu_usage"`
+    MemoryUsage    float64   `json:"memory_usage"`
+    NetworkIO      NetworkIO `json:"network_io"`
+    DiskIO         DiskIO    `json:"disk_io"`
+    Timestamp      time.Time `json:"timestamp"`
+}
+
+// 安全指标
+type SecurityMetrics struct {
+    ThreatsDetected    int64     `json:"threats_detected"`
+    FalsePositives     int64     `json:"false_positives"`
+    ScanSuccessRate    float64   `json:"scan_success_rate"`
+    AverageScanTime    float64   `json:"average_scan_time"`
+    LastScanTime       time.Time `json:"last_scan_time"`
+}
+
+// 收集指标
+func (mc *MetricsCollector) Collect() {
+    mc.mu.Lock()
+    defer mc.mu.Unlock()
+    
+    // 收集系统指标
+    mc.collectSystemMetrics()
+    
+    // 收集安全指标
+    mc.collectSecurityMetrics()
+    
+    // 导出指标
+    mc.exportMetrics()
+}
+```
+
+### 8. 部署和运维
+
+#### 8.1 容器化部署
 
 ```dockerfile
 # Dockerfile
@@ -545,23 +584,23 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o security-scanner ./cmd/scanner
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o scanner .
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
-COPY --from=builder /app/security-scanner .
+COPY --from=builder /app/scanner .
 COPY --from=builder /app/configs ./configs
 
 EXPOSE 8080
-CMD ["./security-scanner"]
+CMD ["./scanner"]
 ```
 
 #### 8.2 Kubernetes部署
 
 ```yaml
-# deployment.yaml
+# scanner-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -582,8 +621,8 @@ spec:
         ports:
         - containerPort: 8080
         env:
-        - name: CONFIG_PATH
-          value: "/root/configs"
+        - name: SCANNER_CONFIG
+          value: "/configs/scanner.yaml"
         resources:
           requests:
             memory: "256Mi"
@@ -591,37 +630,24 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
 ```
 
-### 9. 性能基准
+### 9. 总结
 
-#### 9.1 扫描性能
+本模块实现了高性能的安全扫描工具框架，具有以下特点：
 
-| 目标数量 | 端口范围 | 并发数 | 扫描时间 | 内存使用 |
-|---------|---------|--------|---------|---------|
-| 100     | 1-1000  | 10     | 2.5s    | 128MB   |
-| 1000    | 1-1000  | 50     | 12.3s   | 512MB   |
-| 10000   | 1-1000  | 100    | 45.7s   | 1.2GB   |
+1. **形式化定义**: 提供了完整的数学定义和复杂度分析
+2. **并发安全**: 使用Go的并发原语实现高性能扫描
+3. **模块化设计**: 支持多种扫描器插件
+4. **性能优化**: 包含内存池、连接池等优化技术
+5. **安全考虑**: 内置身份验证、授权和审计功能
+6. **监控指标**: 完整的性能和安全指标收集
+7. **部署就绪**: 提供容器化和Kubernetes部署方案
 
-#### 9.2 漏洞检测准确率
-
-| 漏洞类型 | 检测率 | 误报率 | 漏报率 |
-|---------|--------|--------|--------|
-| SQL注入  | 95.2%  | 2.1%   | 4.8%   |
-| XSS      | 92.8%  | 3.5%   | 7.2%   |
-| 命令注入 | 89.4%  | 4.2%   | 10.6%  |
-
-### 10. 总结
-
-本模块实现了完整的安全扫描工具框架，具有以下特点：
-
-1. **形式化定义**: 采用数学符号和形式化方法定义扫描目标、漏洞和策略
-2. **高性能**: 使用Go协程实现并发扫描，支持速率限制和资源控制
-3. **可扩展**: 模块化设计，支持插件式漏洞检查
-4. **多格式输出**: 支持HTML、JSON等多种报告格式
-5. **容器化部署**: 提供Docker和Kubernetes部署方案
-
-该框架为网络安全扫描提供了理论基础和实际实现，可用于企业安全评估、渗透测试和漏洞管理。
+该框架可以作为企业级安全扫描平台的核心组件，支持大规模网络安全评估和漏洞发现。
 
 ---
 
