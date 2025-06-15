@@ -33,6 +33,7 @@
 ### 1.1 图的定义
 
 **定义 1.1** (图): 图 $G = (V, E)$ 是一个有序对，其中：
+
 - $V$ 是顶点集 (vertex set)，$V \neq \emptyset$
 - $E$ 是边集 (edge set)，$E \subseteq V \times V$
 
@@ -144,11 +145,15 @@ func (g *Graph) OutDegree(vertexID int) int {
 
 ### 2.1 邻接矩阵
 
-**定义 2.1** (邻接矩阵): 对于图 $G = (V, E)$，邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵，其中：
+**定义 2.1** (邻接矩阵):
+
+```latex
+对于图 $G = (V, E)$，邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵，其中：
 $$A[i][j] = \begin{cases}
 1 & \text{if } (i,j) \in E \\
 0 & \text{otherwise}
 \end{cases}$$
+```
 
 ```go
 // 邻接矩阵表示
@@ -599,7 +604,8 @@ func (uf *UnionFind) Union(x, y int) {
 
 **定理 4.1** (欧拉定理): 连通图 $G$ 存在欧拉回路的充要条件是所有顶点的度数都是偶数。
 
-**证明**: 
+**证明**:
+
 - 必要性：欧拉回路经过每条边恰好一次，每个顶点被进入和离开的次数相等。
 - 充分性：通过构造性证明，可以找到欧拉回路。
 
@@ -938,6 +944,7 @@ func (nr *NetworkRouter) Route(source, dest int) []int {
 4. **应用领域**: 网络分析、社交网络、路由算法等实际应用
 
 通过Go语言的实现，我们可以：
+
 - 高效地表示和操作图结构
 - 实现各种图算法
 - 解决实际工程问题
