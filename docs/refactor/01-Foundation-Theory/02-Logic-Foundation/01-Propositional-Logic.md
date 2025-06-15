@@ -1,872 +1,919 @@
 # 01-命题逻辑 (Propositional Logic)
 
-## 概述
+## 目录
 
-命题逻辑是形式逻辑的基础分支，研究命题之间的逻辑关系。它提供了形式化推理的数学工具，是计算机科学中逻辑编程、形式化验证、人工智能等领域的重要基础。
+- [01-命题逻辑 (Propositional Logic)](#01-命题逻辑-propositional-logic)
+  - [目录](#目录)
+  - [1. 基础概念](#1-基础概念)
+    - [1.1 命题定义](#11-命题定义)
+    - [1.2 逻辑连接词](#12-逻辑连接词)
+    - [1.3 真值表](#13-真值表)
+  - [2. 形式化语法](#2-形式化语法)
+    - [2.1 BNF语法定义](#21-bnf语法定义)
+    - [2.2 抽象语法树](#22-抽象语法树)
+    - [2.3 语法分析](#23-语法分析)
+  - [3. 语义学](#3-语义学)
+    - [3.1 解释函数](#31-解释函数)
+    - [3.2 真值赋值](#32-真值赋值)
+    - [3.3 语义等价](#33-语义等价)
+  - [4. 证明系统](#4-证明系统)
+    - [4.1 自然演绎](#41-自然演绎)
+    - [4.2 公理系统](#42-公理系统)
+    - [4.3 归结证明](#43-归结证明)
+  - [5. Go语言实现](#5-go语言实现)
+    - [5.1 命题表示](#51-命题表示)
+    - [5.2 语义求值](#52-语义求值)
+    - [5.3 证明构造](#53-证明构造)
+  - [6. 应用与扩展](#6-应用与扩展)
+    - [6.1 电路设计](#61-电路设计)
+    - [6.2 程序验证](#62-程序验证)
+    - [6.3 知识表示](#63-知识表示)
 
-## 1. 基本概念
+---
 
-### 1.1 命题
+## 1. 基础概念
 
-**定义 1.1** (命题)
-命题是一个具有确定真值的陈述句，要么为真（True），要么为假（False）。
+### 1.1 命题定义
+
+**命题**是能够判断真假的陈述句。在形式化逻辑中，我们用符号来表示命题。
 
 **形式化定义**：
 
 ```latex
-P \in \{T, F\}
+设 P 为原子命题集合，则命题逻辑的语言 L 定义为：
+- 每个 p ∈ P 都是命题
+- 如果 φ 是命题，则 ¬φ 是命题
+- 如果 φ, ψ 是命题，则 (φ ∧ ψ), (φ ∨ ψ), (φ → ψ), (φ ↔ ψ) 是命题
 ```
 
-**示例**：
+### 1.2 逻辑连接词
+
+**基本逻辑连接词**：
+
+| 连接词 | 符号 | 名称 | 含义 |
+|--------|------|------|------|
+| 否定 | ¬ | NOT | 非 |
+| 合取 | ∧ | AND | 且 |
+| 析取 | ∨ | OR | 或 |
+| 蕴含 | → | IMPLIES | 如果...那么 |
+| 等价 | ↔ | IFF | 当且仅当 |
+
+**真值表定义**：
+
+```latex
+对于任意命题 φ, ψ：
 
-- "2 + 2 = 4" 是一个真命题
-- "地球是平的" 是一个假命题
-- "x + 1 = 5" 不是命题（因为x未定义）
+¬φ 的真值：
+φ | ¬φ
+T | F
+F | T
 
-### 1.2 命题变量
+φ ∧ ψ 的真值：
+φ | ψ | φ ∧ ψ
+T | T | T
+T | F | F
+F | T | F
+F | F | F
 
-**定义 1.2** (命题变量)
-命题变量是表示命题的符号，通常用大写字母表示，如 $P, Q, R$ 等。
+φ ∨ ψ 的真值：
+φ | ψ | φ ∨ ψ
+T | T | T
+T | F | T
+F | T | T
+F | F | F
 
-**性质**：
+φ → ψ 的真值：
+φ | ψ | φ → ψ
+T | T | T
+T | F | F
+F | T | T
+F | F | T
 
-- 每个命题变量只能取真值 $T$ 或假值 $F$
-- 命题变量可以组合形成复合命题
+φ ↔ ψ 的真值：
+φ | ψ | φ ↔ ψ
+T | T | T
+T | F | F
+F | T | F
+F | F | T
+```
 
-### 1.3 逻辑连接词
+### 1.3 真值表
 
-#### 1.3.1 否定 (Negation)
+**完全真值表**：列出所有可能赋值下的真值。
 
-**定义 1.3** (否定)
-命题 $P$ 的否定记作 $\neg P$，读作"非P"。
+**示例**：命题 (p ∧ q) → (p ∨ q) 的真值表
 
-**真值表**：
+```latex
+p | q | p ∧ q | p ∨ q | (p ∧ q) → (p ∨ q)
+T | T |   T   |   T   |         T
+T | F |   F   |   T   |         T
+F | T |   F   |   T   |         T
+F | F |   F   |   F   |         T
+```
 
-| $P$ | $\neg P$ |
-|-----|----------|
-| T   | F        |
-| F   | T        |
+---
 
-**性质**：
+## 2. 形式化语法
 
-- $\neg(\neg P) \equiv P$ (双重否定律)
+### 2.1 BNF语法定义
 
-#### 1.3.2 合取 (Conjunction)
+**命题逻辑的BNF语法**：
 
-**定义 1.4** (合取)
-命题 $P$ 和 $Q$ 的合取记作 $P \land Q$，读作"P且Q"。
+```bnf
+<proposition> ::= <atomic> | <negation> | <binary>
+<atomic>      ::= <identifier>
+<negation>    ::= "¬" <proposition> | "~" <proposition>
+<binary>      ::= "(" <proposition> <operator> <proposition> ")"
+<operator>    ::= "∧" | "∨" | "→" | "↔" | "&" | "|" | "->" | "<->"
+<identifier>  ::= [a-zA-Z_][a-zA-Z0-9_]*
+```
 
-**真值表**：
+### 2.2 抽象语法树
 
-| $P$ | $Q$ | $P \land Q$ |
-|-----|-----|-------------|
-| T   | T   | T           |
-| T   | F   | F           |
-| F   | T   | F           |
-| F   | F   | F           |
+**AST节点类型**：
 
-**性质**：
+```latex
+AST节点类型定义：
+- Atom(p): 原子命题 p
+- Not(φ): 否定 ¬φ
+- And(φ, ψ): 合取 φ ∧ ψ
+- Or(φ, ψ): 析取 φ ∨ ψ
+- Implies(φ, ψ): 蕴含 φ → ψ
+- Iff(φ, ψ): 等价 φ ↔ ψ
+```
 
-- $P \land Q \equiv Q \land P$ (交换律)
-- $(P \land Q) \land R \equiv P \land (Q \land R)$ (结合律)
-- $P \land P \equiv P$ (幂等律)
+### 2.3 语法分析
 
-#### 1.3.3 析取 (Disjunction)
+**递归下降解析器**：
 
-**定义 1.5** (析取)
-命题 $P$ 和 $Q$ 的析取记作 $P \lor Q$，读作"P或Q"。
+```latex
+解析算法：
+1. 词法分析：将输入字符串转换为token序列
+2. 语法分析：根据BNF规则构建AST
+3. 语义分析：检查语法正确性
+```
 
-**真值表**：
+---
 
-| $P$ | $Q$ | $P \lor Q$ |
-|-----|-----|------------|
-| T   | T   | T          |
-| T   | F   | T          |
-| F   | T   | T          |
-| F   | F   | F          |
+## 3. 语义学
 
-**性质**：
+### 3.1 解释函数
 
-- $P \lor Q \equiv Q \lor P$ (交换律)
-- $(P \lor Q) \lor R \equiv P \lor (Q \lor R)$ (结合律)
-- $P \lor P \equiv P$ (幂等律)
+**解释函数定义**：
 
-#### 1.3.4 蕴含 (Implication)
+```latex
+设 P 为原子命题集合，解释函数 I: P → {true, false}
 
-**定义 1.6** (蕴含)
-命题 $P$ 蕴含 $Q$ 记作 $P \rightarrow Q$，读作"如果P，那么Q"。
+语义函数 ⟦·⟧_I: Formula → {true, false} 递归定义：
 
-**真值表**：
+⟦p⟧_I = I(p)                    (p ∈ P)
+⟦¬φ⟧_I = ¬⟦φ⟧_I
+⟦φ ∧ ψ⟧_I = ⟦φ⟧_I ∧ ⟦ψ⟧_I
+⟦φ ∨ ψ⟧_I = ⟦φ⟧_I ∨ ⟦ψ⟧_I
+⟦φ → ψ⟧_I = ¬⟦φ⟧_I ∨ ⟦ψ⟧_I
+⟦φ ↔ ψ⟧_I = (⟦φ⟧_I ∧ ⟦ψ⟧_I) ∨ (¬⟦φ⟧_I ∧ ¬⟦ψ⟧_I)
+```
 
-| $P$ | $Q$ | $P \rightarrow Q$ |
-|-----|-----|-------------------|
-| T   | T   | T                 |
-| T   | F   | F                 |
-| F   | T   | T                 |
-| F   | F   | T                 |
+### 3.2 真值赋值
 
-**性质**：
+**真值赋值**：为每个原子命题分配真值。
 
-- $P \rightarrow Q \equiv \neg P \lor Q$
-- $\neg(P \rightarrow Q) \equiv P \land \neg Q$
+**满足性**：
+- 如果 ⟦φ⟧_I = true，称解释 I 满足公式 φ，记作 I ⊨ φ
+- 如果 ⟦φ⟧_I = false，称解释 I 不满足公式 φ，记作 I ⊭ φ
 
-#### 1.3.5 等价 (Equivalence)
+### 3.3 语义等价
 
-**定义 1.7** (等价)
-命题 $P$ 等价于 $Q$ 记作 $P \leftrightarrow Q$，读作"P当且仅当Q"。
+**语义等价定义**：
 
-**真值表**：
+```latex
+两个公式 φ 和 ψ 语义等价，记作 φ ≡ ψ，当且仅当：
+对于所有解释 I，都有 ⟦φ⟧_I = ⟦ψ⟧_I
+```
 
-| $P$ | $Q$ | $P \leftrightarrow Q$ |
-|-----|-----|----------------------|
-| T   | T   | T                    |
-| T   | F   | F                    |
-| F   | T   | F                    |
-| F   | F   | T                    |
+**重要等价关系**：
 
-**性质**：
+```latex
+双重否定：¬¬φ ≡ φ
+德摩根律：¬(φ ∧ ψ) ≡ ¬φ ∨ ¬ψ
+         ¬(φ ∨ ψ) ≡ ¬φ ∧ ¬ψ
+分配律：φ ∧ (ψ ∨ χ) ≡ (φ ∧ ψ) ∨ (φ ∧ χ)
+       φ ∨ (ψ ∧ χ) ≡ (φ ∨ ψ) ∧ (φ ∨ χ)
+蕴含等价：φ → ψ ≡ ¬φ ∨ ψ
+等价分解：φ ↔ ψ ≡ (φ → ψ) ∧ (ψ → φ)
+```
 
-- $P \leftrightarrow Q \equiv (P \rightarrow Q) \land (Q \rightarrow P)$
+---
 
-## 2. 逻辑等价和重言式
+## 4. 证明系统
 
-### 2.1 逻辑等价
+### 4.1 自然演绎
 
-**定义 2.1** (逻辑等价)
-两个命题公式 $A$ 和 $B$ 是逻辑等价的，记作 $A \equiv B$，当且仅当它们在所有真值赋值下具有相同的真值。
+**自然演绎规则**：
 
-**定理 2.1** (德摩根律)
-对于任意命题 $P$ 和 $Q$：
+```latex
+引入规则：
+∧I: φ, ψ ⊢ φ ∧ ψ
+∨I₁: φ ⊢ φ ∨ ψ
+∨I₂: ψ ⊢ φ ∨ ψ
+→I: φ ⊢ ψ / ⊢ φ → ψ
+¬I: φ ⊢ ⊥ / ⊢ ¬φ
 
-1. $\neg(P \land Q) \equiv \neg P \lor \neg Q$
-2. $\neg(P \lor Q) \equiv \neg P \land \neg Q$
+消除规则：
+∧E₁: φ ∧ ψ ⊢ φ
+∧E₂: φ ∧ ψ ⊢ ψ
+∨E: φ ∨ ψ, φ → χ, ψ → χ ⊢ χ
+→E: φ, φ → ψ ⊢ ψ
+¬E: φ, ¬φ ⊢ ⊥
+```
 
-**证明**：
-通过真值表验证：
+### 4.2 公理系统
 
-| $P$ | $Q$ | $P \land Q$ | $\neg(P \land Q)$ | $\neg P$ | $\neg Q$ | $\neg P \lor \neg Q$ |
-|-----|-----|-------------|-------------------|----------|----------|---------------------|
-| T   | T   | T           | F                 | F        | F        | F                   |
-| T   | F   | F           | T                 | F        | T        | T                   |
-| F   | T   | F           | T                 | T        | F        | T                   |
-| F   | F   | F           | T                 | T        | T        | T                   |
+**经典命题逻辑公理**：
 
-### 2.2 重言式和矛盾式
+```latex
+A1: φ → (ψ → φ)
+A2: (φ → (ψ → χ)) → ((φ → ψ) → (φ → χ))
+A3: (¬φ → ¬ψ) → (ψ → φ)
 
-**定义 2.2** (重言式)
-一个命题公式是重言式，当且仅当它在所有真值赋值下都为真。
+推理规则：MP (Modus Ponens)
+φ, φ → ψ / ψ
+```
 
-**定义 2.3** (矛盾式)
-一个命题公式是矛盾式，当且仅当它在所有真值赋值下都为假。
+### 4.3 归结证明
 
-**定义 2.4** (可满足式)
-一个命题公式是可满足式，当且仅当它在至少一个真值赋值下为真。
+**归结规则**：
 
-**定理 2.2** (重言式性质)
+```latex
+归结：从子句 C₁ ∨ p 和 C₂ ∨ ¬p 推出 C₁ ∨ C₂
+```
 
-1. 如果 $A$ 是重言式，则 $\neg A$ 是矛盾式
-2. 如果 $A$ 是矛盾式，则 $\neg A$ 是重言式
-3. 如果 $A$ 和 $B$ 都是重言式，则 $A \land B$ 是重言式
+---
 
-## 3. 推理规则
+## 5. Go语言实现
 
-### 3.1 基本推理规则
-
-#### 3.1.1 假言推理 (Modus Ponens)
-
-**规则**：
-$$\frac{P \rightarrow Q \quad P}{Q}$$
-
-**含义**：如果 $P \rightarrow Q$ 为真且 $P$ 为真，则 $Q$ 为真。
-
-#### 3.1.2 假言三段论 (Hypothetical Syllogism)
-
-**规则**：
-$$\frac{P \rightarrow Q \quad Q \rightarrow R}{P \rightarrow R}$$
-
-**含义**：如果 $P \rightarrow Q$ 为真且 $Q \rightarrow R$ 为真，则 $P \rightarrow R$ 为真。
-
-#### 3.1.3 析取三段论 (Disjunctive Syllogism)
-
-**规则**：
-$$\frac{P \lor Q \quad \neg P}{Q}$$
-
-**含义**：如果 $P \lor Q$ 为真且 $\neg P$ 为真，则 $Q$ 为真。
-
-### 3.2 证明方法
-
-#### 3.2.1 直接证明
-
-**方法**：从前提直接推导出结论。
-
-**示例**：
-证明：如果 $P \rightarrow Q$ 且 $Q \rightarrow R$，则 $P \rightarrow R$
-
-**证明**：
-
-1. $P \rightarrow Q$ (前提)
-2. $Q \rightarrow R$ (前提)
-3. $P \rightarrow R$ (假言三段论，从1和2)
-
-#### 3.2.2 反证法
-
-**方法**：假设结论为假，推导出矛盾。
-
-**示例**：
-证明：$\neg(P \land \neg P)$
-
-**证明**：
-
-1. 假设 $P \land \neg P$ 为真
-2. 从1可得 $P$ 为真
-3. 从1可得 $\neg P$ 为真
-4. 2和3矛盾
-5. 因此假设错误，$\neg(P \land \neg P)$ 为真
-
-## 4. Go语言实现
-
-### 4.1 命题逻辑基础结构
+### 5.1 命题表示
 
 ```go
 package propositional
 
 import (
-    "fmt"
-    "strings"
+	"fmt"
+	"strings"
 )
 
-// TruthValue 真值类型
-type TruthValue bool
-
-const (
-    False TruthValue = false
-    True  TruthValue = true
-)
-
-// String 真值的字符串表示
-func (tv TruthValue) String() string {
-    if tv {
-        return "T"
-    }
-    return "F"
-}
-
-// Proposition 命题接口
+// Proposition 表示命题逻辑公式
 type Proposition interface {
-    Evaluate(assignment map[string]TruthValue) TruthValue
-    String() string
-    GetVariables() map[string]bool
+	String() string
+	Evaluate(interpretation map[string]bool) bool
+	GetAtoms() map[string]bool
 }
 
-// Variable 命题变量
-type Variable struct {
-    Name string
+// Atom 原子命题
+type Atom struct {
+	Name string
 }
 
-// NewVariable 创建命题变量
-func NewVariable(name string) *Variable {
-    return &Variable{Name: name}
+func (a Atom) String() string {
+	return a.Name
 }
 
-// Evaluate 计算变量在给定赋值下的真值
-func (v *Variable) Evaluate(assignment map[string]TruthValue) TruthValue {
-    if value, exists := assignment[v.Name]; exists {
-        return value
-    }
-    return False // 默认值
+func (a Atom) Evaluate(interpretation map[string]bool) bool {
+	return interpretation[a.Name]
 }
 
-// String 变量的字符串表示
-func (v *Variable) String() string {
-    return v.Name
+func (a Atom) GetAtoms() map[string]bool {
+	return map[string]bool{a.Name: true}
 }
 
-// GetVariables 获取变量集合
-func (v *Variable) GetVariables() map[string]bool {
-    return map[string]bool{v.Name: true}
+// Not 否定
+type Not struct {
+	Formula Proposition
 }
 
-// Negation 否定
-type Negation struct {
-    Operand Proposition
+func (n Not) String() string {
+	return fmt.Sprintf("¬(%s)", n.Formula)
 }
 
-// NewNegation 创建否定
-func NewNegation(operand Proposition) *Negation {
-    return &Negation{Operand: operand}
+func (n Not) Evaluate(interpretation map[string]bool) bool {
+	return !n.Formula.Evaluate(interpretation)
 }
 
-// Evaluate 计算否定的真值
-func (n *Negation) Evaluate(assignment map[string]TruthValue) TruthValue {
-    return !n.Operand.Evaluate(assignment)
+func (n Not) GetAtoms() map[string]bool {
+	return n.Formula.GetAtoms()
 }
 
-// String 否定的字符串表示
-func (n *Negation) String() string {
-    return fmt.Sprintf("¬(%s)", n.Operand.String())
+// And 合取
+type And struct {
+	Left, Right Proposition
 }
 
-// GetVariables 获取变量集合
-func (n *Negation) GetVariables() map[string]bool {
-    return n.Operand.GetVariables()
+func (a And) String() string {
+	return fmt.Sprintf("(%s ∧ %s)", a.Left, a.Right)
 }
 
-// Conjunction 合取
-type Conjunction struct {
-    Left  Proposition
-    Right Proposition
+func (a And) Evaluate(interpretation map[string]bool) bool {
+	return a.Left.Evaluate(interpretation) && a.Right.Evaluate(interpretation)
 }
 
-// NewConjunction 创建合取
-func NewConjunction(left, right Proposition) *Conjunction {
-    return &Conjunction{Left: left, Right: right}
+func (a And) GetAtoms() map[string]bool {
+	atoms := a.Left.GetAtoms()
+	for atom := range a.Right.GetAtoms() {
+		atoms[atom] = true
+	}
+	return atoms
 }
 
-// Evaluate 计算合取的真值
-func (c *Conjunction) Evaluate(assignment map[string]TruthValue) TruthValue {
-    return c.Left.Evaluate(assignment) && c.Right.Evaluate(assignment)
+// Or 析取
+type Or struct {
+	Left, Right Proposition
 }
 
-// String 合取的字符串表示
-func (c *Conjunction) String() string {
-    return fmt.Sprintf("(%s ∧ %s)", c.Left.String(), c.Right.String())
+func (o Or) String() string {
+	return fmt.Sprintf("(%s ∨ %s)", o.Left, o.Right)
 }
 
-// GetVariables 获取变量集合
-func (c *Conjunction) GetVariables() map[string]bool {
-    vars := c.Left.GetVariables()
-    for v := range c.Right.GetVariables() {
-        vars[v] = true
-    }
-    return vars
+func (o Or) Evaluate(interpretation map[string]bool) bool {
+	return o.Left.Evaluate(interpretation) || o.Right.Evaluate(interpretation)
 }
 
-// Disjunction 析取
-type Disjunction struct {
-    Left  Proposition
-    Right Proposition
+func (o Or) GetAtoms() map[string]bool {
+	atoms := o.Left.GetAtoms()
+	for atom := range o.Right.GetAtoms() {
+		atoms[atom] = true
+	}
+	return atoms
 }
 
-// NewDisjunction 创建析取
-func NewDisjunction(left, right Proposition) *Disjunction {
-    return &Disjunction{Left: left, Right: right}
+// Implies 蕴含
+type Implies struct {
+	Left, Right Proposition
 }
 
-// Evaluate 计算析取的真值
-func (d *Disjunction) Evaluate(assignment map[string]TruthValue) TruthValue {
-    return d.Left.Evaluate(assignment) || d.Right.Evaluate(assignment)
+func (i Implies) String() string {
+	return fmt.Sprintf("(%s → %s)", i.Left, i.Right)
 }
 
-// String 析取的字符串表示
-func (d *Disjunction) String() string {
-    return fmt.Sprintf("(%s ∨ %s)", d.Left.String(), d.Right.String())
+func (i Implies) Evaluate(interpretation map[string]bool) bool {
+	return !i.Left.Evaluate(interpretation) || i.Right.Evaluate(interpretation)
 }
 
-// GetVariables 获取变量集合
-func (d *Disjunction) GetVariables() map[string]bool {
-    vars := d.Left.GetVariables()
-    for v := range d.Right.GetVariables() {
-        vars[v] = true
-    }
-    return vars
+func (i Implies) GetAtoms() map[string]bool {
+	atoms := i.Left.GetAtoms()
+	for atom := range i.Right.GetAtoms() {
+		atoms[atom] = true
+	}
+	return atoms
 }
 
-// Implication 蕴含
-type Implication struct {
-    Antecedent Proposition
-    Consequent Proposition
+// Iff 等价
+type Iff struct {
+	Left, Right Proposition
 }
 
-// NewImplication 创建蕴含
-func NewImplication(antecedent, consequent Proposition) *Implication {
-    return &Implication{
-        Antecedent: antecedent,
-        Consequent: consequent,
-    }
+func (iff Iff) String() string {
+	return fmt.Sprintf("(%s ↔ %s)", iff.Left, iff.Right)
 }
 
-// Evaluate 计算蕴含的真值
-func (i *Implication) Evaluate(assignment map[string]TruthValue) TruthValue {
-    antecedent := i.Antecedent.Evaluate(assignment)
-    consequent := i.Consequent.Evaluate(assignment)
-    
-    // P → Q ≡ ¬P ∨ Q
-    return !antecedent || consequent
+func (iff Iff) Evaluate(interpretation map[string]bool) bool {
+	return iff.Left.Evaluate(interpretation) == iff.Right.Evaluate(interpretation)
 }
 
-// String 蕴含的字符串表示
-func (i *Implication) String() string {
-    return fmt.Sprintf("(%s → %s)", i.Antecedent.String(), i.Consequent.String())
-}
-
-// GetVariables 获取变量集合
-func (i *Implication) GetVariables() map[string]bool {
-    vars := i.Antecedent.GetVariables()
-    for v := range i.Consequent.GetVariables() {
-        vars[v] = true
-    }
-    return vars
-}
-
-// Equivalence 等价
-type Equivalence struct {
-    Left  Proposition
-    Right Proposition
-}
-
-// NewEquivalence 创建等价
-func NewEquivalence(left, right Proposition) *Equivalence {
-    return &Equivalence{Left: left, Right: right}
-}
-
-// Evaluate 计算等价的真值
-func (e *Equivalence) Evaluate(assignment map[string]TruthValue) TruthValue {
-    left := e.Left.Evaluate(assignment)
-    right := e.Right.Evaluate(assignment)
-    
-    // P ↔ Q ≡ (P → Q) ∧ (Q → P)
-    return left == right
-}
-
-// String 等价的字符串表示
-func (e *Equivalence) String() string {
-    return fmt.Sprintf("(%s ↔ %s)", e.Left.String(), e.Right.String())
-}
-
-// GetVariables 获取变量集合
-func (e *Equivalence) GetVariables() map[string]bool {
-    vars := e.Left.GetVariables()
-    for v := range e.Right.GetVariables() {
-        vars[v] = true
-    }
-    return vars
+func (iff Iff) GetAtoms() map[string]bool {
+	atoms := iff.Left.GetAtoms()
+	for atom := range iff.Right.GetAtoms() {
+		atoms[atom] = true
+	}
+	return atoms
 }
 ```
 
-### 4.2 真值表生成
+### 5.2 语义求值
 
 ```go
-// TruthTable 真值表
-type TruthTable struct {
-    Formula    Proposition
-    Variables  []string
-    Assignments [][]TruthValue
-    Results    []TruthValue
+// TruthTable 生成真值表
+func TruthTable(formula Proposition) [][]bool {
+	atoms := formula.GetAtoms()
+	atomList := make([]string, 0, len(atoms))
+	for atom := range atoms {
+		atomList = append(atomList, atom)
+	}
+	
+	// 生成所有可能的赋值
+	assignments := generateAssignments(atomList)
+	
+	// 计算每个赋值下的真值
+	table := make([][]bool, 0, len(assignments))
+	for _, assignment := range assignments {
+		result := formula.Evaluate(assignment)
+		row := make([]bool, 0, len(atomList)+1)
+		for _, atom := range atomList {
+			row = append(row, assignment[atom])
+		}
+		row = append(row, result)
+		table = append(table, row)
+	}
+	
+	return table
 }
 
-// NewTruthTable 创建真值表
-func NewTruthTable(formula Proposition) *TruthTable {
-    vars := formula.GetVariables()
-    varNames := make([]string, 0, len(vars))
-    for name := range vars {
-        varNames = append(varNames, name)
-    }
-    
-    return &TruthTable{
-        Formula:   formula,
-        Variables: varNames,
-    }
-}
-
-// Generate 生成真值表
-func (tt *TruthTable) Generate() {
-    n := len(tt.Variables)
-    numAssignments := 1 << n // 2^n
-    
-    tt.Assignments = make([][]TruthValue, numAssignments)
-    tt.Results = make([]TruthValue, numAssignments)
-    
-    for i := 0; i < numAssignments; i++ {
-        assignment := make(map[string]TruthValue)
-        tt.Assignments[i] = make([]TruthValue, n)
-        
-        for j := 0; j < n; j++ {
-            value := (i & (1 << j)) != 0
-            assignment[tt.Variables[j]] = TruthValue(value)
-            tt.Assignments[i][j] = TruthValue(value)
-        }
-        
-        tt.Results[i] = tt.Formula.Evaluate(assignment)
-    }
-}
-
-// Print 打印真值表
-func (tt *TruthTable) Print() {
-    if len(tt.Assignments) == 0 {
-        tt.Generate()
-    }
-    
-    // 打印表头
-    for _, varName := range tt.Variables {
-        fmt.Printf("%-8s", varName)
-    }
-    fmt.Printf("%-20s\n", tt.Formula.String())
-    
-    // 打印分隔线
-    for i := 0; i < len(tt.Variables); i++ {
-        fmt.Print("--------")
-    }
-    fmt.Println("--------------------")
-    
-    // 打印真值表
-    for i, assignment := range tt.Assignments {
-        for _, value := range assignment {
-            fmt.Printf("%-8s", value.String())
-        }
-        fmt.Printf("%-20s\n", tt.Results[i].String())
-    }
+// generateAssignments 生成所有可能的真值赋值
+func generateAssignments(atoms []string) []map[string]bool {
+	if len(atoms) == 0 {
+		return []map[string]bool{{}}
+	}
+	
+	// 递归生成
+	subAssignments := generateAssignments(atoms[1:])
+	assignments := make([]map[string]bool, 0, 2*len(subAssignments))
+	
+	for _, sub := range subAssignments {
+		// 当前原子为true
+		trueAssignment := make(map[string]bool)
+		for k, v := range sub {
+			trueAssignment[k] = v
+		}
+		trueAssignment[atoms[0]] = true
+		assignments = append(assignments, trueAssignment)
+		
+		// 当前原子为false
+		falseAssignment := make(map[string]bool)
+		for k, v := range sub {
+			falseAssignment[k] = v
+		}
+		falseAssignment[atoms[0]] = false
+		assignments = append(assignments, falseAssignment)
+	}
+	
+	return assignments
 }
 
 // IsTautology 判断是否为重言式
-func (tt *TruthTable) IsTautology() bool {
-    if len(tt.Results) == 0 {
-        tt.Generate()
-    }
-    
-    for _, result := range tt.Results {
-        if !result {
-            return false
-        }
-    }
-    return true
+func IsTautology(formula Proposition) bool {
+	assignments := generateAssignments(getAtomList(formula.GetAtoms()))
+	for _, assignment := range assignments {
+		if !formula.Evaluate(assignment) {
+			return false
+		}
+	}
+	return true
 }
 
 // IsContradiction 判断是否为矛盾式
-func (tt *TruthTable) IsContradiction() bool {
-    if len(tt.Results) == 0 {
-        tt.Generate()
-    }
-    
-    for _, result := range tt.Results {
-        if result {
-            return false
-        }
-    }
-    return true
+func IsContradiction(formula Proposition) bool {
+	assignments := generateAssignments(getAtomList(formula.GetAtoms()))
+	for _, assignment := range assignments {
+		if formula.Evaluate(assignment) {
+			return false
+		}
+	}
+	return true
 }
 
 // IsSatisfiable 判断是否为可满足式
-func (tt *TruthTable) IsSatisfiable() bool {
-    if len(tt.Results) == 0 {
-        tt.Generate()
-    }
-    
-    for _, result := range tt.Results {
-        if result {
-            return true
-        }
-    }
-    return false
+func IsSatisfiable(formula Proposition) bool {
+	assignments := generateAssignments(getAtomList(formula.GetAtoms()))
+	for _, assignment := range assignments {
+		if formula.Evaluate(assignment) {
+			return true
+		}
+	}
+	return false
+}
+
+func getAtomList(atoms map[string]bool) []string {
+	atomList := make([]string, 0, len(atoms))
+	for atom := range atoms {
+		atomList = append(atomList, atom)
+	}
+	return atomList
 }
 ```
 
-### 4.3 逻辑推理引擎
+### 5.3 证明构造
 
 ```go
-// InferenceEngine 推理引擎
-type InferenceEngine struct {
-    Premises []Proposition
-    Rules    []InferenceRule
+// Proof 表示证明
+type Proof struct {
+	Premises []Proposition
+	Conclusion Proposition
+	Steps     []ProofStep
 }
 
-// InferenceRule 推理规则
-type InferenceRule struct {
-    Name     string
-    Premises []Proposition
-    Conclusion Proposition
+// ProofStep 证明步骤
+type ProofStep struct {
+	Formula Proposition
+	Rule    string
+	Lines   []int // 引用前面的行
 }
 
-// NewInferenceEngine 创建推理引擎
-func NewInferenceEngine() *InferenceEngine {
-    return &InferenceEngine{
-        Premises: make([]Proposition, 0),
-        Rules:    make([]InferenceRule, 0),
-    }
+// NaturalDeduction 自然演绎证明系统
+type NaturalDeduction struct {
+	lines []ProofStep
 }
 
 // AddPremise 添加前提
-func (ie *InferenceEngine) AddPremise(premise Proposition) {
-    ie.Premises = append(ie.Premises, premise)
+func (nd *NaturalDeduction) AddPremise(formula Proposition) {
+	nd.lines = append(nd.lines, ProofStep{
+		Formula: formula,
+		Rule:    "Premise",
+		Lines:   nil,
+	})
 }
 
-// AddRule 添加推理规则
-func (ie *InferenceEngine) AddRule(rule InferenceRule) {
-    ie.Rules = append(ie.Rules, rule)
+// AndIntroduction 合取引入
+func (nd *NaturalDeduction) AndIntroduction(line1, line2 int) error {
+	if line1 >= len(nd.lines) || line2 >= len(nd.lines) {
+		return fmt.Errorf("invalid line numbers")
+	}
+	
+	formula1 := nd.lines[line1].Formula
+	formula2 := nd.lines[line2].Formula
+	
+	nd.lines = append(nd.lines, ProofStep{
+		Formula: And{Left: formula1, Right: formula2},
+		Rule:    "∧I",
+		Lines:   []int{line1, line2},
+	})
+	
+	return nil
 }
 
-// ModusPonens 假言推理规则
-func ModusPonens(implication, antecedent Proposition) Proposition {
-    if imp, ok := implication.(*Implication); ok {
-        // 检查前提是否匹配
-        if imp.Antecedent.String() == antecedent.String() {
-            return imp.Consequent
-        }
-    }
-    return nil
+// AndElimination1 合取消除1
+func (nd *NaturalDeduction) AndElimination1(line int) error {
+	if line >= len(nd.lines) {
+		return fmt.Errorf("invalid line number")
+	}
+	
+	formula := nd.lines[line].Formula
+	if and, ok := formula.(And); ok {
+		nd.lines = append(nd.lines, ProofStep{
+			Formula: and.Left,
+			Rule:    "∧E₁",
+			Lines:   []int{line},
+		})
+		return nil
+	}
+	
+	return fmt.Errorf("formula is not a conjunction")
 }
 
-// HypotheticalSyllogism 假言三段论规则
-func HypotheticalSyllogism(imp1, imp2 Proposition) Proposition {
-    if i1, ok1 := imp1.(*Implication); ok1 {
-        if i2, ok2 := imp2.(*Implication); ok2 {
-            // 检查中间项是否匹配
-            if i1.Consequent.String() == i2.Antecedent.String() {
-                return NewImplication(i1.Antecedent, i2.Consequent)
-            }
-        }
-    }
-    return nil
+// AndElimination2 合取消除2
+func (nd *NaturalDeduction) AndElimination2(line int) error {
+	if line >= len(nd.lines) {
+		return fmt.Errorf("invalid line number")
+	}
+	
+	formula := nd.lines[line].Formula
+	if and, ok := formula.(And); ok {
+		nd.lines = append(nd.lines, ProofStep{
+			Formula: and.Right,
+			Rule:    "∧E₂",
+			Lines:   []int{line},
+		})
+		return nil
+	}
+	
+	return fmt.Errorf("formula is not a conjunction")
 }
 
-// DisjunctiveSyllogism 析取三段论规则
-func DisjunctiveSyllogism(disjunction, negation Proposition) Proposition {
-    if disj, ok := disjunction.(*Disjunction); ok {
-        if neg, ok := negation.(*Negation); ok {
-            // 检查否定项是否匹配
-            if disj.Left.String() == neg.Operand.String() {
-                return disj.Right
-            }
-            if disj.Right.String() == neg.Operand.String() {
-                return disj.Left
-            }
-        }
-    }
-    return nil
+// OrIntroduction1 析取引入1
+func (nd *NaturalDeduction) OrIntroduction1(line int, right Proposition) error {
+	if line >= len(nd.lines) {
+		return fmt.Errorf("invalid line number")
+	}
+	
+	formula := nd.lines[line].Formula
+	nd.lines = append(nd.lines, ProofStep{
+		Formula: Or{Left: formula, Right: right},
+		Rule:    "∨I₁",
+		Lines:   []int{line},
+	})
+	
+	return nil
 }
 
-// Prove 证明结论
-func (ie *InferenceEngine) Prove(conclusion Proposition) bool {
-    // 简化的证明算法
-    // 在实际应用中，需要更复杂的证明策略
-    
-    // 检查结论是否已经在前提中
-    for _, premise := range ie.Premises {
-        if premise.String() == conclusion.String() {
-            return true
-        }
-    }
-    
-    // 尝试应用推理规则
-    for _, rule := range ie.Rules {
-        // 检查规则的前提是否满足
-        premisesSatisfied := true
-        for _, rulePremise := range rule.Premises {
-            found := false
-            for _, premise := range ie.Premises {
-                if premise.String() == rulePremise.String() {
-                    found = true
-                    break
-                }
-            }
-            if !found {
-                premisesSatisfied = false
-                break
-            }
-        }
-        
-        if premisesSatisfied && rule.Conclusion.String() == conclusion.String() {
-            return true
-        }
-    }
-    
-    return false
+// OrIntroduction2 析取引入2
+func (nd *NaturalDeduction) OrIntroduction2(left Proposition, line int) error {
+	if line >= len(nd.lines) {
+		return fmt.Errorf("invalid line number")
+	}
+	
+	formula := nd.lines[line].Formula
+	nd.lines = append(nd.lines, ProofStep{
+		Formula: Or{Left: left, Right: formula},
+		Rule:    "∨I₂",
+		Lines:   []int{line},
+	})
+	
+	return nil
+}
+
+// ImplicationIntroduction 蕴含引入
+func (nd *NaturalDeduction) ImplicationIntroduction(assumptionLine, conclusionLine int) error {
+	if assumptionLine >= len(nd.lines) || conclusionLine >= len(nd.lines) {
+		return fmt.Errorf("invalid line numbers")
+	}
+	
+	assumption := nd.lines[assumptionLine].Formula
+	conclusion := nd.lines[conclusionLine].Formula
+	
+	nd.lines = append(nd.lines, ProofStep{
+		Formula: Implies{Left: assumption, Right: conclusion},
+		Rule:    "→I",
+		Lines:   []int{assumptionLine, conclusionLine},
+	})
+	
+	return nil
+}
+
+// ModusPonens 假言推理
+func (nd *NaturalDeduction) ModusPonens(implicationLine, antecedentLine int) error {
+	if implicationLine >= len(nd.lines) || antecedentLine >= len(nd.lines) {
+		return fmt.Errorf("invalid line numbers")
+	}
+	
+	implication := nd.lines[implicationLine].Formula
+	antecedent := nd.lines[antecedentLine].Formula
+	
+	if impl, ok := implication.(Implies); ok {
+		// 检查前件是否匹配
+		if impl.Left.String() == antecedent.String() {
+			nd.lines = append(nd.lines, ProofStep{
+				Formula: impl.Right,
+				Rule:    "MP",
+				Lines:   []int{implicationLine, antecedentLine},
+			})
+			return nil
+		}
+	}
+	
+	return fmt.Errorf("invalid modus ponens application")
+}
+
+// PrintProof 打印证明
+func (nd *NaturalDeduction) PrintProof() {
+	fmt.Println("Proof:")
+	fmt.Println("Line | Formula | Rule | Lines")
+	fmt.Println("-----|---------|------|------")
+	for i, step := range nd.lines {
+		linesStr := ""
+		if len(step.Lines) > 0 {
+			linesStr = fmt.Sprintf("%v", step.Lines)
+		}
+		fmt.Printf("%4d | %-7s | %-4s | %s\n", 
+			i+1, step.Formula.String(), step.Rule, linesStr)
+	}
 }
 ```
 
-## 5. 应用实例
+---
 
-### 5.1 逻辑电路设计
+## 6. 应用与扩展
+
+### 6.1 电路设计
+
+**逻辑门实现**：
 
 ```go
 // LogicGate 逻辑门接口
 type LogicGate interface {
-    Evaluate(inputs []bool) bool
-    GetInputCount() int
+	Compute(inputs []bool) bool
 }
 
 // ANDGate 与门
 type ANDGate struct{}
 
-// Evaluate 与门计算
-func (ag *ANDGate) Evaluate(inputs []bool) bool {
-    for _, input := range inputs {
-        if !input {
-            return false
-        }
-    }
-    return true
-}
-
-// GetInputCount 获取输入数量
-func (ag *ANDGate) GetInputCount() int {
-    return 2 // 标准与门有2个输入
+func (g ANDGate) Compute(inputs []bool) bool {
+	for _, input := range inputs {
+		if !input {
+			return false
+		}
+	}
+	return true
 }
 
 // ORGate 或门
 type ORGate struct{}
 
-// Evaluate 或门计算
-func (og *ORGate) Evaluate(inputs []bool) bool {
-    for _, input := range inputs {
-        if input {
-            return true
-        }
-    }
-    return false
-}
-
-// GetInputCount 获取输入数量
-func (og *ORGate) GetInputCount() int {
-    return 2 // 标准或门有2个输入
+func (g ORGate) Compute(inputs []bool) bool {
+	for _, input := range inputs {
+		if input {
+			return true
+		}
+	}
+	return false
 }
 
 // NOTGate 非门
 type NOTGate struct{}
 
-// Evaluate 非门计算
-func (ng *NOTGate) Evaluate(inputs []bool) bool {
-    if len(inputs) != 1 {
-        panic("非门只能有一个输入")
-    }
-    return !inputs[0]
+func (g NOTGate) Compute(inputs []bool) bool {
+	if len(inputs) != 1 {
+		panic("NOT gate requires exactly one input")
+	}
+	return !inputs[0]
 }
 
-// GetInputCount 获取输入数量
-func (ng *NOTGate) GetInputCount() int {
-    return 1
+// Circuit 电路
+type Circuit struct {
+	gates []LogicGate
+	connections [][]int
 }
 
-// LogicCircuit 逻辑电路
-type LogicCircuit struct {
-    gates  []LogicGate
-    inputs []string
-    outputs []string
-    connections map[string][]string
+func (c *Circuit) AddGate(gate LogicGate) {
+	c.gates = append(c.gates, gate)
 }
 
-// NewLogicCircuit 创建逻辑电路
-func NewLogicCircuit() *LogicCircuit {
-    return &LogicCircuit{
-        gates:       make([]LogicGate, 0),
-        inputs:      make([]string, 0),
-        outputs:     make([]string, 0),
-        connections: make(map[string][]string),
-    }
+func (c *Circuit) Connect(from, to int) {
+	if len(c.connections) <= to {
+		c.connections = append(c.connections, make([][]int, to-len(c.connections)+1)...)
+	}
+	c.connections[to] = append(c.connections[to], from)
 }
 
-// AddGate 添加逻辑门
-func (lc *LogicCircuit) AddGate(gate LogicGate, name string) {
-    lc.gates = append(lc.gates, gate)
-    lc.connections[name] = make([]string, 0)
-}
-
-// Connect 连接门
-func (lc *LogicCircuit) Connect(from, to string) {
-    if connections, exists := lc.connections[from]; exists {
-        lc.connections[from] = append(connections, to)
-    }
-}
-
-// Evaluate 计算电路输出
-func (lc *LogicCircuit) Evaluate(inputs map[string]bool) map[string]bool {
-    // 简化的电路评估
-    // 在实际应用中，需要拓扑排序和更复杂的评估逻辑
-    outputs := make(map[string]bool)
-    
-    // 复制输入
-    for input := range inputs {
-        outputs[input] = inputs[input]
-    }
-    
-    return outputs
+func (c *Circuit) Evaluate(inputs []bool) []bool {
+	outputs := make([]bool, len(c.gates))
+	
+	// 复制输入
+	copy(outputs, inputs)
+	
+	// 计算每个门的输出
+	for i := len(inputs); i < len(c.gates); i++ {
+		gateInputs := make([]bool, 0)
+		for _, conn := range c.connections[i] {
+			gateInputs = append(gateInputs, outputs[conn])
+		}
+		outputs[i] = c.gates[i].Compute(gateInputs)
+	}
+	
+	return outputs
 }
 ```
 
-### 5.2 知识表示系统
+### 6.2 程序验证
+
+**前置条件和后置条件**：
+
+```go
+// Precondition 前置条件
+type Precondition struct {
+	Formula Proposition
+}
+
+// Postcondition 后置条件
+type Postcondition struct {
+	Formula Proposition
+}
+
+// HoareTriple 霍尔三元组 {P} C {Q}
+type HoareTriple struct {
+	Precondition  Precondition
+	Command       string
+	Postcondition Postcondition
+}
+
+// VerifyHoareTriple 验证霍尔三元组
+func VerifyHoareTriple(triple HoareTriple) bool {
+	// 这里需要实现具体的验证逻辑
+	// 实际应用中会使用更复杂的程序分析技术
+	return true
+}
+
+// Example: 验证交换程序
+func VerifySwap() {
+	// {x = A ∧ y = B} temp := x; x := y; y := temp {x = B ∧ y = A}
+	
+	pre := Precondition{
+		Formula: And{
+			Left:  Atom{Name: "x=A"},
+			Right: Atom{Name: "y=B"},
+		},
+	}
+	
+	post := Postcondition{
+		Formula: And{
+			Left:  Atom{Name: "x=B"},
+			Right: Atom{Name: "y=A"},
+		},
+	}
+	
+	triple := HoareTriple{
+		Precondition:  pre,
+		Command:       "temp := x; x := y; y := temp",
+		Postcondition: post,
+	}
+	
+	if VerifyHoareTriple(triple) {
+		fmt.Println("Swap program is correct")
+	} else {
+		fmt.Println("Swap program is incorrect")
+	}
+}
+```
+
+### 6.3 知识表示
+
+**知识库系统**：
 
 ```go
 // KnowledgeBase 知识库
 type KnowledgeBase struct {
-    facts    []Proposition
-    rules    []Implication
-    engine   *InferenceEngine
-}
-
-// NewKnowledgeBase 创建知识库
-func NewKnowledgeBase() *KnowledgeBase {
-    return &KnowledgeBase{
-        facts:  make([]Proposition, 0),
-        rules:  make([]Implication, 0),
-        engine: NewInferenceEngine(),
-    }
+	facts    []Proposition
+	rules    []Implication
+	query    Proposition
 }
 
 // AddFact 添加事实
 func (kb *KnowledgeBase) AddFact(fact Proposition) {
-    kb.facts = append(kb.facts, fact)
-    kb.engine.AddPremise(fact)
+	kb.facts = append(kb.facts, fact)
 }
 
 // AddRule 添加规则
 func (kb *KnowledgeBase) AddRule(rule Implication) {
-    kb.rules = append(kb.rules, rule)
-    kb.engine.AddPremise(&rule)
+	kb.rules = append(kb.rules, rule)
 }
 
 // Query 查询
 func (kb *KnowledgeBase) Query(query Proposition) bool {
-    return kb.engine.Prove(query)
+	// 简单的前向推理
+	knownFacts := make(map[string]bool)
+	
+	// 初始化已知事实
+	for _, fact := range kb.facts {
+		if atom, ok := fact.(Atom); ok {
+			knownFacts[atom.Name] = true
+		}
+	}
+	
+	// 应用规则
+	changed := true
+	for changed {
+		changed = false
+		for _, rule := range kb.rules {
+			if rule.Left.Evaluate(knownFacts) && !rule.Right.Evaluate(knownFacts) {
+				// 可以推导出新事实
+				if atom, ok := rule.Right.(Atom); ok {
+					knownFacts[atom.Name] = true
+					changed = true
+				}
+			}
+		}
+	}
+	
+	return query.Evaluate(knownFacts)
 }
 
-// ForwardChaining 前向推理
-func (kb *KnowledgeBase) ForwardChaining() []Proposition {
-    conclusions := make([]Proposition, 0)
-    
-    // 简化的前向推理算法
-    for _, rule := range kb.rules {
-        if kb.engine.Prove(rule.Antecedent) {
-            conclusions = append(conclusions, rule.Consequent)
-        }
-    }
-    
-    return conclusions
-}
-
-// BackwardChaining 后向推理
-func (kb *KnowledgeBase) BackwardChaining(goal Proposition) bool {
-    // 简化的后向推理算法
-    return kb.engine.Prove(goal)
+// Example: 动物知识库
+func AnimalKnowledgeBase() {
+	kb := &KnowledgeBase{}
+	
+	// 添加事实
+	kb.AddFact(Atom{Name: "has_fur"})      // 有毛
+	kb.AddFact(Atom{Name: "gives_milk"})   // 产奶
+	
+	// 添加规则
+	kb.AddRule(Implies{
+		Left: And{
+			Left:  Atom{Name: "has_fur"},
+			Right: Atom{Name: "gives_milk"},
+		},
+		Right: Atom{Name: "is_mammal"},
+	})
+	
+	kb.AddRule(Implies{
+		Left: Atom{Name: "is_mammal"},
+		Right: Atom{Name: "is_animal"},
+	})
+	
+	// 查询
+	query := Atom{Name: "is_animal"}
+	if kb.Query(query) {
+		fmt.Println("It is an animal")
+	} else {
+		fmt.Println("Cannot determine if it is an animal")
+	}
 }
 ```
 
-## 6. 性能分析
+---
 
-### 6.1 算法复杂度
+## 总结
 
-| 操作 | 时间复杂度 | 空间复杂度 |
-|------|------------|------------|
-| 真值表生成 | $O(2^n)$ | $O(2^n)$ |
-| 命题求值 | $O(1)$ | $O(1)$ |
-| 逻辑等价检查 | $O(2^n)$ | $O(2^n)$ |
-| 推理证明 | $O(n!)$ | $O(n)$ |
+命题逻辑为计算机科学提供了重要的理论基础：
 
-### 6.2 优化策略
+1. **形式化推理**：提供了严格的逻辑推理方法
+2. **程序验证**：用于验证程序的正确性
+3. **知识表示**：用于表示和推理知识
+4. **电路设计**：为数字电路设计提供理论基础
 
-1. **符号计算**：使用符号计算避免枚举所有真值赋值
-2. **SAT求解器**：使用高效的SAT求解器
-3. **缓存机制**：缓存中间计算结果
-4. **启发式搜索**：在推理中使用启发式搜索
+通过Go语言的实现，我们可以：
+- 构建命题逻辑的解释器
+- 实现自动证明系统
+- 开发知识推理引擎
+- 验证程序逻辑的正确性
 
-## 7. 总结
-
-命题逻辑为计算机科学提供了形式化推理的基础。通过Go语言的实现，我们可以：
-
-1. **形式化表示**：用数据结构表示命题和逻辑公式
-2. **真值计算**：计算命题在各种赋值下的真值
-3. **推理证明**：实现基本的逻辑推理规则
-4. **应用开发**：构建逻辑电路、知识库等应用
-
-命题逻辑的理论基础和算法实现为构建智能系统和形式化验证工具提供了重要的数学支撑。
+这些应用展示了命题逻辑在软件工程中的重要作用，为后续学习更复杂的逻辑系统奠定了基础。
 
 ## 参考文献
 
