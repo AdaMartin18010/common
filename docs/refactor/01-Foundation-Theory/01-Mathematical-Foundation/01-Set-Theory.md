@@ -4,126 +4,123 @@
 
 - [01-集合论 (Set Theory)](#01-集合论-set-theory)
   - [目录](#目录)
-  - [1. 基础概念](#1-基础概念)
+  - [1. 基本概念](#1-基本概念)
     - [1.1 集合的定义](#11-集合的定义)
-    - [1.2 集合的表示方法](#12-集合的表示方法)
-    - [1.3 集合的基本性质](#13-集合的基本性质)
-  - [2. 集合运算](#2-集合运算)
-    - [2.1 基本运算](#21-基本运算)
-    - [2.2 运算律](#22-运算律)
-    - [2.3 德摩根律](#23-德摩根律)
-  - [3. 关系与函数](#3-关系与函数)
-    - [3.1 笛卡尔积](#31-笛卡尔积)
-    - [3.2 二元关系](#32-二元关系)
-    - [3.3 函数](#33-函数)
-  - [4. 基数与无穷](#4-基数与无穷)
-    - [4.1 等势](#41-等势)
-    - [4.2 基数](#42-基数)
-    - [4.3 可数集与不可数集](#43-可数集与不可数集)
-  - [5. Go语言实现](#5-go语言实现)
-    - [5.1 集合数据结构](#51-集合数据结构)
-    - [5.2 集合运算实现](#52-集合运算实现)
-    - [5.3 关系与函数实现](#53-关系与函数实现)
-  - [6. 形式化验证](#6-形式化验证)
-    - [6.1 公理化集合论](#61-公理化集合论)
-    - [6.2 选择公理](#62-选择公理)
-    - [6.3 连续统假设](#63-连续统假设)
+    - [1.2 集合的表示](#12-集合的表示)
+    - [1.3 集合的基本运算](#13-集合的基本运算)
+  - [2. 形式化定义](#2-形式化定义)
+    - [2.1 集合论公理](#21-集合论公理)
+    - [2.2 基本定理](#22-基本定理)
+  - [3. Go语言实现](#3-go语言实现)
+    - [3.1 基础集合类型](#31-基础集合类型)
+    - [3.2 集合运算实现](#32-集合运算实现)
+    - [3.3 泛型集合](#33-泛型集合)
+  - [4. 应用示例](#4-应用示例)
+    - [4.1 数据库查询优化](#41-数据库查询优化)
+    - [4.2 图论算法](#42-图论算法)
+    - [4.3 编译器优化](#43-编译器优化)
+  - [总结](#总结)
 
-## 1. 基础概念
+## 1. 基本概念
 
 ### 1.1 集合的定义
 
-**形式化定义**：
+**定义 1.1**: 集合是不同对象的无序聚集，这些对象称为集合的元素。
 
-集合是满足特定条件的对象的汇集。在公理化集合论中，集合通过以下方式定义：
+**形式化表达**:
+- 设 $A$ 是一个集合，$a \in A$ 表示 $a$ 是 $A$ 的元素
+- 集合的表示：$A = \{a_1, a_2, \ldots, a_n\}$
+- 空集：$\emptyset = \{\}$
 
-```math
-\text{集合公理} \quad \forall x \forall y \forall z \left[ \forall w(w \in x \leftrightarrow w \in y) \rightarrow x = y \right]
-```
+### 1.2 集合的表示
 
-**外延公理**：两个集合相等当且仅当它们包含相同的元素。
+**定义 1.2**: 集合的表示方法
 
-**Go语言表示**：
+1. **列举法**: $A = \{1, 2, 3, 4, 5\}$
+2. **描述法**: $A = \{x \mid x \text{ 是正整数且 } x \leq 5\}$
+3. **递归定义**: 
+   - 基础：$\emptyset \in S$
+   - 归纳：如果 $x \in S$，则 $\{x\} \in S$
+
+### 1.3 集合的基本运算
+
+**定义 1.3**: 基本集合运算
+
+1. **并集**: $A \cup B = \{x \mid x \in A \text{ 或 } x \in B\}$
+2. **交集**: $A \cap B = \{x \mid x \in A \text{ 且 } x \in B\}$
+3. **差集**: $A \setminus B = \{x \mid x \in A \text{ 且 } x \notin B\}$
+4. **补集**: $A^c = \{x \mid x \notin A\}$
+
+## 2. 形式化定义
+
+### 2.1 集合论公理
+
+**公理 2.1** (外延公理): 两个集合相等当且仅当它们包含相同的元素。
+
+$$\forall A \forall B [\forall x(x \in A \leftrightarrow x \in B) \rightarrow A = B]$$
+
+**公理 2.2** (空集公理): 存在一个不包含任何元素的集合。
+
+$$\exists A \forall x(x \notin A)$$
+
+**公理 2.3** (配对公理): 对于任意两个集合，存在一个包含它们的集合。
+
+$$\forall A \forall B \exists C \forall x(x \in C \leftrightarrow x = A \text{ 或 } x = B)$$
+
+### 2.2 基本定理
+
+**定理 2.1** (德摩根律): 对于任意集合 $A$ 和 $B$：
+
+$$(A \cup B)^c = A^c \cap B^c$$
+$$(A \cap B)^c = A^c \cup B^c$$
+
+**证明**:
+1. 设 $x \in (A \cup B)^c$
+2. 则 $x \notin (A \cup B)$
+3. 即 $x \notin A$ 且 $x \notin B$
+4. 因此 $x \in A^c$ 且 $x \in B^c$
+5. 所以 $x \in A^c \cap B^c$
+
+**定理 2.2** (分配律): 对于任意集合 $A$, $B$, $C$：
+
+$$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
+$$A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$$
+
+## 3. Go语言实现
+
+### 3.1 基础集合类型
 
 ```go
 // Set 表示一个泛型集合
-type Set[T comparable] map[T]struct{}
+type Set[T comparable] map[T]bool
 
 // NewSet 创建新的集合
 func NewSet[T comparable]() Set[T] {
     return make(Set[T])
 }
 
-// FromSlice 从切片创建集合
-func FromSlice[T comparable](elements []T) Set[T] {
+// NewSetFromSlice 从切片创建集合
+func NewSetFromSlice[T comparable](slice []T) Set[T] {
     set := NewSet[T]()
-    for _, element := range elements {
-        set.Add(element)
+    for _, item := range slice {
+        set[item] = true
     }
     return set
 }
-```
 
-### 1.2 集合的表示方法
-
-**列举法**：
-```math
-A = \{1, 2, 3, 4, 5\}
-```
-
-**描述法**：
-```math
-A = \{x \in \mathbb{N} \mid 1 \leq x \leq 5\}
-```
-
-**Go语言实现**：
-
-```go
-// 列举法表示
-func ExampleEnumeration() {
-    set := FromSlice([]int{1, 2, 3, 4, 5})
-    fmt.Println(set) // 输出: map[1:{} 2:{} 3:{} 4:{} 5:{}]
+// Add 添加元素到集合
+func (s Set[T]) Add(item T) {
+    s[item] = true
 }
 
-// 描述法表示（通过条件筛选）
-func ExampleDescription() {
-    // 创建1到5的自然数集合
-    set := NewSet[int]()
-    for i := 1; i <= 5; i++ {
-        set.Add(i)
-    }
-    fmt.Println(set)
+// Remove 从集合中移除元素
+func (s Set[T]) Remove(item T) {
+    delete(s, item)
 }
-```
 
-### 1.3 集合的基本性质
-
-**空集**：
-```math
-\emptyset = \{\}
-```
-
-**单元素集**：
-```math
-\{a\} = \{x \mid x = a\}
-```
-
-**子集关系**：
-```math
-A \subseteq B \iff \forall x(x \in A \rightarrow x \in B)
-```
-
-**真子集关系**：
-```math
-A \subset B \iff A \subseteq B \land A \neq B
-```
-
-**Go语言实现**：
-
-```go
-// IsEmpty 检查集合是否为空
-func (s Set[T]) IsEmpty() bool {
-    return len(s) == 0
+// Contains 检查元素是否在集合中
+func (s Set[T]) Contains(item T) bool {
+    return s[item]
 }
 
 // Size 返回集合大小
@@ -131,35 +128,71 @@ func (s Set[T]) Size() int {
     return len(s)
 }
 
-// Contains 检查元素是否在集合中
-func (s Set[T]) Contains(element T) bool {
-    _, exists := s[element]
-    return exists
+// IsEmpty 检查集合是否为空
+func (s Set[T]) IsEmpty() bool {
+    return len(s) == 0
+}
+```
+
+### 3.2 集合运算实现
+
+```go
+// Union 计算两个集合的并集
+func (s Set[T]) Union(other Set[T]) Set[T] {
+    result := NewSet[T]()
+    
+    // 添加当前集合的所有元素
+    for item := range s {
+        result.Add(item)
+    }
+    
+    // 添加另一个集合的所有元素
+    for item := range other {
+        result.Add(item)
+    }
+    
+    return result
 }
 
-// Add 添加元素到集合
-func (s Set[T]) Add(element T) {
-    s[element] = struct{}{}
+// Intersection 计算两个集合的交集
+func (s Set[T]) Intersection(other Set[T]) Set[T] {
+    result := NewSet[T]()
+    
+    for item := range s {
+        if other.Contains(item) {
+            result.Add(item)
+        }
+    }
+    
+    return result
 }
 
-// Remove 从集合中移除元素
-func (s Set[T]) Remove(element T) {
-    delete(s, element)
+// Difference 计算两个集合的差集
+func (s Set[T]) Difference(other Set[T]) Set[T] {
+    result := NewSet[T]()
+    
+    for item := range s {
+        if !other.Contains(item) {
+            result.Add(item)
+        }
+    }
+    
+    return result
 }
 
-// IsSubset 检查是否为子集
+// IsSubset 检查当前集合是否是另一个集合的子集
 func (s Set[T]) IsSubset(other Set[T]) bool {
-    for element := range s {
-        if !other.Contains(element) {
+    for item := range s {
+        if !other.Contains(item) {
             return false
         }
     }
     return true
 }
 
-// IsProperSubset 检查是否为真子集
-func (s Set[T]) IsProperSubset(other Set[T]) bool {
-    return s.IsSubset(other) && !s.Equals(other)
+// IsSuperset 检查当前集合是否是另一个集合的超集
+func (s Set[T]) IsSuperset(other Set[T]) bool {
+    return other.IsSubset(s)
 }
 
 // Equals 检查两个集合是否相等
@@ -171,653 +204,69 @@ func (s Set[T]) Equals(other Set[T]) bool {
 }
 ```
 
-## 2. 集合运算
-
-### 2.1 基本运算
-
-**并集**：
-```math
-A \cup B = \{x \mid x \in A \lor x \in B\}
-```
-
-**交集**：
-```math
-A \cap B = \{x \mid x \in A \land x \in B\}
-```
-
-**差集**：
-```math
-A \setminus B = \{x \mid x \in A \land x \notin B\}
-```
-
-**对称差**：
-```math
-A \triangle B = (A \setminus B) \cup (B \setminus A)
-```
-
-**补集**（相对于全集U）：
-```math
-A^c = U \setminus A = \{x \in U \mid x \notin A\}
-```
-
-**Go语言实现**：
+### 3.3 泛型集合
 
 ```go
-// Union 并集运算
-func (s Set[T]) Union(other Set[T]) Set[T] {
-    result := NewSet[T]()
-    
-    // 添加当前集合的所有元素
-    for element := range s {
-        result.Add(element)
-    }
-    
-    // 添加另一个集合的所有元素
-    for element := range other {
-        result.Add(element)
-    }
-    
-    return result
+// OrderedSet 有序集合实现
+type OrderedSet[T comparable] struct {
+    items []T
+    set   Set[T]
 }
 
-// Intersection 交集运算
-func (s Set[T]) Intersection(other Set[T]) Set[T] {
-    result := NewSet[T]()
-    
-    for element := range s {
-        if other.Contains(element) {
-            result.Add(element)
-        }
-    }
-    
-    return result
-}
-
-// Difference 差集运算
-func (s Set[T]) Difference(other Set[T]) Set[T] {
-    result := NewSet[T]()
-    
-    for element := range s {
-        if !other.Contains(element) {
-            result.Add(element)
-        }
-    }
-    
-    return result
-}
-
-// SymmetricDifference 对称差运算
-func (s Set[T]) SymmetricDifference(other Set[T]) Set[T] {
-    return s.Difference(other).Union(other.Difference(s))
-}
-
-// Complement 补集运算（相对于全集）
-func (s Set[T]) Complement(universe Set[T]) Set[T] {
-    return universe.Difference(s)
-}
-```
-
-### 2.2 运算律
-
-**交换律**：
-```math
-A \cup B = B \cup A \\
-A \cap B = B \cap A
-```
-
-**结合律**：
-```math
-(A \cup B) \cup C = A \cup (B \cup C) \\
-(A \cap B) \cap C = A \cap (B \cap C)
-```
-
-**分配律**：
-```math
-A \cup (B \cap C) = (A \cup B) \cap (A \cup C) \\
-A \cap (B \cup C) = (A \cap B) \cup (A \cap C)
-```
-
-**幂等律**：
-```math
-A \cup A = A \\
-A \cap A = A
-```
-
-**Go语言验证**：
-
-```go
-// 验证交换律
-func TestCommutativeLaw() {
-    A := FromSlice([]int{1, 2, 3})
-    B := FromSlice([]int{3, 4, 5})
-    
-    union1 := A.Union(B)
-    union2 := B.Union(A)
-    
-    if !union1.Equals(union2) {
-        panic("并集交换律不成立")
-    }
-    
-    intersection1 := A.Intersection(B)
-    intersection2 := B.Intersection(A)
-    
-    if !intersection1.Equals(intersection2) {
-        panic("交集交换律不成立")
+// NewOrderedSet 创建新的有序集合
+func NewOrderedSet[T comparable]() *OrderedSet[T] {
+    return &OrderedSet[T]{
+        items: make([]T, 0),
+        set:   NewSet[T](),
     }
 }
 
-// 验证结合律
-func TestAssociativeLaw() {
-    A := FromSlice([]int{1, 2, 3})
-    B := FromSlice([]int{3, 4, 5})
-    C := FromSlice([]int{5, 6, 7})
-    
-    union1 := A.Union(B).Union(C)
-    union2 := A.Union(B.Union(C))
-    
-    if !union1.Equals(union2) {
-        panic("并集结合律不成立")
+// Add 添加元素到有序集合
+func (os *OrderedSet[T]) Add(item T) {
+    if !os.set.Contains(item) {
+        os.items = append(os.items, item)
+        os.set.Add(item)
     }
 }
-```
 
-### 2.3 德摩根律
-
-**德摩根律**：
-```math
-(A \cup B)^c = A^c \cap B^c \\
-(A \cap B)^c = A^c \cup B^c
-```
-
-**推广到有限集**：
-```math
-\left(\bigcup_{i=1}^{n} A_i\right)^c = \bigcap_{i=1}^{n} A_i^c \\
-\left(\bigcap_{i=1}^{n} A_i\right)^c = \bigcup_{i=1}^{n} A_i^c
-```
-
-**Go语言实现**：
-
-```go
-// DeMorganLaw1 验证德摩根律第一条
-func DeMorganLaw1(A, B, universe Set[int]) bool {
-    left := A.Union(B).Complement(universe)
-    right := A.Complement(universe).Intersection(B.Complement(universe))
-    return left.Equals(right)
-}
-
-// DeMorganLaw2 验证德摩根律第二条
-func DeMorganLaw2(A, B, universe Set[int]) bool {
-    left := A.Intersection(B).Complement(universe)
-    right := A.Complement(universe).Union(B.Complement(universe))
-    return left.Equals(right)
-}
-```
-
-## 3. 关系与函数
-
-### 3.1 笛卡尔积
-
-**定义**：
-```math
-A \times B = \{(a, b) \mid a \in A \land b \in B\}
-```
-
-**性质**：
-```math
-|A \times B| = |A| \times |B|
-```
-
-**Go语言实现**：
-
-```go
-// Pair 表示有序对
-type Pair[A, B any] struct {
-    First  A
-    Second B
-}
-
-// CartesianProduct 计算笛卡尔积
-func CartesianProduct[A, B comparable](A Set[A], B Set[B]) Set[Pair[A, B]] {
-    result := NewSet[Pair[A, B]]()
-    
-    for a := range A {
-        for b := range B {
-            result.Add(Pair[A, B]{First: a, Second: b})
-        }
-    }
-    
-    return result
-}
-```
-
-### 3.2 二元关系
-
-**定义**：从集合A到集合B的二元关系是A×B的子集。
-
-**特殊关系**：
-
-**等价关系**（满足自反性、对称性、传递性）：
-```math
-\text{自反性}: \forall x \in A, (x, x) \in R \\
-\text{对称性}: \forall x, y \in A, (x, y) \in R \rightarrow (y, x) \in R \\
-\text{传递性}: \forall x, y, z \in A, (x, y) \in R \land (y, z) \in R \rightarrow (x, z) \in R
-```
-
-**Go语言实现**：
-
-```go
-// Relation 表示二元关系
-type Relation[A, B comparable] Set[Pair[A, B]]
-
-// NewRelation 创建新关系
-func NewRelation[A, B comparable]() Relation[A, B] {
-    return Relation[A, B](NewSet[Pair[A, B]]())
-}
-
-// IsReflexive 检查自反性
-func (r Relation[A, A]) IsReflexive(domain Set[A]) bool {
-    for x := range domain {
-        if !Set[Pair[A, A]](r).Contains(Pair[A, A]{First: x, Second: x}) {
-            return false
-        }
-    }
-    return true
-}
-
-// IsSymmetric 检查对称性
-func (r Relation[A, A]) IsSymmetric() bool {
-    for pair := range r {
-        reverse := Pair[A, A]{First: pair.Second, Second: pair.First}
-        if !Set[Pair[A, A]](r).Contains(reverse) {
-            return false
-        }
-    }
-    return true
-}
-
-// IsTransitive 检查传递性
-func (r Relation[A, A]) IsTransitive() bool {
-    for pair1 := range r {
-        for pair2 := range r {
-            if pair1.Second == pair2.First {
-                target := Pair[A, A]{First: pair1.First, Second: pair2.Second}
-                if !Set[Pair[A, A]](r).Contains(target) {
-                    return false
-                }
-            }
-        }
-    }
-    return true
-}
-
-// IsEquivalence 检查是否为等价关系
-func (r Relation[A, A]) IsEquivalence(domain Set[A]) bool {
-    return r.IsReflexive(domain) && r.IsSymmetric() && r.IsTransitive()
-}
-```
-
-### 3.3 函数
-
-**定义**：函数是从集合A到集合B的关系f，满足：
-```math
-\forall x \in A, \exists! y \in B, (x, y) \in f
-```
-
-**函数性质**：
-
-**单射（一对一）**：
-```math
-\forall x_1, x_2 \in A, f(x_1) = f(x_2) \rightarrow x_1 = x_2
-```
-
-**满射（映上）**：
-```math
-\forall y \in B, \exists x \in A, f(x) = y
-```
-
-**双射（一一对应）**：
-```math
-\text{单射} \land \text{满射}
-```
-
-**Go语言实现**：
-
-```go
-// Function 表示函数
-type Function[A, B comparable] map[A]B
-
-// NewFunction 创建新函数
-func NewFunction[A, B comparable]() Function[A, B] {
-    return make(Function[A, B])
-}
-
-// IsInjective 检查是否为单射
-func (f Function[A, B]) IsInjective() bool {
-    seen := make(map[B]bool)
-    for _, value := range f {
-        if seen[value] {
-            return false
-        }
-        seen[value] = true
-    }
-    return true
-}
-
-// IsSurjective 检查是否为满射
-func (f Function[A, B]) IsSurjective(codomain Set[B]) bool {
-    for element := range codomain {
-        found := false
-        for _, value := range f {
-            if value == element {
-                found = true
+// Remove 从有序集合中移除元素
+func (os *OrderedSet[T]) Remove(item T) {
+    if os.set.Contains(item) {
+        os.set.Remove(item)
+        
+        // 从切片中移除
+        for i, val := range os.items {
+            if val == item {
+                os.items = append(os.items[:i], os.items[i+1:]...)
                 break
             }
         }
-        if !found {
-            return false
-        }
     }
-    return true
 }
 
-// IsBijective 检查是否为双射
-func (f Function[A, B]) IsBijective(codomain Set[B]) bool {
-    return f.IsInjective() && f.IsSurjective(codomain)
-}
-```
-
-## 4. 基数与无穷
-
-### 4.1 等势
-
-**定义**：两个集合A和B等势，记作|A| = |B|，当且仅当存在从A到B的双射。
-
-**Go语言实现**：
-
-```go
-// HasSameCardinality 检查两个集合是否等势
-func HasSameCardinality[A, B comparable](A Set[A], B Set[B]) bool {
-    return A.Size() == B.Size()
-}
-```
-
-### 4.2 基数
-
-**有限集基数**：|A| = n，其中n是自然数。
-
-**可数无穷**：与自然数集等势的集合，基数记为ℵ₀。
-
-**连续统基数**：与实数集等势的集合，基数记为ℵ₁。
-
-**Go语言实现**：
-
-```go
-// Cardinality 返回集合基数
-func (s Set[T]) Cardinality() int {
-    return s.Size()
-}
-
-// IsFinite 检查是否为有限集
-func (s Set[T]) IsFinite() bool {
-    return s.Size() < math.MaxInt
-}
-
-// IsCountable 检查是否为可数集
-func (s Set[T]) IsCountable() bool {
-    // 在Go中，所有集合都是可数的（有限或可数无穷）
-    return true
-}
-```
-
-### 4.3 可数集与不可数集
-
-**可数集**：有限集或与自然数集等势的集合。
-
-**不可数集**：与实数集等势的集合。
-
-**康托尔对角线法**：证明实数集不可数。
-
-**Go语言实现**：
-
-```go
-// GenerateNaturalNumbers 生成自然数集（有限子集）
-func GenerateNaturalNumbers(n int) Set[int] {
-    result := NewSet[int]()
-    for i := 0; i < n; i++ {
-        result.Add(i)
-    }
+// ToSlice 转换为切片
+func (os *OrderedSet[T]) ToSlice() []T {
+    result := make([]T, len(os.items))
+    copy(result, os.items)
     return result
 }
 
-// GenerateRationalNumbers 生成有理数集（有限子集）
-func GenerateRationalNumbers(n int) Set[float64] {
-    result := NewSet[float64]()
-    for i := 1; i <= n; i++ {
-        for j := 1; j <= n; j++ {
-            result.Add(float64(i) / float64(j))
-        }
-    }
-    return result
-}
-```
-
-## 5. Go语言实现
-
-### 5.1 集合数据结构
-
-```go
-package set
-
-import (
-    "fmt"
-    "math"
-)
-
-// Set 表示一个泛型集合
-type Set[T comparable] map[T]struct{}
-
-// NewSet 创建新的集合
-func NewSet[T comparable]() Set[T] {
-    return make(Set[T])
-}
-
-// FromSlice 从切片创建集合
-func FromSlice[T comparable](elements []T) Set[T] {
-    set := NewSet[T]()
-    for _, element := range elements {
-        set.Add(element)
-    }
-    return set
-}
-
-// ToSlice 将集合转换为切片
-func (s Set[T]) ToSlice() []T {
-    result := make([]T, 0, len(s))
-    for element := range s {
-        result = append(result, element)
-    }
-    return result
-}
-
-// String 字符串表示
-func (s Set[T]) String() string {
-    return fmt.Sprintf("Set%v", s.ToSlice())
-}
-```
-
-### 5.2 集合运算实现
-
-```go
-// 基本操作
-func (s Set[T]) Add(element T) {
-    s[element] = struct{}{}
-}
-
-func (s Set[T]) Remove(element T) {
-    delete(s, element)
-}
-
-func (s Set[T]) Contains(element T) bool {
-    _, exists := s[element]
-    return exists
-}
-
-func (s Set[T]) Size() int {
-    return len(s)
-}
-
-func (s Set[T]) IsEmpty() bool {
-    return len(s) == 0
-}
-
-// 集合运算
-func (s Set[T]) Union(other Set[T]) Set[T] {
-    result := NewSet[T]()
-    for element := range s {
-        result.Add(element)
-    }
-    for element := range other {
-        result.Add(element)
-    }
-    return result
-}
-
-func (s Set[T]) Intersection(other Set[T]) Set[T] {
-    result := NewSet[T]()
-    for element := range s {
-        if other.Contains(element) {
-            result.Add(element)
-        }
-    }
-    return result
-}
-
-func (s Set[T]) Difference(other Set[T]) Set[T] {
-    result := NewSet[T]()
-    for element := range s {
-        if !other.Contains(element) {
-            result.Add(element)
-        }
-    }
-    return result
-}
-
-func (s Set[T]) SymmetricDifference(other Set[T]) Set[T] {
-    return s.Difference(other).Union(other.Difference(s))
-}
-```
-
-### 5.3 关系与函数实现
-
-```go
-// Pair 表示有序对
-type Pair[A, B any] struct {
-    First  A
-    Second B
-}
-
-// Relation 表示二元关系
-type Relation[A, B comparable] Set[Pair[A, B]]
-
-// Function 表示函数
-type Function[A, B comparable] map[A]B
-
-// NewFunction 创建新函数
-func NewFunction[A, B comparable]() Function[A, B] {
-    return make(Function[A, B])
-}
-
-// Apply 应用函数
-func (f Function[A, B]) Apply(x A) (B, bool) {
-    result, exists := f[x]
-    return result, exists
-}
-
-// Compose 函数复合
-func Compose[A, B, C comparable](f Function[B, C], g Function[A, B]) Function[A, C] {
-    result := NewFunction[A, C]()
-    for x, y := range g {
-        if z, exists := f.Apply(y); exists {
-            result[x] = z
-        }
-    }
-    return result
-}
-```
-
-## 6. 形式化验证
-
-### 6.1 公理化集合论
-
-**策梅洛-弗兰克尔公理系统（ZF）**：
-
-1. **外延公理**：两个集合相等当且仅当它们包含相同的元素
-2. **空集公理**：存在一个不包含任何元素的集合
-3. **配对公理**：对于任意两个集合，存在包含它们的集合
-4. **并集公理**：对于任意集合族，存在包含所有成员元素的集合
-5. **幂集公理**：对于任意集合，存在包含其所有子集的集合
-6. **无穷公理**：存在一个包含空集且对每个元素x都包含{x}的集合
-7. **替换公理**：对于任意函数和集合，函数的值域是集合
-8. **正则公理**：每个非空集合都包含一个与它不相交的元素
-
-### 6.2 选择公理
-
-**选择公理（AC）**：
-```math
-\forall A \left[ \emptyset \notin A \rightarrow \exists f: A \rightarrow \bigcup A, \forall B \in A, f(B) \in B \right]
-```
-
-**Go语言实现**：
-
-```go
-// ChoiceFunction 实现选择函数
-func ChoiceFunction[A comparable](sets []Set[A]) (A, error) {
-    if len(sets) == 0 {
-        var zero A
-        return zero, fmt.Errorf("empty collection")
-    }
-    
-    for _, set := range sets {
-        if !set.IsEmpty() {
-            for element := range set {
-                return element, nil
-            }
-        }
-    }
-    
-    var zero A
-    return zero, fmt.Errorf("all sets are empty")
-}
-```
-
-### 6.3 连续统假设
-
-**连续统假设（CH）**：
-```math
-2^{\aleph_0} = \aleph_1
-```
-
-**广义连续统假设（GCH）**：
-```math
-\forall \alpha, 2^{\aleph_\alpha} = \aleph_{\alpha+1}
-```
-
-**Go语言实现**：
-
-```go
 // PowerSet 计算幂集
 func PowerSet[T comparable](s Set[T]) Set[Set[T]] {
-    elements := s.ToSlice()
-    n := len(elements)
-    powerSetSize := 1 << n
+    items := make([]T, 0, s.Size())
+    for item := range s {
+        items = append(items, item)
+    }
     
     result := NewSet[Set[T]]()
+    n := len(items)
     
-    for i := 0; i < powerSetSize; i++ {
+    // 使用位掩码生成所有子集
+    for i := 0; i < (1 << n); i++ {
         subset := NewSet[T]()
         for j := 0; j < n; j++ {
             if i&(1<<j) != 0 {
-                subset.Add(elements[j])
+                subset.Add(items[j])
             }
         }
         result.Add(subset)
@@ -825,18 +274,190 @@ func PowerSet[T comparable](s Set[T]) Set[Set[T]] {
     
     return result
 }
+```
 
-// CardinalityOfPowerSet 计算幂集基数
-func CardinalityOfPowerSet[T comparable](s Set[T]) int {
-    return 1 << s.Size()
+## 4. 应用示例
+
+### 4.1 数据库查询优化
+
+```go
+// QueryOptimizer 查询优化器
+type QueryOptimizer struct {
+    tables    Set[string]
+    columns   Set[string]
+    predicates Set[string]
+}
+
+// NewQueryOptimizer 创建查询优化器
+func NewQueryOptimizer() *QueryOptimizer {
+    return &QueryOptimizer{
+        tables:     NewSet[string](),
+        columns:    NewSet[string](),
+        predicates: NewSet[string](),
+    }
+}
+
+// AddTable 添加表
+func (qo *QueryOptimizer) AddTable(table string) {
+    qo.tables.Add(table)
+}
+
+// AddColumn 添加列
+func (qo *QueryOptimizer) AddColumn(column string) {
+    qo.columns.Add(column)
+}
+
+// AddPredicate 添加谓词
+func (qo *QueryOptimizer) AddPredicate(predicate string) {
+    qo.predicates.Add(predicate)
+}
+
+// Optimize 优化查询
+func (qo *QueryOptimizer) Optimize() QueryPlan {
+    // 使用集合运算进行查询优化
+    usedColumns := qo.columns.Intersection(qo.getAvailableColumns())
+    
+    return QueryPlan{
+        Tables:     qo.tables.ToSlice(),
+        Columns:    usedColumns.ToSlice(),
+        Predicates: qo.predicates.ToSlice(),
+    }
+}
+
+type QueryPlan struct {
+    Tables     []string
+    Columns    []string
+    Predicates []string
 }
 ```
 
----
+### 4.2 图论算法
 
-**总结**：集合论为计算机科学提供了重要的数学基础，特别是在数据结构、算法分析和形式化方法中。通过Go语言的实现，我们可以将抽象的数学概念转化为具体的程序代码，为软件工程提供坚实的理论基础。
+```go
+// Graph 图结构
+type Graph[T comparable] struct {
+    vertices Set[T]
+    edges    map[T]Set[T]
+}
 
-**相关链接**：
-- [02-逻辑学](../02-Logic/01-Propositional-Logic.md)
-- [03-图论](../03-Graph-Theory/01-Graph-Basics.md)
-- [04-概率论](../04-Probability-Theory/01-Probability-Basics.md)
+// NewGraph 创建新图
+func NewGraph[T comparable]() *Graph[T] {
+    return &Graph[T]{
+        vertices: NewSet[T](),
+        edges:    make(map[T]Set[T]),
+    }
+}
+
+// AddVertex 添加顶点
+func (g *Graph[T]) AddVertex(vertex T) {
+    g.vertices.Add(vertex)
+    if g.edges[vertex] == nil {
+        g.edges[vertex] = NewSet[T]()
+    }
+}
+
+// AddEdge 添加边
+func (g *Graph[T]) AddEdge(from, to T) {
+    g.AddVertex(from)
+    g.AddVertex(to)
+    g.edges[from].Add(to)
+}
+
+// GetNeighbors 获取邻居
+func (g *Graph[T]) GetNeighbors(vertex T) Set[T] {
+    if neighbors, exists := g.edges[vertex]; exists {
+        return neighbors
+    }
+    return NewSet[T]()
+}
+
+// BFS 广度优先搜索
+func (g *Graph[T]) BFS(start T) []T {
+    visited := NewSet[T]()
+    queue := []T{start}
+    result := []T{}
+    
+    for len(queue) > 0 {
+        current := queue[0]
+        queue = queue[1:]
+        
+        if !visited.Contains(current) {
+            visited.Add(current)
+            result = append(result, current)
+            
+            neighbors := g.GetNeighbors(current)
+            for neighbor := range neighbors {
+                if !visited.Contains(neighbor) {
+                    queue = append(queue, neighbor)
+                }
+            }
+        }
+    }
+    
+    return result
+}
+```
+
+### 4.3 编译器优化
+
+```go
+// SymbolTable 符号表
+type SymbolTable struct {
+    symbols    Set[string]
+    scopes     map[string]Set[string]
+    currentScope string
+}
+
+// NewSymbolTable 创建符号表
+func NewSymbolTable() *SymbolTable {
+    return &SymbolTable{
+        symbols:     NewSet[string](),
+        scopes:      make(map[string]Set[string]),
+        currentScope: "global",
+    }
+}
+
+// EnterScope 进入作用域
+func (st *SymbolTable) EnterScope(scopeName string) {
+    st.currentScope = scopeName
+    if st.scopes[scopeName] == nil {
+        st.scopes[scopeName] = NewSet[string]()
+    }
+}
+
+// ExitScope 退出作用域
+func (st *SymbolTable) ExitScope() {
+    st.currentScope = "global"
+}
+
+// AddSymbol 添加符号
+func (st *SymbolTable) AddSymbol(symbol string) {
+    st.symbols.Add(symbol)
+    st.scopes[st.currentScope].Add(symbol)
+}
+
+// IsDefined 检查符号是否已定义
+func (st *SymbolTable) IsDefined(symbol string) bool {
+    return st.symbols.Contains(symbol)
+}
+
+// GetScopeSymbols 获取当前作用域的符号
+func (st *SymbolTable) GetScopeSymbols() Set[string] {
+    return st.scopes[st.currentScope]
+}
+```
+
+## 总结
+
+集合论为计算机科学提供了重要的理论基础，通过Go语言的泛型实现，我们可以构建高效、类型安全的集合操作。这些实现不仅具有理论价值，在实际的软件开发中也有广泛应用，如数据库查询优化、图论算法、编译器设计等领域。
+
+**关键特性**:
+- 类型安全的泛型实现
+- 高效的哈希表底层实现
+- 完整的集合运算支持
+- 实际应用场景的示例
+
+**性能分析**:
+- 时间复杂度：大多数操作 O(1)
+- 空间复杂度：O(n) 其中 n 是集合大小
+- 内存效率：使用 map 实现，避免重复元素
