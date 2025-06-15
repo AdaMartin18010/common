@@ -6,11 +6,22 @@
   - [目录](#目录)
   - [概述](#概述)
   - [同伦类型论基础](#同伦类型论基础)
+    - [基本概念](#基本概念)
   - [工作流代数结构](#工作流代数结构)
+    - [组合操作](#组合操作)
   - [形式化定义](#形式化定义)
+    - [工作流类型](#工作流类型)
+    - [基本操作实现](#基本操作实现)
   - [数学证明](#数学证明)
+    - [容错性定理](#容错性定理)
+    - [组合性定理](#组合性定理)
   - [Go语言实现](#go语言实现)
+    - [完整的工作流系统](#完整的工作流系统)
+    - [高级组合模式](#高级组合模式)
   - [应用示例](#应用示例)
+    - [支付处理工作流](#支付处理工作流)
+    - [分布式工作流协调](#分布式工作流协调)
+  - [相关链接](#相关链接)
 
 ## 概述
 
@@ -25,6 +36,7 @@
 
 **定义 2.2** (同伦等价)
 两个工作流 $w_1, w_2: [0,1] \rightarrow W$ 是同伦等价的，如果存在连续映射 $H: [0,1] \times [0,1] \rightarrow W$ 使得：
+
 - $H(t,0) = w_1(t)$
 - $H(t,1) = w_2(t)$
 - $H(0,s) = w_1(0) = w_2(0)$
@@ -40,11 +52,14 @@
 ### 组合操作
 
 **定义 2.3** (顺序组合)
+
+```latex
 对于工作流 $w_1, w_2: [0,1] \rightarrow W$，其顺序组合定义为：
 $$(w_1 \circ w_2)(t) = \begin{cases}
 w_1(2t) & \text{if } t \leq \frac{1}{2} \\
 w_2(2t-1) & \text{if } t > \frac{1}{2}
 \end{cases}$$
+```
 
 **定义 2.4** (并行组合)
 对于工作流 $w_1, w_2: [0,1] \rightarrow W$，其并行组合定义为：
@@ -53,12 +68,16 @@ $$(w_1 \parallel w_2)(t) = (w_1(t), w_2(t))$$
 **定理 2.2** (结合律)
 顺序组合满足结合律：$(w_1 \circ w_2) \circ w_3 \sim w_1 \circ (w_2 \circ w_3)$
 
-*证明*: 构造同伦映射 $H(t,s)$ 如下：
+*证明*:
+
+```latex
+构造同伦映射 $H(t,s)$ 如下：
 $$H(t,s) = \begin{cases}
 w_1(\frac{4t}{2-s}) & \text{if } t \leq \frac{2-s}{4} \\
 w_2(4t-2+s) & \text{if } \frac{2-s}{4} < t \leq \frac{3-s}{4} \\
 w_3(\frac{4t-3+s}{1+s}) & \text{if } t > \frac{3-s}{4}
 \end{cases}$$
+```
 
 ## 形式化定义
 
@@ -114,14 +133,14 @@ func (wc *WorkflowComposer[S]) HomotopyEquivalent(w1, w2 Workflow[S], H Homotopy
     if w1(0) != w2(0) || w1(1) != w2(1) {
         return false
     }
-    
+
     // 检查同伦条件
     for t := 0.0; t <= 1.0; t += 0.01 {
         if H(t, 0) != w1(t) || H(t, 1) != w2(t) {
             return false
         }
     }
-    
+
     return true
 }
 ```
@@ -133,7 +152,8 @@ func (wc *WorkflowComposer[S]) HomotopyEquivalent(w1, w2 Workflow[S], H Homotopy
 **定理 2.3** (工作流容错性)
 设 $W$ 是连通的工作流空间，$w$ 是 $W$ 中的工作流。如果 $W$ 的基本群 $\pi_1(W)$ 是平凡的，则 $w$ 具有强容错性。
 
-*证明*: 
+*证明*:
+
 1. 基本群平凡意味着任意闭路径都是可收缩的
 2. 对于任意扰动 $\delta w$，路径 $w + \delta w$ 与 $w$ 同伦
 3. 因此，小的扰动不会改变工作流的本质性质
@@ -143,7 +163,8 @@ func (wc *WorkflowComposer[S]) HomotopyEquivalent(w1, w2 Workflow[S], H Homotopy
 **定理 2.4** (组合性保持)
 如果工作流 $w_1, w_2$ 都具有容错性，则其组合 $w_1 \circ w_2$ 也具有容错性。
 
-*证明*: 
+*证明*:
+
 1. 设 $H_1, H_2$ 分别是 $w_1, w_2$ 的容错同伦
 2. 构造组合同伦 $H(t,s) = H_1(t,s) \circ H_2(t,s)$
 3. 验证 $H$ 满足同伦条件
@@ -184,7 +205,7 @@ func (we *WorkflowEngine[S]) Execute(name string, initialState S) (S, error) {
         var zero S
         return zero, fmt.Errorf("workflow %s not found", name)
     }
-    
+
     return workflow(1.0), nil
 }
 
@@ -299,18 +320,18 @@ func CreateRiskCheckWorkflow() Workflow[PaymentState] {
 // 组合支付和风控工作流
 func CreateCompletePaymentWorkflow() Workflow[PaymentState] {
     engine := NewWorkflowEngine[PaymentState]()
-    
+
     payment := CreatePaymentWorkflow()
     riskCheck := CreateRiskCheckWorkflow()
-    
+
     // 并行执行支付处理和风控检查
     parallel := engine.composer.Parallel(payment, riskCheck)
-    
+
     // 然后顺序执行结算
     settlement := func(t float64) PaymentState {
         return PaymentState{Status: "settled"}
     }
-    
+
     return engine.composer.Sequential(
         func(t float64) PaymentState {
             _, _ = parallel(t)
@@ -341,10 +362,10 @@ type DistributedCoordinator[S State] struct {
 func (dc *DistributedCoordinator[S]) ExecuteDistributed(workflowName string, initialState S) (S, error) {
     // 使用共识算法确保所有节点同步
     // 这里简化实现，实际应使用Raft或Paxos
-    
+
     var finalState S
     var lastError error
-    
+
     for _, node := range dc.nodes {
         state, err := node.Engine.Execute(workflowName, initialState)
         if err != nil {
@@ -353,12 +374,12 @@ func (dc *DistributedCoordinator[S]) ExecuteDistributed(workflowName string, ini
         }
         finalState = state
     }
-    
+
     if lastError != nil {
         var zero S
         return zero, lastError
     }
-    
+
     return finalState, nil
 }
 ```
@@ -373,4 +394,4 @@ func (dc *DistributedCoordinator[S]) ExecuteDistributed(workflowName string, ini
 
 ---
 
-**激情澎湃的持续构建** <(￣︶￣)↗[GO!] 
+**激情澎湃的持续构建** <(￣︶￣)↗[GO!]

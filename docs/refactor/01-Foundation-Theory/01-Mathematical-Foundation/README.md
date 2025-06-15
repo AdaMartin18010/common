@@ -2,33 +2,24 @@
 
 ## 目录
 
-- [01. 数学基础理论](#01-数学基础理论-mathematical-foundation)
+- [01. 数学基础理论 (Mathematical Foundation)](#01-数学基础理论-mathematical-foundation)
   - [目录](#目录)
   - [1. 集合论基础](#1-集合论基础)
     - [1.1 集合的基本概念](#11-集合的基本概念)
     - [1.2 集合运算](#12-集合运算)
     - [1.3 关系与函数](#13-关系与函数)
-    - [1.4 基数与序数](#14-基数与序数)
   - [2. 代数结构](#2-代数结构)
     - [2.1 群论基础](#21-群论基础)
     - [2.2 环论基础](#22-环论基础)
-    - [2.3 域论基础](#23-域论基础)
-    - [2.4 格论基础](#24-格论基础)
   - [3. 图论基础](#3-图论基础)
     - [3.1 图的基本概念](#31-图的基本概念)
     - [3.2 图的表示](#32-图的表示)
     - [3.3 图的算法](#33-图的算法)
-    - [3.4 特殊图类](#34-特殊图类)
   - [4. 概率论基础](#4-概率论基础)
     - [4.1 概率空间](#41-概率空间)
-    - [4.2 随机变量](#42-随机变量)
-    - [4.3 概率分布](#43-概率分布)
-    - [4.4 大数定律与中心极限定理](#44-大数定律与中心极限定理)
   - [5. 线性代数基础](#5-线性代数基础)
     - [5.1 向量空间](#51-向量空间)
-    - [5.2 线性变换](#52-线性变换)
-    - [5.3 特征值与特征向量](#53-特征值与特征向量)
-    - [5.4 矩阵分解](#54-矩阵分解)
+  - [总结](#总结)
 
 ## 1. 集合论基础
 
@@ -38,12 +29,14 @@
 集合是不同对象的无序聚集。集合中的对象称为元素。
 
 **形式化定义**：
+
 ```math
 集合 A = {x | P(x)}
 其中 P(x) 是谓词，表示元素 x 满足的性质
 ```
 
 **Go语言实现**：
+
 ```go
 // 集合的基本接口
 type Set[T comparable] interface {
@@ -121,6 +114,7 @@ func (s *HashSet[T]) Elements() []T {
 5. **补集**：A' = U \ A，其中 U 是全集
 
 **Go语言实现**：
+
 ```go
 // 集合运算方法
 func (s *HashSet[T]) Union(other *HashSet[T]) *HashSet[T] {
@@ -206,11 +200,14 @@ func (s *HashSet[T]) IsProperSubset(other *HashSet[T]) bool {
 集合 A 和 B 的二元关系是 A × B 的子集。
 
 **定义 1.3.2** (函数)
+
 函数 f: A → B 是一个特殊的二元关系，满足：
+
 1. 定义域：dom(f) = A
 2. 单值性：∀a ∈ A, ∀b₁, b₂ ∈ B, (a, b₁) ∈ f ∧ (a, b₂) ∈ f → b₁ = b₂
 
 **Go语言实现**：
+
 ```go
 // 关系的基本接口
 type Relation[A, B comparable] interface {
@@ -312,12 +309,14 @@ func (f *Function[A, B]) Apply(a A) (B, bool) {
 
 **定义 2.1.1** (群)
 群是一个代数结构 (G, ·)，其中：
+
 1. **封闭性**：∀a, b ∈ G, a · b ∈ G
 2. **结合律**：∀a, b, c ∈ G, (a · b) · c = a · (b · c)
 3. **单位元**：∃e ∈ G, ∀a ∈ G, e · a = a · e = a
 4. **逆元**：∀a ∈ G, ∃a⁻¹ ∈ G, a · a⁻¹ = a⁻¹ · a = e
 
 **Go语言实现**：
+
 ```go
 // 群的基本接口
 type Group[T comparable] interface {
@@ -425,11 +424,13 @@ func (g *FiniteGroup[T]) IsValid() bool {
 
 **定义 2.2.1** (环)
 环是一个代数结构 (R, +, ·)，其中：
+
 1. (R, +) 是交换群
 2. (R, ·) 是半群
 3. **分配律**：∀a, b, c ∈ R, a · (b + c) = a · b + a · c ∧ (a + b) · c = a · c + b · c
 
 **Go语言实现**：
+
 ```go
 // 环的基本接口
 type Ring[T comparable] interface {
@@ -565,10 +566,12 @@ func (r *FiniteRing[T]) IsValid() bool {
 图 G = (V, E) 由顶点集 V 和边集 E 组成，其中 E ⊆ V × V。
 
 **定义 3.1.2** (有向图与无向图)
+
 - 有向图：边是有序对 (u, v)
 - 无向图：边是无序对 {u, v}
 
 **Go语言实现**：
+
 ```go
 // 图的基本接口
 type Graph[T comparable] interface {
@@ -711,6 +714,7 @@ func (g *AdjacencyListGraph[T]) GetInDegree(vertex T) int {
 ### 3.2 图的表示
 
 **邻接矩阵表示**：
+
 ```go
 // 邻接矩阵实现的图
 type AdjacencyMatrixGraph[T comparable] struct {
@@ -812,6 +816,7 @@ func (g *AdjacencyMatrixGraph[T]) GetEdges() [][2]T {
 ### 3.3 图的算法
 
 **深度优先搜索 (DFS)**：
+
 ```go
 // 深度优先搜索
 func (g *AdjacencyListGraph[T]) DFS(start T) []T {
@@ -914,11 +919,13 @@ func (g *AdjacencyListGraph[T]) TopologicalSort() ([]T, error) {
 
 **定义 4.1.1** (概率空间)
 概率空间 (Ω, F, P) 由以下组成：
+
 1. **样本空间** Ω：所有可能结果的集合
 2. **事件域** F：Ω 的子集的 σ-代数
 3. **概率测度** P：F → [0,1] 的函数
 
 **Go语言实现**：
+
 ```go
 // 概率空间
 type ProbabilitySpace[T comparable] struct {
@@ -1007,6 +1014,7 @@ func (rv *RandomVariable[T, R]) ExpectedValue() (float64, error) {
 向量空间 V 是一个集合，配备加法和标量乘法运算，满足向量空间公理。
 
 **Go语言实现**：
+
 ```go
 // 向量接口
 type Vector[T comparable] interface {
@@ -1175,6 +1183,7 @@ func (m *Matrix) Transpose() *Matrix {
 5. **线性代数基础** - 向量空间、矩阵运算
 
 每个理论都提供了：
+
 - 严格的形式化定义
 - 数学公理和定理
 - Go语言实现示例
@@ -1184,4 +1193,4 @@ func (m *Matrix) Transpose() *Matrix {
 
 ---
 
-**激情澎湃的持续构建** <(￣︶￣)↗[GO!] **数学基础理论完成！** 🚀 
+**激情澎湃的持续构建** <(￣︶￣)↗[GO!] **数学基础理论完成！** 🚀
