@@ -20,7 +20,7 @@
     - [布朗运动](#布朗运动)
   - [Go语言实现](#go语言实现)
     - [随机数生成](#随机数生成)
-    - [概率分布](#概率分布)
+    - [概率分布](#概率分布-1)
     - [统计函数](#统计函数)
     - [随机过程模拟](#随机过程模拟)
   - [应用领域](#应用领域)
@@ -39,6 +39,7 @@
 ### 概率空间
 
 **定义 1 (概率空间)**: 概率空间 $(\Omega, \mathcal{F}, P)$ 由三部分组成：
+
 - $\Omega$: 样本空间，所有可能结果的集合
 - $\mathcal{F}$: 事件域，$\Omega$ 的子集的 $\sigma$-代数
 - $P$: 概率测度，满足概率公理的函数
@@ -46,6 +47,7 @@
 **定义 2 (事件)**: 事件是样本空间 $\Omega$ 的子集，属于事件域 $\mathcal{F}$。
 
 **定义 3 (概率)**: 概率 $P: \mathcal{F} \rightarrow [0,1]$ 满足：
+
 1. $P(\Omega) = 1$
 2. 对于互斥事件序列 $\{A_i\}$，$P(\bigcup_i A_i) = \sum_i P(A_i)$
 
@@ -80,11 +82,13 @@ $$P(a \leq X \leq b) = \int_a^b f_X(x) dx$$
 $$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$$
 
 **定理 1 (概率的基本性质)**:
+
 1. $P(\emptyset) = 0$
 2. $P(A^c) = 1 - P(A)$
 3. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
 
-**证明**: 
+**证明**:
+
 1. 由公理2和3，$P(\Omega) = P(\Omega \cup \emptyset) = P(\Omega) + P(\emptyset)$，因此 $P(\emptyset) = 0$
 2. $1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)$，因此 $P(A^c) = 1 - P(A)$
 3. $P(A \cup B) = P(A \cup (B \setminus A)) = P(A) + P(B \setminus A) = P(A) + P(B) - P(A \cap B)$
@@ -100,7 +104,7 @@ $$P(A_1 \cap A_2 \cap \cdots \cap A_n) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1
 **定理 3 (全概率公式)**: 如果 $\{B_i\}$ 是样本空间的分割，则：
 $$P(A) = \sum_i P(A|B_i) \cdot P(B_i)$$
 
-**定理 4 (贝叶斯公式)**: 
+**定理 4 (贝叶斯公式)**:
 $$P(B_i|A) = \frac{P(A|B_i) \cdot P(B_i)}{\sum_j P(A|B_j) \cdot P(B_j)}$$
 
 ### 独立性
@@ -112,6 +116,7 @@ $$P(A \cap B) = P(A) \cdot P(B)$$
 $$P(A \cap B|C) = P(A|C) \cdot P(B|C)$$
 
 **定理 5 (独立性的性质)**: 如果 $A$ 和 $B$ 独立，则：
+
 1. $A$ 和 $B^c$ 独立
 2. $A^c$ 和 $B$ 独立
 3. $A^c$ 和 $B^c$ 独立
@@ -137,12 +142,13 @@ $$P(X_{n+1} = j | X_n = i, X_{n-1} = i_{n-1}, \ldots, X_0 = i_0) = P(X_{n+1} = j
 **定义 13 (转移矩阵)**: 马尔可夫链的转移矩阵 $P$ 满足：
 $$P_{ij} = P(X_{n+1} = j | X_n = i)$$
 
-**定理 9 (Chapman-Kolmogorov方程)**: 
+**定理 9 (Chapman-Kolmogorov方程)**:
 $$P^{(n+m)}_{ij} = \sum_k P^{(n)}_{ik} P^{(m)}_{kj}$$
 
 ### 泊松过程
 
 **定义 14 (泊松过程)**: 计数过程 $\{N(t), t \geq 0\}$ 是强度为 $\lambda$ 的泊松过程，如果：
+
 1. $N(0) = 0$
 2. 具有独立增量
 3. 具有平稳增量
@@ -154,6 +160,7 @@ $$P(T > t) = e^{-\lambda t}$$
 ### 布朗运动
 
 **定义 15 (布朗运动)**: 随机过程 $\{B(t), t \geq 0\}$ 是标准布朗运动，如果：
+
 1. $B(0) = 0$
 2. 具有独立增量
 3. 具有平稳增量
@@ -622,6 +629,7 @@ func (bm *BrownianMotion) Simulate(duration float64, steps int) []float64 {
 ### 机器学习
 
 概率论在机器学习中的应用：
+
 - 贝叶斯分类器
 - 概率图模型
 - 期望最大化算法
@@ -630,6 +638,7 @@ func (bm *BrownianMotion) Simulate(duration float64, steps int) []float64 {
 ### 金融建模
 
 概率论在金融建模中的应用：
+
 - 期权定价
 - 风险度量
 - 投资组合优化
@@ -638,6 +647,7 @@ func (bm *BrownianMotion) Simulate(duration float64, steps int) []float64 {
 ### 网络分析
 
 概率论在网络分析中的应用：
+
 - 随机图模型
 - 网络可靠性分析
 - 流量建模
@@ -646,6 +656,7 @@ func (bm *BrownianMotion) Simulate(duration float64, steps int) []float64 {
 ### 性能分析
 
 概率论在性能分析中的应用：
+
 - 排队论
 - 系统可靠性
 - 负载均衡

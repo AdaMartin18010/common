@@ -2,812 +2,795 @@
 
 ## 概述
 
-工作流模型是描述业务流程和系统行为的数学抽象。通过形式化的工作流模型，我们可以精确地定义、分析和验证复杂的业务流程。本章将介绍工作流模型的形式化理论，包括Petri网、状态机、进程代数等核心模型。
+工作流模型是描述业务流程和系统行为的数学形式化表示。基于对 `/docs/model` 目录的深度分析，本文档建立了工作流的形式化理论基础，包括三流统一模型、工作流代数、时态逻辑验证等核心概念。
 
-## 1. 基本概念
+## 1. 工作流基础理论
 
 ### 1.1 工作流定义
 
 **定义 1.1** (工作流)
-工作流是一个三元组 $W = (P, T, F)$，其中：
+工作流 $W = (S, T, F, M_0)$ 是一个四元组，其中：
 
-- $P$ 是库所（Place）的有限集合，表示状态
-- $T$ 是变迁（Transition）的有限集合，表示活动
-- $F \subseteq (P \times T) \cup (T \times P)$ 是流关系，表示连接
+- $S$ 是状态集合（States）
+- $T$ 是转换集合（Transitions）
+- $F \subseteq (S \times T) \cup (T \times S)$ 是流关系（Flow Relation）
+- $M_0: S \rightarrow \mathbb{N}$ 是初始标记（Initial Marking）
 
-**形式化表达**：
-$$W = (P, T, F) \text{ where } P \cap T = \emptyset$$
-
-### 1.2 工作流状态
-
-**定义 1.2** (标记)
-工作流的标记是一个函数 $M: P \rightarrow \mathbb{N}$，表示每个库所中的令牌数量。
-
-**定义 1.3** (初始标记)
-初始标记 $M_0$ 是工作流的起始状态。
+**形式化定义**：
 
 ```go
-// 工作流模型的Go语言实现
-type Place struct {
-    ID   string
-    Name string
+// 工作流基本结构
+type Workflow[T comparable] struct {
+    States      map[T]bool
+    Transitions map[string]*Transition[T]
+    Flow        map[string][]string
+    InitialMark map[T]int
 }
 
-type Transition struct {
-    ID       string
-    Name     string
-    Guard    func(map[string]interface{}) bool
-    Action   func(map[string]interface{}) error
+// 转换定义
+type Transition[T comparable] struct {
+    ID          string
+    Name        string
+    PreStates   map[T]int
+    PostStates  map[T]int
+    Guard       func(map[T]int) bool
+    Action      func(map[T]int) map[T]int
 }
 
-type WorkflowModel struct {
-    Places      map[string]*Place
-    Transitions map[string]*Transition
-    Flow        map[string][]string // 从库所到变迁的流
-    ReverseFlow map[string][]string // 从变迁到库所的流
-    Marking     map[string]int      // 当前标记
-    InitialMarking map[string]int   // 初始标记
-}
-
-func NewWorkflowModel() *WorkflowModel {
-    return &WorkflowModel{
-        Places:      make(map[string]*Place),
-        Transitions: make(map[string]*Transition),
+// 创建新工作流
+func NewWorkflow[T comparable]() *Workflow[T] {
+    return &Workflow[T]{
+        States:      make(map[T]bool),
+        Transitions: make(map[string]*Transition[T]),
         Flow:        make(map[string][]string),
-        ReverseFlow: make(map[string][]string),
-        Marking:     make(map[string]int),
-        InitialMarking: make(map[string]int),
-    }
-}
-
-func (wm *WorkflowModel) AddPlace(id, name string) {
-    wm.Places[id] = &Place{ID: id, Name: name}
-    wm.Marking[id] = 0
-    wm.InitialMarking[id] = 0
-}
-
-func (wm *WorkflowModel) AddTransition(id, name string, guard func(map[string]interface{}) bool, action func(map[string]interface{}) error) {
-    wm.Transitions[id] = &Transition{
-        ID:     id,
-        Name:   name,
-        Guard:  guard,
-        Action: action,
-    }
-}
-
-func (wm *WorkflowModel) AddFlow(fromPlace, toTransition string) {
-    wm.Flow[fromPlace] = append(wm.Flow[fromPlace], toTransition)
-}
-
-func (wm *WorkflowModel) AddReverseFlow(fromTransition, toPlace string) {
-    wm.ReverseFlow[fromTransition] = append(wm.ReverseFlow[fromTransition], toPlace)
-}
-```
-
-## 2. Petri网模型
-
-### 2.1 Petri网定义
-
-**定义 2.1** (Petri网)
-Petri网是一个四元组 $N = (P, T, F, M_0)$，其中：
-
-- $P$ 是库所的有限集合
-- $T$ 是变迁的有限集合
-- $F: (P \times T) \cup (T \times P) \rightarrow \mathbb{N}$ 是权重函数
-- $M_0: P \rightarrow \mathbb{N}$ 是初始标记
-
-**定义 2.2** (变迁使能)
-变迁 $t \in T$ 在标记 $M$ 下使能，当且仅当：
-$$\forall p \in P: M(p) \geq F(p, t)$$
-
-**定义 2.3** (变迁发生)
-如果变迁 $t$ 在标记 $M$ 下使能，则它可以发生，产生新标记 $M'$：
-$$M'(p) = M(p) - F(p, t) + F(t, p)$$
-
-```go
-// Petri网的Go语言实现
-type PetriNet struct {
-    Places      map[string]*Place
-    Transitions map[string]*Transition
-    Flow        map[string]map[string]int // 权重函数
-    Marking     map[string]int
-    InitialMarking map[string]int
-}
-
-func NewPetriNet() *PetriNet {
-    return &PetriNet{
-        Places:      make(map[string]*Place),
-        Transitions: make(map[string]*Transition),
-        Flow:        make(map[string]map[string]int),
-        Marking:     make(map[string]int),
-        InitialMarking: make(map[string]int),
-    }
-}
-
-func (pn *PetriNet) AddPlace(id, name string) {
-    pn.Places[id] = &Place{ID: id, Name: name}
-    pn.Marking[id] = 0
-    pn.InitialMarking[id] = 0
-}
-
-func (pn *PetriNet) AddTransition(id, name string) {
-    pn.Transitions[id] = &Transition{ID: id, Name: name}
-}
-
-func (pn *PetriNet) AddFlow(from, to string, weight int) {
-    if pn.Flow[from] == nil {
-        pn.Flow[from] = make(map[string]int)
-    }
-    pn.Flow[from][to] = weight
-}
-
-func (pn *PetriNet) IsEnabled(transitionID string) bool {
-    for placeID, place := range pn.Places {
-        if weight, exists := pn.Flow[placeID][transitionID]; exists {
-            if pn.Marking[placeID] < weight {
-                return false
-            }
-        }
-    }
-    return true
-}
-
-func (pn *PetriNet) Fire(transitionID string) bool {
-    if !pn.IsEnabled(transitionID) {
-        return false
-    }
-    
-    // 消耗输入令牌
-    for placeID := range pn.Places {
-        if weight, exists := pn.Flow[placeID][transitionID]; exists {
-            pn.Marking[placeID] -= weight
-        }
-    }
-    
-    // 产生输出令牌
-    for placeID := range pn.Places {
-        if weight, exists := pn.Flow[transitionID][placeID]; exists {
-            pn.Marking[placeID] += weight
-        }
-    }
-    
-    return true
-}
-
-func (pn *PetriNet) Reset() {
-    for placeID := range pn.Places {
-        pn.Marking[placeID] = pn.InitialMarking[placeID]
+        InitialMark: make(map[T]int),
     }
 }
 ```
 
-### 2.2 Petri网性质
+### 1.2 三流统一模型
 
-**定义 2.4** (有界性)
-Petri网是有界的，如果存在常数 $k$ 使得：
-$$\forall M \in R(M_0): \forall p \in P: M(p) \leq k$$
+基于 `/docs/model` 的分析，工作流系统包含三个核心流：
 
-**定义 2.5** (活性)
-Petri网是活的，如果：
-$$\forall t \in T: \forall M \in R(M_0): \exists M' \in R(M): t \text{ 在 } M' \text{ 下使能}$$
+#### 1.2.1 控制流 (Control Flow)
 
-**定义 2.6** (可达性)
-标记 $M'$ 从标记 $M$ 可达，如果存在变迁序列 $\sigma = t_1 t_2 \ldots t_n$ 使得：
-$$M \xrightarrow{t_1} M_1 \xrightarrow{t_2} M_2 \ldots \xrightarrow{t_n} M'$$
+**定义 1.2** (控制流)
+控制流描述工作流中活动的执行顺序和条件分支。
 
 ```go
-// Petri网性质分析的Go语言实现
-func (pn *PetriNet) IsBounded() (bool, int) {
-    maxTokens := 0
+// 控制流模型
+type ControlFlow[T comparable] struct {
+    Activities    map[string]*Activity[T]
+    Dependencies  map[string][]string
+    Conditions    map[string]*Condition[T]
+}
+
+type Activity[T comparable] struct {
+    ID          string
+    Name        string
+    Type        ActivityType
+    Predecessors []string
+    Successors   []string
+    Conditions   []*Condition[T]
+}
+
+type ActivityType int
+
+const (
+    ActivityTypeStart ActivityType = iota
+    ActivityTypeProcess
+    ActivityTypeDecision
+    ActivityTypeParallel
+    ActivityTypeEnd
+)
+
+type Condition[T comparable] struct {
+    ID       string
+    Expression string
+    Evaluate  func(map[T]interface{}) bool
+}
+
+// 控制流验证
+func (cf *ControlFlow[T]) Validate() error {
+    // 检查循环依赖
+    if cf.hasCycle() {
+        return errors.New("control flow contains cycles")
+    }
+    
+    // 检查可达性
+    if !cf.isReachable() {
+        return errors.New("some activities are not reachable")
+    }
+    
+    return nil
+}
+
+func (cf *ControlFlow[T]) hasCycle() bool {
     visited := make(map[string]bool)
+    recStack := make(map[string]bool)
     
-    var dfs func(map[string]int)
-    dfs = func(marking map[string]int) {
-        markingKey := pn.markingToString(marking)
-        if visited[markingKey] {
-            return
-        }
-        visited[markingKey] = true
-        
-        // 检查当前标记的令牌数量
-        for _, tokens := range marking {
-            if tokens > maxTokens {
-                maxTokens = tokens
+    for activity := range cf.Activities {
+        if !visited[activity] {
+            if cf.dfsCycle(activity, visited, recStack) {
+                return true
             }
         }
-        
-        // 尝试所有可能的变迁
-        for transitionID := range pn.Transitions {
-            if pn.canFireInMarking(transitionID, marking) {
-                newMarking := pn.fireInMarking(transitionID, marking)
-                dfs(newMarking)
-            }
-        }
-    }
-    
-    dfs(pn.Marking)
-    return maxTokens < 1000, maxTokens // 假设1000为有界阈值
-}
-
-func (pn *PetriNet) markingToString(marking map[string]int) string {
-    keys := make([]string, 0, len(marking))
-    for k := range marking {
-        keys = append(keys, k)
-    }
-    sort.Strings(keys)
-    
-    var result strings.Builder
-    for _, key := range keys {
-        result.WriteString(fmt.Sprintf("%s:%d,", key, marking[key]))
-    }
-    return result.String()
-}
-
-func (pn *PetriNet) canFireInMarking(transitionID string, marking map[string]int) bool {
-    for placeID := range pn.Places {
-        if weight, exists := pn.Flow[placeID][transitionID]; exists {
-            if marking[placeID] < weight {
-                return false
-            }
-        }
-    }
-    return true
-}
-
-func (pn *PetriNet) fireInMarking(transitionID string, marking map[string]int) map[string]int {
-    newMarking := make(map[string]int)
-    for placeID, tokens := range marking {
-        newMarking[placeID] = tokens
-    }
-    
-    // 消耗输入令牌
-    for placeID := range pn.Places {
-        if weight, exists := pn.Flow[placeID][transitionID]; exists {
-            newMarking[placeID] -= weight
-        }
-    }
-    
-    // 产生输出令牌
-    for placeID := range pn.Places {
-        if weight, exists := pn.Flow[transitionID][placeID]; exists {
-            newMarking[placeID] += weight
-        }
-    }
-    
-    return newMarking
-}
-```
-
-## 3. 状态机模型
-
-### 3.1 有限状态机
-
-**定义 3.1** (有限状态机)
-有限状态机是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
-
-- $Q$ 是状态的有限集合
-- $\Sigma$ 是输入字母表的有限集合
-- $\delta: Q \times \Sigma \rightarrow Q$ 是转移函数
-- $q_0 \in Q$ 是初始状态
-- $F \subseteq Q$ 是接受状态集合
-
-**定义 3.2** (状态转移)
-状态机从状态 $q$ 在输入 $a$ 下转移到状态 $q'$，记作：
-$$q \xrightarrow{a} q' \text{ if } \delta(q, a) = q'$$
-
-```go
-// 有限状态机的Go语言实现
-type State struct {
-    ID   string
-    Name string
-}
-
-type FiniteStateMachine struct {
-    States       map[string]*State
-    Alphabet     map[string]bool
-    Transitions  map[string]map[string]string // state -> input -> nextState
-    InitialState string
-    AcceptStates map[string]bool
-    CurrentState string
-}
-
-func NewFiniteStateMachine() *FiniteStateMachine {
-    return &FiniteStateMachine{
-        States:       make(map[string]*State),
-        Alphabet:     make(map[string]bool),
-        Transitions:  make(map[string]map[string]string),
-        AcceptStates: make(map[string]bool),
-    }
-}
-
-func (fsm *FiniteStateMachine) AddState(id, name string) {
-    fsm.States[id] = &State{ID: id, Name: name}
-    fsm.Transitions[id] = make(map[string]string)
-}
-
-func (fsm *FiniteStateMachine) SetInitialState(stateID string) {
-    fsm.InitialState = stateID
-    fsm.CurrentState = stateID
-}
-
-func (fsm *FiniteStateMachine) AddAcceptState(stateID string) {
-    fsm.AcceptStates[stateID] = true
-}
-
-func (fsm *FiniteStateMachine) AddTransition(fromState, input, toState string) {
-    fsm.Alphabet[input] = true
-    fsm.Transitions[fromState][input] = toState
-}
-
-func (fsm *FiniteStateMachine) ProcessInput(input string) bool {
-    if nextState, exists := fsm.Transitions[fsm.CurrentState][input]; exists {
-        fsm.CurrentState = nextState
-        return true
     }
     return false
 }
 
-func (fsm *FiniteStateMachine) IsAccepting() bool {
-    return fsm.AcceptStates[fsm.CurrentState]
+func (cf *ControlFlow[T]) dfsCycle(activity string, visited, recStack map[string]bool) bool {
+    visited[activity] = true
+    recStack[activity] = true
+    
+    for _, successor := range cf.Activities[activity].Successors {
+        if !visited[successor] {
+            if cf.dfsCycle(successor, visited, recStack) {
+                return true
+            }
+        } else if recStack[successor] {
+            return true
+        }
+    }
+    
+    recStack[activity] = false
+    return false
+}
+```
+
+#### 1.2.2 数据流 (Data Flow)
+
+**定义 1.3** (数据流)
+数据流描述工作流中数据的传递、转换和处理过程。
+
+```go
+// 数据流模型
+type DataFlow[T comparable] struct {
+    DataObjects  map[string]*DataObject[T]
+    Transformations map[string]*Transformation[T]
+    DataPaths    map[string][]string
 }
 
-func (fsm *FiniteStateMachine) Reset() {
-    fsm.CurrentState = fsm.InitialState
+type DataObject[T comparable] struct {
+    ID       string
+    Name     string
+    Type     string
+    Schema   interface{}
+    Location string
 }
 
-func (fsm *FiniteStateMachine) ProcessString(inputs []string) bool {
-    fsm.Reset()
-    for _, input := range inputs {
-        if !fsm.ProcessInput(input) {
+type Transformation[T comparable] struct {
+    ID          string
+    Name        string
+    Input       []string
+    Output      []string
+    Transform   func(map[string]interface{}) map[string]interface{}
+    Validation  func(map[string]interface{}) error
+}
+
+// 数据流分析
+func (df *DataFlow[T]) AnalyzeDataDependencies() map[string][]string {
+    dependencies := make(map[string][]string)
+    
+    for _, transformation := range df.Transformations {
+        for _, output := range transformation.Output {
+            if dependencies[output] == nil {
+                dependencies[output] = make([]string, 0)
+            }
+            dependencies[output] = append(dependencies[output], transformation.ID)
+        }
+    }
+    
+    return dependencies
+}
+
+// 数据一致性检查
+func (df *DataFlow[T]) CheckDataConsistency() error {
+    for _, transformation := range df.Transformations {
+        // 检查输入数据对象是否存在
+        for _, input := range transformation.Input {
+            if _, exists := df.DataObjects[input]; !exists {
+                return fmt.Errorf("input data object %s not found for transformation %s", input, transformation.ID)
+            }
+        }
+        
+        // 检查输出数据对象是否存在
+        for _, output := range transformation.Output {
+            if _, exists := df.DataObjects[output]; !exists {
+                return fmt.Errorf("output data object %s not found for transformation %s", output, transformation.ID)
+            }
+        }
+    }
+    
+    return nil
+}
+```
+
+#### 1.2.3 执行流 (Execution Flow)
+
+**定义 1.4** (执行流)
+执行流描述工作流实例的实际执行过程，包括资源分配、时间调度和异常处理。
+
+```go
+// 执行流模型
+type ExecutionFlow[T comparable] struct {
+    Instances    map[string]*WorkflowInstance[T]
+    Resources    map[string]*Resource[T]
+    Scheduler    *Scheduler[T]
+    Monitor      *ExecutionMonitor[T]
+}
+
+type WorkflowInstance[T comparable] struct {
+    ID           string
+    WorkflowID   string
+    Status       InstanceStatus
+    CurrentState map[T]int
+    History      []*ExecutionEvent[T]
+    StartTime    time.Time
+    EndTime      *time.Time
+}
+
+type InstanceStatus int
+
+const (
+    InstanceStatusCreated InstanceStatus = iota
+    InstanceStatusRunning
+    InstanceStatusCompleted
+    InstanceStatusFailed
+    InstanceStatusSuspended
+)
+
+type Resource[T comparable] struct {
+    ID       string
+    Type     string
+    Capacity int
+    Available int
+    Assigned  map[string]bool
+}
+
+type ExecutionEvent[T comparable] struct {
+    Timestamp   time.Time
+    Type        EventType
+    ActivityID  string
+    Data        map[string]interface{}
+    Error       error
+}
+
+type EventType int
+
+const (
+    EventTypeStarted EventType = iota
+    EventTypeCompleted
+    EventTypeFailed
+    EventTypeSuspended
+    EventTypeResumed
+)
+
+// 执行流管理
+func (ef *ExecutionFlow[T]) StartInstance(workflowID string) (*WorkflowInstance[T], error) {
+    instance := &WorkflowInstance[T]{
+        ID:         generateID(),
+        WorkflowID: workflowID,
+        Status:     InstanceStatusCreated,
+        StartTime:  time.Now(),
+        History:    make([]*ExecutionEvent[T], 0),
+    }
+    
+    ef.Instances[instance.ID] = instance
+    return instance, nil
+}
+
+func (ef *ExecutionFlow[T]) ExecuteInstance(instanceID string) error {
+    instance, exists := ef.Instances[instanceID]
+    if !exists {
+        return errors.New("instance not found")
+    }
+    
+    instance.Status = InstanceStatusRunning
+    ef.recordEvent(instance, EventTypeStarted, "", nil, nil)
+    
+    // 执行工作流逻辑
+    return ef.executeWorkflow(instance)
+}
+
+func (ef *ExecutionFlow[T]) executeWorkflow(instance *WorkflowInstance[T]) error {
+    // 简化的执行逻辑
+    // 实际实现需要根据具体的工作流定义执行
+    
+    instance.Status = InstanceStatusCompleted
+    endTime := time.Now()
+    instance.EndTime = &endTime
+    ef.recordEvent(instance, EventTypeCompleted, "", nil, nil)
+    
+    return nil
+}
+
+func (ef *ExecutionFlow[T]) recordEvent(instance *WorkflowInstance[T], eventType EventType, activityID string, data map[string]interface{}, err error) {
+    event := &ExecutionEvent[T]{
+        Timestamp:  time.Now(),
+        Type:       eventType,
+        ActivityID: activityID,
+        Data:       data,
+        Error:      err,
+    }
+    
+    instance.History = append(instance.History, event)
+}
+```
+
+## 2. 工作流代数
+
+### 2.1 基本操作
+
+**定义 2.1** (工作流代数)
+工作流代数定义了工作流组合的基本操作：
+
+- 顺序组合（Sequential Composition）
+- 并行组合（Parallel Composition）
+- 选择分支（Choice）
+- 迭代循环（Iteration）
+
+```go
+// 工作流代数操作
+type WorkflowAlgebra[T comparable] struct {
+    workflows map[string]*Workflow[T]
+}
+
+func NewWorkflowAlgebra[T comparable]() *WorkflowAlgebra[T] {
+    return &WorkflowAlgebra[T]{
+        workflows: make(map[string]*Workflow[T]),
+    }
+}
+
+// 顺序组合
+func (wa *WorkflowAlgebra[T]) SequentialComposition(w1, w2 *Workflow[T]) *Workflow[T] {
+    result := NewWorkflow[T]()
+    
+    // 合并状态
+    for state := range w1.States {
+        result.States[state] = true
+    }
+    for state := range w2.States {
+        result.States[state] = true
+    }
+    
+    // 合并转换
+    for id, transition := range w1.Transitions {
+        result.Transitions[id] = transition
+    }
+    for id, transition := range w2.Transitions {
+        result.Transitions[id] = transition
+    }
+    
+    // 添加连接转换
+    connector := &Transition[T]{
+        ID:        "connector_" + generateID(),
+        Name:      "Sequential Connector",
+        PreStates: map[T]int{},
+        PostStates: map[T]int{},
+    }
+    
+    // 找到w1的结束状态和w2的开始状态
+    for state := range w1.States {
+        if wa.isEndState(w1, state) {
+            connector.PreStates[state] = 1
+        }
+    }
+    for state := range w2.States {
+        if wa.isStartState(w2, state) {
+            connector.PostStates[state] = 1
+        }
+    }
+    
+    result.Transitions[connector.ID] = connector
+    
+    return result
+}
+
+// 并行组合
+func (wa *WorkflowAlgebra[T]) ParallelComposition(w1, w2 *Workflow[T]) *Workflow[T] {
+    result := NewWorkflow[T]()
+    
+    // 合并状态和转换
+    for state := range w1.States {
+        result.States[state] = true
+    }
+    for state := range w2.States {
+        result.States[state] = true
+    }
+    
+    for id, transition := range w1.Transitions {
+        result.Transitions[id] = transition
+    }
+    for id, transition := range w2.Transitions {
+        result.Transitions[id] = transition
+    }
+    
+    // 添加同步转换
+    syncStart := &Transition[T]{
+        ID:        "sync_start_" + generateID(),
+        Name:      "Parallel Start",
+        PreStates: map[T]int{},
+        PostStates: map[T]int{},
+    }
+    
+    syncEnd := &Transition[T]{
+        ID:        "sync_end_" + generateID(),
+        Name:      "Parallel End",
+        PreStates: map[T]int{},
+        PostStates: map[T]int{},
+    }
+    
+    // 连接开始状态
+    for state := range w1.States {
+        if wa.isStartState(w1, state) {
+            syncStart.PostStates[state] = 1
+        }
+    }
+    for state := range w2.States {
+        if wa.isStartState(w2, state) {
+            syncStart.PostStates[state] = 1
+        }
+    }
+    
+    // 连接结束状态
+    for state := range w1.States {
+        if wa.isEndState(w1, state) {
+            syncEnd.PreStates[state] = 1
+        }
+    }
+    for state := range w2.States {
+        if wa.isEndState(w2, state) {
+            syncEnd.PreStates[state] = 1
+        }
+    }
+    
+    result.Transitions[syncStart.ID] = syncStart
+    result.Transitions[syncEnd.ID] = syncEnd
+    
+    return result
+}
+
+// 选择分支
+func (wa *WorkflowAlgebra[T]) Choice(w1, w2 *Workflow[T], condition func(map[T]int) bool) *Workflow[T] {
+    result := NewWorkflow[T]()
+    
+    // 合并状态和转换
+    for state := range w1.States {
+        result.States[state] = true
+    }
+    for state := range w2.States {
+        result.States[state] = true
+    }
+    
+    for id, transition := range w1.Transitions {
+        result.Transitions[id] = transition
+    }
+    for id, transition := range w2.Transitions {
+        result.Transitions[id] = transition
+    }
+    
+    // 添加条件转换
+    choice := &Transition[T]{
+        ID:        "choice_" + generateID(),
+        Name:      "Choice",
+        PreStates: map[T]int{},
+        PostStates: map[T]int{},
+        Guard:     condition,
+    }
+    
+    // 连接开始状态
+    for state := range w1.States {
+        if wa.isStartState(w1, state) {
+            choice.PostStates[state] = 1
+        }
+    }
+    for state := range w2.States {
+        if wa.isStartState(w2, state) {
+            choice.PostStates[state] = 1
+        }
+    }
+    
+    result.Transitions[choice.ID] = choice
+    
+    return result
+}
+
+// 辅助方法
+func (wa *WorkflowAlgebra[T]) isStartState(w *Workflow[T], state T) bool {
+    // 检查是否为开始状态（没有前置转换）
+    for _, transition := range w.Transitions {
+        if transition.PreStates[state] > 0 {
             return false
         }
     }
-    return fsm.IsAccepting()
+    return true
+}
+
+func (wa *WorkflowAlgebra[T]) isEndState(w *Workflow[T], state T) bool {
+    // 检查是否为结束状态（没有后置转换）
+    for _, transition := range w.Transitions {
+        if transition.PostStates[state] > 0 {
+            return false
+        }
+    }
+    return true
 }
 ```
 
-### 3.2 工作流状态机
+### 2.2 代数性质
 
-**定义 3.3** (工作流状态机)
-工作流状态机是一个扩展的有限状态机，增加了：
+**定理 2.1** (结合律)
+顺序组合满足结合律：
+$$(W_1 \circ W_2) \circ W_3 = W_1 \circ (W_2 \circ W_3)$$
 
-- 条件函数：$C: Q \times \Sigma \rightarrow \mathbb{B}$
-- 动作函数：$A: Q \times \Sigma \rightarrow \text{Action}$
+**定理 2.2** (交换律)
+并行组合满足交换律：
+$$W_1 \parallel W_2 = W_2 \parallel W_1$$
+
+**定理 2.3** (分配律)
+并行组合对顺序组合满足分配律：
+$$(W_1 \circ W_2) \parallel W_3 = (W_1 \parallel W_3) \circ (W_2 \parallel W_3)$$
 
 ```go
-// 工作流状态机的Go语言实现
-type WorkflowStateMachine struct {
-    States       map[string]*State
-    Events       map[string]bool
-    Transitions  map[string]map[string]*Transition
-    InitialState string
-    FinalStates  map[string]bool
-    CurrentState string
-    Context      map[string]interface{}
+// 代数性质验证
+func (wa *WorkflowAlgebra[T]) VerifyAssociativity(w1, w2, w3 *Workflow[T]) bool {
+    left := wa.SequentialComposition(wa.SequentialComposition(w1, w2), w3)
+    right := wa.SequentialComposition(w1, wa.SequentialComposition(w2, w3))
+    
+    return wa.workflowsEqual(left, right)
 }
 
-type Transition struct {
-    FromState string
-    Event     string
-    ToState   string
-    Condition func(map[string]interface{}) bool
-    Action    func(map[string]interface{}) error
+func (wa *WorkflowAlgebra[T]) VerifyCommutativity(w1, w2 *Workflow[T]) bool {
+    left := wa.ParallelComposition(w1, w2)
+    right := wa.ParallelComposition(w2, w1)
+    
+    return wa.workflowsEqual(left, right)
 }
 
-func NewWorkflowStateMachine() *WorkflowStateMachine {
-    return &WorkflowStateMachine{
-        States:      make(map[string]*State),
-        Events:      make(map[string]bool),
-        Transitions: make(map[string]map[string]*Transition),
-        FinalStates: make(map[string]bool),
-        Context:     make(map[string]interface{}),
-    }
-}
-
-func (wsm *WorkflowStateMachine) AddState(id, name string) {
-    wsm.States[id] = &State{ID: id, Name: name}
-    wsm.Transitions[id] = make(map[string]*Transition)
-}
-
-func (wsm *WorkflowStateMachine) AddTransition(fromState, event, toState string, condition func(map[string]interface{}) bool, action func(map[string]interface{}) error) {
-    wsm.Events[event] = true
-    wsm.Transitions[fromState][event] = &Transition{
-        FromState: fromState,
-        Event:     event,
-        ToState:   toState,
-        Condition: condition,
-        Action:    action,
-    }
-}
-
-func (wsm *WorkflowStateMachine) TriggerEvent(event string) error {
-    if wsm.CurrentState == "" {
-        return fmt.Errorf("no initial state set")
+func (wa *WorkflowAlgebra[T]) workflowsEqual(w1, w2 *Workflow[T]) bool {
+    // 简化的相等性检查
+    // 实际实现需要更复杂的图同构检查
+    
+    if len(w1.States) != len(w2.States) {
+        return false
     }
     
-    if transition, exists := wsm.Transitions[wsm.CurrentState][event]; exists {
-        // 检查条件
-        if transition.Condition != nil && !transition.Condition(wsm.Context) {
-            return fmt.Errorf("transition condition not met")
-        }
-        
-        // 执行动作
-        if transition.Action != nil {
-            if err := transition.Action(wsm.Context); err != nil {
-                return fmt.Errorf("transition action failed: %w", err)
-            }
-        }
-        
-        // 状态转移
-        wsm.CurrentState = transition.ToState
-        return nil
+    if len(w1.Transitions) != len(w2.Transitions) {
+        return false
     }
     
-    return fmt.Errorf("no transition found for event %s in state %s", event, wsm.CurrentState)
-}
-
-func (wsm *WorkflowStateMachine) IsCompleted() bool {
-    return wsm.FinalStates[wsm.CurrentState]
-}
-
-func (wsm *WorkflowStateMachine) GetAvailableEvents() []string {
-    if wsm.CurrentState == "" {
-        return []int{}
-    }
-    
-    events := []string{}
-    for event := range wsm.Transitions[wsm.CurrentState] {
-        events = append(events, event)
-    }
-    return events
+    return true
 }
 ```
 
-## 4. 进程代数
+## 3. 时态逻辑验证
 
-### 4.1 CCS (Calculus of Communicating Systems)
+### 3.1 线性时态逻辑 (LTL)
 
-**定义 4.1** (CCS语法)
-CCS进程的语法定义如下：
-$$P ::= 0 \mid \alpha.P \mid P + Q \mid P \mid Q \mid P \setminus L \mid A$$
-
-其中：
-
-- $0$ 是空进程
-- $\alpha.P$ 是前缀操作
-- $P + Q$ 是选择操作
-- $P \mid Q$ 是并行组合
-- $P \setminus L$ 是限制操作
-- $A$ 是进程标识符
-
-**定义 4.2** (转移关系)
-CCS的转移关系由以下规则定义：
-
-**前缀规则**：
-$$\frac{}{\alpha.P \xrightarrow{\alpha} P}$$
-
-**选择规则**：
-$$\frac{P \xrightarrow{\alpha} P'}{P + Q \xrightarrow{\alpha} P'} \quad \frac{Q \xrightarrow{\alpha} Q'}{P + Q \xrightarrow{\alpha} Q'}$$
-
-**并行规则**：
-$$\frac{P \xrightarrow{\alpha} P'}{P \mid Q \xrightarrow{\alpha} P' \mid Q} \quad \frac{Q \xrightarrow{\alpha} Q'}{P \mid Q \xrightarrow{\alpha} P \mid Q'}$$
-
-**通信规则**：
-$$\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{\bar{a}} Q'}{P \mid Q \xrightarrow{\tau} P' \mid Q'}$$
+**定义 3.1** (LTL公式)
+线性时态逻辑公式的语法：
+$$\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \phi$$
 
 ```go
-// CCS进程的Go语言实现
-type Action struct {
+// LTL公式表示
+type LTLFormula interface {
+    Evaluate(trace []map[string]bool) bool
+}
+
+type AtomicProposition struct {
     Name string
-    Type ActionType // Input, Output, Internal
 }
 
-type ActionType int
-
-const (
-    Input ActionType = iota
-    Output
-    Internal
-)
-
-type CCSProcess interface {
-    CanPerform(action Action) bool
-    Perform(action Action) CCSProcess
-    GetActions() []Action
+func (ap *AtomicProposition) Evaluate(trace []map[string]bool) bool {
+    if len(trace) == 0 {
+        return false
+    }
+    return trace[0][ap.Name]
 }
 
-type NilProcess struct{}
+type Negation struct {
+    Formula LTLFormula
+}
 
-func (n NilProcess) CanPerform(action Action) bool {
+func (n *Negation) Evaluate(trace []map[string]bool) bool {
+    return !n.Formula.Evaluate(trace)
+}
+
+type Conjunction struct {
+    Left  LTLFormula
+    Right LTLFormula
+}
+
+func (c *Conjunction) Evaluate(trace []map[string]bool) bool {
+    return c.Left.Evaluate(trace) && c.Right.Evaluate(trace)
+}
+
+type Next struct {
+    Formula LTLFormula
+}
+
+func (n *Next) Evaluate(trace []map[string]bool) bool {
+    if len(trace) <= 1 {
+        return false
+    }
+    return n.Formula.Evaluate(trace[1:])
+}
+
+type Finally struct {
+    Formula LTLFormula
+}
+
+func (f *Finally) Evaluate(trace []map[string]bool) bool {
+    for i := range trace {
+        if f.Formula.Evaluate(trace[i:]) {
+            return true
+        }
+    }
     return false
 }
 
-func (n NilProcess) Perform(action Action) CCSProcess {
-    return n
+type Globally struct {
+    Formula LTLFormula
 }
 
-func (n NilProcess) GetActions() []Action {
-    return []Action{}
-}
-
-type PrefixProcess struct {
-    Action Action
-    Next   CCSProcess
-}
-
-func (p PrefixProcess) CanPerform(action Action) bool {
-    return p.Action.Name == action.Name && p.Action.Type == action.Type
-}
-
-func (p PrefixProcess) Perform(action Action) CCSProcess {
-    if p.CanPerform(action) {
-        return p.Next
-    }
-    return p
-}
-
-func (p PrefixProcess) GetActions() []Action {
-    return []Action{p.Action}
-}
-
-type ChoiceProcess struct {
-    Left  CCSProcess
-    Right CCSProcess
-}
-
-func (c ChoiceProcess) CanPerform(action Action) bool {
-    return c.Left.CanPerform(action) || c.Right.CanPerform(action)
-}
-
-func (c ChoiceProcess) Perform(action Action) CCSProcess {
-    if c.Left.CanPerform(action) {
-        return c.Left.Perform(action)
-    }
-    if c.Right.CanPerform(action) {
-        return c.Right.Perform(action)
-    }
-    return c
-}
-
-func (c ChoiceProcess) GetActions() []Action {
-    actions := c.Left.GetActions()
-    actions = append(actions, c.Right.GetActions()...)
-    return actions
-}
-
-type ParallelProcess struct {
-    Left  CCSProcess
-    Right CCSProcess
-}
-
-func (p ParallelProcess) CanPerform(action Action) bool {
-    return p.Left.CanPerform(action) || p.Right.CanPerform(action)
-}
-
-func (p ParallelProcess) Perform(action Action) CCSProcess {
-    if p.Left.CanPerform(action) {
-        return ParallelProcess{
-            Left:  p.Left.Perform(action),
-            Right: p.Right,
+func (g *Globally) Evaluate(trace []map[string]bool) bool {
+    for i := range trace {
+        if !g.Formula.Evaluate(trace[i:]) {
+            return false
         }
     }
-    if p.Right.CanPerform(action) {
-        return ParallelProcess{
-            Left:  p.Left,
-            Right: p.Right.Perform(action),
-        }
-    }
-    return p
+    return true
 }
 
-func (p ParallelProcess) GetActions() []Action {
-    actions := p.Left.GetActions()
-    actions = append(actions, p.Right.GetActions()...)
-    return actions
+type Until struct {
+    Left  LTLFormula
+    Right LTLFormula
+}
+
+func (u *Until) Evaluate(trace []map[string]bool) bool {
+    for i := range trace {
+        if u.Right.Evaluate(trace[i:]) {
+            return true
+        }
+        if !u.Left.Evaluate(trace[i:]) {
+            return false
+        }
+    }
+    return false
 }
 ```
 
-## 5. 工作流模式
+### 3.2 工作流属性验证
 
-### 5.1 基本模式
+**定义 3.2** (安全性)
+工作流满足安全性当且仅当不会到达错误状态：
+$$\mathbf{G} \neg error$$
 
-**定义 5.1** (顺序模式)
-顺序模式表示活动按顺序执行：
-$$P_1 \rightarrow P_2 \rightarrow \ldots \rightarrow P_n$$
+**定义 3.3** (活性)
+工作流满足活性当且仅当最终会到达目标状态：
+$$\mathbf{F} goal$$
 
-**定义 5.2** (并行模式)
-并行模式表示活动同时执行：
-$$P_1 \parallel P_2 \parallel \ldots \parallel P_n$$
-
-**定义 5.3** (选择模式)
-选择模式表示从多个活动中选择一个执行：
-$$P_1 + P_2 + \ldots + P_n$$
+**定义 3.4** (死锁自由性)
+工作流满足死锁自由性当且仅当总是存在可执行的转换：
+$$\mathbf{G} \mathbf{F} enabled$$
 
 ```go
-// 工作流模式的Go语言实现
-type WorkflowPattern interface {
-    Execute(context map[string]interface{}) error
-    GetNextSteps() []string
+// 工作流属性验证器
+type WorkflowVerifier[T comparable] struct {
+    workflow *Workflow[T]
 }
 
-type SequentialPattern struct {
-    Steps []WorkflowPattern
+func NewWorkflowVerifier[T comparable](w *Workflow[T]) *WorkflowVerifier[T] {
+    return &WorkflowVerifier[T]{workflow: w}
 }
 
-func (sp SequentialPattern) Execute(context map[string]interface{}) error {
-    for _, step := range sp.Steps {
-        if err := step.Execute(context); err != nil {
-            return err
-        }
-    }
-    return nil
-}
-
-func (sp SequentialPattern) GetNextSteps() []string {
-    if len(sp.Steps) > 0 {
-        return sp.Steps[0].GetNextSteps()
-    }
-    return []string{}
-}
-
-type ParallelPattern struct {
-    Steps []WorkflowPattern
-}
-
-func (pp ParallelPattern) Execute(context map[string]interface{}) error {
-    var wg sync.WaitGroup
-    errors := make(chan error, len(pp.Steps))
+// 验证安全性
+func (wv *WorkflowVerifier[T]) VerifySafety() bool {
+    // 检查是否可达错误状态
+    errorStates := wv.findErrorStates()
     
-    for _, step := range pp.Steps {
-        wg.Add(1)
-        go func(s WorkflowPattern) {
-            defer wg.Done()
-            if err := s.Execute(context); err != nil {
-                errors <- err
-            }
-        }(step)
-    }
-    
-    wg.Wait()
-    close(errors)
-    
-    // 检查是否有错误
-    for err := range errors {
-        if err != nil {
-            return err
+    for _, state := range errorStates {
+        if wv.isReachable(state) {
+            return false
         }
     }
     
-    return nil
+    return true
 }
 
-func (pp ParallelPattern) GetNextSteps() []string {
-    steps := []string{}
-    for _, step := range pp.Steps {
-        steps = append(steps, step.GetNextSteps()...)
-    }
-    return steps
-}
-
-type ChoicePattern struct {
-    Condition func(map[string]interface{}) int
-    Steps     []WorkflowPattern
-}
-
-func (cp ChoicePattern) Execute(context map[string]interface{}) error {
-    choice := cp.Condition(context)
-    if choice >= 0 && choice < len(cp.Steps) {
-        return cp.Steps[choice].Execute(context)
-    }
-    return fmt.Errorf("invalid choice: %d", choice)
-}
-
-func (cp ChoicePattern) GetNextSteps() []string {
-    steps := []string{}
-    for _, step := range cp.Steps {
-        steps = append(steps, step.GetNextSteps()...)
-    }
-    return steps
-}
-```
-
-### 5.2 高级模式
-
-**定义 5.4** (循环模式)
-循环模式表示活动重复执行：
-$$\text{while } C \text{ do } P$$
-
-**定义 5.5** (异常处理模式)
-异常处理模式表示异常情况的处理：
-$$\text{try } P \text{ catch } E \text{ handle } H$$
-
-```go
-// 高级工作流模式的Go语言实现
-type LoopPattern struct {
-    Condition func(map[string]interface{}) bool
-    Body      WorkflowPattern
-    MaxIterations int
-}
-
-func (lp LoopPattern) Execute(context map[string]interface{}) error {
-    iterations := 0
-    for lp.Condition(context) && iterations < lp.MaxIterations {
-        if err := lp.Body.Execute(context); err != nil {
-            return err
+// 验证活性
+func (wv *WorkflowVerifier[T]) VerifyLiveness() bool {
+    // 检查是否可达目标状态
+    goalStates := wv.findGoalStates()
+    
+    for _, state := range goalStates {
+        if !wv.isReachable(state) {
+            return false
         }
-        iterations++
     }
     
-    if iterations >= lp.MaxIterations {
-        return fmt.Errorf("maximum iterations exceeded")
+    return true
+}
+
+// 验证死锁自由性
+func (wv *WorkflowVerifier[T]) VerifyDeadlockFreedom() bool {
+    // 检查是否存在死锁状态
+    deadlockStates := wv.findDeadlockStates()
+    
+    for _, state := range deadlockStates {
+        if wv.isReachable(state) {
+            return false
+        }
     }
     
-    return nil
+    return true
 }
 
-func (lp LoopPattern) GetNextSteps() []string {
-    return lp.Body.GetNextSteps()
+// 辅助方法
+func (wv *WorkflowVerifier[T]) findErrorStates() []T {
+    var errorStates []T
+    // 实际实现需要根据具体的工作流定义识别错误状态
+    return errorStates
 }
 
-type ExceptionPattern struct {
-    Try     WorkflowPattern
-    Catch   map[string]WorkflowPattern // 异常类型 -> 处理模式
-    Finally WorkflowPattern
+func (wv *WorkflowVerifier[T]) findGoalStates() []T {
+    var goalStates []T
+    // 实际实现需要根据具体的工作流定义识别目标状态
+    return goalStates
 }
 
-func (ep ExceptionPattern) Execute(context map[string]interface{}) error {
-    defer func() {
-        if ep.Finally != nil {
-            ep.Finally.Execute(context)
-        }
-    }()
+func (wv *WorkflowVerifier[T]) findDeadlockStates() []T {
+    var deadlockStates []T
     
-    defer func() {
-        if r := recover(); r != nil {
-            if exceptionType, ok := r.(string); ok {
-                if handler, exists := ep.Catch[exceptionType]; exists {
-                    handler.Execute(context)
-                }
-            }
+    for state := range wv.workflow.States {
+        if wv.isDeadlockState(state) {
+            deadlockStates = append(deadlockStates, state)
         }
-    }()
+    }
     
-    return ep.Try.Execute(context)
+    return deadlockStates
 }
 
-func (ep ExceptionPattern) GetNextSteps() []string {
-    return ep.Try.GetNextSteps()
+func (wv *WorkflowVerifier[T]) isDeadlockState(state T) bool {
+    // 检查状态是否有可执行的转换
+    for _, transition := range wv.workflow.Transitions {
+        if transition.PreStates[state] > 0 {
+            return false
+        }
+    }
+    return true
 }
-```
 
-## 6. 工作流验证
-
-### 6.1 可达性分析
-
-**定义 6.1** (可达性)
-状态 $s'$ 从状态 $s$ 可达，如果存在执行序列使得：
-$$s \xrightarrow{a_1} s_1 \xrightarrow{a_2} s_2 \ldots \xrightarrow{a_n} s'$$
-
-```go
-// 可达性分析的Go语言实现
-func (wsm *WorkflowStateMachine) IsReachable(targetState string) bool {
-    visited := make(map[string]bool)
-    queue := []string{wsm.InitialState}
-    visited[wsm.InitialState] = true
+func (wv *WorkflowVerifier[T]) isReachable(state T) bool {
+    // 使用BFS检查可达性
+    visited := make(map[T]bool)
+    queue := []T{}
+    
+    // 从初始状态开始
+    for s, count := range wv.workflow.InitialMark {
+        if count > 0 {
+            queue = append(queue, s)
+            visited[s] = true
+        }
+    }
     
     for len(queue) > 0 {
         current := queue[0]
         queue = queue[1:]
         
-        if current == targetState {
+        if current == state {
             return true
         }
         
-        for event := range wsm.Transitions[current] {
-            if transition, exists := wsm.Transitions[current][event]; exists {
-                if !visited[transition.ToState] {
-                    visited[transition.ToState] = true
-                    queue = append(queue, transition.ToState)
+        // 检查所有可能的转换
+        for _, transition := range wv.workflow.Transitions {
+            if transition.PreStates[current] > 0 {
+                for nextState := range transition.PostStates {
+                    if !visited[nextState] {
+                        visited[nextState] = true
+                        queue = append(queue, nextState)
+                    }
                 }
             }
         }
@@ -817,179 +800,104 @@ func (wsm *WorkflowStateMachine) IsReachable(targetState string) bool {
 }
 ```
 
-### 6.2 死锁检测
+## 4. 工作流优化
 
-**定义 6.2** (死锁)
-工作流处于死锁状态，如果没有可执行的变迁。
+### 4.1 性能优化
 
 ```go
-// 死锁检测的Go语言实现
-func (wsm *WorkflowStateMachine) IsDeadlocked() bool {
-    return len(wsm.GetAvailableEvents()) == 0
+// 工作流性能分析器
+type WorkflowPerformanceAnalyzer[T comparable] struct {
+    workflow *Workflow[T]
+    metrics  map[string]float64
 }
 
-func (wsm *WorkflowStateMachine) FindDeadlockStates() []string {
-    deadlockStates := []string{}
-    visited := make(map[string]bool)
+func NewWorkflowPerformanceAnalyzer[T comparable](w *Workflow[T]) *WorkflowPerformanceAnalyzer[T] {
+    return &WorkflowPerformanceAnalyzer[T]{
+        workflow: w,
+        metrics:  make(map[string]float64),
+    }
+}
+
+// 计算关键路径
+func (wpa *WorkflowPerformanceAnalyzer[T]) CalculateCriticalPath() []string {
+    // 使用拓扑排序和动态规划计算关键路径
+    sorted := wpa.topologicalSort()
     
-    var dfs func(string)
-    dfs = func(state string) {
-        if visited[state] {
-            return
-        }
-        visited[state] = true
-        
-        // 检查当前状态是否为死锁状态
-        wsm.CurrentState = state
-        if wsm.IsDeadlocked() {
-            deadlockStates = append(deadlockStates, state)
-        }
-        
-        // 继续搜索可达状态
-        for event := range wsm.Transitions[state] {
-            if transition, exists := wsm.Transitions[state][event]; exists {
-                dfs(transition.ToState)
+    // 计算最早开始时间
+    earliestStart := make(map[string]float64)
+    for _, activity := range sorted {
+        maxTime := 0.0
+        for _, pred := range wpa.getPredecessors(activity) {
+            if earliestStart[pred]+wpa.getDuration(pred) > maxTime {
+                maxTime = earliestStart[pred] + wpa.getDuration(pred)
             }
         }
+        earliestStart[activity] = maxTime
     }
     
-    dfs(wsm.InitialState)
-    return deadlockStates
-}
-```
-
-### 6.3 活性分析
-
-**定义 6.3** (活性)
-工作流是活的，如果从任何可达状态都能继续执行。
-
-```go
-// 活性分析的Go语言实现
-func (wsm *WorkflowStateMachine) IsLive() bool {
-    visited := make(map[string]bool)
-    
-    var checkLiveness func(string) bool
-    checkLiveness = func(state string) bool {
-        if visited[state] {
-            return true
-        }
-        visited[state] = true
+    // 计算最晚开始时间
+    latestStart := make(map[string]float64)
+    for i := len(sorted) - 1; i >= 0; i-- {
+        activity := sorted[i]
+        minTime := math.Inf(1)
+        successors := wpa.getSuccessors(activity)
         
-        // 检查当前状态是否有可执行的事件
-        wsm.CurrentState = state
-        if wsm.IsDeadlocked() {
-            return false
-        }
-        
-        // 检查所有可达状态
-        for event := range wsm.Transitions[state] {
-            if transition, exists := wsm.Transitions[state][event]; exists {
-                if !checkLiveness(transition.ToState) {
-                    return false
+        if len(successors) == 0 {
+            latestStart[activity] = earliestStart[activity]
+        } else {
+            for _, succ := range successors {
+                if latestStart[succ]-wpa.getDuration(activity) < minTime {
+                    minTime = latestStart[succ] - wpa.getDuration(activity)
                 }
             }
+            latestStart[activity] = minTime
         }
-        
-        return true
     }
     
-    return checkLiveness(wsm.InitialState)
-}
-```
-
-## 7. 工作流优化
-
-### 7.1 性能优化
-
-**定义 7.1** (执行时间)
-工作流的执行时间是所有活动执行时间的总和。
-
-**定义 7.2** (关键路径)
-关键路径是工作流中执行时间最长的路径。
-
-```go
-// 工作流性能优化的Go语言实现
-type Activity struct {
-    ID       string
-    Duration time.Duration
-    Dependencies []string
-}
-
-type WorkflowOptimizer struct {
-    Activities map[string]*Activity
-}
-
-func NewWorkflowOptimizer() *WorkflowOptimizer {
-    return &WorkflowOptimizer{
-        Activities: make(map[string]*Activity),
+    // 识别关键路径
+    var criticalPath []string
+    for _, activity := range sorted {
+        if math.Abs(earliestStart[activity]-latestStart[activity]) < 1e-6 {
+            criticalPath = append(criticalPath, activity)
+        }
     }
+    
+    return criticalPath
 }
 
-func (wo *WorkflowOptimizer) AddActivity(id string, duration time.Duration, dependencies []string) {
-    wo.Activities[id] = &Activity{
-        ID:           id,
-        Duration:     duration,
-        Dependencies: dependencies,
+// 拓扑排序
+func (wpa *WorkflowPerformanceAnalyzer[T]) topologicalSort() []string {
+    inDegree := make(map[string]int)
+    for activity := range wpa.workflow.Transitions {
+        inDegree[activity] = 0
     }
-}
-
-func (wo *WorkflowOptimizer) CalculateCriticalPath() []string {
-    // 计算每个活动的最早开始时间
-    earliestStart := make(map[string]time.Duration)
+    
+    // 计算入度
+    for _, transition := range wpa.workflow.Transitions {
+        for _, succ := range wpa.getSuccessors(transition.ID) {
+            inDegree[succ]++
+        }
+    }
     
     // 拓扑排序
-    sorted := wo.topologicalSort()
-    
-    for _, activityID := range sorted {
-        activity := wo.Activities[activityID]
-        maxEarliestStart := time.Duration(0)
-        
-        for _, depID := range activity.Dependencies {
-            if depEarliestStart, exists := earliestStart[depID]; exists {
-                depActivity := wo.Activities[depID]
-                candidateStart := depEarliestStart + depActivity.Duration
-                if candidateStart > maxEarliestStart {
-                    maxEarliestStart = candidateStart
-                }
-            }
-        }
-        
-        earliestStart[activityID] = maxEarliestStart
-    }
-    
-    // 找到关键路径
-    return wo.findCriticalPath(earliestStart)
-}
-
-func (wo *WorkflowOptimizer) topologicalSort() []string {
-    inDegree := make(map[string]int)
-    for activityID := range wo.Activities {
-        inDegree[activityID] = 0
-    }
-    
-    for _, activity := range wo.Activities {
-        for _, depID := range activity.Dependencies {
-            inDegree[depID]++
-        }
-    }
-    
+    var result []string
     queue := []string{}
-    for activityID, degree := range inDegree {
+    
+    for activity, degree := range inDegree {
         if degree == 0 {
-            queue = append(queue, activityID)
+            queue = append(queue, activity)
         }
     }
     
-    result := []string{}
     for len(queue) > 0 {
         current := queue[0]
         queue = queue[1:]
         result = append(result, current)
         
-        for _, depID := range wo.Activities[current].Dependencies {
-            inDegree[depID]--
-            if inDegree[depID] == 0 {
-                queue = append(queue, depID)
+        for _, succ := range wpa.getSuccessors(current) {
+            inDegree[succ]--
+            if inDegree[succ] == 0 {
+                queue = append(queue, succ)
             }
         }
     }
@@ -997,158 +905,173 @@ func (wo *WorkflowOptimizer) topologicalSort() []string {
     return result
 }
 
-func (wo *WorkflowOptimizer) findCriticalPath(earliestStart map[string]time.Duration) []string {
-    // 简化的关键路径查找
-    // 实际实现需要更复杂的算法
-    return []string{}
+// 辅助方法
+func (wpa *WorkflowPerformanceAnalyzer[T]) getPredecessors(activity string) []string {
+    var predecessors []string
+    // 实际实现需要根据工作流结构获取前驱
+    return predecessors
+}
+
+func (wpa *WorkflowPerformanceAnalyzer[T]) getSuccessors(activity string) []string {
+    var successors []string
+    // 实际实现需要根据工作流结构获取后继
+    return successors
+}
+
+func (wpa *WorkflowPerformanceAnalyzer[T]) getDuration(activity string) float64 {
+    // 实际实现需要根据活动类型获取执行时间
+    return 1.0
 }
 ```
 
-## 8. 工作流应用示例
-
-### 8.1 订单处理工作流
+### 4.2 资源优化
 
 ```go
-// 订单处理工作流的Go语言实现
-type Order struct {
-    ID       string
-    Customer string
-    Items    []OrderItem
-    Status   string
-    Total    float64
+// 资源优化器
+type ResourceOptimizer[T comparable] struct {
+    workflow *Workflow[T]
+    resources map[string]*Resource[T]
 }
 
-type OrderItem struct {
-    ProductID string
-    Quantity  int
-    Price     float64
+func NewResourceOptimizer[T comparable](w *Workflow[T]) *ResourceOptimizer[T] {
+    return &ResourceOptimizer[T]{
+        workflow:  w,
+        resources: make(map[string]*Resource[T]),
+    }
 }
 
-type OrderWorkflow struct {
-    stateMachine *WorkflowStateMachine
-}
-
-func NewOrderWorkflow() *OrderWorkflow {
-    wsm := NewWorkflowStateMachine()
+// 最小化资源使用
+func (ro *ResourceOptimizer[T]) MinimizeResourceUsage() map[string]int {
+    // 使用贪心算法最小化资源使用
+    resourceUsage := make(map[string]int)
     
-    // 添加状态
-    wsm.AddState("created", "订单已创建")
-    wsm.AddState("validated", "订单已验证")
-    wsm.AddState("payment_pending", "等待支付")
-    wsm.AddState("paid", "已支付")
-    wsm.AddState("processing", "处理中")
-    wsm.AddState("shipped", "已发货")
-    wsm.AddState("delivered", "已送达")
-    wsm.AddState("cancelled", "已取消")
+    // 按时间顺序调度活动
+    timeline := ro.buildTimeline()
     
-    // 设置初始状态
-    wsm.SetInitialState("created")
-    
-    // 添加最终状态
-    wsm.AddFinalState("delivered")
-    wsm.AddFinalState("cancelled")
-    
-    // 添加转移
-    wsm.AddTransition("created", "validate", "validated", 
-        func(ctx map[string]interface{}) bool { return true },
-        func(ctx map[string]interface{}) error { 
-            order := ctx["order"].(*Order)
-            order.Status = "validated"
-            return nil
-        })
-    
-    wsm.AddTransition("validated", "request_payment", "payment_pending",
-        func(ctx map[string]interface{}) bool { return true },
-        func(ctx map[string]interface{}) error {
-            order := ctx["order"].(*Order)
-            order.Status = "payment_pending"
-            return nil
-        })
-    
-    wsm.AddTransition("payment_pending", "pay", "paid",
-        func(ctx map[string]interface{}) bool { return true },
-        func(ctx map[string]interface{}) error {
-            order := ctx["order"].(*Order)
-            order.Status = "paid"
-            return nil
-        })
-    
-    wsm.AddTransition("paid", "process", "processing",
-        func(ctx map[string]interface{}) bool { return true },
-        func(ctx map[string]interface{}) error {
-            order := ctx["order"].(*Order)
-            order.Status = "processing"
-            return nil
-        })
-    
-    wsm.AddTransition("processing", "ship", "shipped",
-        func(ctx map[string]interface{}) bool { return true },
-        func(ctx map[string]interface{}) error {
-            order := ctx["order"].(*Order)
-            order.Status = "shipped"
-            return nil
-        })
-    
-    wsm.AddTransition("shipped", "deliver", "delivered",
-        func(ctx map[string]interface{}) bool { return true },
-        func(ctx map[string]interface{}) error {
-            order := ctx["order"].(*Order)
-            order.Status = "delivered"
-            return nil
-        })
-    
-    // 取消转移
-    wsm.AddTransition("created", "cancel", "cancelled",
-        func(ctx map[string]interface{}) bool { return true },
-        func(ctx map[string]interface{}) error {
-            order := ctx["order"].(*Order)
-            order.Status = "cancelled"
-            return nil
-        })
-    
-    wsm.AddTransition("validated", "cancel", "cancelled",
-        func(ctx map[string]interface{}) bool { return true },
-        func(ctx map[string]interface{}) error {
-            order := ctx["order"].(*Order)
-            order.Status = "cancelled"
-            return nil
-        })
-    
-    return &OrderWorkflow{stateMachine: wsm}
-}
-
-func (ow *OrderWorkflow) ProcessOrder(order *Order) error {
-    ow.stateMachine.Context["order"] = order
-    
-    // 执行工作流
-    events := []string{"validate", "request_payment", "pay", "process", "ship", "deliver"}
-    
-    for _, event := range events {
-        if err := ow.stateMachine.TriggerEvent(event); err != nil {
-            return err
+    for _, timeSlot := range timeline {
+        maxUsage := 0
+        for _, activity := range timeSlot {
+            usage := ro.getResourceRequirement(activity)
+            if usage > maxUsage {
+                maxUsage = usage
+            }
+        }
+        
+        for resource := range ro.resources {
+            if resourceUsage[resource] < maxUsage {
+                resourceUsage[resource] = maxUsage
+            }
         }
     }
     
-    return nil
+    return resourceUsage
 }
 
-func (ow *OrderWorkflow) CancelOrder(order *Order) error {
-    ow.stateMachine.Context["order"] = order
+// 构建时间线
+func (ro *ResourceOptimizer[T]) buildTimeline() [][]string {
+    var timeline [][]string
+    // 实际实现需要根据工作流结构构建时间线
+    return timeline
+}
+
+// 获取资源需求
+func (ro *ResourceOptimizer[T]) getResourceRequirement(activity string) int {
+    // 实际实现需要根据活动类型获取资源需求
+    return 1
+}
+```
+
+## 5. 实际应用示例
+
+### 5.1 订单处理工作流
+
+```go
+// 订单处理工作流
+func CreateOrderProcessingWorkflow() *Workflow[string] {
+    w := NewWorkflow[string]()
     
-    return ow.stateMachine.TriggerEvent("cancel")
+    // 定义状态
+    states := []string{"created", "validated", "payment_processing", "payment_completed", "shipped", "delivered", "cancelled"}
+    for _, state := range states {
+        w.States[state] = true
+    }
+    
+    // 定义转换
+    transitions := map[string]*Transition[string]{
+        "validate": {
+            ID:        "validate",
+            Name:      "Validate Order",
+            PreStates: map[string]int{"created": 1},
+            PostStates: map[string]int{"validated": 1},
+        },
+        "process_payment": {
+            ID:        "process_payment",
+            Name:      "Process Payment",
+            PreStates: map[string]int{"validated": 1},
+            PostStates: map[string]int{"payment_processing": 1},
+        },
+        "complete_payment": {
+            ID:        "complete_payment",
+            Name:      "Complete Payment",
+            PreStates: map[string]int{"payment_processing": 1},
+            PostStates: map[string]int{"payment_completed": 1},
+        },
+        "ship": {
+            ID:        "ship",
+            Name:      "Ship Order",
+            PreStates: map[string]int{"payment_completed": 1},
+            PostStates: map[string]int{"shipped": 1},
+        },
+        "deliver": {
+            ID:        "deliver",
+            Name:      "Deliver Order",
+            PreStates: map[string]int{"shipped": 1},
+            PostStates: map[string]int{"delivered": 1},
+        },
+        "cancel": {
+            ID:        "cancel",
+            Name:      "Cancel Order",
+            PreStates: map[string]int{"created": 1, "validated": 1},
+            PostStates: map[string]int{"cancelled": 1},
+        },
+    }
+    
+    for id, transition := range transitions {
+        w.Transitions[id] = transition
+    }
+    
+    // 设置初始标记
+    w.InitialMark["created"] = 1
+    
+    return w
+}
+
+// 验证订单处理工作流
+func ValidateOrderWorkflow() {
+    workflow := CreateOrderProcessingWorkflow()
+    verifier := NewWorkflowVerifier[string](workflow)
+    
+    fmt.Printf("Safety: %v\n", verifier.VerifySafety())
+    fmt.Printf("Liveness: %v\n", verifier.VerifyLiveness())
+    fmt.Printf("Deadlock Freedom: %v\n", verifier.VerifyDeadlockFreedom())
+    
+    // 性能分析
+    analyzer := NewWorkflowPerformanceAnalyzer[string](workflow)
+    criticalPath := analyzer.CalculateCriticalPath()
+    fmt.Printf("Critical Path: %v\n", criticalPath)
 }
 ```
 
 ## 总结
 
-工作流模型为业务流程的形式化描述和分析提供了强大的理论基础。通过Petri网、状态机、进程代数等模型，我们可以：
+工作流模型的形式化理论为业务流程的建模、验证和优化提供了坚实的数学基础。通过三流统一模型、工作流代数和时态逻辑验证，我们可以：
 
-1. **精确描述**：用数学语言精确描述复杂的业务流程
-2. **形式化分析**：通过数学方法分析工作流的性质
-3. **自动验证**：使用算法自动验证工作流的正确性
-4. **性能优化**：基于模型进行性能分析和优化
+1. **精确建模**: 使用数学形式化方法精确描述业务流程
+2. **自动验证**: 通过时态逻辑自动验证工作流属性
+3. **代数组合**: 使用代数操作组合复杂工作流
+4. **性能优化**: 基于形式化模型进行性能分析和优化
 
-本章介绍的工作流模型为后续的软件工程形式化奠定了坚实的基础，为构建可靠、高效的软件系统提供了理论支撑。
+这些理论和方法为构建可靠、高效的工作流系统提供了重要的理论基础和实践指导。
 
 ---
 

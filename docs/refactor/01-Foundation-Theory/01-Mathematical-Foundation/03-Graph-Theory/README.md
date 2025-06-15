@@ -15,9 +15,14 @@
     - [图的代数结构](#图的代数结构)
   - [算法与复杂度](#算法与复杂度)
     - [图遍历算法](#图遍历算法)
+      - [深度优先搜索 (DFS)](#深度优先搜索-dfs)
+      - [广度优先搜索 (BFS)](#广度优先搜索-bfs)
     - [最短路径算法](#最短路径算法)
+      - [Dijkstra算法](#dijkstra算法)
     - [最小生成树算法](#最小生成树算法)
+      - [Kruskal算法](#kruskal算法)
     - [网络流算法](#网络流算法)
+      - [Ford-Fulkerson算法](#ford-fulkerson算法)
   - [Go语言实现](#go语言实现)
     - [图的数据结构](#图的数据结构)
     - [图的基本操作](#图的基本操作)
@@ -38,10 +43,12 @@
 ### 图的定义
 
 **定义 1 (图)**: 图 $G = (V, E)$ 是一个有序对，其中：
+
 - $V$ 是顶点的有限集合，称为顶点集
 - $E$ 是边的集合，每条边是顶点集 $V$ 中两个顶点的无序对
 
 **定义 2 (有向图)**: 有向图 $D = (V, A)$ 是一个有序对，其中：
+
 - $V$ 是顶点的有限集合
 - $A$ 是弧的集合，每条弧是顶点集 $V$ 中两个顶点的有序对
 
@@ -105,7 +112,7 @@ func DFS(g *Graph, start Vertex) {
 func dfsHelper(g *Graph, v Vertex, visited map[Vertex]bool) {
     visited[v] = true
     fmt.Printf("Visit: %v\n", v)
-    
+
     for _, neighbor := range g.AdjacencyList[v] {
         if !visited[neighbor] {
             dfsHelper(g, neighbor, visited)
@@ -125,12 +132,12 @@ func BFS(g *Graph, start Vertex) {
     visited := make(map[Vertex]bool)
     queue := []Vertex{start}
     visited[start] = true
-    
+
     for len(queue) > 0 {
         v := queue[0]
         queue = queue[1:]
         fmt.Printf("Visit: %v\n", v)
-        
+
         for _, neighbor := range g.AdjacencyList[v] {
             if !visited[neighbor] {
                 visited[neighbor] = true
@@ -156,18 +163,18 @@ func Dijkstra(g *Graph, start Vertex) map[Vertex]int {
         distances[v] = math.MaxInt32
     }
     distances[start] = 0
-    
+
     pq := &PriorityQueue{}
     heap.Push(pq, &Item{vertex: start, distance: 0})
-    
+
     for pq.Len() > 0 {
         item := heap.Pop(pq).(*Item)
         u := item.vertex
-        
+
         if item.distance > distances[u] {
             continue
         }
-        
+
         for v, weight := range g.AdjacencyList[u] {
             if distances[u]+weight < distances[v] {
                 distances[v] = distances[u] + weight
@@ -175,7 +182,7 @@ func Dijkstra(g *Graph, start Vertex) map[Vertex]int {
             }
         }
     }
-    
+
     return distances
 }
 ```
@@ -196,21 +203,21 @@ func Kruskal(g *Graph) []Edge {
             edges = append(edges, Edge{u, v, weight})
         }
     }
-    
+
     sort.Slice(edges, func(i, j int) bool {
         return edges[i].Weight < edges[j].Weight
     })
-    
+
     uf := NewUnionFind(len(g.AdjacencyList))
     var mst []Edge
-    
+
     for _, edge := range edges {
         if uf.Find(edge.From) != uf.Find(edge.To) {
             mst = append(mst, edge)
             uf.Union(edge.From, edge.To)
         }
     }
-    
+
     return mst
 }
 ```
@@ -227,16 +234,16 @@ func Kruskal(g *Graph) []Edge {
 func FordFulkerson(g *Graph, source, sink Vertex) int {
     residual := g.Copy()
     maxFlow := 0
-    
+
     for {
         path := findAugmentingPath(residual, source, sink)
         if path == nil {
             break
         }
-        
+
         minCapacity := findMinCapacity(path)
         maxFlow += minCapacity
-        
+
         // 更新残量图
         for i := 0; i < len(path)-1; i++ {
             u, v := path[i], path[i+1]
@@ -244,7 +251,7 @@ func FordFulkerson(g *Graph, source, sink Vertex) int {
             residual.AdjacencyList[v][u] += minCapacity
         }
     }
-    
+
     return maxFlow
 }
 ```
@@ -292,7 +299,7 @@ func (g *Graph) AddVertex(v Vertex) {
 func (g *Graph) AddEdge(from, to Vertex, weight int) {
     g.AddVertex(from)
     g.AddVertex(to)
-    
+
     g.AdjacencyList[from][to] = weight
     if !g.Directed {
         g.AdjacencyList[to][from] = weight
@@ -317,16 +324,16 @@ func (g *Graph) IsConnected() bool {
     if len(g.AdjacencyList) == 0 {
         return true
     }
-    
+
     visited := make(map[Vertex]bool)
     var start Vertex
     for v := range g.AdjacencyList {
         start = v
         break
     }
-    
+
     g.dfs(start, visited)
-    
+
     return len(visited) == len(g.AdjacencyList)
 }
 
@@ -361,7 +368,7 @@ func (g *Graph) Transpose() *Graph {
     if !g.Directed {
         return g.Copy()
     }
-    
+
     transposed := NewGraph(true)
     for v, neighbors := range g.AdjacencyList {
         for neighbor, weight := range neighbors {
@@ -375,7 +382,7 @@ func (g *Graph) Transpose() *Graph {
 func (g *Graph) GetConnectedComponents() [][]Vertex {
     visited := make(map[Vertex]bool)
     var components [][]Vertex
-    
+
     for v := range g.AdjacencyList {
         if !visited[v] {
             var component []Vertex
@@ -383,7 +390,7 @@ func (g *Graph) GetConnectedComponents() [][]Vertex {
             components = append(components, component)
         }
     }
-    
+
     return components
 }
 
@@ -391,7 +398,7 @@ func (g *Graph) GetConnectedComponents() [][]Vertex {
 func (g *Graph) dfsComponent(v Vertex, visited map[Vertex]bool, component *[]Vertex) {
     visited[v] = true
     *component = append(*component, v)
-    
+
     for neighbor := range g.AdjacencyList[v] {
         if !visited[neighbor] {
             g.dfsComponent(neighbor, visited, component)
@@ -408,19 +415,19 @@ func (g *Graph) TopologicalSort() ([]Vertex, error) {
     if !g.Directed {
         return nil, fmt.Errorf("topological sort only works on directed graphs")
     }
-    
+
     inDegree := make(map[Vertex]int)
     for v := range g.AdjacencyList {
         inDegree[v] = 0
     }
-    
+
     // 计算入度
     for _, neighbors := range g.AdjacencyList {
         for neighbor := range neighbors {
             inDegree[neighbor]++
         }
     }
-    
+
     // 使用队列进行拓扑排序
     var queue []Vertex
     for v, degree := range inDegree {
@@ -428,13 +435,13 @@ func (g *Graph) TopologicalSort() ([]Vertex, error) {
             queue = append(queue, v)
         }
     }
-    
+
     var result []Vertex
     for len(queue) > 0 {
         v := queue[0]
         queue = queue[1:]
         result = append(result, v)
-        
+
         for neighbor := range g.AdjacencyList[v] {
             inDegree[neighbor]--
             if inDegree[neighbor] == 0 {
@@ -442,11 +449,11 @@ func (g *Graph) TopologicalSort() ([]Vertex, error) {
             }
         }
     }
-    
+
     if len(result) != len(g.AdjacencyList) {
         return nil, fmt.Errorf("graph contains cycle")
     }
-    
+
     return result, nil
 }
 
@@ -466,7 +473,7 @@ func (g *Graph) FloydWarshall() map[Vertex]map[Vertex]int {
             }
         }
     }
-    
+
     // Floyd-Warshall算法核心
     for k := range g.AdjacencyList {
         for i := range g.AdjacencyList {
@@ -479,7 +486,7 @@ func (g *Graph) FloydWarshall() map[Vertex]map[Vertex]int {
             }
         }
     }
-    
+
     return dist
 }
 ```

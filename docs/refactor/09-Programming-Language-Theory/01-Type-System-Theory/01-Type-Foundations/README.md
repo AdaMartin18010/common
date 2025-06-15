@@ -941,6 +941,7 @@ func (cs *ConstraintSolver) combineSubstitutions(sub1, sub2 *TypeSubstitution) *
 ### 编译器设计
 
 类型基础在编译器设计中的应用：
+
 - 类型检查
 - 类型推导
 - 代码生成
@@ -949,6 +950,7 @@ func (cs *ConstraintSolver) combineSubstitutions(sub1, sub2 *TypeSubstitution) *
 ### 静态分析
 
 类型基础在静态分析中的应用：
+
 - 类型推断
 - 错误检测
 - 程序验证
@@ -957,6 +959,7 @@ func (cs *ConstraintSolver) combineSubstitutions(sub1, sub2 *TypeSubstitution) *
 ### 程序验证
 
 类型基础在程序验证中的应用：
+
 - 类型安全证明
 - 程序正确性
 - 形式化验证
@@ -965,6 +968,7 @@ func (cs *ConstraintSolver) combineSubstitutions(sub1, sub2 *TypeSubstitution) *
 ### 代码生成
 
 类型基础在代码生成中的应用：
+
 - 类型特化
 - 泛型实例化
 - 优化代码
@@ -976,4 +980,4 @@ func (cs *ConstraintSolver) combineSubstitutions(sub1, sub2 *TypeSubstitution) *
 - [03-类型安全 (Type Safety)](../03-Type-Safety/README.md)
 - [04-高级类型系统 (Advanced Type Systems)](../04-Advanced-Type-Systems/README.md)
 - [02-语义学理论 (Semantics Theory)](../../02-Semantics-Theory/README.md)
-- [03-编译原理 (Compiler Theory)](../../03-Compiler-Theory/README.md) 
+- [03-编译原理 (Compiler Theory)](../../03-Compiler-Theory/README.md)

@@ -51,12 +51,14 @@
 ### 逻辑连接词
 
 **定义 4 (否定)**: 命题 $p$ 的否定记为 $\neg p$，真值表为：
+
 | $p$ | $\neg p$ |
 |-----|----------|
 | T   | F        |
 | F   | T        |
 
 **定义 5 (合取)**: 命题 $p$ 和 $q$ 的合取记为 $p \wedge q$，真值表为：
+
 | $p$ | $q$ | $p \wedge q$ |
 |-----|-----|--------------|
 | T   | T   | T            |
@@ -65,6 +67,7 @@
 | F   | F   | F            |
 
 **定义 6 (析取)**: 命题 $p$ 和 $q$ 的析取记为 $p \vee q$，真值表为：
+
 | $p$ | $q$ | $p \vee q$ |
 |-----|-----|------------|
 | T   | T   | T          |
@@ -73,6 +76,7 @@
 | F   | F   | F          |
 
 **定义 7 (蕴含)**: 命题 $p$ 蕴含 $q$ 记为 $p \rightarrow q$，真值表为：
+
 | $p$ | $q$ | $p \rightarrow q$ |
 |-----|-----|-------------------|
 | T   | T   | T                 |
@@ -81,6 +85,7 @@
 | F   | F   | T                 |
 
 **定义 8 (等价)**: 命题 $p$ 等价于 $q$ 记为 $p \leftrightarrow q$，真值表为：
+
 | $p$ | $q$ | $p \leftrightarrow q$ |
 |-----|-----|----------------------|
 | T   | T   | T                    |
@@ -99,6 +104,7 @@
 ### 语法
 
 **定义 10 (命题公式)**: 命题公式按以下规则递归定义：
+
 1. 命题变量是公式
 2. 如果 $\phi$ 是公式，则 $\neg \phi$ 是公式
 3. 如果 $\phi$ 和 $\psi$ 是公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是公式
@@ -110,6 +116,7 @@
 **定义 12 (解释)**: 解释 $I$ 是从命题变量到真值的映射。
 
 **定义 13 (满足关系)**: 解释 $I$ 满足公式 $\phi$，记为 $I \models \phi$，按以下规则定义：
+
 1. $I \models p$ 当且仅当 $I(p) = \text{true}$
 2. $I \models \neg \phi$ 当且仅当 $I \not\models \phi$
 3. $I \models \phi \wedge \psi$ 当且仅当 $I \models \phi$ 且 $I \models \psi$
@@ -149,27 +156,32 @@
 
 **定理 6 (双重否定)**: $\neg \neg \phi \equiv \phi$
 
-**定理 7 (幂等律)**: 
+**定理 7 (幂等律)**:
+
 - $\phi \wedge \phi \equiv \phi$
 - $\phi \vee \phi \equiv \phi$
 
 **定理 8 (交换律)**:
+
 - $\phi \wedge \psi \equiv \psi \wedge \phi$
 - $\phi \vee \psi \equiv \psi \vee \phi$
 
 **定理 9 (结合律)**:
+
 - $(\phi \wedge \psi) \wedge \chi \equiv \phi \wedge (\psi \wedge \chi)$
 - $(\phi \vee \psi) \vee \chi \equiv \phi \vee (\psi \vee \chi)$
 
 ### 德摩根律
 
 **定理 10 (德摩根律)**:
+
 - $\neg (\phi \wedge \psi) \equiv \neg \phi \vee \neg \psi$
 - $\neg (\phi \vee \psi) \equiv \neg \phi \wedge \neg \psi$
 
 ### 分配律
 
 **定理 11 (分配律)**:
+
 - $\phi \wedge (\psi \vee \chi) \equiv (\phi \wedge \psi) \vee (\phi \wedge \chi)$
 - $\phi \vee (\psi \wedge \chi) \equiv (\phi \vee \psi) \wedge (\phi \vee \chi)$
 
@@ -786,6 +798,7 @@ func (nfc *NormalFormConverter) distributeConjunctions(proposition Proposition) 
 ### 数字电路设计
 
 命题逻辑在数字电路设计中的应用：
+
 - 逻辑门设计
 - 电路优化
 - 故障检测
@@ -794,6 +807,7 @@ func (nfc *NormalFormConverter) distributeConjunctions(proposition Proposition) 
 ### 程序验证
 
 命题逻辑在程序验证中的应用：
+
 - 程序正确性证明
 - 模型检查
 - 静态分析
@@ -802,6 +816,7 @@ func (nfc *NormalFormConverter) distributeConjunctions(proposition Proposition) 
 ### 知识表示
 
 命题逻辑在知识表示中的应用：
+
 - 专家系统
 - 知识库
 - 推理系统
@@ -810,6 +825,7 @@ func (nfc *NormalFormConverter) distributeConjunctions(proposition Proposition) 
 ### 自动推理
 
 命题逻辑在自动推理中的应用：
+
 - 定理证明
 - 约束求解
 - 规划系统
@@ -821,4 +837,4 @@ func (nfc *NormalFormConverter) distributeConjunctions(proposition Proposition) 
 - [03-模态逻辑 (Modal Logic)](../03-Modal-Logic/README.md)
 - [04-时态逻辑 (Temporal Logic)](../04-Temporal-Logic/README.md)
 - [08-软件工程形式化 (Software Engineering Formalization)](../../08-Software-Engineering-Formalization/README.md)
-- [09-编程语言理论 (Programming Language Theory)](../../09-Programming-Language-Theory/README.md) 
+- [09-编程语言理论 (Programming Language Theory)](../../09-Programming-Language-Theory/README.md)

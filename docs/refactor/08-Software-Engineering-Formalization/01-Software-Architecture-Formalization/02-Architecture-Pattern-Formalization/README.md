@@ -45,6 +45,7 @@
 ### 架构模式定义
 
 **定义 1 (架构模式)**: 架构模式 $P = (C, R, I, O)$ 是一个四元组，其中：
+
 - $C$ 是组件集合
 - $R$ 是关系集合
 - $I$ 是接口集合
@@ -69,6 +70,7 @@ $$\forall r \in R_1: \phi(r) \in R_2$$
 ### 模式组合理论
 
 **定义 4 (模式组合算子)**: 模式组合算子 $\oplus$ 满足：
+
 1. 结合律：$(P_1 \oplus P_2) \oplus P_3 = P_1 \oplus (P_2 \oplus P_3)$
 2. 交换律：$P_1 \oplus P_2 = P_2 \oplus P_1$
 3. 单位元：存在单位模式 $E$，使得 $P \oplus E = P$
@@ -355,6 +357,7 @@ func (la *LayeredArchitecture) isCyclicUtil(layerName string, visited, recStack 
 ### 形式化定义
 
 **定义 7 (微服务)**: 微服务 $S = (I, O, P, D)$ 是一个四元组，其中：
+
 - $I$ 是输入接口集合
 - $O$ 是输出接口集合
 - $P$ 是处理逻辑
@@ -626,6 +629,7 @@ func (ma *MicroserviceArchitecture) InvokeService(ctx context.Context, serviceNa
 ### 形式化定义
 
 **定义 10 (事件)**: 事件 $E = (T, D, S)$ 是一个三元组，其中：
+
 - $T$ 是时间戳
 - $D$ 是事件数据
 - $S$ 是事件源
@@ -1120,6 +1124,7 @@ func (sa *ScalabilityAnalyzer) analyzeMicroserviceScalability(arch *Microservice
 ### 企业应用
 
 架构模式在企业应用中的应用：
+
 - 分层架构用于业务逻辑分离
 - 微服务架构用于系统解耦
 - 事件驱动架构用于业务流程集成
@@ -1127,6 +1132,7 @@ func (sa *ScalabilityAnalyzer) analyzeMicroserviceScalability(arch *Microservice
 ### 分布式系统
 
 架构模式在分布式系统中的应用：
+
 - 微服务架构用于服务拆分
 - 事件驱动架构用于异步通信
 - 领域驱动设计用于业务建模
@@ -1134,6 +1140,7 @@ func (sa *ScalabilityAnalyzer) analyzeMicroserviceScalability(arch *Microservice
 ### 实时系统
 
 架构模式在实时系统中的应用：
+
 - 事件驱动架构用于实时数据处理
 - 分层架构用于性能优化
 - 微服务架构用于负载均衡
@@ -1141,6 +1148,7 @@ func (sa *ScalabilityAnalyzer) analyzeMicroserviceScalability(arch *Microservice
 ### 云原生应用
 
 架构模式在云原生应用中的应用：
+
 - 微服务架构用于容器化部署
 - 事件驱动架构用于无服务器计算
 - 领域驱动设计用于微服务设计
@@ -1151,4 +1159,4 @@ func (sa *ScalabilityAnalyzer) analyzeMicroserviceScalability(arch *Microservice
 - [03-架构质量属性 (Architecture Quality Attributes)](../03-Architecture-Quality-Attributes/README.md)
 - [04-架构决策记录 (Architecture Decision Records)](../04-Architecture-Decision-Records/README.md)
 - [02-工作流形式化 (Workflow Formalization)](../../02-Workflow-Formalization/README.md)
-- [03-组件形式化 (Component Formalization)](../../03-Component-Formalization/README.md) 
+- [03-组件形式化 (Component Formalization)](../../03-Component-Formalization/README.md)
