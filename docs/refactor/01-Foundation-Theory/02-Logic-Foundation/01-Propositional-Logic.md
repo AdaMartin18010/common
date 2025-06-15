@@ -12,11 +12,13 @@
 命题是一个具有确定真值的陈述句，要么为真（True），要么为假（False）。
 
 **形式化定义**：
+
 ```latex
 P \in \{T, F\}
 ```
 
 **示例**：
+
 - "2 + 2 = 4" 是一个真命题
 - "地球是平的" 是一个假命题
 - "x + 1 = 5" 不是命题（因为x未定义）
@@ -27,6 +29,7 @@ P \in \{T, F\}
 命题变量是表示命题的符号，通常用大写字母表示，如 $P, Q, R$ 等。
 
 **性质**：
+
 - 每个命题变量只能取真值 $T$ 或假值 $F$
 - 命题变量可以组合形成复合命题
 
@@ -38,12 +41,14 @@ P \in \{T, F\}
 命题 $P$ 的否定记作 $\neg P$，读作"非P"。
 
 **真值表**：
+
 | $P$ | $\neg P$ |
 |-----|----------|
 | T   | F        |
 | F   | T        |
 
 **性质**：
+
 - $\neg(\neg P) \equiv P$ (双重否定律)
 
 #### 1.3.2 合取 (Conjunction)
@@ -52,6 +57,7 @@ P \in \{T, F\}
 命题 $P$ 和 $Q$ 的合取记作 $P \land Q$，读作"P且Q"。
 
 **真值表**：
+
 | $P$ | $Q$ | $P \land Q$ |
 |-----|-----|-------------|
 | T   | T   | T           |
@@ -60,6 +66,7 @@ P \in \{T, F\}
 | F   | F   | F           |
 
 **性质**：
+
 - $P \land Q \equiv Q \land P$ (交换律)
 - $(P \land Q) \land R \equiv P \land (Q \land R)$ (结合律)
 - $P \land P \equiv P$ (幂等律)
@@ -70,6 +77,7 @@ P \in \{T, F\}
 命题 $P$ 和 $Q$ 的析取记作 $P \lor Q$，读作"P或Q"。
 
 **真值表**：
+
 | $P$ | $Q$ | $P \lor Q$ |
 |-----|-----|------------|
 | T   | T   | T          |
@@ -78,6 +86,7 @@ P \in \{T, F\}
 | F   | F   | F          |
 
 **性质**：
+
 - $P \lor Q \equiv Q \lor P$ (交换律)
 - $(P \lor Q) \lor R \equiv P \lor (Q \lor R)$ (结合律)
 - $P \lor P \equiv P$ (幂等律)
@@ -88,6 +97,7 @@ P \in \{T, F\}
 命题 $P$ 蕴含 $Q$ 记作 $P \rightarrow Q$，读作"如果P，那么Q"。
 
 **真值表**：
+
 | $P$ | $Q$ | $P \rightarrow Q$ |
 |-----|-----|-------------------|
 | T   | T   | T                 |
@@ -96,6 +106,7 @@ P \in \{T, F\}
 | F   | F   | T                 |
 
 **性质**：
+
 - $P \rightarrow Q \equiv \neg P \lor Q$
 - $\neg(P \rightarrow Q) \equiv P \land \neg Q$
 
@@ -105,6 +116,7 @@ P \in \{T, F\}
 命题 $P$ 等价于 $Q$ 记作 $P \leftrightarrow Q$，读作"P当且仅当Q"。
 
 **真值表**：
+
 | $P$ | $Q$ | $P \leftrightarrow Q$ |
 |-----|-----|----------------------|
 | T   | T   | T                    |
@@ -113,6 +125,7 @@ P \in \{T, F\}
 | F   | F   | T                    |
 
 **性质**：
+
 - $P \leftrightarrow Q \equiv (P \rightarrow Q) \land (Q \rightarrow P)$
 
 ## 2. 逻辑等价和重言式
@@ -124,6 +137,7 @@ P \in \{T, F\}
 
 **定理 2.1** (德摩根律)
 对于任意命题 $P$ 和 $Q$：
+
 1. $\neg(P \land Q) \equiv \neg P \lor \neg Q$
 2. $\neg(P \lor Q) \equiv \neg P \land \neg Q$
 
@@ -149,6 +163,7 @@ P \in \{T, F\}
 一个命题公式是可满足式，当且仅当它在至少一个真值赋值下为真。
 
 **定理 2.2** (重言式性质)
+
 1. 如果 $A$ 是重言式，则 $\neg A$ 是矛盾式
 2. 如果 $A$ 是矛盾式，则 $\neg A$ 是重言式
 3. 如果 $A$ 和 $B$ 都是重言式，则 $A \land B$ 是重言式
@@ -188,6 +203,7 @@ $$\frac{P \lor Q \quad \neg P}{Q}$$
 证明：如果 $P \rightarrow Q$ 且 $Q \rightarrow R$，则 $P \rightarrow R$
 
 **证明**：
+
 1. $P \rightarrow Q$ (前提)
 2. $Q \rightarrow R$ (前提)
 3. $P \rightarrow R$ (假言三段论，从1和2)
@@ -200,6 +216,7 @@ $$\frac{P \lor Q \quad \neg P}{Q}$$
 证明：$\neg(P \land \neg P)$
 
 **证明**：
+
 1. 假设 $P \land \neg P$ 为真
 2. 从1可得 $P$ 为真
 3. 从1可得 $\neg P$ 为真

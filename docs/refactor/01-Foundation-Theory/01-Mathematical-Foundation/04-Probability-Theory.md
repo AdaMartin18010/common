@@ -16,6 +16,7 @@
 
 **定义 1.3** (事件代数)
 事件代数 $\mathcal{F}$ 是 $\Omega$ 的子集族，满足：
+
 1. $\Omega \in \mathcal{F}$
 2. 如果 $A \in \mathcal{F}$，则 $A^c \in \mathcal{F}$
 3. 如果 $A_1, A_2, \ldots \in \mathcal{F}$，则 $\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$
@@ -24,6 +25,7 @@
 
 **定义 1.4** (概率测度)
 概率测度 $P$ 是定义在事件代数 $\mathcal{F}$ 上的函数，满足：
+
 1. **非负性**：$P(A) \geq 0$ 对所有 $A \in \mathcal{F}$
 2. **规范性**：$P(\Omega) = 1$
 3. **可列可加性**：对于互不相容的事件 $A_1, A_2, \ldots$，
@@ -31,11 +33,13 @@
 
 **定理 1.1** (概率的基本性质)
 对于任意事件 $A, B \in \mathcal{F}$：
+
 1. $P(A^c) = 1 - P(A)$
 2. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
 3. 如果 $A \subseteq B$，则 $P(A) \leq P(B)$
 
 **证明**：
+
 1. 由于 $A \cup A^c = \Omega$ 且 $A \cap A^c = \emptyset$，由可列可加性：
    $$1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)$$
    因此 $P(A^c) = 1 - P(A)$
@@ -73,6 +77,7 @@ $$P(A \cap B|C) = P(A|C) \cdot P(B|C)$$
 
 **定理 2.2** (全概率公式)
 如果事件 $B_1, B_2, \ldots, B_n$ 构成样本空间的一个划分，即：
+
 1. $B_i \cap B_j = \emptyset$ 对所有 $i \neq j$
 2. $\bigcup_{i=1}^{n} B_i = \Omega$
 
@@ -95,6 +100,7 @@ $$P(B_i|A) = \frac{P(A|B_i) \cdot P(B_i)}{\sum_{j=1}^{n} P(A|B_j) \cdot P(B_j)}$
 $$F_X(x) = P(X \leq x)$$
 
 **性质**：
+
 1. $F_X(x)$ 是非减函数
 2. $\lim_{x \to -\infty} F_X(x) = 0$
 3. $\lim_{x \to +\infty} F_X(x) = 1$
@@ -107,6 +113,7 @@ $$F_X(x) = P(X \leq x)$$
 $$p_X(x) = P(X = x)$$
 
 **性质**：
+
 1. $p_X(x) \geq 0$ 对所有 $x$
 2. $\sum_{x} p_X(x) = 1$
 
@@ -117,6 +124,7 @@ $$p_X(x) = P(X = x)$$
 $$f_X(x) = \frac{d}{dx} F_X(x)$$
 
 **性质**：
+
 1. $f_X(x) \geq 0$ 对所有 $x$
 2. $\int_{-\infty}^{\infty} f_X(x) dx = 1$
 3. $P(a \leq X \leq b) = \int_{a}^{b} f_X(x) dx$

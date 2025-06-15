@@ -8,6 +8,8 @@
     - [1.1 概率空间](#11-概率空间)
     - [1.2 随机变量](#12-随机变量)
     - [1.3 概率分布](#13-概率分布)
+      - [1.3.1 离散分布](#131-离散分布)
+      - [1.3.2 连续分布](#132-连续分布)
   - [2. 形式化定义](#2-形式化定义)
     - [2.1 测度论基础](#21-测度论基础)
     - [2.2 概率公理](#22-概率公理)
@@ -21,6 +23,10 @@
     - [4.2 概率分布](#42-概率分布)
     - [4.3 统计计算](#43-统计计算)
   - [5. 应用场景](#5-应用场景)
+    - [5.1 机器学习](#51-机器学习)
+    - [5.2 金融建模](#52-金融建模)
+    - [5.3 质量控制](#53-质量控制)
+    - [5.4 生物统计学](#54-生物统计学)
   - [6. 总结](#6-总结)
 
 ## 1. 基础概念
@@ -28,11 +34,13 @@
 ### 1.1 概率空间
 
 **定义 1.1** (概率空间): 概率空间 $(\Omega, \mathcal{F}, P)$ 由以下三个部分组成：
+
 - $\Omega$: 样本空间，包含所有可能的结果
 - $\mathcal{F}$: 事件域，是 $\Omega$ 的子集的 $\sigma$-代数
 - $P$: 概率测度，满足概率公理
 
 **定义 1.2** ($\sigma$-代数): 集合族 $\mathcal{F}$ 是 $\sigma$-代数，如果：
+
 1. $\Omega \in \mathcal{F}$
 2. 如果 $A \in \mathcal{F}$，则 $A^c \in \mathcal{F}$
 3. 如果 $A_1, A_2, \ldots \in \mathcal{F}$，则 $\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$
@@ -61,6 +69,7 @@ $$F_X(x) = \int_{-\infty}^{x} f_X(t) dt$$
 ### 2.1 测度论基础
 
 **定义 2.1** (测度): 测度 $\mu$ 是定义在可测空间 $(\Omega, \mathcal{F})$ 上的函数，满足：
+
 1. 非负性: $\mu(A) \geq 0$ 对所有 $A \in \mathcal{F}$
 2. 空集测度: $\mu(\emptyset) = 0$
 3. 可数可加性: 对于互不相交的可数集族 $\{A_i\}$，
@@ -74,12 +83,14 @@ $$\mu(B) = \mu(A) + \mu(B \setminus A) \geq \mu(A)$$
 ### 2.2 概率公理
 
 **公理 2.1** (Kolmogorov概率公理):
+
 1. 非负性: $P(A) \geq 0$ 对所有 $A \in \mathcal{F}$
 2. 规范性: $P(\Omega) = 1$
 3. 可数可加性: 对于互不相交的可数集族 $\{A_i\}$，
    $$P\left(\bigcup_{i=1}^{\infty} A_i\right) = \sum_{i=1}^{\infty} P(A_i)$$
 
 **定理 2.2** (概率的基本性质):
+
 1. $P(A^c) = 1 - P(A)$
 2. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
 3. 如果 $A \subseteq B$，则 $P(A) \leq P(B)$
@@ -505,8 +516,9 @@ func (s *Statistics) tTestPValue(t float64, df int) float64 {
 ---
 
 **相关链接**:
+
 - [01-集合论](../01-Set-Theory/README.md)
 - [02-逻辑学](../02-Logic/README.md)
 - [03-图论](../03-Graph-Theory/README.md)
 - [03-设计模式](../../03-Design-Patterns/README.md)
-- [02-软件架构](../../02-Software-Architecture/README.md) 
+- [02-软件架构](../../02-Software-Architecture/README.md)

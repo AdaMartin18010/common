@@ -43,6 +43,7 @@
 ### 1.1 图的定义
 
 **定义 1.1** (图): 图 $G = (V, E)$ 是一个有序对，其中：
+
 - $V$ 是顶点集 (vertex set)，$V \neq \emptyset$
 - $E$ 是边集 (edge set)，$E \subseteq V \times V$
 
@@ -77,6 +78,7 @@
 ### 2.1 图的形式化模型
 
 **公理 2.1** (图的基本公理):
+
 1. 顶点集非空: $V \neq \emptyset$
 2. 边集是顶点对的子集: $E \subseteq V \times V$
 3. 自环允许性: $(v, v) \in E$ 在某些图中允许
@@ -84,7 +86,8 @@
 **定理 2.1** (握手定理): 对于任何图 $G = (V, E)$，
 $$\sum_{v \in V} deg(v) = 2|E|$$
 
-**证明**: 
+**证明**:
+
 - 每条边贡献给两个顶点的度数
 - 因此所有顶点的度数之和等于边数的两倍
 
@@ -95,6 +98,7 @@ $$\sum_{v \in V} deg(v) = 2|E|$$
 **定理 2.2** (欧拉回路定理): 连通图 $G$ 存在欧拉回路的充要条件是所有顶点的度数都是偶数。
 
 **证明**:
+
 - 必要性: 欧拉回路中每个顶点进入和离开的次数相等
 - 充分性: 通过构造算法证明
 
@@ -113,7 +117,8 @@ $$\sum_{v \in V} deg(v) = 2|E|$$
 #### 3.1.1 深度优先搜索 (DFS)
 
 **算法 3.1** (DFS):
-```
+
+```text
 DFS(G, v):
     visited[v] = true
     for each neighbor u of v:
@@ -126,7 +131,8 @@ DFS(G, v):
 #### 3.1.2 广度优先搜索 (BFS)
 
 **算法 3.2** (BFS):
-```
+
+```text
 BFS(G, s):
     queue = [s]
     visited[s] = true
@@ -145,7 +151,8 @@ BFS(G, s):
 #### 3.2.1 Dijkstra算法
 
 **算法 3.3** (Dijkstra):
-```
+
+```text
 Dijkstra(G, s):
     dist[s] = 0
     for all v ≠ s: dist[v] = ∞
@@ -164,7 +171,8 @@ Dijkstra(G, s):
 #### 3.3.1 Kruskal算法
 
 **算法 3.4** (Kruskal):
-```
+
+```text
 Kruskal(G):
     sort edges by weight
     for each edge (u,v) in sorted order:
@@ -527,6 +535,7 @@ func (g *AdjacencyListGraph) ParallelBFS(start Vertex, numWorkers int) []Vertex 
 ### 5.1 网络路由
 
 图论在网络路由中的应用：
+
 - 最短路径算法用于路由选择
 - 最小生成树用于网络设计
 - 连通性分析用于故障检测
@@ -562,8 +571,9 @@ func (g *AdjacencyListGraph) ParallelBFS(start Vertex, numWorkers int) []Vertex 
 ---
 
 **相关链接**:
+
 - [01-集合论](../01-Set-Theory/README.md)
 - [02-逻辑学](../02-Logic/README.md)
 - [04-概率论](../04-Probability-Theory/README.md)
 - [03-设计模式](../../03-Design-Patterns/README.md)
-- [02-软件架构](../../02-Software-Architecture/README.md) 
+- [02-软件架构](../../02-Software-Architecture/README.md)

@@ -25,6 +25,10 @@
     - [5.2 推理引擎](#52-推理引擎)
     - [5.3 模型检查](#53-模型检查)
   - [6. 应用场景](#6-应用场景)
+    - [6.1 程序验证](#61-程序验证)
+    - [6.2 人工智能](#62-人工智能)
+    - [6.3 数据库](#63-数据库)
+    - [6.4 硬件设计](#64-硬件设计)
   - [7. 总结](#7-总结)
 
 ## 1. 命题逻辑
@@ -40,11 +44,13 @@
 ### 1.2 形式化定义
 
 **定义 1.4** (命题逻辑语言): 命题逻辑语言 $\mathcal{L}$ 由以下部分组成：
+
 - 命题符号集 $\mathcal{P} = \{p, q, r, \ldots\}$
 - 逻辑连接词: $\neg$ (否定), $\wedge$ (合取), $\vee$ (析取), $\rightarrow$ (蕴含), $\leftrightarrow$ (等价)
 - 辅助符号: $(, )$
 
 **定义 1.5** (合式公式): 合式公式递归定义如下：
+
 1. 每个命题符号 $p \in \mathcal{P}$ 是合式公式
 2. 如果 $\phi$ 是合式公式，则 $\neg \phi$ 是合式公式
 3. 如果 $\phi$ 和 $\psi$ 是合式公式，则 $(\phi \wedge \psi)$, $(\phi \vee \psi)$, $(\phi \rightarrow \psi)$, $(\phi \leftrightarrow \psi)$ 是合式公式
@@ -52,6 +58,7 @@
 ### 1.3 推理规则
 
 **公理 1.1** (命题逻辑公理):
+
 1. $\phi \rightarrow (\psi \rightarrow \phi)$
 2. $(\phi \rightarrow (\psi \rightarrow \chi)) \rightarrow ((\phi \rightarrow \psi) \rightarrow (\phi \rightarrow \chi))$
 3. $(\neg \phi \rightarrow \neg \psi) \rightarrow (\psi \rightarrow \phi)$
@@ -71,6 +78,7 @@
 ### 2.2 形式化定义
 
 **定义 2.4** (一阶逻辑语言): 一阶逻辑语言 $\mathcal{L}$ 包含：
+
 - 个体常项集 $\mathcal{C}$
 - 个体变项集 $\mathcal{V}$
 - 谓词符号集 $\mathcal{P}$
@@ -78,6 +86,7 @@
 - 逻辑连接词和量词
 
 **定义 2.5** (项): 项递归定义如下：
+
 1. 每个个体常项和个体变项是项
 2. 如果 $f$ 是 $n$ 元函数符号，$t_1, \ldots, t_n$ 是项，则 $f(t_1, \ldots, t_n)$ 是项
 
@@ -98,16 +107,19 @@
 **定义 3.1** (模态算子): 模态算子包括 $\Box$ (必然) 和 $\Diamond$ (可能)。
 
 **定义 3.2** (模态公式): 模态公式在命题逻辑基础上增加：
+
 - 如果 $\phi$ 是模态公式，则 $\Box \phi$ 和 $\Diamond \phi$ 是模态公式
 
 ### 3.2 可能世界语义
 
 **定义 3.3** (克里普克模型): 克里普克模型 $\mathcal{M} = (W, R, V)$ 包含：
+
 - $W$: 可能世界集
 - $R \subseteq W \times W$: 可达关系
 - $V: W \times \mathcal{P} \rightarrow \{true, false\}$: 赋值函数
 
 **定义 3.4** (模态公式的真值): 在可能世界 $w$ 中：
+
 - $\mathcal{M}, w \models \Box \phi$ 当且仅当对所有 $v$ 使得 $wRv$，有 $\mathcal{M}, v \models \phi$
 - $\mathcal{M}, w \models \Diamond \phi$ 当且仅当存在 $v$ 使得 $wRv$ 且 $\mathcal{M}, v \models \phi$
 
@@ -126,9 +138,11 @@
 ### 4.1 基本概念
 
 **定义 4.1** (时态算子): 时态算子包括：
+
 - $G$ (总是), $F$ (将来), $X$ (下一个), $U$ (直到)
 
 **定义 4.2** (时态公式): 时态公式在命题逻辑基础上增加：
+
 - $G \phi$: $\phi$ 总是为真
 - $F \phi$: $\phi$ 将来为真
 - $X \phi$: $\phi$ 下一个时刻为真
@@ -139,6 +153,7 @@
 **定义 4.3** (线性时态结构): 线性时态结构是序列 $\sigma = s_0, s_1, s_2, \ldots$，其中每个 $s_i$ 是状态。
 
 **定义 4.4** (LTL语义): 在位置 $i$ 上：
+
 - $\sigma, i \models G \phi$ 当且仅当对所有 $j \geq i$，$\sigma, j \models \phi$
 - $\sigma, i \models F \phi$ 当且仅当存在 $j \geq i$，$\sigma, j \models \phi$
 - $\sigma, i \models X \phi$ 当且仅当 $\sigma, i+1 \models \phi$
@@ -148,7 +163,8 @@
 
 **定义 4.5** (计算树逻辑): CTL公式包含路径量词 $A$ (对所有路径) 和 $E$ (存在路径)。
 
-**定义 4.6** (CTL语义): 
+**定义 4.6** (CTL语义):
+
 - $A \phi$: 在所有路径上 $\phi$ 为真
 - $E \phi$: 存在路径使得 $\phi$ 为真
 
@@ -615,8 +631,9 @@ func (mc *ModelChecker) checkEventuallyRecursive(formula Formula, state int, vis
 ---
 
 **相关链接**:
+
 - [01-数学基础](../01-Mathematical-Foundation/README.md)
 - [03-范畴论基础](../03-Category-Theory-Foundation/README.md)
 - [04-计算理论基础](../04-Computational-Theory-Foundation/README.md)
 - [03-设计模式](../../03-Design-Patterns/README.md)
-- [02-软件架构](../../02-Software-Architecture/README.md) 
+- [02-软件架构](../../02-Software-Architecture/README.md)

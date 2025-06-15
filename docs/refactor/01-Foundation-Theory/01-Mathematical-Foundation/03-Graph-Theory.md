@@ -10,10 +10,12 @@
 
 **定义 1.1** (图)
 一个图 $G = (V, E)$ 由以下两部分组成：
+
 - $V$ 是顶点的有限集合，称为顶点集（Vertex Set）
 - $E$ 是边的集合，每条边连接两个顶点，称为边集（Edge Set）
 
 **形式化定义**：
+
 ```latex
 G = (V, E) \text{ where } E \subseteq V \times V
 ```
@@ -26,6 +28,7 @@ G = (V, E) \text{ where } E \subseteq V \times V
 在无向图中，边没有方向，$(u,v) \in E$ 表示顶点 $u$ 和 $v$ 之间有一条边。
 
 **性质**：
+
 - 对称性：$(u,v) \in E \Leftrightarrow (v,u) \in E$
 - 自环：$(v,v) \in E$ 称为自环
 
@@ -35,6 +38,7 @@ G = (V, E) \text{ where } E \subseteq V \times V
 在有向图中，边有方向，$(u,v) \in E$ 表示从顶点 $u$ 到顶点 $v$ 有一条有向边。
 
 **性质**：
+
 - 非对称性：$(u,v) \in E$ 不一定意味着 $(v,u) \in E$
 - 入度和出度：每个顶点有入度和出度
 
@@ -131,7 +135,7 @@ func (g *Graph) AddVertex(id int, data interface{}) {
 func (g *Graph) AddEdge(from, to int, weight float64) {
     edge := Edge{From: from, To: to, Weight: weight}
     g.edges[from] = append(g.edges[from], edge)
-    
+
     // 如果是无向图，添加反向边
     if !g.directed {
         reverseEdge := Edge{From: to, To: from, Weight: weight}
@@ -171,21 +175,21 @@ func (g *Graph) GetTotalDegree() int {
 func (g *Graph) DFS(startID int) []int {
     visited := make(map[int]bool)
     result := make([]int, 0)
-    
+
     var dfs func(int)
     dfs = func(vertexID int) {
         if visited[vertexID] {
             return
         }
-        
+
         visited[vertexID] = true
         result = append(result, vertexID)
-        
+
         for _, edge := range g.edges[vertexID] {
             dfs(edge.To)
         }
     }
-    
+
     dfs(startID)
     return result
 }
@@ -195,18 +199,18 @@ func (g *Graph) DFSIterative(startID int) []int {
     visited := make(map[int]bool)
     result := make([]int, 0)
     stack := []int{startID}
-    
+
     for len(stack) > 0 {
         vertexID := stack[len(stack)-1]
         stack = stack[:len(stack)-1]
-        
+
         if visited[vertexID] {
             continue
         }
-        
+
         visited[vertexID] = true
         result = append(result, vertexID)
-        
+
         // 将邻接顶点压入栈中（逆序以保持正确的访问顺序）
         for i := len(g.edges[vertexID]) - 1; i >= 0; i-- {
             neighbor := g.edges[vertexID][i].To
@@ -215,7 +219,7 @@ func (g *Graph) DFSIterative(startID int) []int {
             }
         }
     }
-    
+
     return result
 }
 ```
@@ -234,12 +238,12 @@ func (g *Graph) BFS(startID int) []int {
     result := make([]int, 0)
     queue := []int{startID}
     visited[startID] = true
-    
+
     for len(queue) > 0 {
         vertexID := queue[0]
         queue = queue[1:]
         result = append(result, vertexID)
-        
+
         for _, edge := range g.edges[vertexID] {
             neighbor := edge.To
             if !visited[neighbor] {
@@ -248,7 +252,7 @@ func (g *Graph) BFS(startID int) []int {
             }
         }
     }
-    
+
     return result
 }
 ```
@@ -267,31 +271,31 @@ Dijkstra算法用于找到从起始顶点到所有其他顶点的最短路径。
 func (g *Graph) Dijkstra(startID int) map[int]float64 {
     distances := make(map[int]float64)
     visited := make(map[int]bool)
-    
+
     // 初始化距离
     for vertexID := range g.vertices {
         distances[vertexID] = math.Inf(1)
     }
     distances[startID] = 0
-    
+
     for len(visited) < len(g.vertices) {
         // 找到未访问顶点中距离最小的
         minVertex := -1
         minDist := math.Inf(1)
-        
+
         for vertexID, dist := range distances {
             if !visited[vertexID] && dist < minDist {
                 minDist = dist
                 minVertex = vertexID
             }
         }
-        
+
         if minVertex == -1 {
             break
         }
-        
+
         visited[minVertex] = true
-        
+
         // 更新邻接顶点的距离
         for _, edge := range g.edges[minVertex] {
             neighbor := edge.To
@@ -301,7 +305,7 @@ func (g *Graph) Dijkstra(startID int) map[int]float64 {
             }
         }
     }
-    
+
     return distances
 }
 ```
@@ -318,7 +322,7 @@ Floyd-Warshall算法用于找到所有顶点对之间的最短路径。
 func (g *Graph) FloydWarshall() [][]float64 {
     n := len(g.vertices)
     dist := make([][]float64, n)
-    
+
     // 初始化距离矩阵
     for i := 0; i < n; i++ {
         dist[i] = make([]float64, n)
@@ -330,14 +334,14 @@ func (g *Graph) FloydWarshall() [][]float64 {
             }
         }
     }
-    
+
     // 设置直接边的距离
     for vertexID, edges := range g.edges {
         for _, edge := range edges {
             dist[vertexID][edge.To] = edge.Weight
         }
     }
-    
+
     // Floyd-Warshall算法核心
     for k := 0; k < n; k++ {
         for i := 0; i < n; i++ {
@@ -350,7 +354,7 @@ func (g *Graph) FloydWarshall() [][]float64 {
             }
         }
     }
-    
+
     return dist
 }
 ```
@@ -387,22 +391,22 @@ func (g *Graph) Kruskal() []Edge {
             }
         }
     }
-    
+
     // 按权重排序
     sort.Slice(edges, func(i, j int) bool {
         return edges[i].Weight < edges[j].Weight
     })
-    
+
     // 并查集
     parent := make(map[int]int)
     rank := make(map[int]int)
-    
+
     // 初始化并查集
     for vertexID := range g.vertices {
         parent[vertexID] = vertexID
         rank[vertexID] = 0
     }
-    
+
     // 查找根节点
     find := func(x int) int {
         if parent[x] != x {
@@ -410,16 +414,16 @@ func (g *Graph) Kruskal() []Edge {
         }
         return parent[x]
     }
-    
+
     // 合并两个集合
     union := func(x, y int) bool {
         rootX := find(x)
         rootY := find(y)
-        
+
         if rootX == rootY {
             return false
         }
-        
+
         if rank[rootX] < rank[rootY] {
             parent[rootX] = rootY
         } else if rank[rootX] > rank[rootY] {
@@ -430,7 +434,7 @@ func (g *Graph) Kruskal() []Edge {
         }
         return true
     }
-    
+
     // Kruskal算法核心
     mst := make([]Edge, 0)
     for _, edge := range edges {
@@ -442,7 +446,7 @@ func (g *Graph) Kruskal() []Edge {
             })
         }
     }
-    
+
     return mst
 }
 ```
@@ -493,12 +497,12 @@ func (sn *SocialNetwork) AddFriendship(user1, user2 int) {
 // GetFriendsOfFriends 获取朋友的朋友
 func (sn *SocialNetwork) GetFriendsOfFriends(userID int) []int {
     friends := make(map[int]bool)
-    
+
     // 获取直接朋友
     for _, edge := range sn.edges[userID] {
         friends[edge.To] = true
     }
-    
+
     // 获取朋友的朋友
     friendsOfFriends := make(map[int]bool)
     for friend := range friends {
@@ -508,12 +512,12 @@ func (sn *SocialNetwork) GetFriendsOfFriends(userID int) []int {
             }
         }
     }
-    
+
     result := make([]int, 0, len(friendsOfFriends))
     for friend := range friendsOfFriends {
         result = append(result, friend)
     }
-    
+
     return result
 }
 
@@ -523,11 +527,11 @@ func (sn *SocialNetwork) GetShortestPath(from, to int) []int {
     if distances[to] == math.Inf(1) {
         return nil
     }
-    
+
     // 重建路径
     path := []int{to}
     current := to
-    
+
     for current != from {
         for _, edge := range sn.edges[current] {
             if distances[edge.To]+edge.Weight == distances[current] {
@@ -537,7 +541,7 @@ func (sn *SocialNetwork) GetShortestPath(from, to int) []int {
             }
         }
     }
-    
+
     return path
 }
 ```
