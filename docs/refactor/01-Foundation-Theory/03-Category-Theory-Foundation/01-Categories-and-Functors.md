@@ -2,868 +2,634 @@
 
 ## 目录
 
-- [01-范畴和函子 (Categories and Functors)](#01-范畴和函子-categories-and-functors)
-  - [目录](#目录)
-  - [1. 基本概念](#1-基本概念)
-    - [1.1 范畴的定义](#11-范畴的定义)
-    - [1.2 态射和复合](#12-态射和复合)
-    - [1.3 单位态射](#13-单位态射)
+- [01-范畴和函子](#01-范畴和函子)
+  - [1. 概念定义](#1-概念定义)
   - [2. 形式化定义](#2-形式化定义)
-    - [2.1 范畴的公理化](#21-范畴的公理化)
-    - [2.2 函子的定义](#22-函子的定义)
-    - [2.3 自然变换](#23-自然变换)
-  - [3. 重要概念](#3-重要概念)
-    - [3.1 同构](#31-同构)
-    - [3.2 单态射和满态射](#32-单态射和满态射)
-    - [3.3 积和余积](#33-积和余积)
+  - [3. 定理证明](#3-定理证明)
   - [4. Go语言实现](#4-go语言实现)
-    - [4.1 范畴数据结构](#41-范畴数据结构)
-    - [4.2 函子实现](#42-函子实现)
-    - [4.3 自然变换实现](#43-自然变换实现)
   - [5. 应用示例](#5-应用示例)
-    - [5.1 集合范畴](#51-集合范畴)
-    - [5.2 群范畴](#52-群范畴)
-    - [5.3 编程语言应用](#53-编程语言应用)
-  - [总结](#总结)
+  - [6. 性能分析](#6-性能分析)
+  - [7. 参考文献](#7-参考文献)
 
-## 1. 基本概念
+## 1. 概念定义
 
-### 1.1 范畴的定义
+### 1.1 基本概念
 
-**定义 1.1**: 范畴 $\mathcal{C}$ 由以下数据组成：
+**定义 1.1**: 范畴 (Category)
+一个范畴 $\mathcal{C}$ 由以下数据组成：
+- 对象集合 $\text{Ob}(\mathcal{C})$
+- 对于每对对象 $A, B \in \text{Ob}(\mathcal{C})$，有一个态射集合 $\text{Hom}_{\mathcal{C}}(A, B)$
+- 对于每个对象 $A$，有一个单位态射 $1_A: A \rightarrow A$
+- 对于态射 $f: A \rightarrow B$ 和 $g: B \rightarrow C$，有一个复合态射 $g \circ f: A \rightarrow C$
 
-1. **对象类** $\text{Ob}(\mathcal{C})$: 范畴中的对象集合
-2. **态射类** $\text{Mor}(\mathcal{C})$: 范畴中的态射集合
-3. **域和余域函数**:
-   - $\text{dom}: \text{Mor}(\mathcal{C}) \rightarrow \text{Ob}(\mathcal{C})$ (域)
-   - $\text{cod}: \text{Mor}(\mathcal{C}) \rightarrow \text{Ob}(\mathcal{C})$ (余域)
-4. **复合函数**: $\circ: \text{Mor}(\mathcal{C}) \times \text{Mor}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{C})$
-5. **单位函数**: $\text{id}: \text{Ob}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{C})$
-
-**记法**: 对于对象 $A, B \in \text{Ob}(\mathcal{C})$，从 $A$ 到 $B$ 的态射集合记为 $\text{Hom}_{\mathcal{C}}(A, B)$ 或 $\mathcal{C}(A, B)$。
-
-### 1.2 态射和复合
-
-**定义 1.2**: 态射复合
-
-对于态射 $f: A \rightarrow B$ 和 $g: B \rightarrow C$，它们的复合 $g \circ f: A \rightarrow C$ 满足：
-
+满足以下公理：
 1. **结合律**: $(h \circ g) \circ f = h \circ (g \circ f)$
-2. **单位律**: $\text{id}_B \circ f = f = f \circ \text{id}_A$
+2. **单位律**: $f \circ 1_A = f = 1_B \circ f$
 
-**形式化表达**:
+### 1.2 核心思想
 
-- 态射 $f: A \rightarrow B$ 表示 $\text{dom}(f) = A$ 且 $\text{cod}(f) = B$
-- 复合 $g \circ f$ 定义当且仅当 $\text{cod}(f) = \text{dom}(g)$
-
-### 1.3 单位态射
-
-**定义 1.3**: 单位态射
-
-对于每个对象 $A \in \text{Ob}(\mathcal{C})$，存在唯一的态射 $\text{id}_A: A \rightarrow A$，称为 $A$ 的单位态射，满足：
-
-- 对于任意态射 $f: A \rightarrow B$，有 $\text{id}_B \circ f = f$
-- 对于任意态射 $g: B \rightarrow A$，有 $g \circ \text{id}_A = g$
+范畴论的核心思想是通过态射（箭头）来研究对象之间的关系，而不是直接研究对象本身。这种抽象方法在计算机科学中特别有用，因为它可以统一处理各种不同的数学结构。
 
 ## 2. 形式化定义
 
-### 2.1 范畴的公理化
+### 2.1 数学定义
 
-**公理 2.1**: 范畴的公理系统
+**定义 2.1**: 范畴的严格定义
+一个范畴 $\mathcal{C}$ 是一个六元组 $(\text{Ob}, \text{Hom}, \text{dom}, \text{cod}, \text{id}, \circ)$，其中：
 
-1. **对象公理**: $\text{Ob}(\mathcal{C})$ 是一个类
-2. **态射公理**: 对于任意对象 $A, B$，$\text{Hom}_{\mathcal{C}}(A, B)$ 是一个集合
-3. **复合公理**: 复合函数 $\circ$ 满足结合律
-4. **单位公理**: 每个对象都有单位态射
-5. **单位律公理**: 单位态射满足左右单位律
-
-**定理 2.1**: 单位态射的唯一性
-
-在任意范畴中，每个对象的单位态射是唯一的。
-
-**证明**: 假设 $\text{id}_A$ 和 $\text{id}_A'$ 都是 $A$ 的单位态射，则：
-$$\text{id}_A = \text{id}_A \circ \text{id}_A' = \text{id}_A'$$
-
-### 2.2 函子的定义
-
-**定义 2.2**: 函子
-
-从范畴 $\mathcal{C}$ 到范畴 $\mathcal{D}$ 的**函子** $F: \mathcal{C} \rightarrow \mathcal{D}$ 由以下数据组成：
-
-1. **对象函数**: $F: \text{Ob}(\mathcal{C}) \rightarrow \text{Ob}(\mathcal{D})$
-2. **态射函数**: $F: \text{Mor}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{D})$
+- $\text{Ob}$ 是对象集合
+- $\text{Hom}$ 是态射集合
+- $\text{dom}: \text{Hom} \rightarrow \text{Ob}$ 是定义域函数
+- $\text{cod}: \text{Hom} \rightarrow \text{Ob}$ 是陪域函数
+- $\text{id}: \text{Ob} \rightarrow \text{Hom}$ 是单位态射函数
+- $\circ: \text{Hom} \times \text{Hom} \rightarrow \text{Hom}$ 是复合函数
 
 满足以下条件：
+1. 对于态射 $f, g$，$g \circ f$ 定义当且仅当 $\text{cod}(f) = \text{dom}(g)$
+2. $\text{dom}(\text{id}(A)) = A = \text{cod}(\text{id}(A))$
+3. 结合律和单位律
 
-1. **保持域和余域**: 如果 $f: A \rightarrow B$，则 $F(f): F(A) \rightarrow F(B)$
-2. **保持复合**: $F(g \circ f) = F(g) \circ F(f)$
-3. **保持单位**: $F(\text{id}_A) = \text{id}_{F(A)}$
+**定义 2.2**: 函子 (Functor)
+从范畴 $\mathcal{C}$ 到范畴 $\mathcal{D}$ 的函子 $F: \mathcal{C} \rightarrow \mathcal{D}$ 由以下数据组成：
+- 对象函数 $F_{\text{Ob}}: \text{Ob}(\mathcal{C}) \rightarrow \text{Ob}(\mathcal{D})$
+- 态射函数 $F_{\text{Hom}}: \text{Hom}(\mathcal{C}) \rightarrow \text{Hom}(\mathcal{D})$
 
-**定义 2.3**: 函子的类型
+满足：
+1. $F(1_A) = 1_{F(A)}$
+2. $F(g \circ f) = F(g) \circ F(f)$
 
-1. **协变函子**: 保持态射方向
-2. **反变函子**: 反转态射方向，即 $F(f): F(B) \rightarrow F(A)$
+### 2.2 类型定义
 
-### 2.3 自然变换
+```go
+// Object 表示范畴中的对象
+type Object interface {
+    ID() string
+    String() string
+}
 
-**定义 2.4**: 自然变换
+// Morphism 表示范畴中的态射
+type Morphism interface {
+    ID() string
+    Domain() Object
+    Codomain() Object
+    Compose(other Morphism) (Morphism, error)
+    String() string
+}
 
-对于函子 $F, G: \mathcal{C} \rightarrow \mathcal{D}$，**自然变换** $\alpha: F \Rightarrow G$ 是一个态射族 $\{\alpha_A: F(A) \rightarrow G(A)\}_{A \in \text{Ob}(\mathcal{C})}$，满足：
+// Category 表示范畴
+type Category struct {
+    Name     string
+    Objects  map[string]Object
+    Morphisms map[string]Morphism
+}
 
-对于任意态射 $f: A \rightarrow B$，有：
-$$G(f) \circ \alpha_A = \alpha_B \circ F(f)$$
+// Functor 表示函子
+type Functor struct {
+    Name     string
+    Source   *Category
+    Target   *Category
+    ObjectMap map[string]Object
+    MorphismMap map[string]Morphism
+}
 
-这个等式称为**自然性条件**。
+// ConcreteObject 具体对象实现
+type ConcreteObject struct {
+    id   string
+    name string
+}
 
-**定义 2.5**: 自然同构
+// ConcreteMorphism 具体态射实现
+type ConcreteMorphism struct {
+    id       string
+    domain   Object
+    codomain Object
+    compose  func(Morphism) (Morphism, error)
+}
+```
 
-自然变换 $\alpha: F \Rightarrow G$ 是**自然同构**，如果每个 $\alpha_A$ 都是同构。
+## 3. 定理证明
 
-## 3. 重要概念
+### 3.1 定理陈述
 
-### 3.1 同构
+**定理 3.1**: 单位态射的唯一性
+在任意范畴中，每个对象的单位态射是唯一的。
 
-**定义 3.1**: 同构
+**定理 3.2**: 函子的保结构性
+函子保持范畴的所有结构，包括单位态射和复合运算。
 
-态射 $f: A \rightarrow B$ 是**同构**，如果存在态射 $g: B \rightarrow A$ 使得：
-$$g \circ f = \text{id}_A \text{ 且 } f \circ g = \text{id}_B$$
+**定理 3.3**: 函子复合
+如果 $F: \mathcal{C} \rightarrow \mathcal{D}$ 和 $G: \mathcal{D} \rightarrow \mathcal{E}$ 是函子，则 $G \circ F: \mathcal{C} \rightarrow \mathcal{E}$ 也是函子。
 
-此时称 $g$ 为 $f$ 的**逆**，记作 $f^{-1}$。
+### 3.2 证明过程
 
-**定理 3.1**: 逆的唯一性
+**证明定理 3.1**: 单位态射的唯一性
 
-同构的逆是唯一的。
+设 $1_A$ 和 $1'_A$ 都是对象 $A$ 的单位态射。
 
-**证明**: 假设 $g$ 和 $g'$ 都是 $f$ 的逆，则：
-$$g = g \circ \text{id}_B = g \circ (f \circ g') = (g \circ f) \circ g' = \text{id}_A \circ g' = g'$$
+根据单位律：
+- $1_A \circ 1'_A = 1'_A$ (因为 $1_A$ 是单位态射)
+- $1_A \circ 1'_A = 1_A$ (因为 $1'_A$ 是单位态射)
 
-### 3.2 单态射和满态射
+因此 $1_A = 1'_A$，证毕。
 
-**定义 3.2**: 单态射
+**证明定理 3.2**: 函子的保结构性
 
-态射 $f: A \rightarrow B$ 是**单态射**，如果对于任意态射 $g, h: C \rightarrow A$：
-$$f \circ g = f \circ h \Rightarrow g = h$$
+设 $F: \mathcal{C} \rightarrow \mathcal{D}$ 是函子。
 
-**定义 3.3**: 满态射
+对于单位态射：
+$$F(1_A) = 1_{F(A)}$$
 
-态射 $f: A \rightarrow B$ 是**满态射**，如果对于任意态射 $g, h: B \rightarrow C$：
-$$g \circ f = h \circ f \Rightarrow g = h$$
+对于复合运算：
+$$F(g \circ f) = F(g) \circ F(f)$$
 
-### 3.3 积和余积
-
-**定义 3.4**: 积
-
-对象 $A$ 和 $B$ 的**积**是一个对象 $A \times B$ 连同两个投影态射：
-$$\pi_1: A \times B \rightarrow A \text{ 和 } \pi_2: A \times B \rightarrow B$$
-
-满足：对于任意对象 $C$ 和态射 $f: C \rightarrow A$，$g: C \rightarrow B$，存在唯一的态射 $\langle f, g \rangle: C \rightarrow A \times B$ 使得：
-$$\pi_1 \circ \langle f, g \rangle = f \text{ 且 } \pi_2 \circ \langle f, g \rangle = g$$
-
-**定义 3.5**: 余积
-
-对象 $A$ 和 $B$ 的**余积**是一个对象 $A + B$ 连同两个注入态射：
-$$\iota_1: A \rightarrow A + B \text{ 和 } \iota_2: B \rightarrow A + B$$
-
-满足：对于任意对象 $C$ 和态射 $f: A \rightarrow C$，$g: B \rightarrow C$，存在唯一的态射 $[f, g]: A + B \rightarrow C$ 使得：
-$$[f, g] \circ \iota_1 = f \text{ 且 } [f, g] \circ \iota_2 = g$$
+这些正是函子定义中的条件，证毕。
 
 ## 4. Go语言实现
 
-### 4.1 范畴数据结构
+### 4.1 基础实现
 
 ```go
-// Object 范畴中的对象
+package categorytheory
+
+import (
+    "fmt"
+    "sync"
+)
+
+// Object 表示范畴中的对象
 type Object interface {
     ID() string
+    String() string
 }
 
-// Morphism 范畴中的态射
-type Morphism struct {
-    ID       string
-    Domain   Object
-    Codomain Object
-    Data     interface{} // 态射的具体数据
+// Morphism 表示范畴中的态射
+type Morphism interface {
+    ID() string
+    Domain() Object
+    Codomain() Object
+    Compose(other Morphism) (Morphism, error)
+    String() string
 }
 
-// NewMorphism 创建态射
-func NewMorphism(id string, domain, codomain Object, data interface{}) *Morphism {
-    return &Morphism{
-        ID:       id,
-        Domain:   domain,
-        Codomain: codomain,
-        Data:     data,
-    }
-}
-
-// Category 范畴
+// Category 表示范畴
 type Category struct {
-    Name      string
-    Objects   map[string]Object
-    Morphisms map[string]*Morphism
-    Compose   func(*Morphism, *Morphism) (*Morphism, error)
-    Identity  func(Object) *Morphism
+    Name       string
+    Objects    map[string]Object
+    Morphisms  map[string]Morphism
+    mu         sync.RWMutex
 }
 
-// NewCategory 创建范畴
+// NewCategory 创建新范畴
 func NewCategory(name string) *Category {
     return &Category{
         Name:      name,
         Objects:   make(map[string]Object),
-        Morphisms: make(map[string]*Morphism),
+        Morphisms: make(map[string]Morphism),
     }
 }
 
 // AddObject 添加对象
-func (c *Category) AddObject(obj Object) {
+func (c *Category) AddObject(obj Object) error {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    
+    if _, exists := c.Objects[obj.ID()]; exists {
+        return fmt.Errorf("object %s already exists", obj.ID())
+    }
+    
     c.Objects[obj.ID()] = obj
+    return nil
 }
 
 // AddMorphism 添加态射
-func (c *Category) AddMorphism(morphism *Morphism) {
-    c.Morphisms[morphism.ID] = morphism
+func (c *Category) AddMorphism(morph Morphism) error {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    
+    if _, exists := c.Morphisms[morph.ID()]; exists {
+        return fmt.Errorf("morphism %s already exists", morph.ID())
+    }
+    
+    // 检查定义域和陪域是否存在
+    if _, exists := c.Objects[morph.Domain().ID()]; !exists {
+        return fmt.Errorf("domain object %s does not exist", morph.Domain().ID())
+    }
+    
+    if _, exists := c.Objects[morph.Codomain().ID()]; !exists {
+        return fmt.Errorf("codomain object %s does not exist", morph.Codomain().ID())
+    }
+    
+    c.Morphisms[morph.ID()] = morph
+    return nil
 }
 
-// GetMorphisms 获取从A到B的所有态射
-func (c *Category) GetMorphisms(from, to Object) []*Morphism {
-    var morphisms []*Morphism
-    for _, morphism := range c.Morphisms {
-        if morphism.Domain == from && morphism.Codomain == to {
-            morphisms = append(morphisms, morphism)
-        }
-    }
-    return morphisms
+// GetObject 获取对象
+func (c *Category) GetObject(id string) (Object, bool) {
+    c.mu.RLock()
+    defer c.mu.RUnlock()
+    
+    obj, exists := c.Objects[id]
+    return obj, exists
+}
+
+// GetMorphism 获取态射
+func (c *Category) GetMorphism(id string) (Morphism, bool) {
+    c.mu.RLock()
+    defer c.mu.RUnlock()
+    
+    morph, exists := c.Morphisms[id]
+    return morph, exists
 }
 
 // ComposeMorphisms 复合态射
-func (c *Category) ComposeMorphisms(f, g *Morphism) (*Morphism, error) {
-    if f.Codomain != g.Domain {
+func (c *Category) ComposeMorphisms(f, g Morphism) (Morphism, error) {
+    if f.Codomain().ID() != g.Domain().ID() {
         return nil, fmt.Errorf("cannot compose morphisms: codomain of f != domain of g")
     }
     
-    if c.Compose != nil {
-        return c.Compose(f, g)
-    }
-    
-    // 默认复合
-    composedID := fmt.Sprintf("%s_%s", f.ID, g.ID)
-    composedData := fmt.Sprintf("(%s ∘ %s)", g.ID, f.ID)
-    
-    return NewMorphism(composedID, f.Domain, g.Codomain, composedData), nil
+    return f.Compose(g)
 }
 
-// IdentityMorphism 获取对象的单位态射
-func (c *Category) IdentityMorphism(obj Object) *Morphism {
-    if c.Identity != nil {
-        return c.Identity(obj)
+// ConcreteObject 具体对象实现
+type ConcreteObject struct {
+    id   string
+    name string
+}
+
+// NewConcreteObject 创建具体对象
+func NewConcreteObject(id, name string) *ConcreteObject {
+    return &ConcreteObject{
+        id:   id,
+        name: name,
+    }
+}
+
+// ID 返回对象ID
+func (o *ConcreteObject) ID() string {
+    return o.id
+}
+
+// String 字符串表示
+func (o *ConcreteObject) String() string {
+    return fmt.Sprintf("Object(%s: %s)", o.id, o.name)
+}
+
+// ConcreteMorphism 具体态射实现
+type ConcreteMorphism struct {
+    id       string
+    domain   Object
+    codomain Object
+    compose  func(Morphism) (Morphism, error)
+}
+
+// NewConcreteMorphism 创建具体态射
+func NewConcreteMorphism(id string, domain, codomain Object) *ConcreteMorphism {
+    return &ConcreteMorphism{
+        id:       id,
+        domain:   domain,
+        codomain: codomain,
+    }
+}
+
+// ID 返回态射ID
+func (m *ConcreteMorphism) ID() string {
+    return m.id
+}
+
+// Domain 返回定义域
+func (m *ConcreteMorphism) Domain() Object {
+    return m.domain
+}
+
+// Codomain 返回陪域
+func (m *ConcreteMorphism) Codomain() Object {
+    return m.codomain
+}
+
+// Compose 复合态射
+func (m *ConcreteMorphism) Compose(other Morphism) (Morphism, error) {
+    if m.codomain.ID() != other.Domain().ID() {
+        return nil, fmt.Errorf("cannot compose: codomain != domain")
     }
     
-    // 默认单位态射
-    idID := fmt.Sprintf("id_%s", obj.ID())
-    return NewMorphism(idID, obj, obj, "identity")
-}
-
-// IsIsomorphism 检查态射是否为同构
-func (c *Category) IsIsomorphism(morphism *Morphism) bool {
-    // 检查是否存在逆态射
-    inverses := c.GetMorphisms(morphism.Codomain, morphism.Domain)
+    // 创建复合态射
+    compositeID := fmt.Sprintf("%s_%s", m.id, other.ID())
+    composite := NewConcreteMorphism(compositeID, m.domain, other.Codomain())
     
-    for _, inverse := range inverses {
-        // 检查复合是否为单位态射
-        comp1, err1 := c.ComposeMorphisms(morphism, inverse)
-        comp2, err2 := c.ComposeMorphisms(inverse, morphism)
-        
-        if err1 == nil && err2 == nil {
-            id1 := c.IdentityMorphism(morphism.Domain)
-            id2 := c.IdentityMorphism(morphism.Codomain)
-            
-            if comp1.ID == id1.ID && comp2.ID == id2.ID {
-                return true
-            }
-        }
-    }
-    
-    return false
+    return composite, nil
 }
 
-// IsMonomorphism 检查态射是否为单态射
-func (c *Category) IsMonomorphism(morphism *Morphism) bool {
-    // 对于所有可能的态射对，检查左消去律
-    for _, m1 := range c.Morphisms {
-        for _, m2 := range c.Morphisms {
-            if m1.Codomain == morphism.Domain && m2.Codomain == morphism.Domain {
-                comp1, err1 := c.ComposeMorphisms(m1, morphism)
-                comp2, err2 := c.ComposeMorphisms(m2, morphism)
-                
-                if err1 == nil && err2 == nil && comp1.ID == comp2.ID {
-                    if m1.ID != m2.ID {
-                        return false
-                    }
-                }
-            }
-        }
-    }
-    return true
+// String 字符串表示
+func (m *ConcreteMorphism) String() string {
+    return fmt.Sprintf("Morphism(%s: %s -> %s)", m.id, m.domain.ID(), m.codomain.ID())
 }
 
-// IsEpimorphism 检查态射是否为满态射
-func (c *Category) IsEpimorphism(morphism *Morphism) bool {
-    // 对于所有可能的态射对，检查右消去律
-    for _, m1 := range c.Morphisms {
-        for _, m2 := range c.Morphisms {
-            if morphism.Codomain == m1.Domain && morphism.Codomain == m2.Domain {
-                comp1, err1 := c.ComposeMorphisms(morphism, m1)
-                comp2, err2 := c.ComposeMorphisms(morphism, m2)
-                
-                if err1 == nil && err2 == nil && comp1.ID == comp2.ID {
-                    if m1.ID != m2.ID {
-                        return false
-                    }
-                }
-            }
-        }
-    }
-    return true
-}
-```
-
-### 4.2 函子实现
-
-```go
-// Functor 函子
+// Functor 表示函子
 type Functor struct {
-    Name           string
-    SourceCategory *Category
-    TargetCategory *Category
-    ObjectMap      map[string]Object
-    MorphismMap    map[string]*Morphism
+    Name         string
+    Source       *Category
+    Target       *Category
+    ObjectMap    map[string]Object
+    MorphismMap  map[string]Morphism
+    mu           sync.RWMutex
 }
 
-// NewFunctor 创建函子
+// NewFunctor 创建新函子
 func NewFunctor(name string, source, target *Category) *Functor {
     return &Functor{
-        Name:           name,
-        SourceCategory: source,
-        TargetCategory: target,
-        ObjectMap:      make(map[string]Object),
-        MorphismMap:    make(map[string]*Morphism),
+        Name:        name,
+        Source:      source,
+        Target:      target,
+        ObjectMap:   make(map[string]Object),
+        MorphismMap: make(map[string]Morphism),
     }
 }
 
 // MapObject 映射对象
-func (f *Functor) MapObject(obj Object, targetObj Object) {
-    f.ObjectMap[obj.ID()] = targetObj
+func (f *Functor) MapObject(sourceObj Object, targetObj Object) error {
+    f.mu.Lock()
+    defer f.mu.Unlock()
+    
+    f.ObjectMap[sourceObj.ID()] = targetObj
+    return nil
 }
 
 // MapMorphism 映射态射
-func (f *Functor) MapMorphism(morphism *Morphism, targetMorphism *Morphism) {
-    f.MorphismMap[morphism.ID] = targetMorphism
-}
-
-// ApplyToObject 应用函子到对象
-func (f *Functor) ApplyToObject(obj Object) Object {
-    if targetObj, exists := f.ObjectMap[obj.ID()]; exists {
-        return targetObj
-    }
+func (f *Functor) MapMorphism(sourceMorph Morphism, targetMorph Morphism) error {
+    f.mu.Lock()
+    defer f.mu.Unlock()
+    
+    f.MorphismMap[sourceMorph.ID()] = targetMorph
     return nil
 }
 
-// ApplyToMorphism 应用函子到态射
-func (f *Functor) ApplyToMorphism(morphism *Morphism) *Morphism {
-    if targetMorphism, exists := f.MorphismMap[morphism.ID]; exists {
-        return targetMorphism
+// ApplyToObject 应用到对象
+func (f *Functor) ApplyToObject(sourceObj Object) (Object, error) {
+    f.mu.RLock()
+    defer f.mu.RUnlock()
+    
+    if targetObj, exists := f.ObjectMap[sourceObj.ID()]; exists {
+        return targetObj, nil
     }
-    return nil
+    
+    return nil, fmt.Errorf("no mapping for object %s", sourceObj.ID())
 }
 
-// IsValid 检查函子是否有效
-func (f *Functor) IsValid() bool {
-    // 检查对象映射的一致性
-    for _, obj := range f.SourceCategory.Objects {
-        if f.ApplyToObject(obj) == nil {
-            return false
-        }
+// ApplyToMorphism 应用到态射
+func (f *Functor) ApplyToMorphism(sourceMorph Morphism) (Morphism, error) {
+    f.mu.RLock()
+    defer f.mu.RUnlock()
+    
+    if targetMorph, exists := f.MorphismMap[sourceMorph.ID()]; exists {
+        return targetMorph, nil
     }
     
-    // 检查态射映射的一致性
-    for _, morphism := range f.SourceCategory.Morphisms {
-        targetMorphism := f.ApplyToMorphism(morphism)
-        if targetMorphism == nil {
-            return false
-        }
-        
-        // 检查域和余域的映射
-        targetDomain := f.ApplyToObject(morphism.Domain)
-        targetCodomain := f.ApplyToObject(morphism.Codomain)
-        
-        if targetMorphism.Domain != targetDomain || targetMorphism.Codomain != targetCodomain {
-            return false
-        }
-    }
-    
-    return true
-}
-
-// ComposeFunctors 复合函子
-func ComposeFunctors(f, g *Functor) *Functor {
-    if f.TargetCategory != g.SourceCategory {
-        return nil
-    }
-    
-    composed := NewFunctor(
-        fmt.Sprintf("%s ∘ %s", g.Name, f.Name),
-        f.SourceCategory,
-        g.TargetCategory,
-    )
-    
-    // 复合对象映射
-    for objID, obj := range f.ObjectMap {
-        if gObj := g.ApplyToObject(obj); gObj != nil {
-            composed.ObjectMap[objID] = gObj
-        }
-    }
-    
-    // 复合态射映射
-    for morphismID, morphism := range f.MorphismMap {
-        if gMorphism := g.ApplyToMorphism(morphism); gMorphism != nil {
-            composed.MorphismMap[morphismID] = gMorphism
-        }
-    }
-    
-    return composed
+    return nil, fmt.Errorf("no mapping for morphism %s", sourceMorph.ID())
 }
 ```
 
-### 4.3 自然变换实现
+### 4.2 泛型实现
 
 ```go
-// NaturalTransformation 自然变换
-type NaturalTransformation struct {
-    Name     string
-    Source   *Functor
-    Target   *Functor
-    Components map[string]*Morphism // 每个对象对应的态射
+// GenericCategory 泛型范畴
+type GenericCategory[T Object, U Morphism] struct {
+    Name      string
+    Objects   map[string]T
+    Morphisms map[string]U
+    mu        sync.RWMutex
 }
 
-// NewNaturalTransformation 创建自然变换
-func NewNaturalTransformation(name string, source, target *Functor) *NaturalTransformation {
-    return &NaturalTransformation{
-        Name:       name,
-        Source:     source,
-        Target:     target,
-        Components: make(map[string]*Morphism),
+// GenericFunctor 泛型函子
+type GenericFunctor[T1, T2 Object, U1, U2 Morphism] struct {
+    Name         string
+    Source       *GenericCategory[T1, U1]
+    Target       *GenericCategory[T2, U2]
+    ObjectMap    map[string]T2
+    MorphismMap  map[string]U2
+    mu           sync.RWMutex
+}
+
+// NewGenericCategory 创建泛型范畴
+func NewGenericCategory[T Object, U Morphism](name string) *GenericCategory[T, U] {
+    return &GenericCategory[T, U]{
+        Name:      name,
+        Objects:   make(map[string]T),
+        Morphisms: make(map[string]U),
     }
 }
 
-// AddComponent 添加分量
-func (nt *NaturalTransformation) AddComponent(obj Object, morphism *Morphism) {
-    nt.Components[obj.ID()] = morphism
-}
-
-// GetComponent 获取分量
-func (nt *NaturalTransformation) GetComponent(obj Object) *Morphism {
-    return nt.Components[obj.ID()]
-}
-
-// IsNatural 检查是否为自然变换
-func (nt *NaturalTransformation) IsNatural() bool {
-    // 检查自然性条件
-    for _, morphism := range nt.Source.SourceCategory.Morphisms {
-        sourceObj := morphism.Domain
-        targetObj := morphism.Codomain
-        
-        sourceComponent := nt.GetComponent(sourceObj)
-        targetComponent := nt.GetComponent(targetObj)
-        
-        if sourceComponent == nil || targetComponent == nil {
-            continue
-        }
-        
-        // 检查自然性条件：G(f) ∘ α_A = α_B ∘ F(f)
-        sourceMorphism := nt.Source.ApplyToMorphism(morphism)
-        targetMorphism := nt.Target.ApplyToMorphism(morphism)
-        
-        if sourceMorphism == nil || targetMorphism == nil {
-            continue
-        }
-        
-        // 这里需要实际的态射复合来验证自然性
-        // 简化版本：检查态射的域和余域是否匹配
-        if sourceComponent.Codomain != targetComponent.Domain {
-            return false
-        }
+// AddObject 添加对象
+func (gc *GenericCategory[T, U]) AddObject(obj T) error {
+    gc.mu.Lock()
+    defer gc.mu.Unlock()
+    
+    if _, exists := gc.Objects[obj.ID()]; exists {
+        return fmt.Errorf("object %s already exists", obj.ID())
     }
     
-    return true
+    gc.Objects[obj.ID()] = obj
+    return nil
+}
+```
+
+### 4.3 并发实现
+
+```go
+// ConcurrentCategory 并发范畴
+type ConcurrentCategory struct {
+    Name       string
+    Objects    sync.Map
+    Morphisms  sync.Map
 }
 
-// IsNaturalIsomorphism 检查是否为自然同构
-func (nt *NaturalTransformation) IsNaturalIsomorphism() bool {
-    if !nt.IsNatural() {
-        return false
+// NewConcurrentCategory 创建并发范畴
+func NewConcurrentCategory(name string) *ConcurrentCategory {
+    return &ConcurrentCategory{
+        Name: name,
     }
-    
-    // 检查每个分量是否为同构
-    for _, component := range nt.Components {
-        if !nt.Target.TargetCategory.IsIsomorphism(component) {
-            return false
-        }
+}
+
+// AddObject 线程安全添加对象
+func (cc *ConcurrentCategory) AddObject(obj Object) error {
+    if _, loaded := cc.Objects.LoadOrStore(obj.ID(), obj); loaded {
+        return fmt.Errorf("object %s already exists", obj.ID())
     }
-    
-    return true
+    return nil
+}
+
+// GetObject 线程安全获取对象
+func (cc *ConcurrentCategory) GetObject(id string) (Object, bool) {
+    if value, ok := cc.Objects.Load(id); ok {
+        return value.(Object), true
+    }
+    return nil, false
+}
+
+// RangeObjects 遍历所有对象
+func (cc *ConcurrentCategory) RangeObjects(f func(key, value interface{}) bool) {
+    cc.Objects.Range(f)
 }
 ```
 
 ## 5. 应用示例
 
-### 5.1 集合范畴
+### 5.1 基础示例
 
 ```go
-// SetObject 集合对象
-type SetObject struct {
-    ID   string
-    Elements []interface{}
-}
-
-func (s *SetObject) ID() string {
-    return s.ID
-}
-
-// SetMorphism 集合态射（函数）
-type SetMorphism struct {
-    ID       string
-    Domain   *SetObject
-    Codomain *SetObject
-    Function map[interface{}]interface{} // 函数的具体实现
-}
-
-// SetCategory 集合范畴
-func CreateSetCategory() *Category {
+// 示例：集合范畴
+func SetCategoryExample() {
+    // 创建集合范畴
     setCat := NewCategory("Set")
     
-    // 定义复合函数
-    setCat.Compose = func(f, g *Morphism) (*Morphism, error) {
-        if f.Codomain != g.Domain {
-            return nil, fmt.Errorf("cannot compose")
-        }
-        
-        setF := f.(*SetMorphism)
-        setG := g.(*SetMorphism)
-        
-        // 复合函数
-        composedFunc := make(map[interface{}]interface{})
-        for x, fx := range setF.Function {
-            if gx, exists := setG.Function[fx]; exists {
-                composedFunc[x] = gx
-            }
-        }
-        
-        composedID := fmt.Sprintf("%s_%s", f.ID, g.ID)
-        return &SetMorphism{
-            ID:       composedID,
-            Domain:   setF.Domain,
-            Codomain: setG.Codomain,
-            Function: composedFunc,
-        }, nil
+    // 创建对象（集合）
+    emptySet := NewConcreteObject("empty", "Empty Set")
+    singletonSet := NewConcreteObject("singleton", "Singleton Set")
+    twoElementSet := NewConcreteObject("two", "Two Element Set")
+    
+    // 添加对象到范畴
+    setCat.AddObject(emptySet)
+    setCat.AddObject(singletonSet)
+    setCat.AddObject(twoElementSet)
+    
+    // 创建态射（函数）
+    emptyToSingleton := NewConcreteMorphism("empty_to_singleton", emptySet, singletonSet)
+    singletonToTwo := NewConcreteMorphism("singleton_to_two", singletonSet, twoElementSet)
+    
+    // 添加态射到范畴
+    setCat.AddMorphism(emptyToSingleton)
+    setCat.AddMorphism(singletonToTwo)
+    
+    // 复合态射
+    composite, err := setCat.ComposeMorphisms(emptyToSingleton, singletonToTwo)
+    if err == nil {
+        fmt.Printf("Composite morphism: %s\n", composite)
     }
-    
-    // 定义单位态射
-    setCat.Identity = func(obj Object) *Morphism {
-        setObj := obj.(*SetObject)
-        identityFunc := make(map[interface{}]interface{})
-        for _, elem := range setObj.Elements {
-            identityFunc[elem] = elem
-        }
-        
-        return &SetMorphism{
-            ID:       fmt.Sprintf("id_%s", obj.ID()),
-            Domain:   setObj,
-            Codomain: setObj,
-            Function: identityFunc,
-        }
-    }
-    
-    return setCat
-}
-
-// SetCategoryExample 集合范畴示例
-func SetCategoryExample() {
-    setCat := CreateSetCategory()
-    
-    // 创建集合对象
-    setA := &SetObject{ID: "A", Elements: []interface{}{1, 2, 3}}
-    setB := &SetObject{ID: "B", Elements: []interface{}{"a", "b", "c"}}
-    
-    setCat.AddObject(setA)
-    setCat.AddObject(setB)
-    
-    // 创建函数态射
-    f := &SetMorphism{
-        ID:       "f",
-        Domain:   setA,
-        Codomain: setB,
-        Function: map[interface{}]interface{}{
-            1: "a",
-            2: "b",
-            3: "c",
-        },
-    }
-    
-    setCat.AddMorphism(f)
-    
-    fmt.Println("集合范畴示例")
-    fmt.Printf("对象A: %v\n", setA.Elements)
-    fmt.Printf("对象B: %v\n", setB.Elements)
-    fmt.Printf("函数f: %v\n", f.Function)
-    
-    // 检查是否为同构
-    isIso := setCat.IsIsomorphism(f)
-    fmt.Printf("f是否为同构: %v\n", isIso)
 }
 ```
 
-### 5.2 群范畴
+### 5.2 高级示例
 
 ```go
-// GroupObject 群对象
-type GroupObject struct {
-    ID      string
-    Elements []int
-    Operation func(int, int) int
-    Identity  int
+// 示例：函子应用
+func FunctorExample() {
+    // 创建源范畴和目标范畴
+    sourceCat := NewCategory("Source")
+    targetCat := NewCategory("Target")
+    
+    // 创建对象
+    sourceObj := NewConcreteObject("A", "Source Object A")
+    targetObj := NewConcreteObject("F(A)", "Target Object F(A)")
+    
+    sourceCat.AddObject(sourceObj)
+    targetCat.AddObject(targetObj)
+    
+    // 创建函子
+    functor := NewFunctor("F", sourceCat, targetCat)
+    
+    // 定义对象映射
+    functor.MapObject(sourceObj, targetObj)
+    
+    // 应用函子
+    result, err := functor.ApplyToObject(sourceObj)
+    if err == nil {
+        fmt.Printf("Functor applied: %s -> %s\n", sourceObj, result)
+    }
 }
 
-func (g *GroupObject) ID() string {
-    return g.ID
-}
-
-// GroupMorphism 群态射（群同态）
-type GroupMorphism struct {
-    ID       string
-    Domain   *GroupObject
-    Codomain *GroupObject
-    Function map[int]int
-}
-
-// GroupCategory 群范畴
-func CreateGroupCategory() *Category {
-    groupCat := NewCategory("Group")
+// 示例：程序状态范畴
+func ProgramStateCategoryExample() {
+    // 创建程序状态范畴
+    progCat := NewCategory("ProgramState")
     
-    // 定义复合函数
-    groupCat.Compose = func(f, g *Morphism) (*Morphism, error) {
-        if f.Codomain != g.Domain {
-            return nil, fmt.Errorf("cannot compose")
-        }
-        
-        groupF := f.(*GroupMorphism)
-        groupG := g.(*GroupMorphism)
-        
-        // 复合函数
-        composedFunc := make(map[int]int)
-        for x, fx := range groupF.Function {
-            if gx, exists := groupG.Function[fx]; exists {
-                composedFunc[x] = gx
-            }
-        }
-        
-        composedID := fmt.Sprintf("%s_%s", f.ID, g.ID)
-        return &GroupMorphism{
-            ID:       composedID,
-            Domain:   groupF.Domain,
-            Codomain: groupG.Codomain,
-            Function: composedFunc,
-        }, nil
+    // 状态对象
+    initialState := NewConcreteObject("init", "Initial State")
+    runningState := NewConcreteObject("running", "Running State")
+    finalState := NewConcreteObject("final", "Final State")
+    
+    progCat.AddObject(initialState)
+    progCat.AddObject(runningState)
+    progCat.AddObject(finalState)
+    
+    // 状态转换态射
+    initToRunning := NewConcreteMorphism("start", initialState, runningState)
+    runningToFinal := NewConcreteMorphism("finish", runningState, finalState)
+    
+    progCat.AddMorphism(initToRunning)
+    progCat.AddMorphism(runningToFinal)
+    
+    // 计算完整执行路径
+    fullExecution, err := progCat.ComposeMorphisms(initToRunning, runningToFinal)
+    if err == nil {
+        fmt.Printf("Full execution path: %s\n", fullExecution)
     }
-    
-    // 定义单位态射
-    groupCat.Identity = func(obj Object) *Morphism {
-        groupObj := obj.(*GroupObject)
-        identityFunc := make(map[int]int)
-        for _, elem := range groupObj.Elements {
-            identityFunc[elem] = elem
-        }
-        
-        return &GroupMorphism{
-            ID:       fmt.Sprintf("id_%s", obj.ID()),
-            Domain:   groupObj,
-            Codomain: groupObj,
-            Function: identityFunc,
-        }
-    }
-    
-    return groupCat
-}
-
-// GroupCategoryExample 群范畴示例
-func GroupCategoryExample() {
-    groupCat := CreateGroupCategory()
-    
-    // 创建群对象（整数加法群）
-    groupZ := &GroupObject{
-        ID: "Z",
-        Elements: []int{0, 1, -1, 2, -2},
-        Operation: func(a, b int) int { return a + b },
-        Identity: 0,
-    }
-    
-    // 创建群对象（模2群）
-    groupZ2 := &GroupObject{
-        ID: "Z2",
-        Elements: []int{0, 1},
-        Operation: func(a, b int) int { return (a + b) % 2 },
-        Identity: 0,
-    }
-    
-    groupCat.AddObject(groupZ)
-    groupCat.AddObject(groupZ2)
-    
-    // 创建群同态（模2映射）
-    phi := &GroupMorphism{
-        ID:       "phi",
-        Domain:   groupZ,
-        Codomain: groupZ2,
-        Function: map[int]int{
-            0: 0,
-            1: 1,
-            -1: 1,
-            2: 0,
-            -2: 0,
-        },
-    }
-    
-    groupCat.AddMorphism(phi)
-    
-    fmt.Println("群范畴示例")
-    fmt.Printf("群Z: %v\n", groupZ.Elements)
-    fmt.Printf("群Z2: %v\n", groupZ2.Elements)
-    fmt.Printf("同态phi: %v\n", phi.Function)
-    
-    // 检查是否为满态射
-    isEpi := groupCat.IsEpimorphism(phi)
-    fmt.Printf("phi是否为满态射: %v\n", isEpi)
 }
 ```
 
-### 5.3 编程语言应用
+## 6. 性能分析
+
+### 6.1 时间复杂度
+
+- **对象查找**: $O(1)$ (使用哈希表)
+- **态射查找**: $O(1)$ (使用哈希表)
+- **态射复合**: $O(1)$ (直接操作)
+- **函子应用**: $O(1)$ (映射查找)
+
+### 6.2 空间复杂度
+
+- **范畴存储**: $O(|Ob| + |Mor|)$
+- **函子存储**: $O(|Ob| + |Mor|)$
+- **态射复合**: $O(1)$
+
+### 6.3 基准测试
 
 ```go
-// TypeObject 类型对象
-type TypeObject struct {
-    ID   string
-    Name string
-}
-
-func (t *TypeObject) ID() string {
-    return t.ID
-}
-
-// FunctionMorphism 函数态射
-type FunctionMorphism struct {
-    ID       string
-    Domain   *TypeObject
-    Codomain *TypeObject
-    Function interface{} // 实际的Go函数
-}
-
-// TypeCategory 类型范畴
-func CreateTypeCategory() *Category {
-    typeCat := NewCategory("Type")
+func BenchmarkCategoryOperations(b *testing.B) {
+    cat := NewCategory("Benchmark")
     
-    // 定义复合函数
-    typeCat.Compose = func(f, g *Morphism) (*Morphism, error) {
-        if f.Codomain != g.Domain {
-            return nil, fmt.Errorf("cannot compose")
-        }
-        
-        funcF := f.(*FunctionMorphism)
-        funcG := g.(*FunctionMorphism)
-        
-        // 在实际应用中，这里会进行函数复合
-        composedID := fmt.Sprintf("%s_%s", f.ID, g.ID)
-        return &FunctionMorphism{
-            ID:       composedID,
-            Domain:   funcF.Domain,
-            Codomain: funcG.Codomain,
-            Function: "composed function",
-        }, nil
-    }
+    // 预创建对象和态射
+    objects := make([]Object, 1000)
+    morphisms := make([]Morphism, 1000)
     
-    // 定义单位态射
-    typeCat.Identity = func(obj Object) *Morphism {
-        return &FunctionMorphism{
-            ID:       fmt.Sprintf("id_%s", obj.ID()),
-            Domain:   obj.(*TypeObject),
-            Codomain: obj.(*TypeObject),
-            Function: "identity function",
+    for i := 0; i < 1000; i++ {
+        obj := NewConcreteObject(fmt.Sprintf("obj%d", i), fmt.Sprintf("Object %d", i))
+        objects[i] = obj
+        cat.AddObject(obj)
+        
+        if i > 0 {
+            morph := NewConcreteMorphism(fmt.Sprintf("morph%d", i), objects[i-1], obj)
+            morphisms[i] = morph
+            cat.AddMorphism(morph)
         }
     }
     
-    return typeCat
-}
-
-// ProgrammingLanguageExample 编程语言应用示例
-func ProgrammingLanguageExample() {
-    typeCat := CreateTypeCategory()
+    b.ResetTimer()
     
-    // 创建类型对象
-    intType := &TypeObject{ID: "int", Name: "int"}
-    stringType := &TypeObject{ID: "string", Name: "string"}
-    boolType := &TypeObject{ID: "bool", Name: "bool"}
+    b.Run("ObjectLookup", func(b *testing.B) {
+        for i := 0; i < b.N; i++ {
+            cat.GetObject("obj500")
+        }
+    })
     
-    typeCat.AddObject(intType)
-    typeCat.AddObject(stringType)
-    typeCat.AddObject(boolType)
+    b.Run("MorphismLookup", func(b *testing.B) {
+        for i := 0; i < b.N; i++ {
+            cat.GetMorphism("morph500")
+        }
+    })
     
-    // 创建函数态射
-    toString := &FunctionMorphism{
-        ID:       "toString",
-        Domain:   intType,
-        Codomain: stringType,
-        Function: func(x int) string { return fmt.Sprintf("%d", x) },
-    }
-    
-    isPositive := &FunctionMorphism{
-        ID:       "isPositive",
-        Domain:   intType,
-        Codomain: boolType,
-        Function: func(x int) bool { return x > 0 },
-    }
-    
-    typeCat.AddMorphism(toString)
-    typeCat.AddMorphism(isPositive)
-    
-    fmt.Println("编程语言应用示例")
-    fmt.Printf("类型: %s, %s, %s\n", intType.Name, stringType.Name, boolType.Name)
-    fmt.Printf("函数: %s, %s\n", toString.ID, isPositive.ID)
-    
-    // 演示函子
-    listFunctor := NewFunctor("List", typeCat, typeCat)
-    
-    // 映射对象
-    listFunctor.MapObject(intType, &TypeObject{ID: "[]int", Name: "[]int"})
-    listFunctor.MapObject(stringType, &TypeObject{ID: "[]string", Name: "[]string"})
-    listFunctor.MapObject(boolType, &TypeObject{ID: "[]bool", Name: "[]bool"})
-    
-    fmt.Println("List函子:")
-    for objID, targetObj := range listFunctor.ObjectMap {
-        fmt.Printf("  %s -> %s\n", objID, targetObj.ID())
-    }
+    b.Run("Composition", func(b *testing.B) {
+        for i := 0; i < b.N; i++ {
+            if i < len(morphisms)-1 {
+                cat.ComposeMorphisms(morphisms[i], morphisms[i+1])
+            }
+        }
+    })
 }
 ```
 
-## 总结
+## 7. 参考文献
 
-范畴论是数学的基础理论，提供了：
-
-1. **抽象结构**: 统一处理各种数学结构
-2. **函子理论**: 研究结构之间的映射
-3. **自然变换**: 研究函子之间的关系
-4. **广泛应用**: 在代数、拓扑、逻辑、计算机科学等领域有重要应用
-
-通过Go语言的实现，我们展示了：
-
-- 范畴、对象、态射的数据结构表示
-- 函子的实现和复合
-- 自然变换的定义和验证
-- 集合范畴、群范畴、类型范畴等具体应用
-
-这为后续的极限和余极限、伴随函子等更高级的范畴论概念奠定了基础。
+1. Mac Lane, S. (1998). *Categories for the Working Mathematician*. Springer-Verlag.
+2. Awodey, S. (2010). *Category Theory*. Oxford University Press.
+3. Barr, M., & Wells, C. (1995). *Category Theory for Computing Science*. Prentice Hall.
+4. Pierce, B. C. (1991). *Basic Category Theory for Computer Scientists*. MIT Press.
+5. Spivak, D. I. (2014). *Category Theory for the Sciences*. MIT Press.
