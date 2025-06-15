@@ -1,620 +1,949 @@
 # 03-图论 (Graph Theory)
 
-## 概述
+## 目录
 
-图论是数学的一个分支，研究图（Graph）的数学性质。图由顶点（Vertex）和边（Edge）组成，是描述对象之间关系的重要数学工具。在计算机科学中，图论广泛应用于算法设计、网络分析、数据结构等领域。
+- [03-图论 (Graph Theory)](#03-图论-graph-theory)
+  - [目录](#目录)
+  - [1. 基础概念](#1-基础概念)
+    - [1.1 图的定义](#11-图的定义)
+    - [1.2 图的类型](#12-图的类型)
+    - [1.3 基本术语](#13-基本术语)
+  - [2. 图的表示](#2-图的表示)
+    - [2.1 邻接矩阵](#21-邻接矩阵)
+    - [2.2 邻接表](#22-邻接表)
+    - [2.3 边列表](#23-边列表)
+  - [3. 图算法](#3-图算法)
+    - [3.1 深度优先搜索](#31-深度优先搜索)
+    - [3.2 广度优先搜索](#32-广度优先搜索)
+    - [3.3 最短路径算法](#33-最短路径算法)
+    - [3.4 最小生成树](#34-最小生成树)
+  - [4. 图论定理](#4-图论定理)
+    - [4.1 欧拉定理](#41-欧拉定理)
+    - [4.2 哈密顿定理](#42-哈密顿定理)
+    - [4.3 四色定理](#43-四色定理)
+  - [5. 应用领域](#5-应用领域)
+    - [5.1 网络分析](#51-网络分析)
+    - [5.2 社交网络](#52-社交网络)
+    - [5.3 路由算法](#53-路由算法)
+  - [6. 总结](#6-总结)
+  - [参考文献](#参考文献)
 
-## 1. 基本概念
+## 1. 基础概念
 
 ### 1.1 图的定义
 
-**定义 1.1** (图)
-一个图 $G = (V, E)$ 由以下两部分组成：
+**定义 1.1** (图): 图 $G = (V, E)$ 是一个有序对，其中：
+- $V$ 是顶点集 (vertex set)，$V \neq \emptyset$
+- $E$ 是边集 (edge set)，$E \subseteq V \times V$
 
-- $V$ 是顶点的有限集合，称为顶点集（Vertex Set）
-- $E$ 是边的集合，每条边连接两个顶点，称为边集（Edge Set）
+**定义 1.2** (有向图): 有向图 $G = (V, E)$ 中，边是有序对 $(u, v) \in E$，表示从顶点 $u$ 到顶点 $v$ 的有向边。
 
-**形式化定义**：
-
-```latex
-G = (V, E) \text{ where } E \subseteq V \times V
-```
+**定义 1.3** (无向图): 无向图 $G = (V, E)$ 中，边是无序对 $\{u, v\} \in E$，表示顶点 $u$ 和 $v$ 之间的无向边。
 
 ### 1.2 图的类型
 
-#### 1.2.1 无向图 (Undirected Graph)
+```go
+// 图的基本类型定义
+type GraphType int
 
-**定义 1.2** (无向图)
-在无向图中，边没有方向，$(u,v) \in E$ 表示顶点 $u$ 和 $v$ 之间有一条边。
+const (
+    UndirectedGraph GraphType = iota
+    DirectedGraph
+    WeightedGraph
+    BipartiteGraph
+    Tree
+    DAG // Directed Acyclic Graph
+)
 
-**性质**：
+// 顶点接口
+type Vertex interface {
+    ID() int
+    String() string
+}
 
-- 对称性：$(u,v) \in E \Leftrightarrow (v,u) \in E$
-- 自环：$(v,v) \in E$ 称为自环
+// 边接口
+type Edge interface {
+    From() Vertex
+    To() Vertex
+    Weight() float64
+    String() string
+}
 
-#### 1.2.2 有向图 (Directed Graph)
+// 基础图结构
+type Graph struct {
+    vertices map[int]Vertex
+    edges    map[int]map[int]Edge
+    graphType GraphType
+    directed  bool
+    weighted  bool
+}
 
-**定义 1.3** (有向图)
-在有向图中，边有方向，$(u,v) \in E$ 表示从顶点 $u$ 到顶点 $v$ 有一条有向边。
+// 创建新图
+func NewGraph(graphType GraphType) *Graph {
+    return &Graph{
+        vertices: make(map[int]Vertex),
+        edges:    make(map[int]map[int]Edge),
+        graphType: graphType,
+        directed:  graphType == DirectedGraph || graphType == DAG,
+        weighted:  graphType == WeightedGraph,
+    }
+}
+```
 
-**性质**：
+### 1.3 基本术语
 
-- 非对称性：$(u,v) \in E$ 不一定意味着 $(v,u) \in E$
-- 入度和出度：每个顶点有入度和出度
+**定义 1.4** (度数): 顶点 $v$ 的度数 $deg(v)$ 是与 $v$ 相邻的边数。
 
-### 1.3 图的基本性质
-
-#### 1.3.1 度数 (Degree)
-
-**定义 1.4** (度数)
-顶点 $v$ 的度数 $deg(v)$ 是与该顶点相连的边的数量。
-
-**定理 1.1** (握手定理)
-对于任意图 $G = (V, E)$，所有顶点的度数之和等于边数的两倍：
-
+**定理 1.1** (握手定理): 对于任意图 $G = (V, E)$，
 $$\sum_{v \in V} deg(v) = 2|E|$$
 
-**证明**：
-每条边贡献给两个顶点的度数，因此所有度数之和等于边数的两倍。
+**证明**: 每条边贡献给两个顶点的度数，因此所有顶点的度数之和等于边数的两倍。
 
-#### 1.3.2 路径和连通性
+```go
+// 度数计算
+func (g *Graph) Degree(vertexID int) int {
+    if g.directed {
+        return g.InDegree(vertexID) + g.OutDegree(vertexID)
+    }
+    
+    if neighbors, exists := g.edges[vertexID]; exists {
+        return len(neighbors)
+    }
+    return 0
+}
 
-**定义 1.5** (路径)
-图 $G$ 中的路径是顶点序列 $v_0, v_1, \ldots, v_k$，其中 $(v_i, v_{i+1}) \in E$ 对所有 $0 \leq i < k$ 成立。
+// 入度 (有向图)
+func (g *Graph) InDegree(vertexID int) int {
+    if !g.directed {
+        return g.Degree(vertexID)
+    }
+    
+    count := 0
+    for _, neighbors := range g.edges {
+        if _, exists := neighbors[vertexID]; exists {
+            count++
+        }
+    }
+    return count
+}
 
-**定义 1.6** (连通图)
-无向图 $G$ 是连通的，当且仅当任意两个顶点之间都存在路径。
+// 出度 (有向图)
+func (g *Graph) OutDegree(vertexID int) int {
+    if !g.directed {
+        return g.Degree(vertexID)
+    }
+    
+    if neighbors, exists := g.edges[vertexID]; exists {
+        return len(neighbors)
+    }
+    return 0
+}
+```
 
 ## 2. 图的表示
 
-### 2.1 邻接矩阵 (Adjacency Matrix)
+### 2.1 邻接矩阵
 
-**定义 2.1** (邻接矩阵)
-图 $G = (V, E)$ 的邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵，其中：
-
+**定义 2.1** (邻接矩阵): 对于图 $G = (V, E)$，邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵，其中：
 $$A[i][j] = \begin{cases}
 1 & \text{if } (i,j) \in E \\
 0 & \text{otherwise}
 \end{cases}$$
 
-### 2.2 邻接表 (Adjacency List)
-
-**定义 2.2** (邻接表)
-图 $G = (V, E)$ 的邻接表是一个数组，其中每个元素是一个链表，存储与该顶点相邻的所有顶点。
-
-## 3. Go语言实现
-
-### 3.1 图的基本结构
-
 ```go
-package graph
-
-import (
-    "fmt"
-    "math"
-)
-
-// Vertex 表示图中的顶点
-type Vertex struct {
-    ID   int
-    Data interface{}
+// 邻接矩阵表示
+type AdjacencyMatrix struct {
+    matrix [][]int
+    size   int
 }
 
-// Edge 表示图中的边
-type Edge struct {
-    From   int
-    To     int
-    Weight float64
+func NewAdjacencyMatrix(size int) *AdjacencyMatrix {
+    matrix := make([][]int, size)
+    for i := range matrix {
+        matrix[i] = make([]int, size)
+    }
+    return &AdjacencyMatrix{matrix: matrix, size: size}
 }
 
-// Graph 表示图的基本结构
-type Graph struct {
-    vertices map[int]*Vertex
-    edges    map[int][]Edge
-    directed bool
-}
-
-// NewGraph 创建新的图
-func NewGraph(directed bool) *Graph {
-    return &Graph{
-        vertices: make(map[int]*Vertex),
-        edges:    make(map[int][]Edge),
-        directed: directed,
+func (am *AdjacencyMatrix) AddEdge(from, to int) {
+    if from >= 0 && from < am.size && to >= 0 && to < am.size {
+        am.matrix[from][to] = 1
     }
 }
 
-// AddVertex 添加顶点
-func (g *Graph) AddVertex(id int, data interface{}) {
-    g.vertices[id] = &Vertex{ID: id, Data: data}
-    if g.edges[id] == nil {
-        g.edges[id] = make([]Edge, 0)
+func (am *AdjacencyMatrix) HasEdge(from, to int) bool {
+    if from >= 0 && from < am.size && to >= 0 && to < am.size {
+        return am.matrix[from][to] == 1
     }
+    return false
 }
 
-// AddEdge 添加边
-func (g *Graph) AddEdge(from, to int, weight float64) {
-    edge := Edge{From: from, To: to, Weight: weight}
-    g.edges[from] = append(g.edges[from], edge)
-
-    // 如果是无向图，添加反向边
-    if !g.directed {
-        reverseEdge := Edge{From: to, To: from, Weight: weight}
-        g.edges[to] = append(g.edges[to], reverseEdge)
-    }
-}
-
-// GetDegree 获取顶点的度数
-func (g *Graph) GetDegree(vertexID int) int {
-    if edges, exists := g.edges[vertexID]; exists {
-        return len(edges)
-    }
-    return 0
-}
-
-// GetTotalDegree 获取所有顶点的度数之和
-func (g *Graph) GetTotalDegree() int {
-    total := 0
-    for _, edges := range g.edges {
-        total += len(edges)
-    }
-    return total
-}
+// 时间复杂度分析
+// 空间复杂度: O(V²)
+// 添加边: O(1)
+// 检查边: O(1)
+// 遍历邻居: O(V)
 ```
 
-### 3.2 图的遍历算法
+### 2.2 邻接表
 
-#### 3.2.1 深度优先搜索 (DFS)
-
-**算法描述**：
-深度优先搜索从起始顶点开始，沿着图的边尽可能深入地访问顶点，直到无法继续前进，然后回溯。
-
-**时间复杂度**：$O(|V| + |E|)$
+**定义 2.2** (邻接表): 邻接表是图的另一种表示方法，为每个顶点维护一个邻居列表。
 
 ```go
-// DFS 深度优先搜索
-func (g *Graph) DFS(startID int) []int {
-    visited := make(map[int]bool)
-    result := make([]int, 0)
+// 邻接表表示
+type AdjacencyList struct {
+    vertices map[int][]int
+    size     int
+}
 
-    var dfs func(int)
-    dfs = func(vertexID int) {
-        if visited[vertexID] {
+func NewAdjacencyList() *AdjacencyList {
+    return &AdjacencyList{
+        vertices: make(map[int][]int),
+        size:     0,
+    }
+}
+
+func (al *AdjacencyList) AddVertex(vertexID int) {
+    if _, exists := al.vertices[vertexID]; !exists {
+        al.vertices[vertexID] = []int{}
+        al.size++
+    }
+}
+
+func (al *AdjacencyList) AddEdge(from, to int) {
+    al.AddVertex(from)
+    al.AddVertex(to)
+    
+    // 检查边是否已存在
+    for _, neighbor := range al.vertices[from] {
+        if neighbor == to {
             return
         }
+    }
+    
+    al.vertices[from] = append(al.vertices[from], to)
+}
 
+func (al *AdjacencyList) GetNeighbors(vertexID int) []int {
+    if neighbors, exists := al.vertices[vertexID]; exists {
+        return neighbors
+    }
+    return []int{}
+}
+
+// 时间复杂度分析
+// 空间复杂度: O(V + E)
+// 添加边: O(1) 平均情况
+// 检查边: O(deg(v))
+// 遍历邻居: O(deg(v))
+```
+
+### 2.3 边列表
+
+**定义 2.3** (边列表): 边列表是图的简单表示方法，直接存储所有边。
+
+```go
+// 边列表表示
+type EdgeList struct {
+    edges []Edge
+    size  int
+}
+
+type SimpleEdge struct {
+    from   int
+    to     int
+    weight float64
+}
+
+func (se SimpleEdge) From() Vertex {
+    return &SimpleVertex{id: se.from}
+}
+
+func (se SimpleEdge) To() Vertex {
+    return &SimpleVertex{id: se.to}
+}
+
+func (se SimpleEdge) Weight() float64 {
+    return se.weight
+}
+
+func (se SimpleEdge) String() string {
+    return fmt.Sprintf("(%d -> %d, weight: %.2f)", se.from, se.to, se.weight)
+}
+
+type SimpleVertex struct {
+    id int
+}
+
+func (sv SimpleVertex) ID() int {
+    return sv.id
+}
+
+func (sv SimpleVertex) String() string {
+    return fmt.Sprintf("V%d", sv.id)
+}
+
+func NewEdgeList() *EdgeList {
+    return &EdgeList{
+        edges: []Edge{},
+        size:  0,
+    }
+}
+
+func (el *EdgeList) AddEdge(from, to int, weight float64) {
+    edge := &SimpleEdge{from: from, to: to, weight: weight}
+    el.edges = append(el.edges, edge)
+    el.size++
+}
+
+// 时间复杂度分析
+// 空间复杂度: O(E)
+// 添加边: O(1)
+// 检查边: O(E)
+// 遍历邻居: O(E)
+```
+
+## 3. 图算法
+
+### 3.1 深度优先搜索
+
+**算法 3.1** (深度优先搜索): DFS是一种图遍历算法，沿着图的深度优先遍历。
+
+```go
+// 深度优先搜索
+func (g *Graph) DFS(startID int) []int {
+    visited := make(map[int]bool)
+    result := []int{}
+    
+    var dfs func(vertexID int)
+    dfs = func(vertexID int) {
         visited[vertexID] = true
         result = append(result, vertexID)
-
-        for _, edge := range g.edges[vertexID] {
-            dfs(edge.To)
+        
+        if neighbors, exists := g.edges[vertexID]; exists {
+            for neighborID := range neighbors {
+                if !visited[neighborID] {
+                    dfs(neighborID)
+                }
+            }
         }
     }
-
+    
     dfs(startID)
     return result
 }
 
-// DFSIterative 迭代式深度优先搜索
+// 非递归版本
 func (g *Graph) DFSIterative(startID int) []int {
     visited := make(map[int]bool)
-    result := make([]int, 0)
+    result := []int{}
     stack := []int{startID}
-
+    
     for len(stack) > 0 {
         vertexID := stack[len(stack)-1]
         stack = stack[:len(stack)-1]
-
-        if visited[vertexID] {
-            continue
-        }
-
-        visited[vertexID] = true
-        result = append(result, vertexID)
-
-        // 将邻接顶点压入栈中（逆序以保持正确的访问顺序）
-        for i := len(g.edges[vertexID]) - 1; i >= 0; i-- {
-            neighbor := g.edges[vertexID][i].To
-            if !visited[neighbor] {
-                stack = append(stack, neighbor)
-            }
-        }
-    }
-
-    return result
-}
-```
-
-#### 3.2.2 广度优先搜索 (BFS)
-
-**算法描述**：
-广度优先搜索从起始顶点开始，先访问所有相邻顶点，然后逐层向外扩展。
-
-**时间复杂度**：$O(|V| + |E|)$
-
-```go
-// BFS 广度优先搜索
-func (g *Graph) BFS(startID int) []int {
-    visited := make(map[int]bool)
-    result := make([]int, 0)
-    queue := []int{startID}
-    visited[startID] = true
-
-    for len(queue) > 0 {
-        vertexID := queue[0]
-        queue = queue[1:]
-        result = append(result, vertexID)
-
-        for _, edge := range g.edges[vertexID] {
-            neighbor := edge.To
-            if !visited[neighbor] {
-                visited[neighbor] = true
-                queue = append(queue, neighbor)
-            }
-        }
-    }
-
-    return result
-}
-```
-
-### 3.3 最短路径算法
-
-#### 3.3.1 Dijkstra算法
-
-**算法描述**：
-Dijkstra算法用于找到从起始顶点到所有其他顶点的最短路径。
-
-**时间复杂度**：$O((|V| + |E|) \log |V|)$
-
-```go
-// Dijkstra 最短路径算法
-func (g *Graph) Dijkstra(startID int) map[int]float64 {
-    distances := make(map[int]float64)
-    visited := make(map[int]bool)
-
-    // 初始化距离
-    for vertexID := range g.vertices {
-        distances[vertexID] = math.Inf(1)
-    }
-    distances[startID] = 0
-
-    for len(visited) < len(g.vertices) {
-        // 找到未访问顶点中距离最小的
-        minVertex := -1
-        minDist := math.Inf(1)
-
-        for vertexID, dist := range distances {
-            if !visited[vertexID] && dist < minDist {
-                minDist = dist
-                minVertex = vertexID
-            }
-        }
-
-        if minVertex == -1 {
-            break
-        }
-
-        visited[minVertex] = true
-
-        // 更新邻接顶点的距离
-        for _, edge := range g.edges[minVertex] {
-            neighbor := edge.To
-            newDist := distances[minVertex] + edge.Weight
-            if newDist < distances[neighbor] {
-                distances[neighbor] = newDist
-            }
-        }
-    }
-
-    return distances
-}
-```
-
-#### 3.3.2 Floyd-Warshall算法
-
-**算法描述**：
-Floyd-Warshall算法用于找到所有顶点对之间的最短路径。
-
-**时间复杂度**：$O(|V|^3)$
-
-```go
-// FloydWarshall 全源最短路径算法
-func (g *Graph) FloydWarshall() [][]float64 {
-    n := len(g.vertices)
-    dist := make([][]float64, n)
-
-    // 初始化距离矩阵
-    for i := 0; i < n; i++ {
-        dist[i] = make([]float64, n)
-        for j := 0; j < n; j++ {
-            if i == j {
-                dist[i][j] = 0
-            } else {
-                dist[i][j] = math.Inf(1)
-            }
-        }
-    }
-
-    // 设置直接边的距离
-    for vertexID, edges := range g.edges {
-        for _, edge := range edges {
-            dist[vertexID][edge.To] = edge.Weight
-        }
-    }
-
-    // Floyd-Warshall算法核心
-    for k := 0; k < n; k++ {
-        for i := 0; i < n; i++ {
-            for j := 0; j < n; j++ {
-                if dist[i][k] != math.Inf(1) && dist[k][j] != math.Inf(1) {
-                    if dist[i][k]+dist[k][j] < dist[i][j] {
-                        dist[i][j] = dist[i][k] + dist[k][j]
+        
+        if !visited[vertexID] {
+            visited[vertexID] = true
+            result = append(result, vertexID)
+            
+            if neighbors, exists := g.edges[vertexID]; exists {
+                for neighborID := range neighbors {
+                    if !visited[neighborID] {
+                        stack = append(stack, neighborID)
                     }
                 }
             }
         }
     }
-
-    return dist
-}
-```
-
-### 3.4 最小生成树算法
-
-#### 3.4.1 Kruskal算法
-
-**算法描述**：
-Kruskal算法用于找到无向连通图的最小生成树。
-
-**时间复杂度**：$O(|E| \log |E|)$
-
-```go
-// Edge 用于Kruskal算法
-type KruskalEdge struct {
-    From   int
-    To     int
-    Weight float64
-}
-
-// Kruskal 最小生成树算法
-func (g *Graph) Kruskal() []Edge {
-    // 收集所有边
-    edges := make([]KruskalEdge, 0)
-    for vertexID, edgeList := range g.edges {
-        for _, edge := range edgeList {
-            if !g.directed || edge.From < edge.To { // 避免重复边
-                edges = append(edges, KruskalEdge{
-                    From:   edge.From,
-                    To:     edge.To,
-                    Weight: edge.Weight,
-                })
-            }
-        }
-    }
-
-    // 按权重排序
-    sort.Slice(edges, func(i, j int) bool {
-        return edges[i].Weight < edges[j].Weight
-    })
-
-    // 并查集
-    parent := make(map[int]int)
-    rank := make(map[int]int)
-
-    // 初始化并查集
-    for vertexID := range g.vertices {
-        parent[vertexID] = vertexID
-        rank[vertexID] = 0
-    }
-
-    // 查找根节点
-    find := func(x int) int {
-        if parent[x] != x {
-            parent[x] = find(parent[x])
-        }
-        return parent[x]
-    }
-
-    // 合并两个集合
-    union := func(x, y int) bool {
-        rootX := find(x)
-        rootY := find(y)
-
-        if rootX == rootY {
-            return false
-        }
-
-        if rank[rootX] < rank[rootY] {
-            parent[rootX] = rootY
-        } else if rank[rootX] > rank[rootY] {
-            parent[rootY] = rootX
-        } else {
-            parent[rootY] = rootX
-            rank[rootX]++
-        }
-        return true
-    }
-
-    // Kruskal算法核心
-    mst := make([]Edge, 0)
-    for _, edge := range edges {
-        if union(edge.From, edge.To) {
-            mst = append(mst, Edge{
-                From:   edge.From,
-                To:     edge.To,
-                Weight: edge.Weight,
-            })
-        }
-    }
-
-    return mst
-}
-```
-
-## 4. 图论定理和证明
-
-### 4.1 欧拉路径定理
-
-**定理 4.1** (欧拉路径定理)
-连通图 $G$ 存在欧拉路径当且仅当：
-- 所有顶点的度数都是偶数，或者
-- 恰好有两个顶点的度数是奇数
-
-**证明**：
-1. **必要性**：如果存在欧拉路径，那么除了起点和终点外，每个顶点被访问的次数必须是偶数。
-2. **充分性**：通过构造性证明，可以找到欧拉路径。
-
-### 4.2 哈密顿路径问题
-
-**定义 4.1** (哈密顿路径)
-哈密顿路径是经过图中每个顶点恰好一次的路径。
-
-**定理 4.2** (Dirac定理)
-如果图 $G$ 有 $n$ 个顶点，且每个顶点的度数至少为 $n/2$，则 $G$ 存在哈密顿回路。
-
-## 5. 应用实例
-
-### 5.1 社交网络分析
-
-```go
-// SocialNetwork 社交网络图
-type SocialNetwork struct {
-    *Graph
-}
-
-// NewSocialNetwork 创建社交网络
-func NewSocialNetwork() *SocialNetwork {
-    return &SocialNetwork{
-        Graph: NewGraph(false), // 无向图
-    }
-}
-
-// AddFriendship 添加朋友关系
-func (sn *SocialNetwork) AddFriendship(user1, user2 int) {
-    sn.AddEdge(user1, user2, 1.0)
-}
-
-// GetFriendsOfFriends 获取朋友的朋友
-func (sn *SocialNetwork) GetFriendsOfFriends(userID int) []int {
-    friends := make(map[int]bool)
-
-    // 获取直接朋友
-    for _, edge := range sn.edges[userID] {
-        friends[edge.To] = true
-    }
-
-    // 获取朋友的朋友
-    friendsOfFriends := make(map[int]bool)
-    for friend := range friends {
-        for _, edge := range sn.edges[friend] {
-            if edge.To != userID && !friends[edge.To] {
-                friendsOfFriends[edge.To] = true
-            }
-        }
-    }
-
-    result := make([]int, 0, len(friendsOfFriends))
-    for friend := range friendsOfFriends {
-        result = append(result, friend)
-    }
-
+    
     return result
 }
 
-// GetShortestPath 获取两个用户之间的最短路径
-func (sn *SocialNetwork) GetShortestPath(from, to int) []int {
-    distances := sn.Dijkstra(from)
-    if distances[to] == math.Inf(1) {
-        return nil
+// 时间复杂度: O(V + E)
+// 空间复杂度: O(V)
+```
+
+### 3.2 广度优先搜索
+
+**算法 3.2** (广度优先搜索): BFS是一种图遍历算法，按照层次遍历图。
+
+```go
+// 广度优先搜索
+func (g *Graph) BFS(startID int) []int {
+    visited := make(map[int]bool)
+    result := []int{}
+    queue := []int{startID}
+    visited[startID] = true
+    
+    for len(queue) > 0 {
+        vertexID := queue[0]
+        queue = queue[1:]
+        result = append(result, vertexID)
+        
+        if neighbors, exists := g.edges[vertexID]; exists {
+            for neighborID := range neighbors {
+                if !visited[neighborID] {
+                    visited[neighborID] = true
+                    queue = append(queue, neighborID)
+                }
+            }
+        }
     }
+    
+    return result
+}
 
-    // 重建路径
-    path := []int{to}
-    current := to
+// 带距离的BFS
+func (g *Graph) BFSWithDistance(startID int) map[int]int {
+    visited := make(map[int]bool)
+    distance := make(map[int]int)
+    queue := []int{startID}
+    visited[startID] = true
+    distance[startID] = 0
+    
+    for len(queue) > 0 {
+        vertexID := queue[0]
+        queue = queue[1:]
+        
+        if neighbors, exists := g.edges[vertexID]; exists {
+            for neighborID := range neighbors {
+                if !visited[neighborID] {
+                    visited[neighborID] = true
+                    distance[neighborID] = distance[vertexID] + 1
+                    queue = append(queue, neighborID)
+                }
+            }
+        }
+    }
+    
+    return distance
+}
 
-    for current != from {
-        for _, edge := range sn.edges[current] {
-            if distances[edge.To]+edge.Weight == distances[current] {
-                path = append([]int{edge.To}, path...)
-                current = edge.To
+// 时间复杂度: O(V + E)
+// 空间复杂度: O(V)
+```
+
+### 3.3 最短路径算法
+
+**算法 3.3** (Dijkstra算法): 用于计算带权图中单源最短路径。
+
+```go
+// Dijkstra算法
+func (g *Graph) Dijkstra(startID int) map[int]float64 {
+    distances := make(map[int]float64)
+    visited := make(map[int]bool)
+    
+    // 初始化距离
+    for vertexID := range g.vertices {
+        distances[vertexID] = math.Inf(1)
+    }
+    distances[startID] = 0
+    
+    // 优先队列 (使用堆)
+    pq := &PriorityQueue{}
+    heap.Push(pq, &Item{vertexID: startID, distance: 0})
+    
+    for pq.Len() > 0 {
+        item := heap.Pop(pq).(*Item)
+        vertexID := item.vertexID
+        
+        if visited[vertexID] {
+            continue
+        }
+        visited[vertexID] = true
+        
+        if neighbors, exists := g.edges[vertexID]; exists {
+            for neighborID, edge := range neighbors {
+                newDistance := distances[vertexID] + edge.Weight()
+                if newDistance < distances[neighborID] {
+                    distances[neighborID] = newDistance
+                    heap.Push(pq, &Item{vertexID: neighborID, distance: newDistance})
+                }
+            }
+        }
+    }
+    
+    return distances
+}
+
+// 优先队列实现
+type Item struct {
+    vertexID int
+    distance float64
+    index    int
+}
+
+type PriorityQueue []*Item
+
+func (pq PriorityQueue) Len() int { return len(pq) }
+
+func (pq PriorityQueue) Less(i, j int) bool {
+    return pq[i].distance < pq[j].distance
+}
+
+func (pq PriorityQueue) Swap(i, j int) {
+    pq[i], pq[j] = pq[j], pq[i]
+    pq[i].index = i
+    pq[j].index = j
+}
+
+func (pq *PriorityQueue) Push(x interface{}) {
+    n := len(*pq)
+    item := x.(*Item)
+    item.index = n
+    *pq = append(*pq, item)
+}
+
+func (pq *PriorityQueue) Pop() interface{} {
+    old := *pq
+    n := len(old)
+    item := old[n-1]
+    old[n-1] = nil
+    item.index = -1
+    *pq = old[0 : n-1]
+    return item
+}
+
+// 时间复杂度: O((V + E) log V) 使用二叉堆
+// 空间复杂度: O(V)
+```
+
+### 3.4 最小生成树
+
+**定义 3.1** (最小生成树): 对于连通无向图 $G = (V, E)$，最小生成树是包含所有顶点且边权重和最小的树。
+
+**算法 3.4** (Kruskal算法): 用于计算最小生成树。
+
+```go
+// Kruskal算法
+func (g *Graph) KruskalMST() []Edge {
+    var edges []Edge
+    
+    // 收集所有边
+    for _, neighbors := range g.edges {
+        for _, edge := range neighbors {
+            edges = append(edges, edge)
+        }
+    }
+    
+    // 按权重排序
+    sort.Slice(edges, func(i, j int) bool {
+        return edges[i].Weight() < edges[j].Weight()
+    })
+    
+    // 并查集
+    uf := NewUnionFind(len(g.vertices))
+    mst := []Edge{}
+    
+    for _, edge := range edges {
+        fromID := edge.From().ID()
+        toID := edge.To().ID()
+        
+        if uf.Find(fromID) != uf.Find(toID) {
+            mst = append(mst, edge)
+            uf.Union(fromID, toID)
+        }
+    }
+    
+    return mst
+}
+
+// 并查集实现
+type UnionFind struct {
+    parent []int
+    rank   []int
+}
+
+func NewUnionFind(size int) *UnionFind {
+    parent := make([]int, size)
+    rank := make([]int, size)
+    for i := range parent {
+        parent[i] = i
+    }
+    return &UnionFind{parent: parent, rank: rank}
+}
+
+func (uf *UnionFind) Find(x int) int {
+    if uf.parent[x] != x {
+        uf.parent[x] = uf.Find(uf.parent[x])
+    }
+    return uf.parent[x]
+}
+
+func (uf *UnionFind) Union(x, y int) {
+    rootX := uf.Find(x)
+    rootY := uf.Find(y)
+    
+    if rootX == rootY {
+        return
+    }
+    
+    if uf.rank[rootX] < uf.rank[rootY] {
+        uf.parent[rootX] = rootY
+    } else if uf.rank[rootX] > uf.rank[rootY] {
+        uf.parent[rootY] = rootX
+    } else {
+        uf.parent[rootY] = rootX
+        uf.rank[rootX]++
+    }
+}
+
+// 时间复杂度: O(E log E)
+// 空间复杂度: O(V)
+```
+
+## 4. 图论定理
+
+### 4.1 欧拉定理
+
+**定理 4.1** (欧拉定理): 连通图 $G$ 存在欧拉回路的充要条件是所有顶点的度数都是偶数。
+
+**证明**: 
+- 必要性：欧拉回路经过每条边恰好一次，每个顶点被进入和离开的次数相等。
+- 充分性：通过构造性证明，可以找到欧拉回路。
+
+```go
+// 欧拉回路检测
+func (g *Graph) HasEulerCircuit() bool {
+    // 检查连通性
+    if !g.IsConnected() {
+        return false
+    }
+    
+    // 检查所有顶点度数是否为偶数
+    for vertexID := range g.vertices {
+        if g.Degree(vertexID)%2 != 0 {
+            return false
+        }
+    }
+    
+    return true
+}
+
+// 连通性检测
+func (g *Graph) IsConnected() bool {
+    if len(g.vertices) == 0 {
+        return true
+    }
+    
+    // 从任意顶点开始DFS
+    var startID int
+    for vertexID := range g.vertices {
+        startID = vertexID
+        break
+    }
+    
+    visited := g.DFS(startID)
+    return len(visited) == len(g.vertices)
+}
+```
+
+### 4.2 哈密顿定理
+
+**定理 4.2** (哈密顿定理): 对于完全图 $K_n$，存在哈密顿回路。
+
+**证明**: 完全图中任意两个顶点都相邻，可以通过多种方式构造哈密顿回路。
+
+```go
+// 哈密顿回路检测 (NP完全问题)
+func (g *Graph) HasHamiltonianCycle() bool {
+    if len(g.vertices) < 3 {
+        return false
+    }
+    
+    // 使用回溯法
+    path := []int{}
+    visited := make(map[int]bool)
+    
+    return g.hamiltonianBacktrack(path, visited)
+}
+
+func (g *Graph) hamiltonianBacktrack(path []int, visited map[int]bool) bool {
+    if len(path) == len(g.vertices) {
+        // 检查最后一个顶点是否与起始顶点相邻
+        if len(path) > 0 {
+            first := path[0]
+            last := path[len(path)-1]
+            if g.HasEdge(last, first) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    for vertexID := range g.vertices {
+        if !visited[vertexID] {
+            if len(path) == 0 || g.HasEdge(path[len(path)-1], vertexID) {
+                visited[vertexID] = true
+                path = append(path, vertexID)
+                
+                if g.hamiltonianBacktrack(path, visited) {
+                    return true
+                }
+                
+                visited[vertexID] = false
+                path = path[:len(path)-1]
+            }
+        }
+    }
+    
+    return false
+}
+```
+
+### 4.3 四色定理
+
+**定理 4.3** (四色定理): 任何平面图都可以用四种颜色着色，使得相邻顶点颜色不同。
+
+```go
+// 图着色算法
+func (g *Graph) ColorGraph() map[int]int {
+    colors := make(map[int]int)
+    
+    for vertexID := range g.vertices {
+        // 找到可用的最小颜色
+        usedColors := make(map[int]bool)
+        
+        if neighbors, exists := g.edges[vertexID]; exists {
+            for neighborID := range neighbors {
+                if color, hasColor := colors[neighborID]; hasColor {
+                    usedColors[color] = true
+                }
+            }
+        }
+        
+        // 分配最小可用颜色
+        for color := 0; ; color++ {
+            if !usedColors[color] {
+                colors[vertexID] = color
                 break
             }
         }
     }
+    
+    return colors
+}
 
+// 检查着色是否有效
+func (g *Graph) IsValidColoring(colors map[int]int) bool {
+    for vertexID, neighbors := range g.edges {
+        vertexColor := colors[vertexID]
+        for neighborID := range neighbors {
+            if colors[neighborID] == vertexColor {
+                return false
+            }
+        }
+    }
+    return true
+}
+```
+
+## 5. 应用领域
+
+### 5.1 网络分析
+
+图论在网络分析中有广泛应用：
+
+```go
+// 网络中心性分析
+type CentralityAnalysis struct {
+    graph *Graph
+}
+
+// 度中心性
+func (ca *CentralityAnalysis) DegreeCentrality(vertexID int) float64 {
+    degree := ca.graph.Degree(vertexID)
+    totalVertices := len(ca.graph.vertices)
+    return float64(degree) / float64(totalVertices-1)
+}
+
+// 接近中心性
+func (ca *CentralityAnalysis) ClosenessCentrality(vertexID int) float64 {
+    distances := ca.graph.BFSWithDistance(vertexID)
+    totalDistance := 0
+    reachableVertices := 0
+    
+    for _, distance := range distances {
+        if distance > 0 {
+            totalDistance += distance
+            reachableVertices++
+        }
+    }
+    
+    if reachableVertices == 0 {
+        return 0
+    }
+    
+    return float64(reachableVertices) / float64(totalDistance)
+}
+
+// 介数中心性
+func (ca *CentralityAnalysis) BetweennessCentrality(vertexID int) float64 {
+    // 简化实现
+    totalPaths := 0
+    pathsThroughVertex := 0
+    
+    for startID := range ca.graph.vertices {
+        for endID := range ca.graph.vertices {
+            if startID != endID && startID != vertexID && endID != vertexID {
+                totalPaths++
+                // 检查最短路径是否经过vertexID
+                if ca.isOnShortestPath(startID, endID, vertexID) {
+                    pathsThroughVertex++
+                }
+            }
+        }
+    }
+    
+    if totalPaths == 0 {
+        return 0
+    }
+    
+    return float64(pathsThroughVertex) / float64(totalPaths)
+}
+
+func (ca *CentralityAnalysis) isOnShortestPath(start, end, vertex int) bool {
+    // 简化实现：检查vertex是否在start到end的最短路径上
+    distances := ca.graph.BFSWithDistance(start)
+    if distance, exists := distances[end]; exists && distance > 0 {
+        vertexDistance := distances[vertex]
+        return vertexDistance > 0 && vertexDistance < distance
+    }
+    return false
+}
+```
+
+### 5.2 社交网络
+
+```go
+// 社交网络分析
+type SocialNetwork struct {
+    graph *Graph
+    users map[int]*User
+}
+
+type User struct {
+    ID       int
+    Name     string
+    Friends  []int
+    Posts    []Post
+}
+
+type Post struct {
+    ID      int
+    Content string
+    Likes   int
+    Shares  int
+}
+
+// 影响力分析
+func (sn *SocialNetwork) InfluenceScore(userID int) float64 {
+    // 基于度中心性和接近中心性计算影响力
+    centrality := &CentralityAnalysis{graph: sn.graph}
+    
+    degreeCentrality := centrality.DegreeCentrality(userID)
+    closenessCentrality := centrality.ClosenessCentrality(userID)
+    
+    return (degreeCentrality + closenessCentrality) / 2.0
+}
+
+// 社区检测 (简化版)
+func (sn *SocialNetwork) DetectCommunities() [][]int {
+    visited := make(map[int]bool)
+    communities := [][]int{}
+    
+    for userID := range sn.users {
+        if !visited[userID] {
+            community := sn.DFS(userID)
+            communities = append(communities, community)
+            
+            for _, memberID := range community {
+                visited[memberID] = true
+            }
+        }
+    }
+    
+    return communities
+}
+```
+
+### 5.3 路由算法
+
+```go
+// 网络路由
+type NetworkRouter struct {
+    graph *Graph
+    routingTable map[int]map[int]int // [source][destination] -> nextHop
+}
+
+func NewNetworkRouter(graph *Graph) *NetworkRouter {
+    return &NetworkRouter{
+        graph: graph,
+        routingTable: make(map[int]map[int]int),
+    }
+}
+
+// 构建路由表
+func (nr *NetworkRouter) BuildRoutingTable() {
+    for sourceID := range nr.graph.vertices {
+        nr.routingTable[sourceID] = make(map[int]int)
+        distances := nr.graph.BFSWithDistance(sourceID)
+        
+        for destID, distance := range distances {
+            if distance > 0 {
+                // 找到下一跳
+                nextHop := nr.findNextHop(sourceID, destID)
+                nr.routingTable[sourceID][destID] = nextHop
+            }
+        }
+    }
+}
+
+func (nr *NetworkRouter) findNextHop(source, dest int) int {
+    // 简化实现：返回第一个邻居
+    if neighbors, exists := nr.graph.edges[source]; exists {
+        for neighborID := range neighbors {
+            return neighborID
+        }
+    }
+    return source
+}
+
+// 路由查找
+func (nr *NetworkRouter) Route(source, dest int) []int {
+    path := []int{source}
+    current := source
+    
+    for current != dest {
+        if nextHop, exists := nr.routingTable[current][dest]; exists {
+            path = append(path, nextHop)
+            current = nextHop
+        } else {
+            return nil // 无路径
+        }
+    }
+    
     return path
 }
 ```
 
-### 5.2 网络路由
+## 6. 总结
 
-```go
-// NetworkRouter 网络路由器
-type NetworkRouter struct {
-    *Graph
-}
+图论是计算机科学和软件工程的重要理论基础，提供了：
 
-// NewNetworkRouter 创建网络路由器
-func NewNetworkRouter() *NetworkRouter {
-    return &NetworkRouter{
-        Graph: NewGraph(true), // 有向图
-    }
-}
+1. **理论基础**: 为算法设计和分析提供数学基础
+2. **数据结构**: 邻接矩阵、邻接表等高效的图表示方法
+3. **算法设计**: DFS、BFS、最短路径、最小生成树等经典算法
+4. **应用领域**: 网络分析、社交网络、路由算法等实际应用
 
-// AddConnection 添加网络连接
-func (nr *NetworkRouter) AddConnection(from, to int, bandwidth float64) {
-    nr.AddEdge(from, to, 1.0/bandwidth) // 权重为延迟
-}
+通过Go语言的实现，我们可以：
+- 高效地表示和操作图结构
+- 实现各种图算法
+- 解决实际工程问题
+- 验证图论定理和性质
 
-// FindOptimalRoute 找到最优路由
-func (nr *NetworkRouter) FindOptimalRoute(from, to int) []int {
-    return nr.GetShortestPath(from, to)
-}
-
-// GetNetworkTopology 获取网络拓扑
-func (nr *NetworkRouter) GetNetworkTopology() map[int][]int {
-    topology := make(map[int][]int)
-    for vertexID, edges := range nr.edges {
-        neighbors := make([]int, 0, len(edges))
-        for _, edge := range edges {
-            neighbors = append(neighbors, edge.To)
-        }
-        topology[vertexID] = neighbors
-    }
-    return topology
-}
-```
-
-## 6. 性能分析
-
-### 6.1 时间复杂度分析
-
-| 算法 | 时间复杂度 | 空间复杂度 |
-|------|------------|------------|
-| DFS | $O(|V| + |E|)$ | $O(|V|)$ |
-| BFS | $O(|V| + |E|)$ | $O(|V|)$ |
-| Dijkstra | $O((|V| + |E|) \log |V|)$ | $O(|V|)$ |
-| Floyd-Warshall | $O(|V|^3)$ | $O(|V|^2)$ |
-| Kruskal | $O(|E| \log |E|)$ | $O(|V|)$ |
-
-### 6.2 空间复杂度分析
-
-- **邻接矩阵**：$O(|V|^2)$
-- **邻接表**：$O(|V| + |E|)$
-- **稀疏图**：邻接表更优
-- **稠密图**：邻接矩阵更优
-
-## 7. 总结
-
-图论是计算机科学中重要的数学基础，提供了描述和分析复杂关系的强大工具。通过Go语言的实现，我们可以：
-
-1. **高效表示**：使用邻接表或邻接矩阵表示图
-2. **快速遍历**：实现DFS和BFS算法
-3. **路径优化**：使用Dijkstra和Floyd-Warshall算法
-4. **最小生成树**：使用Kruskal算法
-5. **实际应用**：社交网络分析、网络路由等
-
-图论的理论基础和算法实现为构建复杂的软件系统提供了重要的数学支撑。
+图论为软件工程提供了强大的工具，特别是在网络应用、社交平台、路由系统等领域有广泛应用。
 
 ## 参考文献
 
