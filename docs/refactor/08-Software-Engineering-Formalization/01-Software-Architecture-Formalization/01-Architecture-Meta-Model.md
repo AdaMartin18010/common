@@ -24,6 +24,7 @@
     - [5.1 微服务架构](#51-微服务架构)
     - [5.2 分层架构](#52-分层架构)
     - [5.3 事件驱动架构](#53-事件驱动架构)
+  - [总结](#总结)
 
 ## 1. 基本概念
 
@@ -32,6 +33,7 @@
 **定义 1.1**: 软件架构元模型是一个形式化的框架，用于定义软件架构的基本概念、元素、关系和约束。
 
 **形式化表达**:
+
 - 元模型：$\mathcal{M} = (\mathcal{E}, \mathcal{R}, \mathcal{C})$
 - 其中 $\mathcal{E}$ 是架构元素集合
 - $\mathcal{R}$ 是关系集合
@@ -64,6 +66,7 @@
 $$\mathcal{E} = \mathcal{C} \cup \mathcal{I} \cup \mathcal{P} \cup \mathcal{D}$$
 
 其中：
+
 - $\mathcal{C}$: 组件集合
 - $\mathcal{I}$: 接口集合
 - $\mathcal{P}$: 端口集合
@@ -76,6 +79,7 @@ $$\mathcal{E} = \mathcal{C} \cup \mathcal{I} \cup \mathcal{P} \cup \mathcal{D}$$
 $$c = (id, type, interfaces, properties, behavior)$$
 
 其中：
+
 - $id$: 组件唯一标识符
 - $type$: 组件类型
 - $interfaces$: 接口集合
@@ -89,6 +93,7 @@ $$c = (id, type, interfaces, properties, behavior)$$
 $$i = (id, type, operations, constraints)$$
 
 其中：
+
 - $id$: 接口唯一标识符
 - $type$: 接口类型 (provided/required)
 - $operations$: 操作集合
@@ -107,6 +112,7 @@ $$\mathcal{R} = \mathcal{R}_{comp} \cup \mathcal{R}_{dep} \cup \mathcal{R}_{asso
 $$r_{comp} = (parent, child, cardinality)$$
 
 其中：
+
 - $parent \in \mathcal{E}$: 父元素
 - $child \in \mathcal{E}$: 子元素
 - $cardinality$: 基数约束
@@ -118,6 +124,7 @@ $$r_{comp} = (parent, child, cardinality)$$
 $$r_{dep} = (source, target, type, strength)$$
 
 其中：
+
 - $source \in \mathcal{E}$: 源元素
 - $target \in \mathcal{E}$: 目标元素
 - $type$: 依赖类型
@@ -132,6 +139,7 @@ $$r_{dep} = (source, target, type, strength)$$
 $$c = (scope, condition, action)$$
 
 其中：
+
 - $scope$: 约束作用域
 - $condition$: 约束条件
 - $action$: 违反约束时的动作
@@ -154,6 +162,7 @@ $$c = (scope, condition, action)$$
 $$V_{logical} = (\mathcal{E}_{logical}, \mathcal{R}_{logical}, \mathcal{C}_{logical})$$
 
 其中：
+
 - $\mathcal{E}_{logical}$: 逻辑元素集合
 - $\mathcal{R}_{logical}$: 逻辑关系集合
 - $\mathcal{C}_{logical}$: 逻辑约束集合
@@ -161,6 +170,7 @@ $$V_{logical} = (\mathcal{E}_{logical}, \mathcal{R}_{logical}, \mathcal{C}_{logi
 **定义 3.2**: 逻辑元素
 
 逻辑元素包括：
+
 - 业务组件
 - 业务接口
 - 业务数据
@@ -175,6 +185,7 @@ $$V_{logical} = (\mathcal{E}_{logical}, \mathcal{R}_{logical}, \mathcal{C}_{logi
 $$V_{physical} = (\mathcal{E}_{physical}, \mathcal{R}_{physical}, \mathcal{C}_{physical})$$
 
 其中：
+
 - $\mathcal{E}_{physical}$: 物理元素集合
 - $\mathcal{R}_{physical}$: 物理关系集合
 - $\mathcal{C}_{physical}$: 物理约束集合
@@ -182,6 +193,7 @@ $$V_{physical} = (\mathcal{E}_{physical}, \mathcal{R}_{physical}, \mathcal{C}_{p
 **定义 3.4**: 物理元素
 
 物理元素包括：
+
 - 计算节点
 - 网络连接
 - 存储设备
@@ -196,6 +208,7 @@ $$V_{physical} = (\mathcal{E}_{physical}, \mathcal{R}_{physical}, \mathcal{C}_{p
 $$V_{deployment} = (\mathcal{E}_{deployment}, \mathcal{R}_{deployment}, \mathcal{C}_{deployment})$$
 
 其中：
+
 - $\mathcal{E}_{deployment}$: 部署元素集合
 - $\mathcal{R}_{deployment}$: 部署关系集合
 - $\mathcal{C}_{deployment}$: 部署约束集合
@@ -1045,14 +1058,16 @@ func (eda *EventDrivenArchitecture) BuildArchitecture() {
 架构元模型为软件架构提供了形式化的理论基础，通过Go语言的实现，我们可以构建强大的架构建模、验证和分析工具。这些工具在大型软件系统的设计和维护中具有重要价值。
 
 **关键特性**:
+
 - 完整的架构元素和关系定义
 - 多视图架构支持
 - 架构验证和分析功能
 - 实际架构模式的示例
 
 **应用领域**:
+
 - 企业架构设计
 - 系统集成
 - 架构重构
 - 质量保证
-- 技术决策支持 
+- 技术决策支持
