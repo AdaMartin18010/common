@@ -4,26 +4,32 @@
 
 - [02-逻辑基础 (Logic Foundation)](#02-逻辑基础-logic-foundation)
   - [目录](#目录)
-  - [1. 命题逻辑](#1-命题逻辑)
+  - [1. 命题逻辑 (Propositional Logic)](#1-命题逻辑-propositional-logic)
     - [1.1 基本概念](#11-基本概念)
-    - [1.2 形式化定义](#12-形式化定义)
-    - [1.3 推理规则](#13-推理规则)
-  - [2. 谓词逻辑](#2-谓词逻辑)
+    - [1.2 语法](#12-语法)
+    - [1.3 语义](#13-语义)
+    - [1.4 推理规则](#14-推理规则)
+  - [2. 谓词逻辑 (Predicate Logic)](#2-谓词逻辑-predicate-logic)
     - [2.1 基本概念](#21-基本概念)
-    - [2.2 形式化定义](#22-形式化定义)
-    - [2.3 量词](#23-量词)
-  - [3. 模态逻辑](#3-模态逻辑)
+    - [2.2 语法](#22-语法)
+    - [2.3 语义](#23-语义)
+    - [2.4 推理规则](#24-推理规则)
+  - [3. 模态逻辑 (Modal Logic)](#3-模态逻辑-modal-logic)
     - [3.1 基本概念](#31-基本概念)
-    - [3.2 可能世界语义](#32-可能世界语义)
-    - [3.3 模态系统](#33-模态系统)
-  - [4. 时态逻辑](#4-时态逻辑)
+    - [3.2 语法](#32-语法)
+    - [3.3 语义](#33-语义)
+    - [3.4 系统](#34-系统)
+  - [4. 时态逻辑 (Temporal Logic)](#4-时态逻辑-temporal-logic)
     - [4.1 基本概念](#41-基本概念)
     - [4.2 线性时态逻辑](#42-线性时态逻辑)
     - [4.3 分支时态逻辑](#43-分支时态逻辑)
+    - [4.4 模型检验](#44-模型检验)
   - [5. Go语言实现](#5-go语言实现)
-    - [5.1 逻辑表达式](#51-逻辑表达式)
-    - [5.2 推理引擎](#52-推理引擎)
-    - [5.3 模型检查](#53-模型检查)
+    - [5.1 命题逻辑实现](#51-命题逻辑实现)
+    - [5.2 真值表生成](#52-真值表生成)
+    - [5.3 谓词逻辑实现](#53-谓词逻辑实现)
+    - [5.4 时态逻辑实现](#54-时态逻辑实现)
+    - [5.5 使用示例](#55-使用示例)
   - [6. 应用场景](#6-应用场景)
     - [6.1 程序验证](#61-程序验证)
     - [6.2 人工智能](#62-人工智能)
@@ -31,146 +37,279 @@
     - [6.4 硬件设计](#64-硬件设计)
   - [7. 总结](#7-总结)
 
-## 1. 命题逻辑
+## 1. 命题逻辑 (Propositional Logic)
 
 ### 1.1 基本概念
 
-**定义 1.1** (命题): 命题是一个具有确定真值的陈述句。
+**定义 1.1**: 命题
+命题是一个可以判断真假的陈述句。
 
-**定义 1.2** (原子命题): 原子命题是不可再分解的基本命题，用命题符号 $p, q, r, \ldots$ 表示。
+**定义 1.2**: 原子命题
+原子命题是最基本的命题，不能再分解为更简单的命题。
 
-**定义 1.3** (复合命题): 复合命题是由原子命题通过逻辑连接词构成的命题。
+**定义 1.3**: 复合命题
+复合命题是由原子命题通过逻辑连接词构成的命题。
 
-### 1.2 形式化定义
+### 1.2 语法
 
-**定义 1.4** (命题逻辑语言): 命题逻辑语言 $\mathcal{L}$ 由以下部分组成：
+**定义 1.4**: 命题逻辑语言
+命题逻辑语言由以下部分组成：
+- 命题变元集合 $P = \{p, q, r, \ldots\}$
+- 逻辑连接词：$\neg$（否定）、$\wedge$（合取）、$\vee$（析取）、$\rightarrow$（蕴含）、$\leftrightarrow$（等价）
+- 辅助符号：$($ 和 $)$
 
-- 命题符号集 $\mathcal{P} = \{p, q, r, \ldots\}$
-- 逻辑连接词: $\neg$ (否定), $\wedge$ (合取), $\vee$ (析取), $\rightarrow$ (蕴含), $\leftrightarrow$ (等价)
-- 辅助符号: $(, )$
+**定义 1.5**: 合式公式
+合式公式（well-formed formula）递归定义如下：
+1. 每个命题变元 $p \in P$ 是合式公式
+2. 如果 $\phi$ 是合式公式，则 $\neg\phi$ 是合式公式
+3. 如果 $\phi$ 和 $\psi$ 是合式公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是合式公式
+4. 只有通过上述规则构造的表达式才是合式公式
 
-**定义 1.5** (合式公式): 合式公式递归定义如下：
+### 1.3 语义
 
-1. 每个命题符号 $p \in \mathcal{P}$ 是合式公式
-2. 如果 $\phi$ 是合式公式，则 $\neg \phi$ 是合式公式
-3. 如果 $\phi$ 和 $\psi$ 是合式公式，则 $(\phi \wedge \psi)$, $(\phi \vee \psi)$, $(\phi \rightarrow \psi)$, $(\phi \leftrightarrow \psi)$ 是合式公式
+**定义 1.6**: 真值赋值
+真值赋值是一个函数 $v: P \rightarrow \{T, F\}$，其中 $T$ 表示真，$F$ 表示假。
 
-### 1.3 推理规则
+**定义 1.7**: 真值函数
+真值函数 $\overline{v}$ 递归定义如下：
+1. $\overline{v}(p) = v(p)$ 对于 $p \in P$
+2. $\overline{v}(\neg\phi) = T$ 当且仅当 $\overline{v}(\phi) = F$
+3. $\overline{v}(\phi \wedge \psi) = T$ 当且仅当 $\overline{v}(\phi) = T$ 且 $\overline{v}(\psi) = T$
+4. $\overline{v}(\phi \vee \psi) = T$ 当且仅当 $\overline{v}(\phi) = T$ 或 $\overline{v}(\psi) = T$
+5. $\overline{v}(\phi \rightarrow \psi) = T$ 当且仅当 $\overline{v}(\phi) = F$ 或 $\overline{v}(\psi) = T$
+6. $\overline{v}(\phi \leftrightarrow \psi) = T$ 当且仅当 $\overline{v}(\phi) = \overline{v}(\psi)$
 
-**公理 1.1** (命题逻辑公理):
+**定义 1.8**: 重言式、矛盾式和可满足式
+- 公式 $\phi$ 是重言式（tautology），如果对于所有真值赋值 $v$，$\overline{v}(\phi) = T$
+- 公式 $\phi$ 是矛盾式（contradiction），如果对于所有真值赋值 $v$，$\overline{v}(\phi) = F$
+- 公式 $\phi$ 是可满足式（satisfiable），如果存在真值赋值 $v$ 使得 $\overline{v}(\phi) = T$
 
-1. $\phi \rightarrow (\psi \rightarrow \phi)$
-2. $(\phi \rightarrow (\psi \rightarrow \chi)) \rightarrow ((\phi \rightarrow \psi) \rightarrow (\phi \rightarrow \chi))$
-3. $(\neg \phi \rightarrow \neg \psi) \rightarrow (\psi \rightarrow \phi)$
+### 1.4 推理规则
 
-**推理规则 1.1** (分离规则): 从 $\phi$ 和 $\phi \rightarrow \psi$ 可以推出 $\psi$。
+**定义 1.9**: 推理规则
+常用的推理规则包括：
 
-## 2. 谓词逻辑
+1. **假言推理（Modus Ponens）**：
+   $$\frac{\phi \rightarrow \psi \quad \phi}{\psi}$$
+
+2. **假言三段论**：
+   $$\frac{\phi \rightarrow \psi \quad \psi \rightarrow \chi}{\phi \rightarrow \chi}$$
+
+3. **合取引入**：
+   $$\frac{\phi \quad \psi}{\phi \wedge \psi}$$
+
+4. **合取消除**：
+   $$\frac{\phi \wedge \psi}{\phi} \quad \frac{\phi \wedge \psi}{\psi}$$
+
+5. **析取引入**：
+   $$\frac{\phi}{\phi \vee \psi} \quad \frac{\psi}{\phi \vee \psi}$$
+
+**定理 1.1**: 德摩根律
+对于任意公式 $\phi$ 和 $\psi$：
+1. $\neg(\phi \wedge \psi) \equiv \neg\phi \vee \neg\psi$
+2. $\neg(\phi \vee \psi) \equiv \neg\phi \wedge \neg\psi$
+
+## 2. 谓词逻辑 (Predicate Logic)
 
 ### 2.1 基本概念
 
-**定义 2.1** (谓词): 谓词是描述对象性质或关系的符号。
+**定义 2.1**: 谓词
+谓词是描述对象性质或关系的符号。
 
-**定义 2.2** (个体): 个体是论域中的对象，用个体常项或个体变项表示。
+**定义 2.2**: 量词
+- 全称量词 $\forall$：表示"对于所有"
+- 存在量词 $\exists$：表示"存在"
 
-**定义 2.3** (量词): 量词包括全称量词 $\forall$ 和存在量词 $\exists$。
-
-### 2.2 形式化定义
-
-**定义 2.4** (一阶逻辑语言): 一阶逻辑语言 $\mathcal{L}$ 包含：
-
-- 个体常项集 $\mathcal{C}$
-- 个体变项集 $\mathcal{V}$
-- 谓词符号集 $\mathcal{P}$
-- 函数符号集 $\mathcal{F}$
-- 逻辑连接词和量词
-
-**定义 2.5** (项): 项递归定义如下：
-
-1. 每个个体常项和个体变项是项
+**定义 2.3**: 项
+项递归定义如下：
+1. 变量和常量是项
 2. 如果 $f$ 是 $n$ 元函数符号，$t_1, \ldots, t_n$ 是项，则 $f(t_1, \ldots, t_n)$ 是项
 
-**定义 2.6** (原子公式): 如果 $P$ 是 $n$ 元谓词符号，$t_1, \ldots, t_n$ 是项，则 $P(t_1, \ldots, t_n)$ 是原子公式。
+### 2.2 语法
 
-### 2.3 量词
+**定义 2.4**: 一阶逻辑语言
+一阶逻辑语言由以下部分组成：
+- 变量集合 $V = \{x, y, z, \ldots\}$
+- 常量集合 $C = \{a, b, c, \ldots\}$
+- 函数符号集合 $F = \{f, g, h, \ldots\}$
+- 谓词符号集合 $P = \{P, Q, R, \ldots\}$
+- 逻辑连接词：$\neg, \wedge, \vee, \rightarrow, \leftrightarrow$
+- 量词：$\forall, \exists$
+- 辅助符号：$($ 和 $)$
 
-**定义 2.7** (全称量词): $\forall x \phi$ 表示"对所有 $x$，$\phi$ 成立"。
+**定义 2.5**: 原子公式
+如果 $P$ 是 $n$ 元谓词符号，$t_1, \ldots, t_n$ 是项，则 $P(t_1, \ldots, t_n)$ 是原子公式。
 
-**定义 2.8** (存在量词): $\exists x \phi$ 表示"存在 $x$，使得 $\phi$ 成立"。
+**定义 2.6**: 合式公式
+合式公式递归定义如下：
+1. 每个原子公式是合式公式
+2. 如果 $\phi$ 是合式公式，则 $\neg\phi$ 是合式公式
+3. 如果 $\phi$ 和 $\psi$ 是合式公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是合式公式
+4. 如果 $\phi$ 是合式公式，$x$ 是变量，则 $\forall x \phi$ 和 $\exists x \phi$ 是合式公式
 
-**定理 2.1** (量词对偶性): $\neg \forall x \phi \equiv \exists x \neg \phi$ 和 $\neg \exists x \phi \equiv \forall x \neg \phi$。
+### 2.3 语义
 
-## 3. 模态逻辑
+**定义 2.7**: 解释
+解释 $\mathcal{I} = (D, \cdot^{\mathcal{I}})$ 由以下部分组成：
+- 论域 $D$（非空集合）
+- 解释函数 $\cdot^{\mathcal{I}}$，将常量、函数符号和谓词符号映射到论域中的对象
+
+**定义 2.8**: 赋值
+赋值是一个函数 $\sigma: V \rightarrow D$，将变量映射到论域中的对象。
+
+**定义 2.9**: 满足关系
+满足关系 $\models$ 递归定义如下：
+1. $\mathcal{I}, \sigma \models P(t_1, \ldots, t_n)$ 当且仅当 $(t_1^{\mathcal{I},\sigma}, \ldots, t_n^{\mathcal{I},\sigma}) \in P^{\mathcal{I}}$
+2. $\mathcal{I}, \sigma \models \neg\phi$ 当且仅当 $\mathcal{I}, \sigma \not\models \phi$
+3. $\mathcal{I}, \sigma \models \phi \wedge \psi$ 当且仅当 $\mathcal{I}, \sigma \models \phi$ 且 $\mathcal{I}, \sigma \models \psi$
+4. $\mathcal{I}, \sigma \models \forall x \phi$ 当且仅当对于所有 $d \in D$，$\mathcal{I}, \sigma[x \mapsto d] \models \phi$
+5. $\mathcal{I}, \sigma \models \exists x \phi$ 当且仅当存在 $d \in D$ 使得 $\mathcal{I}, \sigma[x \mapsto d] \models \phi$
+
+### 2.4 推理规则
+
+**定义 2.10**: 谓词逻辑推理规则
+除了命题逻辑的推理规则外，还有：
+
+1. **全称消除**：
+   $$\frac{\forall x \phi}{\phi[t/x]}$$
+   其中 $t$ 是项，$\phi[t/x]$ 表示将 $\phi$ 中的 $x$ 替换为 $t$
+
+2. **全称引入**：
+   $$\frac{\phi}{\forall x \phi}$$
+   其中 $x$ 不在 $\phi$ 的自由变量中出现
+
+3. **存在引入**：
+   $$\frac{\phi[t/x]}{\exists x \phi}$$
+
+4. **存在消除**：
+   $$\frac{\exists x \phi \quad \phi[y/x] \vdash \psi}{\psi}$$
+   其中 $y$ 是新的变量
+
+## 3. 模态逻辑 (Modal Logic)
 
 ### 3.1 基本概念
 
-**定义 3.1** (模态算子): 模态算子包括 $\Box$ (必然) 和 $\Diamond$ (可能)。
+**定义 3.1**: 模态算子
+- $\Box$：必然算子（necessarily）
+- $\Diamond$：可能算子（possibly）
 
-**定义 3.2** (模态公式): 模态公式在命题逻辑基础上增加：
+**定义 3.2**: 模态公式
+模态公式在命题逻辑基础上增加：
+- 如果 $\phi$ 是模态公式，则 $\Box\phi$ 和 $\Diamond\phi$ 是模态公式
 
-- 如果 $\phi$ 是模态公式，则 $\Box \phi$ 和 $\Diamond \phi$ 是模态公式
+### 3.2 语法
 
-### 3.2 可能世界语义
+**定义 3.3**: 模态逻辑语言
+模态逻辑语言在命题逻辑基础上增加模态算子 $\Box$ 和 $\Diamond$。
 
-**定义 3.3** (克里普克模型): 克里普克模型 $\mathcal{M} = (W, R, V)$ 包含：
+**定义 3.4**: 模态公式
+模态公式递归定义如下：
+1. 每个命题变元是模态公式
+2. 如果 $\phi$ 是模态公式，则 $\neg\phi$、$\Box\phi$、$\Diamond\phi$ 是模态公式
+3. 如果 $\phi$ 和 $\psi$ 是模态公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是模态公式
 
-- $W$: 可能世界集
-- $R \subseteq W \times W$: 可达关系
-- $V: W \times \mathcal{P} \rightarrow \{true, false\}$: 赋值函数
+### 3.3 语义
 
-**定义 3.4** (模态公式的真值): 在可能世界 $w$ 中：
+**定义 3.5**: 克里普克模型
+克里普克模型是一个三元组 $\mathcal{M} = (W, R, V)$，其中：
+- $W$ 是可能世界集合
+- $R \subseteq W \times W$ 是可达关系
+- $V: W \times P \rightarrow \{T, F\}$ 是赋值函数
 
-- $\mathcal{M}, w \models \Box \phi$ 当且仅当对所有 $v$ 使得 $wRv$，有 $\mathcal{M}, v \models \phi$
-- $\mathcal{M}, w \models \Diamond \phi$ 当且仅当存在 $v$ 使得 $wRv$ 且 $\mathcal{M}, v \models \phi$
+**定义 3.6**: 模态逻辑满足关系
+满足关系 $\models$ 递归定义如下：
+1. $\mathcal{M}, w \models p$ 当且仅当 $V(w, p) = T$
+2. $\mathcal{M}, w \models \neg\phi$ 当且仅当 $\mathcal{M}, w \not\models \phi$
+3. $\mathcal{M}, w \models \phi \wedge \psi$ 当且仅当 $\mathcal{M}, w \models \phi$ 且 $\mathcal{M}, w \models \psi$
+4. $\mathcal{M}, w \models \Box\phi$ 当且仅当对于所有 $w'$ 使得 $wRw'$，$\mathcal{M}, w' \models \phi$
+5. $\mathcal{M}, w \models \Diamond\phi$ 当且仅当存在 $w'$ 使得 $wRw'$ 且 $\mathcal{M}, w' \models \phi$
 
-### 3.3 模态系统
+### 3.4 系统
 
-**公理 3.1** (K公理): $\Box(\phi \rightarrow \psi) \rightarrow (\Box \phi \rightarrow \Box \psi)$
+**定义 3.7**: 模态逻辑系统
+常见的模态逻辑系统包括：
 
-**公理 3.2** (T公理): $\Box \phi \rightarrow \phi$
+1. **K系统**：最基本的模态逻辑系统
+2. **T系统**：K + $\Box\phi \rightarrow \phi$（自反性）
+3. **S4系统**：T + $\Box\phi \rightarrow \Box\Box\phi$（传递性）
+4. **S5系统**：S4 + $\Diamond\phi \rightarrow \Box\Diamond\phi$（欧几里得性）
 
-**公理 3.3** (4公理): $\Box \phi \rightarrow \Box \Box \phi$
-
-**公理 3.4** (5公理): $\Diamond \phi \rightarrow \Box \Diamond \phi$
-
-## 4. 时态逻辑
+## 4. 时态逻辑 (Temporal Logic)
 
 ### 4.1 基本概念
 
-**定义 4.1** (时态算子): 时态算子包括：
-
-- $G$ (总是), $F$ (将来), $X$ (下一个), $U$ (直到)
-
-**定义 4.2** (时态公式): 时态公式在命题逻辑基础上增加：
-
-- $G \phi$: $\phi$ 总是为真
-- $F \phi$: $\phi$ 将来为真
-- $X \phi$: $\phi$ 下一个时刻为真
-- $\phi U \psi$: $\phi$ 为真直到 $\psi$ 为真
+**定义 4.1**: 时态算子
+- $G$：全局算子（always）
+- $F$：未来算子（eventually）
+- $X$：下一个算子（next）
+- $U$：直到算子（until）
 
 ### 4.2 线性时态逻辑
 
-**定义 4.3** (线性时态结构): 线性时态结构是序列 $\sigma = s_0, s_1, s_2, \ldots$，其中每个 $s_i$ 是状态。
+**定义 4.2**: LTL语法
+线性时态逻辑（Linear Temporal Logic, LTL）公式递归定义如下：
+1. 每个命题变元是LTL公式
+2. 如果 $\phi$ 和 $\psi$ 是LTL公式，则 $\neg\phi$、$\phi \wedge \psi$、$\phi \vee \psi$、$\phi \rightarrow \psi$ 是LTL公式
+3. 如果 $\phi$ 和 $\psi$ 是LTL公式，则 $X\phi$、$G\phi$、$F\phi$、$\phi U\psi$ 是LTL公式
 
-**定义 4.4** (LTL语义): 在位置 $i$ 上：
-
-- $\sigma, i \models G \phi$ 当且仅当对所有 $j \geq i$，$\sigma, j \models \phi$
-- $\sigma, i \models F \phi$ 当且仅当存在 $j \geq i$，$\sigma, j \models \phi$
-- $\sigma, i \models X \phi$ 当且仅当 $\sigma, i+1 \models \phi$
-- $\sigma, i \models \phi U \psi$ 当且仅当存在 $j \geq i$ 使得 $\sigma, j \models \psi$ 且对所有 $k$ 满足 $i \leq k < j$，$\sigma, k \models \phi$
+**定义 4.3**: LTL语义
+LTL公式在无限序列 $\pi = \pi_0\pi_1\pi_2\ldots$ 上的满足关系：
+1. $\pi \models p$ 当且仅当 $p \in \pi_0$
+2. $\pi \models \neg\phi$ 当且仅当 $\pi \not\models \phi$
+3. $\pi \models \phi \wedge \psi$ 当且仅当 $\pi \models \phi$ 且 $\pi \models \psi$
+4. $\pi \models X\phi$ 当且仅当 $\pi^1 \models \phi$
+5. $\pi \models G\phi$ 当且仅当对于所有 $i \geq 0$，$\pi^i \models \phi$
+6. $\pi \models F\phi$ 当且仅当存在 $i \geq 0$ 使得 $\pi^i \models \phi$
+7. $\pi \models \phi U\psi$ 当且仅当存在 $i \geq 0$ 使得 $\pi^i \models \psi$ 且对于所有 $0 \leq j < i$，$\pi^j \models \phi$
 
 ### 4.3 分支时态逻辑
 
-**定义 4.5** (计算树逻辑): CTL公式包含路径量词 $A$ (对所有路径) 和 $E$ (存在路径)。
+**定义 4.4**: CTL语法
+计算树逻辑（Computation Tree Logic, CTL）公式递归定义如下：
+1. 每个命题变元是CTL公式
+2. 如果 $\phi$ 和 $\psi$ 是CTL公式，则 $\neg\phi$、$\phi \wedge \psi$、$\phi \vee \psi$、$\phi \rightarrow \psi$ 是CTL公式
+3. 如果 $\phi$ 和 $\psi$ 是CTL公式，则 $AX\phi$、$EX\phi$、$AG\phi$、$EG\phi$、$AF\phi$、$EF\phi$、$A[\phi U\psi]$、$E[\phi U\psi]$ 是CTL公式
 
-**定义 4.6** (CTL语义):
+### 4.4 模型检验
 
-- $A \phi$: 在所有路径上 $\phi$ 为真
-- $E \phi$: 存在路径使得 $\phi$ 为真
+**定义 4.5**: 模型检验问题
+给定一个系统模型 $\mathcal{M}$ 和一个时态逻辑公式 $\phi$，判断是否 $\mathcal{M} \models \phi$。
+
+**算法 4.1**: CTL模型检验算法
+```go
+func ModelCheckCTL(model *KripkeModel, formula CTLFormula) bool {
+    // 递归计算满足公式的状态集合
+    switch f := formula.(type) {
+    case *Atomic:
+        return model.SatisfyAtomic(f)
+    case *Not:
+        return !ModelCheckCTL(model, f.Formula)
+    case *And:
+        return ModelCheckCTL(model, f.Left) && ModelCheckCTL(model, f.Right)
+    case *AX:
+        return model.SatisfyAX(f.Formula)
+    case *EX:
+        return model.SatisfyEX(f.Formula)
+    case *AG:
+        return model.SatisfyAG(f.Formula)
+    case *EG:
+        return model.SatisfyEG(f.Formula)
+    case *AF:
+        return model.SatisfyAF(f.Formula)
+    case *EF:
+        return model.SatisfyEF(f.Formula)
+    case *AU:
+        return model.SatisfyAU(f.Left, f.Right)
+    case *EU:
+        return model.SatisfyEU(f.Left, f.Right)
+    }
+    return false
+}
+```
 
 ## 5. Go语言实现
 
-### 5.1 逻辑表达式
+### 5.1 命题逻辑实现
 
 ```go
 package logic
@@ -180,415 +319,496 @@ import (
     "strings"
 )
 
-// 逻辑表达式接口
-type Formula interface {
+// PropositionalFormula 表示命题逻辑公式
+type PropositionalFormula interface {
+    Evaluate(assignment map[string]bool) bool
     String() string
-    Evaluate(valuation map[string]bool) bool
-    GetVariables() map[string]bool
 }
 
-// 原子命题
-type Atom struct {
+// Atomic 原子命题
+type Atomic struct {
     Name string
 }
 
-func NewAtom(name string) *Atom {
-    return &Atom{Name: name}
+func (a *Atomic) Evaluate(assignment map[string]bool) bool {
+    return assignment[a.Name]
 }
 
-func (a *Atom) String() string {
+func (a *Atomic) String() string {
     return a.Name
 }
 
-func (a *Atom) Evaluate(valuation map[string]bool) bool {
-    return valuation[a.Name]
+// Not 否定
+type Not struct {
+    Formula PropositionalFormula
 }
 
-func (a *Atom) GetVariables() map[string]bool {
-    return map[string]bool{a.Name: true}
+func (n *Not) Evaluate(assignment map[string]bool) bool {
+    return !n.Formula.Evaluate(assignment)
 }
 
-// 否定
-type Negation struct {
-    Formula Formula
+func (n *Not) String() string {
+    return fmt.Sprintf("¬(%s)", n.Formula)
 }
 
-func NewNegation(formula Formula) *Negation {
-    return &Negation{Formula: formula}
+// And 合取
+type And struct {
+    Left, Right PropositionalFormula
 }
 
-func (n *Negation) String() string {
-    return fmt.Sprintf("¬(%s)", n.Formula.String())
+func (a *And) Evaluate(assignment map[string]bool) bool {
+    return a.Left.Evaluate(assignment) && a.Right.Evaluate(assignment)
 }
 
-func (n *Negation) Evaluate(valuation map[string]bool) bool {
-    return !n.Formula.Evaluate(valuation)
+func (a *And) String() string {
+    return fmt.Sprintf("(%s ∧ %s)", a.Left, a.Right)
 }
 
-func (n *Negation) GetVariables() map[string]bool {
-    return n.Formula.GetVariables()
+// Or 析取
+type Or struct {
+    Left, Right PropositionalFormula
 }
 
-// 合取
-type Conjunction struct {
-    Left  Formula
-    Right Formula
+func (o *Or) Evaluate(assignment map[string]bool) bool {
+    return o.Left.Evaluate(assignment) || o.Right.Evaluate(assignment)
 }
 
-func NewConjunction(left, right Formula) *Conjunction {
-    return &Conjunction{Left: left, Right: right}
+func (o *Or) String() string {
+    return fmt.Sprintf("(%s ∨ %s)", o.Left, o.Right)
 }
 
-func (c *Conjunction) String() string {
-    return fmt.Sprintf("(%s ∧ %s)", c.Left.String(), c.Right.String())
+// Implies 蕴含
+type Implies struct {
+    Left, Right PropositionalFormula
 }
 
-func (c *Conjunction) Evaluate(valuation map[string]bool) bool {
-    return c.Left.Evaluate(valuation) && c.Right.Evaluate(valuation)
+func (i *Implies) Evaluate(assignment map[string]bool) bool {
+    return !i.Left.Evaluate(assignment) || i.Right.Evaluate(assignment)
 }
 
-func (c *Conjunction) GetVariables() map[string]bool {
-    vars := c.Left.GetVariables()
-    for v := range c.Right.GetVariables() {
-        vars[v] = true
-    }
-    return vars
-}
-
-// 析取
-type Disjunction struct {
-    Left  Formula
-    Right Formula
-}
-
-func NewDisjunction(left, right Formula) *Disjunction {
-    return &Disjunction{Left: left, Right: right}
-}
-
-func (d *Disjunction) String() string {
-    return fmt.Sprintf("(%s ∨ %s)", d.Left.String(), d.Right.String())
-}
-
-func (d *Disjunction) Evaluate(valuation map[string]bool) bool {
-    return d.Left.Evaluate(valuation) || d.Right.Evaluate(valuation)
-}
-
-func (d *Disjunction) GetVariables() map[string]bool {
-    vars := d.Left.GetVariables()
-    for v := range d.Right.GetVariables() {
-        vars[v] = true
-    }
-    return vars
-}
-
-// 蕴含
-type Implication struct {
-    Antecedent Formula
-    Consequent Formula
-}
-
-func NewImplication(antecedent, consequent Formula) *Implication {
-    return &Implication{
-        Antecedent: antecedent,
-        Consequent: consequent,
-    }
-}
-
-func (i *Implication) String() string {
-    return fmt.Sprintf("(%s → %s)", i.Antecedent.String(), i.Consequent.String())
-}
-
-func (i *Implication) Evaluate(valuation map[string]bool) bool {
-    return !i.Antecedent.Evaluate(valuation) || i.Consequent.Evaluate(valuation)
-}
-
-func (i *Implication) GetVariables() map[string]bool {
-    vars := i.Antecedent.GetVariables()
-    for v := range i.Consequent.GetVariables() {
-        vars[v] = true
-    }
-    return vars
+func (i *Implies) String() string {
+    return fmt.Sprintf("(%s → %s)", i.Left, i.Right)
 }
 ```
 
-### 5.2 推理引擎
+### 5.2 真值表生成
 
 ```go
-// 推理引擎
-type InferenceEngine struct {
-    axioms    []Formula
-    theorems  []Formula
-}
-
-func NewInferenceEngine() *InferenceEngine {
-    return &InferenceEngine{
-        axioms:   make([]Formula, 0),
-        theorems: make([]Formula, 0),
+// TruthTable 生成真值表
+func TruthTable(formula PropositionalFormula, variables []string) {
+    n := len(variables)
+    fmt.Printf("Truth Table for: %s\n", formula)
+    fmt.Println(strings.Repeat("-", 50))
+    
+    // 打印表头
+    for _, v := range variables {
+        fmt.Printf("%s ", v)
     }
-}
-
-// 添加公理
-func (ie *InferenceEngine) AddAxiom(axiom Formula) {
-    ie.axioms = append(ie.axioms, axiom)
-}
-
-// 分离规则
-func (ie *InferenceEngine) ModusPonens(premise1, premise2 Formula) (Formula, error) {
-    // 检查 premise1 是否为 premise2 → conclusion 的形式
-    if imp, ok := premise2.(*Implication); ok {
-        if imp.Antecedent.String() == premise1.String() {
-            return imp.Consequent, nil
-        }
-    }
-    return nil, fmt.Errorf("modus ponens cannot be applied")
-}
-
-// 证明检查
-func (ie *InferenceEngine) IsProvable(formula Formula) bool {
-    // 简化实现：检查是否为重言式
-    return ie.IsTautology(formula)
-}
-
-// 重言式检查
-func (ie *InferenceEngine) IsTautology(formula Formula) bool {
-    variables := formula.GetVariables()
-    varNames := make([]string, 0, len(variables))
-    for v := range variables {
-        varNames = append(varNames, v)
-    }
+    fmt.Printf("| Result\n")
+    fmt.Println(strings.Repeat("-", 50))
     
     // 生成所有可能的赋值
-    n := len(varNames)
     for i := 0; i < (1 << n); i++ {
-        valuation := make(map[string]bool)
-        for j, name := range varNames {
-            valuation[name] = (i & (1 << j)) != 0
+        assignment := make(map[string]bool)
+        for j, v := range variables {
+            assignment[v] = (i & (1 << j)) != 0
         }
         
-        if !formula.Evaluate(valuation) {
-            return false
-        }
-    }
-    
-    return true
-}
-
-// 矛盾检查
-func (ie *InferenceEngine) IsContradiction(formula Formula) bool {
-    variables := formula.GetVariables()
-    varNames := make([]string, 0, len(variables))
-    for v := range variables {
-        varNames = append(varNames, v)
-    }
-    
-    n := len(varNames)
-    for i := 0; i < (1 << n); i++ {
-        valuation := make(map[string]bool)
-        for j, name := range varNames {
-            valuation[name] = (i & (1 << j)) != 0
+        // 打印赋值
+        for _, v := range variables {
+            if assignment[v] {
+                fmt.Printf("T ")
+            } else {
+                fmt.Printf("F ")
+            }
         }
         
-        if formula.Evaluate(valuation) {
-            return false
+        // 计算结果
+        result := formula.Evaluate(assignment)
+        if result {
+            fmt.Printf("| T\n")
+        } else {
+            fmt.Printf("| F\n")
         }
     }
-    
-    return true
 }
 
-// 等价性检查
-func (ie *InferenceEngine) AreEquivalent(formula1, formula2 Formula) bool {
-    variables := make(map[string]bool)
-    for v := range formula1.GetVariables() {
-        variables[v] = true
-    }
-    for v := range formula2.GetVariables() {
-        variables[v] = true
-    }
-    
-    varNames := make([]string, 0, len(variables))
-    for v := range variables {
-        varNames = append(varNames, v)
-    }
-    
-    n := len(varNames)
+// IsTautology 检查是否为重言式
+func IsTautology(formula PropositionalFormula, variables []string) bool {
+    n := len(variables)
     for i := 0; i < (1 << n); i++ {
-        valuation := make(map[string]bool)
-        for j, name := range varNames {
-            valuation[name] = (i & (1 << j)) != 0
+        assignment := make(map[string]bool)
+        for j, v := range variables {
+            assignment[v] = (i & (1 << j)) != 0
         }
-        
-        if formula1.Evaluate(valuation) != formula2.Evaluate(valuation) {
+        if !formula.Evaluate(assignment) {
             return false
         }
     }
-    
-    return true
-}
-```
-
-### 5.3 模型检查
-
-```go
-// 时态逻辑公式
-type TemporalFormula interface {
-    Formula
-    IsTemporal() bool
-}
-
-// 总是算子
-type Always struct {
-    Formula Formula
-}
-
-func NewAlways(formula Formula) *Always {
-    return &Always{Formula: formula}
-}
-
-func (a *Always) String() string {
-    return fmt.Sprintf("G(%s)", a.Formula.String())
-}
-
-func (a *Always) IsTemporal() bool {
     return true
 }
 
-func (a *Always) Evaluate(valuation map[string]bool) bool {
-    // 简化实现：在当前状态下检查
-    return a.Formula.Evaluate(valuation)
-}
-
-func (a *Always) GetVariables() map[string]bool {
-    return a.Formula.GetVariables()
-}
-
-// 将来算子
-type Eventually struct {
-    Formula Formula
-}
-
-func NewEventually(formula Formula) *Eventually {
-    return &Eventually{Formula: formula}
-}
-
-func (e *Eventually) String() string {
-    return fmt.Sprintf("F(%s)", e.Formula.String())
-}
-
-func (e *Eventually) IsTemporal() bool {
-    return true
-}
-
-func (e *Eventually) Evaluate(valuation map[string]bool) bool {
-    // 简化实现：在当前状态下检查
-    return e.Formula.Evaluate(valuation)
-}
-
-func (e *Eventually) GetVariables() map[string]bool {
-    return e.Formula.GetVariables()
-}
-
-// 模型检查器
-type ModelChecker struct {
-    states     []map[string]bool
-    transitions [][]int
-}
-
-func NewModelChecker() *ModelChecker {
-    return &ModelChecker{
-        states:      make([]map[string]bool, 0),
-        transitions: make([][]int, 0),
-    }
-}
-
-// 添加状态
-func (mc *ModelChecker) AddState(valuation map[string]bool) int {
-    state := make(map[string]bool)
-    for k, v := range valuation {
-        state[k] = v
-    }
-    mc.states = append(mc.states, state)
-    mc.transitions = append(mc.transitions, make([]int, 0))
-    return len(mc.states) - 1
-}
-
-// 添加转换
-func (mc *ModelChecker) AddTransition(from, to int) {
-    if from >= 0 && from < len(mc.transitions) {
-        mc.transitions[from] = append(mc.transitions[from], to)
-    }
-}
-
-// 检查LTL公式
-func (mc *ModelChecker) CheckLTL(formula TemporalFormula, state int) bool {
-    if state < 0 || state >= len(mc.states) {
-        return false
-    }
-    
-    switch f := formula.(type) {
-    case *Always:
-        return mc.checkAlways(f.Formula, state)
-    case *Eventually:
-        return mc.checkEventually(f.Formula, state)
-    default:
-        return formula.Evaluate(mc.states[state])
-    }
-}
-
-// 检查总是算子
-func (mc *ModelChecker) checkAlways(formula Formula, state int) bool {
-    visited := make(map[int]bool)
-    return mc.checkAlwaysRecursive(formula, state, visited)
-}
-
-func (mc *ModelChecker) checkAlwaysRecursive(formula Formula, state int, visited map[int]bool) bool {
-    if visited[state] {
-        return true // 避免循环
-    }
-    
-    visited[state] = true
-    
-    // 检查当前状态
-    if !formula.Evaluate(mc.states[state]) {
-        return false
-    }
-    
-    // 检查所有后继状态
-    for _, nextState := range mc.transitions[state] {
-        if !mc.checkAlwaysRecursive(formula, nextState, visited) {
-            return false
+// IsSatisfiable 检查是否为可满足式
+func IsSatisfiable(formula PropositionalFormula, variables []string) bool {
+    n := len(variables)
+    for i := 0; i < (1 << n); i++ {
+        assignment := make(map[string]bool)
+        for j, v := range variables {
+            assignment[v] = (i & (1 << j)) != 0
         }
-    }
-    
-    return true
-}
-
-// 检查将来算子
-func (mc *ModelChecker) checkEventually(formula Formula, state int) bool {
-    visited := make(map[int]bool)
-    return mc.checkEventuallyRecursive(formula, state, visited)
-}
-
-func (mc *ModelChecker) checkEventuallyRecursive(formula Formula, state int, visited map[int]bool) bool {
-    if visited[state] {
-        return false // 避免循环
-    }
-    
-    visited[state] = true
-    
-    // 检查当前状态
-    if formula.Evaluate(mc.states[state]) {
-        return true
-    }
-    
-    // 检查后继状态
-    for _, nextState := range mc.transitions[state] {
-        if mc.checkEventuallyRecursive(formula, nextState, visited) {
+        if formula.Evaluate(assignment) {
             return true
         }
     }
-    
     return false
+}
+```
+
+### 5.3 谓词逻辑实现
+
+```go
+// PredicateFormula 表示谓词逻辑公式
+type PredicateFormula interface {
+    Evaluate(interpretation *Interpretation, assignment map[string]interface{}) bool
+    String() string
+}
+
+// Interpretation 解释
+type Interpretation struct {
+    Domain []interface{}
+    Predicates map[string]func([]interface{}) bool
+    Functions map[string]func([]interface{}) interface{}
+    Constants map[string]interface{}
+}
+
+// AtomicPredicate 原子谓词
+type AtomicPredicate struct {
+    Name string
+    Terms []Term
+}
+
+func (ap *AtomicPredicate) Evaluate(interpretation *Interpretation, assignment map[string]interface{}) bool {
+    args := make([]interface{}, len(ap.Terms))
+    for i, term := range ap.Terms {
+        args[i] = term.Evaluate(interpretation, assignment)
+    }
+    return interpretation.Predicates[ap.Name](args)
+}
+
+func (ap *AtomicPredicate) String() string {
+    terms := make([]string, len(ap.Terms))
+    for i, term := range ap.Terms {
+        terms[i] = term.String()
+    }
+    return fmt.Sprintf("%s(%s)", ap.Name, strings.Join(terms, ", "))
+}
+
+// Term 项
+type Term interface {
+    Evaluate(interpretation *Interpretation, assignment map[string]interface{}) interface{}
+    String() string
+}
+
+// Variable 变量
+type Variable struct {
+    Name string
+}
+
+func (v *Variable) Evaluate(interpretation *Interpretation, assignment map[string]interface{}) interface{} {
+    return assignment[v.Name]
+}
+
+func (v *Variable) String() string {
+    return v.Name
+}
+
+// Constant 常量
+type Constant struct {
+    Name string
+}
+
+func (c *Constant) Evaluate(interpretation *Interpretation, assignment map[string]interface{}) interface{} {
+    return interpretation.Constants[c.Name]
+}
+
+func (c *Constant) String() string {
+    return c.Name
+}
+
+// UniversalQuantifier 全称量词
+type UniversalQuantifier struct {
+    Variable string
+    Formula  PredicateFormula
+}
+
+func (uq *UniversalQuantifier) Evaluate(interpretation *Interpretation, assignment map[string]interface{}) bool {
+    for _, element := range interpretation.Domain {
+        newAssignment := make(map[string]interface{})
+        for k, v := range assignment {
+            newAssignment[k] = v
+        }
+        newAssignment[uq.Variable] = element
+        if !uq.Formula.Evaluate(interpretation, newAssignment) {
+            return false
+        }
+    }
+    return true
+}
+
+func (uq *UniversalQuantifier) String() string {
+    return fmt.Sprintf("∀%s(%s)", uq.Variable, uq.Formula)
+}
+
+// ExistentialQuantifier 存在量词
+type ExistentialQuantifier struct {
+    Variable string
+    Formula  PredicateFormula
+}
+
+func (eq *ExistentialQuantifier) Evaluate(interpretation *Interpretation, assignment map[string]interface{}) bool {
+    for _, element := range interpretation.Domain {
+        newAssignment := make(map[string]interface{})
+        for k, v := range assignment {
+            newAssignment[k] = v
+        }
+        newAssignment[eq.Variable] = element
+        if eq.Formula.Evaluate(interpretation, newAssignment) {
+            return true
+        }
+    }
+    return false
+}
+
+func (eq *ExistentialQuantifier) String() string {
+    return fmt.Sprintf("∃%s(%s)", eq.Variable, eq.Formula)
+}
+```
+
+### 5.4 时态逻辑实现
+
+```go
+// TemporalFormula 表示时态逻辑公式
+type TemporalFormula interface {
+    Evaluate(model *KripkeModel, state int) bool
+    String() string
+}
+
+// KripkeModel 克里普克模型
+type KripkeModel struct {
+    States []map[string]bool
+    Transitions [][]int
+}
+
+// LTLFormula LTL公式
+type LTLFormula interface {
+    TemporalFormula
+}
+
+// G 全局算子
+type G struct {
+    Formula LTLFormula
+}
+
+func (g *G) Evaluate(model *KripkeModel, state int) bool {
+    visited := make(map[int]bool)
+    return g.evaluateRecursive(model, state, visited)
+}
+
+func (g *G) evaluateRecursive(model *KripkeModel, state int, visited map[int]bool) bool {
+    if visited[state] {
+        return true // 避免循环
+    }
+    visited[state] = true
+    
+    if !g.Formula.Evaluate(model, state) {
+        return false
+    }
+    
+    for _, nextState := range model.Transitions[state] {
+        if !g.evaluateRecursive(model, nextState, visited) {
+            return false
+        }
+    }
+    return true
+}
+
+func (g *G) String() string {
+    return fmt.Sprintf("G(%s)", g.Formula)
+}
+
+// F 未来算子
+type F struct {
+    Formula LTLFormula
+}
+
+func (f *F) Evaluate(model *KripkeModel, state int) bool {
+    visited := make(map[int]bool)
+    return f.evaluateRecursive(model, state, visited)
+}
+
+func (f *F) evaluateRecursive(model *KripkeModel, state int, visited map[int]bool) bool {
+    if visited[state] {
+        return false // 避免循环
+    }
+    visited[state] = true
+    
+    if f.Formula.Evaluate(model, state) {
+        return true
+    }
+    
+    for _, nextState := range model.Transitions[state] {
+        if f.evaluateRecursive(model, nextState, visited) {
+            return true
+        }
+    }
+    return false
+}
+
+func (f *F) String() string {
+    return fmt.Sprintf("F(%s)", f.Formula)
+}
+
+// X 下一个算子
+type X struct {
+    Formula LTLFormula
+}
+
+func (x *X) Evaluate(model *KripkeModel, state int) bool {
+    if len(model.Transitions[state]) == 0 {
+        return false
+    }
+    // 假设只有一个后继状态
+    nextState := model.Transitions[state][0]
+    return x.Formula.Evaluate(model, nextState)
+}
+
+func (x *X) String() string {
+    return fmt.Sprintf("X(%s)", x.Formula)
+}
+
+// U 直到算子
+type U struct {
+    Left, Right LTLFormula
+}
+
+func (u *U) Evaluate(model *KripkeModel, state int) bool {
+    visited := make(map[int]bool)
+    return u.evaluateRecursive(model, state, visited)
+}
+
+func (u *U) evaluateRecursive(model *KripkeModel, state int, visited map[int]bool) bool {
+    if visited[state] {
+        return false // 避免循环
+    }
+    visited[state] = true
+    
+    if u.Right.Evaluate(model, state) {
+        return true
+    }
+    
+    if !u.Left.Evaluate(model, state) {
+        return false
+    }
+    
+    for _, nextState := range model.Transitions[state] {
+        if u.evaluateRecursive(model, nextState, visited) {
+            return true
+        }
+    }
+    return false
+}
+
+func (u *U) String() string {
+    return fmt.Sprintf("(%s U %s)", u.Left, u.Right)
+}
+```
+
+### 5.5 使用示例
+
+```go
+func main() {
+    // 命题逻辑示例
+    fmt.Println("=== Propositional Logic ===")
+    
+    // 创建公式: (p ∧ q) → r
+    p := &Atomic{Name: "p"}
+    q := &Atomic{Name: "q"}
+    r := &Atomic{Name: "r"}
+    
+    pAndQ := &And{Left: p, Right: q}
+    formula := &Implies{Left: pAndQ, Right: r}
+    
+    variables := []string{"p", "q", "r"}
+    TruthTable(formula, variables)
+    
+    fmt.Printf("Is tautology: %t\n", IsTautology(formula, variables))
+    fmt.Printf("Is satisfiable: %t\n", IsSatisfiable(formula, variables))
+    
+    // 谓词逻辑示例
+    fmt.Println("\n=== Predicate Logic ===")
+    
+    // 创建解释
+    interpretation := &Interpretation{
+        Domain: []interface{}{1, 2, 3, 4, 5},
+        Predicates: map[string]func([]interface{}) bool{
+            "Even": func(args []interface{}) bool {
+                n := args[0].(int)
+                return n%2 == 0
+            },
+            "Greater": func(args []interface{}) bool {
+                a, b := args[0].(int), args[1].(int)
+                return a > b
+            },
+        },
+        Constants: map[string]interface{}{
+            "zero": 0,
+        },
+    }
+    
+    // 创建公式: ∀x(Even(x) → x > 0)
+    x := &Variable{Name: "x"}
+    evenX := &AtomicPredicate{Name: "Even", Terms: []Term{x}}
+    zero := &Constant{Name: "zero"}
+    greaterXZero := &AtomicPredicate{Name: "Greater", Terms: []Term{x, zero}}
+    
+    implies := &Implies{Left: evenX, Right: greaterXZero}
+    universalFormula := &UniversalQuantifier{Variable: "x", Formula: implies}
+    
+    assignment := make(map[string]interface{})
+    result := universalFormula.Evaluate(interpretation, assignment)
+    fmt.Printf("Formula: %s\n", universalFormula)
+    fmt.Printf("Result: %t\n", result)
+    
+    // 时态逻辑示例
+    fmt.Println("\n=== Temporal Logic ===")
+    
+    // 创建克里普克模型
+    model := &KripkeModel{
+        States: []map[string]bool{
+            {"p": true, "q": false},
+            {"p": false, "q": true},
+            {"p": true, "q": true},
+        },
+        Transitions: [][]int{
+            {1, 2},
+            {0, 2},
+            {0, 1},
+        },
+    }
+    
+    // 创建LTL公式: G(p → Fq)
+    atomicP := &Atomic{Name: "p"}
+    atomicQ := &Atomic{Name: "q"}
+    
+    fQ := &F{Formula: atomicQ}
+    impliesPQ := &Implies{Left: atomicP, Right: fQ}
+    gFormula := &G{Formula: impliesPQ}
+    
+    fmt.Printf("Formula: %s\n", gFormula)
+    for i := 0; i < len(model.States); i++ {
+        result := gFormula.Evaluate(model, i)
+        fmt.Printf("State %d: %t\n", i, result)
+    }
 }
 ```
 
@@ -620,13 +840,21 @@ func (mc *ModelChecker) checkEventuallyRecursive(formula Formula, state int, vis
 
 ## 7. 总结
 
-逻辑基础作为计算机科学的重要理论基础，在程序验证、人工智能、数据库等领域有广泛应用。通过Go语言的实现，我们可以看到：
+逻辑学是计算机科学的基础理论，在程序验证、人工智能、数据库理论等领域有广泛应用。通过形式化定义和Go语言实现，我们建立了从理论到实践的完整框架。
 
-1. **理论实现**: 逻辑学的基本概念可以转化为高效的代码
-2. **推理引擎**: 通过算法实现自动推理和证明
-3. **模型检查**: 用于验证系统性质和行为
+### 关键要点
 
-逻辑学的研究不仅有助于理解推理的本质，也为构建可靠的软件系统提供了理论基础。
+1. **理论基础**: 命题逻辑、谓词逻辑、模态逻辑、时态逻辑
+2. **推理系统**: 公理化系统、自然演绎、模型检验
+3. **实现技术**: 真值表、解释、克里普克模型
+4. **应用场景**: 程序验证、人工智能、数据库查询
+
+### 进一步研究方向
+
+1. **高阶逻辑**: 二阶逻辑、类型论
+2. **非经典逻辑**: 直觉逻辑、模糊逻辑、多值逻辑
+3. **逻辑编程**: Prolog、约束逻辑编程
+4. **自动定理证明**: 归结、表方法、模型检验
 
 ---
 

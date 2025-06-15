@@ -36,6 +36,7 @@
 
 **定义 1.1 (图)**
 图 $G = (V, E)$ 是一个有序对，其中：
+
 - $V$ 是顶点集（vertex set），$V \neq \emptyset$
 - $E$ 是边集（edge set），$E \subseteq V \times V$
 
@@ -59,11 +60,15 @@
 ### 1.3 图的表示
 
 **邻接矩阵表示**：
+
 对于图 $G = (V, E)$，邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵，其中：
+
+```latex
 $$A[i][j] = \begin{cases}
 1 & \text{if } (i,j) \in E \\
 0 & \text{otherwise}
 \end{cases}$$
+```
 
 **邻接表表示**：
 每个顶点维护一个包含其邻居顶点的列表。
@@ -82,6 +87,7 @@ $$A[i][j] = \begin{cases}
 图 $G = (V, E)$ 是连通的，当且仅当从任意顶点开始的深度优先搜索或广度优先搜索能够访问所有顶点。
 
 **证明**：
+
 - **必要性**：如果图是连通的，那么从任意顶点都存在到其他所有顶点的路径，因此DFS或BFS能够访问所有顶点。
 - **充分性**：如果从某个顶点开始的遍历能够访问所有顶点，那么该顶点到所有其他顶点都存在路径，因此图是连通的。
 
@@ -112,6 +118,7 @@ $$A[i][j] = \begin{cases}
 
 **定理 2.3 (树的性质)**
 对于包含 $n$ 个顶点的树 $T$：
+
 1. $T$ 有 $n-1$ 条边
 2. $T$ 是连通的
 3. $T$ 是无环的
@@ -130,7 +137,7 @@ $$A[i][j] = \begin{cases}
 func DFS(graph map[int][]int, start int) []int {
     visited := make(map[int]bool)
     result := []int{}
-    
+
     var dfs func(int)
     dfs = func(node int) {
         if visited[node] {
@@ -138,12 +145,12 @@ func DFS(graph map[int][]int, start int) []int {
         }
         visited[node] = true
         result = append(result, node)
-        
+
         for _, neighbor := range graph[node] {
             dfs(neighbor)
         }
     }
-    
+
     dfs(start)
     return result
 }
@@ -157,12 +164,12 @@ func BFS(graph map[int][]int, start int) []int {
     result := []int{}
     queue := []int{start}
     visited[start] = true
-    
+
     for len(queue) > 0 {
         node := queue[0]
         queue = queue[1:]
         result = append(result, node)
-        
+
         for _, neighbor := range graph[node] {
             if !visited[neighbor] {
                 visited[neighbor] = true
@@ -170,7 +177,7 @@ func BFS(graph map[int][]int, start int) []int {
             }
         }
     }
-    
+
     return result
 }
 ```
@@ -191,19 +198,19 @@ func Dijkstra(graph map[int][]Edge, start int) map[int]int {
         distances[node] = math.MaxInt32
     }
     distances[start] = 0
-    
+
     pq := &PriorityQueue{}
     heap.Push(pq, &Item{node: start, distance: 0})
-    
+
     for pq.Len() > 0 {
         item := heap.Pop(pq).(*Item)
         node := item.node
         dist := item.distance
-        
+
         if dist > distances[node] {
             continue
         }
-        
+
         for _, edge := range graph[node] {
             newDist := dist + edge.Weight
             if newDist < distances[edge.To] {
@@ -212,7 +219,7 @@ func Dijkstra(graph map[int][]Edge, start int) map[int]int {
             }
         }
     }
-    
+
     return distances
 }
 ```
@@ -238,17 +245,17 @@ func Kruskal(edges []Edge, n int) []Edge {
     sort.Slice(edges, func(i, j int) bool {
         return edges[i].Weight < edges[j].Weight
     })
-    
+
     uf := NewUnionFind(n)
     result := []Edge{}
-    
+
     for _, edge := range edges {
         if uf.Find(edge.From) != uf.Find(edge.To) {
             uf.Union(edge.From, edge.To)
             result = append(result, edge)
         }
     }
-    
+
     return result
 }
 ```
@@ -284,6 +291,7 @@ Kruskal算法能够找到图的最小生成树。
 连通图 $G$ 存在欧拉回路，当且仅当所有顶点的度都是偶数。
 
 **证明**：
+
 - **必要性**：欧拉回路经过每条边恰好一次，因此每个顶点被进入和离开的次数相等，度为偶数。
 - **充分性**：使用构造性证明，从任意顶点开始，每次选择未使用的边，直到无法继续，然后回溯并寻找其他路径。
 
@@ -372,7 +380,7 @@ func (g *AdjacencyListGraph) IsConnected() bool {
     if len(g.vertices) == 0 {
         return true
     }
-    
+
     visited := make(map[int]bool)
     var dfs func(int)
     dfs = func(v int) {
@@ -383,13 +391,13 @@ func (g *AdjacencyListGraph) IsConnected() bool {
             }
         }
     }
-    
+
     // 从任意顶点开始DFS
     for v := range g.vertices {
         dfs(v)
         break
     }
-    
+
     return len(visited) == len(g.vertices)
 }
 
@@ -403,12 +411,12 @@ func (g *AdjacencyListGraph) HasCycle() bool {
 func (g *AdjacencyListGraph) hasDirectedCycle() bool {
     visited := make(map[int]bool)
     recStack := make(map[int]bool)
-    
+
     var dfs func(int) bool
     dfs = func(v int) bool {
         visited[v] = true
         recStack[v] = true
-        
+
         for _, neighbor := range g.GetNeighbors(v) {
             if !visited[neighbor] {
                 if dfs(neighbor) {
@@ -418,11 +426,11 @@ func (g *AdjacencyListGraph) hasDirectedCycle() bool {
                 return true
             }
         }
-        
+
         recStack[v] = false
         return false
     }
-    
+
     for v := range g.vertices {
         if !visited[v] {
             if dfs(v) {
@@ -435,11 +443,11 @@ func (g *AdjacencyListGraph) hasDirectedCycle() bool {
 
 func (g *AdjacencyListGraph) hasUndirectedCycle() bool {
     visited := make(map[int]bool)
-    
+
     var dfs func(int, int) bool
     dfs = func(v, parent int) bool {
         visited[v] = true
-        
+
         for _, neighbor := range g.GetNeighbors(v) {
             if !visited[neighbor] {
                 if dfs(neighbor, v) {
@@ -451,7 +459,7 @@ func (g *AdjacencyListGraph) hasUndirectedCycle() bool {
         }
         return false
     }
-    
+
     for v := range g.vertices {
         if !visited[v] {
             if dfs(v, -1) {
@@ -472,14 +480,14 @@ func TopologicalSort(graph map[int][]int) ([]int, error) {
     for v := range graph {
         inDegree[v] = 0
     }
-    
+
     // 计算入度
     for _, neighbors := range graph {
         for _, neighbor := range neighbors {
             inDegree[neighbor]++
         }
     }
-    
+
     // 使用队列进行拓扑排序
     queue := []int{}
     for v, degree := range inDegree {
@@ -487,13 +495,13 @@ func TopologicalSort(graph map[int][]int) ([]int, error) {
             queue = append(queue, v)
         }
     }
-    
+
     result := []int{}
     for len(queue) > 0 {
         v := queue[0]
         queue = queue[1:]
         result = append(result, v)
-        
+
         for _, neighbor := range graph[v] {
             inDegree[neighbor]--
             if inDegree[neighbor] == 0 {
@@ -501,11 +509,11 @@ func TopologicalSort(graph map[int][]int) ([]int, error) {
             }
         }
     }
-    
+
     if len(result) != len(graph) {
         return nil, fmt.Errorf("graph contains cycle")
     }
-    
+
     return result, nil
 }
 
@@ -517,7 +525,7 @@ func StronglyConnectedComponents(graph map[int][]int) [][]int {
     onStack := make(map[int]bool)
     stack := []int{}
     result := [][]int{}
-    
+
     var strongConnect func(int)
     strongConnect = func(v int) {
         indices[v] = index
@@ -525,7 +533,7 @@ func StronglyConnectedComponents(graph map[int][]int) [][]int {
         index++
         stack = append(stack, v)
         onStack[v] = true
-        
+
         for _, neighbor := range graph[v] {
             if _, exists := indices[neighbor]; !exists {
                 strongConnect(neighbor)
@@ -534,7 +542,7 @@ func StronglyConnectedComponents(graph map[int][]int) [][]int {
                 lowLinks[v] = min(lowLinks[v], indices[neighbor])
             }
         }
-        
+
         if lowLinks[v] == indices[v] {
             component := []int{}
             for {
@@ -549,13 +557,13 @@ func StronglyConnectedComponents(graph map[int][]int) [][]int {
             result = append(result, component)
         }
     }
-    
+
     for v := range graph {
         if _, exists := indices[v]; !exists {
             strongConnect(v)
         }
     }
-    
+
     return result
 }
 
@@ -578,7 +586,7 @@ func FloydWarshall(graph [][]int) [][]int {
         dist[i] = make([]int, n)
         copy(dist[i], graph[i])
     }
-    
+
     for k := 0; k < n; k++ {
         for i := 0; i < n; i++ {
             for j := 0; j < n; j++ {
@@ -590,7 +598,7 @@ func FloydWarshall(graph [][]int) [][]int {
             }
         }
     }
-    
+
     return dist
 }
 
@@ -623,7 +631,7 @@ func MaxFlow(graph map[int][]FlowEdge, source, sink int) int {
             })
         }
     }
-    
+
     maxFlow := 0
     for {
         // 使用BFS寻找增广路径
@@ -631,7 +639,7 @@ func MaxFlow(graph map[int][]FlowEdge, source, sink int) int {
         if len(path) == 0 {
             break
         }
-        
+
         // 计算路径上的最小容量
         minCapacity := math.MaxInt32
         for i := 0; i < len(path)-1; i++ {
@@ -640,15 +648,15 @@ func MaxFlow(graph map[int][]FlowEdge, source, sink int) int {
                 minCapacity = edge.capacity - edge.flow
             }
         }
-        
+
         // 更新残量网络
         for i := 0; i < len(path)-1; i++ {
             updateFlow(residual, path[i], path[i+1], minCapacity)
         }
-        
+
         maxFlow += minCapacity
     }
-    
+
     return maxFlow
 }
 
@@ -657,11 +665,11 @@ func findAugmentingPath(residual map[int][]FlowEdge, source, sink int) []int {
     visited := make(map[int]bool)
     queue := []int{source}
     visited[source] = true
-    
+
     for len(queue) > 0 {
         current := queue[0]
         queue = queue[1:]
-        
+
         if current == sink {
             // 重建路径
             path := []int{}
@@ -672,7 +680,7 @@ func findAugmentingPath(residual map[int][]FlowEdge, source, sink int) []int {
             path = append([]int{source}, path...)
             return path
         }
-        
+
         for _, edge := range residual[current] {
             if !visited[edge.to] && edge.capacity > edge.flow {
                 visited[edge.to] = true
@@ -681,7 +689,7 @@ func findAugmentingPath(residual map[int][]FlowEdge, source, sink int) []int {
             }
         }
     }
-    
+
     return []int{}
 }
 ```
@@ -708,38 +716,38 @@ func (nta *NetworkTopologyAnalyzer) AddConnection(node1, node2 int) {
 
 func (nta *NetworkTopologyAnalyzer) AnalyzeConnectivity() map[string]interface{} {
     result := make(map[string]interface{})
-    
+
     // 检查连通性
     result["is_connected"] = nta.graph.IsConnected()
-    
+
     // 计算连通分量
     result["connected_components"] = nta.findConnectedComponents()
-    
+
     // 计算网络直径
     result["diameter"] = nta.calculateDiameter()
-    
+
     // 计算平均度
     result["average_degree"] = nta.calculateAverageDegree()
-    
+
     return result
 }
 
 func (nta *NetworkTopologyAnalyzer) findConnectedComponents() [][]int {
     visited := make(map[int]bool)
     components := [][]int{}
-    
+
     var dfs func(int, *[]int)
     dfs = func(v int, component *[]int) {
         visited[v] = true
         *component = append(*component, v)
-        
+
         for _, neighbor := range nta.graph.GetNeighbors(v) {
             if !visited[neighbor] {
                 dfs(neighbor, component)
             }
         }
     }
-    
+
     for v := range nta.graph.vertices {
         if !visited[v] {
             component := []int{}
@@ -747,14 +755,14 @@ func (nta *NetworkTopologyAnalyzer) findConnectedComponents() [][]int {
             components = append(components, component)
         }
     }
-    
+
     return components
 }
 
 func (nta *NetworkTopologyAnalyzer) calculateDiameter() int {
     vertices := nta.graph.GetVertices()
     maxDiameter := 0
-    
+
     for _, start := range vertices {
         distances := nta.shortestPaths(start)
         for _, dist := range distances {
@@ -763,18 +771,18 @@ func (nta *NetworkTopologyAnalyzer) calculateDiameter() int {
             }
         }
     }
-    
+
     return maxDiameter
 }
 
 func (nta *NetworkTopologyAnalyzer) calculateAverageDegree() float64 {
     totalDegree := 0
     vertexCount := len(nta.graph.vertices)
-    
+
     for v := range nta.graph.vertices {
         totalDegree += len(nta.graph.GetNeighbors(v))
     }
-    
+
     return float64(totalDegree) / float64(vertexCount)
 }
 ```
@@ -801,7 +809,7 @@ func (sna *SocialNetworkAnalyzer) FindInfluentialUsers() []int {
     // 使用度中心性找出有影响力的用户
     maxDegree := 0
     influentialUsers := []int{}
-    
+
     for v := range sna.graph.vertices {
         degree := len(sna.graph.GetNeighbors(v))
         if degree > maxDegree {
@@ -811,7 +819,7 @@ func (sna *SocialNetworkAnalyzer) FindInfluentialUsers() []int {
             influentialUsers = append(influentialUsers, v)
         }
     }
-    
+
     return influentialUsers
 }
 
@@ -821,7 +829,7 @@ func (sna *SocialNetworkAnalyzer) FindCommunities() [][]int {
     for i, v := range sna.graph.GetVertices() {
         labels[v] = i
     }
-    
+
     changed := true
     for changed {
         changed = false
@@ -831,7 +839,7 @@ func (sna *SocialNetworkAnalyzer) FindCommunities() [][]int {
             for _, neighbor := range sna.graph.GetNeighbors(v) {
                 labelCount[labels[neighbor]]++
             }
-            
+
             // 选择最常见的标签
             maxCount := 0
             newLabel := labels[v]
@@ -841,25 +849,25 @@ func (sna *SocialNetworkAnalyzer) FindCommunities() [][]int {
                     newLabel = label
                 }
             }
-            
+
             if newLabel != labels[v] {
                 labels[v] = newLabel
                 changed = true
             }
         }
     }
-    
+
     // 按标签分组
     communities := make(map[int][]int)
     for v, label := range labels {
         communities[label] = append(communities[label], v)
     }
-    
+
     result := [][]int{}
     for _, community := range communities {
         result = append(result, community)
     }
-    
+
     return result
 }
 ```
@@ -894,12 +902,12 @@ func (ra *RoutingAlgorithm) AddLink(from, to, cost int) {
 func (ra *RoutingAlgorithm) ComputeRoutingTable(source int) map[int]RoutingEntry {
     distances := Dijkstra(ra.graph, source)
     routingTable := make(map[int]RoutingEntry)
-    
+
     for dest := range ra.graph {
         if dest != source {
             path := ra.findPath(source, dest)
             nextHop := path[1] if len(path) > 1 else dest
-            
+
             routingTable[dest] = RoutingEntry{
                 Destination: dest,
                 NextHop:     nextHop,
@@ -908,7 +916,7 @@ func (ra *RoutingAlgorithm) ComputeRoutingTable(source int) map[int]RoutingEntry
             }
         }
     }
-    
+
     return routingTable
 }
 
@@ -916,24 +924,24 @@ func (ra *RoutingAlgorithm) findPath(source, dest int) []int {
     // 使用Dijkstra算法重建路径
     distances := make(map[int]int)
     previous := make(map[int]int)
-    
+
     for node := range ra.graph {
         distances[node] = math.MaxInt32
     }
     distances[source] = 0
-    
+
     pq := &PriorityQueue{}
     heap.Push(pq, &Item{node: source, distance: 0})
-    
+
     for pq.Len() > 0 {
         item := heap.Pop(pq).(*Item)
         node := item.node
         dist := item.distance
-        
+
         if dist > distances[node] {
             continue
         }
-        
+
         for _, edge := range ra.graph[node] {
             newDist := dist + edge.Weight
             if newDist < distances[edge.To] {
@@ -943,7 +951,7 @@ func (ra *RoutingAlgorithm) findPath(source, dest int) []int {
             }
         }
     }
-    
+
     // 重建路径
     path := []int{}
     current := dest
@@ -952,7 +960,7 @@ func (ra *RoutingAlgorithm) findPath(source, dest int) []int {
         current = previous[current]
     }
     path = append([]int{source}, path...)
-    
+
     return path
 }
 ```
@@ -972,6 +980,7 @@ func (ra *RoutingAlgorithm) findPath(source, dest int) []int {
 ---
 
 **参考文献**：
+
 1. Cormen, T. H., et al. "Introduction to Algorithms." MIT Press, 2009.
 2. Bondy, J. A., & Murty, U. S. R. "Graph Theory." Springer, 2008.
 3. West, D. B. "Introduction to Graph Theory." Prentice Hall, 2001.

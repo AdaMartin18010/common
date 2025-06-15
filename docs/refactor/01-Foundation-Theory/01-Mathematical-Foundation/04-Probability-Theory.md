@@ -28,6 +28,7 @@
     - [6.1 蒙特卡洛方法](#61-蒙特卡洛方法)
     - [6.2 随机算法](#62-随机算法)
     - [6.3 概率模型](#63-概率模型)
+  - [总结](#总结)
 
 ## 1. 基础定义
 
@@ -35,6 +36,7 @@
 
 **定义 1.1 (概率空间)**
 概率空间 $(\Omega, \mathcal{F}, P)$ 由以下三个部分组成：
+
 - $\Omega$：样本空间，包含所有可能的结果
 - $\mathcal{F}$：事件域，是 $\Omega$ 的子集的 $\sigma$-代数
 - $P$：概率测度，满足：
@@ -142,6 +144,7 @@ $$P_{ij}(n) = P(X_{n+1} = j|X_n = i)$$
 
 **定义 3.3 (转移矩阵)**
 转移矩阵 $P = [P_{ij}]$ 满足：
+
 1. $P_{ij} \geq 0$ 对所有 $i, j$
 2. $\sum_j P_{ij} = 1$ 对所有 $i$
 
@@ -156,6 +159,7 @@ $$= \sum_k P(X_n = k|X_0 = i) \cdot P(X_{n+m} = j|X_n = k) = \sum_k P_{ik}^{(n)}
 
 **定义 3.4 (泊松过程)**
 计数过程 $\{N(t)\}_{t \geq 0}$ 是强度为 $\lambda$ 的泊松过程，如果：
+
 1. $N(0) = 0$
 2. 具有独立增量
 3. 具有平稳增量
@@ -173,6 +177,7 @@ $$P(N(t) = k) = \frac{(\lambda t)^k}{k!} e^{-\lambda t}, \quad k = 0, 1, 2, \ldo
 
 **定义 3.5 (布朗运动)**
 随机过程 $\{B(t)\}_{t \geq 0}$ 是标准布朗运动，如果：
+
 1. $B(0) = 0$
 2. 具有独立增量
 3. 具有平稳增量
@@ -180,6 +185,7 @@ $$P(N(t) = k) = \frac{(\lambda t)^k}{k!} e^{-\lambda t}, \quad k = 0, 1, 2, \ldo
 
 **定理 3.3 (布朗运动性质)**
 布朗运动具有以下性质：
+
 1. $E[B(t)] = 0$
 2. $Var[B(t)] = t$
 3. $Cov[B(s), B(t)] = \min(s, t)$
@@ -194,12 +200,14 @@ $$P(\bigcap_{n=1}^{\infty} A_n) = \lim_{n \to \infty} P(A_n)$$
 
 **定理 4.1 (概率测度的性质)**
 概率测度 $P$ 满足：
+
 1. $P(\emptyset) = 0$
 2. $P(A^c) = 1 - P(A)$
 3. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
 4. 如果 $A \subseteq B$，则 $P(A) \leq P(B)$
 
 **证明**：
+
 1. 由于 $\emptyset = \emptyset \cup \emptyset$ 且 $\emptyset \cap \emptyset = \emptyset$，$P(\emptyset) = P(\emptyset) + P(\emptyset)$，因此 $P(\emptyset) = 0$
 2. $1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)$，因此 $P(A^c) = 1 - P(A)$
 3. $P(A \cup B) = P(A \cup (B \setminus A)) = P(A) + P(B \setminus A) = P(A) + P(B) - P(A \cap B)$
@@ -1055,6 +1063,7 @@ func (hmm *HiddenMarkovModel) sampleFromDistribution(dist map[int]float64) int {
 ---
 
 **参考文献**：
+
 1. Ross, S. M. "Introduction to Probability Models." Academic Press, 2014.
 2. Casella, G., & Berger, R. L. "Statistical Inference." Cengage Learning, 2002.
 3. Wasserman, L. "All of Statistics." Springer, 2013.

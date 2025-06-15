@@ -3,31 +3,32 @@
 ## 目录
 
 - [01-命题逻辑 (Propositional Logic)](#01-命题逻辑-propositional-logic)
-	- [目录](#目录)
-	- [1. 基础定义](#1-基础定义)
-		- [1.1 命题](#11-命题)
-		- [1.2 逻辑连接词](#12-逻辑连接词)
-		- [1.3 命题公式](#13-命题公式)
-	- [2. 语义学](#2-语义学)
-		- [2.1 真值表](#21-真值表)
-		- [2.2 语义函数](#22-语义函数)
-		- [2.3 逻辑等价](#23-逻辑等价)
-	- [3. 证明系统](#3-证明系统)
-		- [3.1 自然演绎](#31-自然演绎)
-		- [3.2 公理系统](#32-公理系统)
-		- [3.3 归结原理](#33-归结原理)
-	- [4. 形式化定义](#4-形式化定义)
-		- [4.1 语法定义](#41-语法定义)
-		- [4.2 语义定义](#42-语义定义)
-		- [4.3 完备性定理](#43-完备性定理)
-	- [5. Go语言实现](#5-go语言实现)
-		- [5.1 命题公式表示](#51-命题公式表示)
-		- [5.2 真值表计算](#52-真值表计算)
-		- [5.3 证明系统实现](#53-证明系统实现)
-	- [6. 应用实例](#6-应用实例)
-		- [6.1 电路设计验证](#61-电路设计验证)
-		- [6.2 程序逻辑验证](#62-程序逻辑验证)
-		- [6.3 知识表示](#63-知识表示)
+  - [目录](#目录)
+  - [1. 基础定义](#1-基础定义)
+    - [1.1 命题](#11-命题)
+    - [1.2 逻辑连接词](#12-逻辑连接词)
+    - [1.3 命题公式](#13-命题公式)
+  - [2. 语义学](#2-语义学)
+    - [2.1 真值表](#21-真值表)
+    - [2.2 语义函数](#22-语义函数)
+    - [2.3 逻辑等价](#23-逻辑等价)
+  - [3. 证明系统](#3-证明系统)
+    - [3.1 自然演绎](#31-自然演绎)
+    - [3.2 公理系统](#32-公理系统)
+    - [3.3 归结原理](#33-归结原理)
+  - [4. 形式化定义](#4-形式化定义)
+    - [4.1 语法定义](#41-语法定义)
+    - [4.2 语义定义](#42-语义定义)
+    - [4.3 完备性定理](#43-完备性定理)
+  - [5. Go语言实现](#5-go语言实现)
+    - [5.1 命题公式表示](#51-命题公式表示)
+    - [5.2 真值表计算](#52-真值表计算)
+    - [5.3 证明系统实现](#53-证明系统实现)
+  - [6. 应用实例](#6-应用实例)
+    - [6.1 电路设计验证](#61-电路设计验证)
+    - [6.2 程序逻辑验证](#62-程序逻辑验证)
+    - [6.3 知识表示](#63-知识表示)
+  - [总结](#总结)
 
 ## 1. 基础定义
 
@@ -63,6 +64,7 @@
 
 **定义 1.9 (命题公式)**
 命题公式的递归定义：
+
 1. 原子命题是命题公式
 2. 如果 $\phi$ 是命题公式，则 $\neg \phi$ 是命题公式
 3. 如果 $\phi, \psi$ 是命题公式，则 $(\phi \wedge \psi), (\phi \vee \psi), (\phi \rightarrow \psi), (\phi \leftrightarrow \psi)$ 是命题公式
@@ -88,6 +90,7 @@
 
 **定义 2.3 (语义函数)**
 语义函数 $\llbracket \cdot \rrbracket$ 将命题公式映射到真值，满足：
+
 1. $\llbracket P \rrbracket = v(P)$ 对于原子命题 $P$
 2. $\llbracket \neg \phi \rrbracket = \neg \llbracket \phi \rrbracket$
 3. $\llbracket \phi \wedge \psi \rrbracket = \llbracket \phi \rrbracket \wedge \llbracket \psi \rrbracket$
@@ -102,6 +105,7 @@
 
 **定理 2.2 (德摩根律)**
 对于任意命题公式 $\phi, \psi$：
+
 1. $\neg(\phi \wedge \psi) \equiv \neg \phi \vee \neg \psi$
 2. $\neg(\phi \vee \psi) \equiv \neg \phi \wedge \neg \psi$
 
@@ -110,6 +114,7 @@
 
 **定理 2.3 (分配律)**
 对于任意命题公式 $\phi, \psi, \chi$：
+
 1. $\phi \wedge (\psi \vee \chi) \equiv (\phi \wedge \psi) \vee (\phi \wedge \chi)$
 2. $\phi \vee (\psi \wedge \chi) \equiv (\phi \vee \psi) \wedge (\phi \vee \chi)$
 
@@ -121,11 +126,13 @@
 自然演绎系统包含以下推理规则：
 
 **引入规则**：
+
 - $\wedge$-I: 从 $\phi$ 和 $\psi$ 推出 $\phi \wedge \psi$
 - $\vee$-I: 从 $\phi$ 推出 $\phi \vee \psi$ 或 $\psi \vee \phi$
 - $\rightarrow$-I: 从假设 $\phi$ 推出 $\psi$ 后，可以推出 $\phi \rightarrow \psi$
 
 **消除规则**：
+
 - $\wedge$-E: 从 $\phi \wedge \psi$ 推出 $\phi$ 或 $\psi$
 - $\vee$-E: 从 $\phi \vee \psi$ 和 $\phi \rightarrow \chi$ 和 $\psi \rightarrow \chi$ 推出 $\chi$
 - $\rightarrow$-E: 从 $\phi$ 和 $\phi \rightarrow \psi$ 推出 $\psi$
@@ -137,11 +144,13 @@
 
 **定义 3.2 (公理系统)**
 命题逻辑的公理系统包含以下公理模式：
+
 1. $\phi \rightarrow (\psi \rightarrow \phi)$
 2. $(\phi \rightarrow (\psi \rightarrow \chi)) \rightarrow ((\phi \rightarrow \psi) \rightarrow (\phi \rightarrow \chi))$
 3. $(\neg \phi \rightarrow \neg \psi) \rightarrow (\psi \rightarrow \phi)$
 
 **推理规则**：
+
 - 分离规则（MP）：从 $\phi$ 和 $\phi \rightarrow \psi$ 推出 $\psi$
 
 ### 3.3 归结原理
@@ -161,12 +170,14 @@
 
 **定义 4.1 (命题逻辑语言)**
 命题逻辑语言 $\mathcal{L}$ 由以下部分组成：
+
 - 原子命题集合 $\mathcal{P} = \{P_1, P_2, \ldots\}$
 - 逻辑连接词集合 $\{\neg, \wedge, \vee, \rightarrow, \leftrightarrow\}$
 - 括号 $\{(, )\}$
 
 **定义 4.2 (公式集合)**
 公式集合 $\mathcal{F}$ 是满足以下条件的最小集合：
+
 1. $\mathcal{P} \subseteq \mathcal{F}$
 2. 如果 $\phi \in \mathcal{F}$，则 $\neg \phi \in \mathcal{F}$
 3. 如果 $\phi, \psi \in \mathcal{F}$，则 $(\phi \wedge \psi), (\phi \vee \psi), (\phi \rightarrow \psi), (\phi \leftrightarrow \psi) \in \mathcal{F}$
@@ -178,6 +189,7 @@
 
 **定义 4.4 (满足关系)**
 满足关系 $\models$ 递归定义如下：
+
 1. $I \models P$ 当且仅当 $I(P) = true$
 2. $I \models \neg \phi$ 当且仅当 $I \not\models \phi$
 3. $I \models \phi \wedge \psi$ 当且仅当 $I \models \phi$ 且 $I \models \psi$

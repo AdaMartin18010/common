@@ -4,141 +4,127 @@
 
 - [03-图论 (Graph Theory)](#03-图论-graph-theory)
   - [目录](#目录)
-  - [概述](#概述)
-  - [基本概念](#基本概念)
-    - [图的定义](#图的定义)
-    - [图的类型](#图的类型)
-    - [图的基本性质](#图的基本性质)
-  - [形式化理论](#形式化理论)
-    - [图的形式化定义](#图的形式化定义)
-    - [图的基本定理](#图的基本定理)
-    - [图的代数结构](#图的代数结构)
-  - [算法与复杂度](#算法与复杂度)
-    - [图遍历算法](#图遍历算法)
-      - [深度优先搜索 (DFS)](#深度优先搜索-dfs)
-      - [广度优先搜索 (BFS)](#广度优先搜索-bfs)
-    - [最短路径算法](#最短路径算法)
-      - [Dijkstra算法](#dijkstra算法)
-    - [最小生成树算法](#最小生成树算法)
-      - [Kruskal算法](#kruskal算法)
-    - [网络流算法](#网络流算法)
-      - [Ford-Fulkerson算法](#ford-fulkerson算法)
-  - [Go语言实现](#go语言实现)
-    - [图的数据结构](#图的数据结构)
-    - [图的基本操作](#图的基本操作)
-    - [图算法实现](#图算法实现)
-  - [应用领域](#应用领域)
-    - [网络分析](#网络分析)
-    - [社交网络](#社交网络)
-    - [路由算法](#路由算法)
-    - [依赖分析](#依赖分析)
-  - [相关链接](#相关链接)
+  - [1. 基础概念](#1-基础概念)
+    - [1.1 图的定义](#11-图的定义)
+    - [1.2 图的类型](#12-图的类型)
+    - [1.3 基本性质](#13-基本性质)
+  - [2. 图的表示](#2-图的表示)
+    - [2.1 邻接矩阵](#21-邻接矩阵)
+    - [2.2 邻接表](#22-邻接表)
+    - [2.3 边列表](#23-边列表)
+  - [3. 图算法](#3-图算法)
+    - [3.1 遍历算法](#31-遍历算法)
+    - [3.2 最短路径](#32-最短路径)
+    - [3.3 最小生成树](#33-最小生成树)
+  - [4. 形式化定义](#4-形式化定义)
+  - [5. Go语言实现](#5-go语言实现)
 
-## 概述
+## 1. 基础概念
 
-图论是研究图（Graph）的数学分支，图是由顶点（Vertex）和边（Edge）组成的数学结构。图论在计算机科学中有着广泛的应用，包括网络分析、算法设计、数据结构等领域。
+### 1.1 图的定义
 
-## 基本概念
+**定义 1.1**: 图 $G = (V, E)$ 是一个有序对，其中：
+- $V$ 是顶点集（vertex set），$V \neq \emptyset$
+- $E$ 是边集（edge set），$E \subseteq V \times V$
 
-### 图的定义
+**定义 1.2**: 对于边 $e = (u, v) \in E$：
+- $u$ 和 $v$ 是 $e$ 的端点
+- $u$ 和 $v$ 是相邻的（adjacent）
+- $e$ 与 $u$ 和 $v$ 相关联（incident）
 
-**定义 1 (图)**: 图 $G = (V, E)$ 是一个有序对，其中：
+### 1.2 图的类型
 
-- $V$ 是顶点的有限集合，称为顶点集
-- $E$ 是边的集合，每条边是顶点集 $V$ 中两个顶点的无序对
+**定义 1.3**: 无向图（Undirected Graph）
+- 边是无序对：$(u, v) = (v, u)$
+- 邻接关系是对称的
 
-**定义 2 (有向图)**: 有向图 $D = (V, A)$ 是一个有序对，其中：
+**定义 1.4**: 有向图（Directed Graph）
+- 边是有序对：$(u, v) \neq (v, u)$
+- 邻接关系不对称
 
-- $V$ 是顶点的有限集合
-- $A$ 是弧的集合，每条弧是顶点集 $V$ 中两个顶点的有序对
+**定义 1.5**: 加权图（Weighted Graph）
+- 每条边 $e$ 关联一个权重 $w(e) \in \mathbb{R}$
 
-### 图的类型
+### 1.3 基本性质
 
-1. **无向图**: 边没有方向
-2. **有向图**: 边有方向
-3. **加权图**: 边有权重
-4. **多重图**: 允许重边
-5. **简单图**: 无重边无自环
+**定义 1.6**: 顶点的度（Degree）
+- 无向图：$deg(v) = |\{e \in E : v \text{ 是 } e \text{ 的端点}\}|$
+- 有向图：入度 $deg^-(v)$ 和出度 $deg^+(v)$
 
-### 图的基本性质
-
-**定义 3 (度数)**: 顶点 $v$ 的度数 $deg(v)$ 是与 $v$ 相邻的边数
-
-**定理 1 (握手定理)**: 对于任意图 $G = (V, E)$，
+**定理 1.1**: 握手定理
+对于无向图 $G = (V, E)$：
 $$\sum_{v \in V} deg(v) = 2|E|$$
 
-**证明**: 每条边贡献给两个顶点的度数，因此所有顶点的度数之和等于边数的两倍。
+**证明**:
+每条边贡献给两个顶点的度，因此总度数等于边数的两倍。
 
-## 形式化理论
+## 2. 图的表示
 
-### 图的形式化定义
+### 2.1 邻接矩阵
 
-**定义 4 (邻接矩阵)**: 图 $G = (V, E)$ 的邻接矩阵 $A$ 是一个 $n \times n$ 矩阵，其中：
-$$A_{ij} = \begin{cases}
-1 & \text{if } (v_i, v_j) \in E \\
+**定义 2.1**: 邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵：
+$$A[i][j] = \begin{cases}
+1 & \text{if } (i, j) \in E \\
 0 & \text{otherwise}
 \end{cases}$$
 
-**定义 5 (邻接表)**: 图 $G = (V, E)$ 的邻接表是一个映射 $adj: V \rightarrow 2^V$，其中 $adj(v)$ 是与 $v$ 相邻的顶点集合。
+**性质**:
+- 无向图的邻接矩阵是对称的
+- 对角线元素为0（无自环）
+- 空间复杂度：$O(|V|^2)$
 
-### 图的基本定理
+### 2.2 邻接表
 
-**定理 2 (欧拉定理)**: 连通图 $G$ 存在欧拉回路的充要条件是所有顶点的度数都是偶数。
+**定义 2.2**: 邻接表为每个顶点维护一个邻接顶点列表：
+$$Adj[v] = \{u \in V : (v, u) \in E\}$$
 
-**定理 3 (哈密顿定理)**: 对于 $n \geq 3$ 的完全图 $K_n$，存在哈密顿回路。
+**性质**:
+- 空间复杂度：$O(|V| + |E|)$
+- 适合稀疏图
+- 遍历邻接顶点效率高
 
-**定理 4 (平面图欧拉公式)**: 对于连通平面图 $G = (V, E, F)$，
-$$|V| - |E| + |F| = 2$$
-其中 $F$ 是面的集合。
+### 2.3 边列表
 
-### 图的代数结构
+**定义 2.3**: 边列表直接存储所有边：
+$$E = \{(u_1, v_1), (u_2, v_2), \ldots, (u_m, v_m)\}$$
 
-**定义 6 (图同构)**: 两个图 $G_1 = (V_1, E_1)$ 和 $G_2 = (V_2, E_2)$ 同构，如果存在双射 $f: V_1 \rightarrow V_2$，使得：
-$$(u, v) \in E_1 \Leftrightarrow (f(u), f(v)) \in E_2$$
+## 3. 图算法
 
-## 算法与复杂度
+### 3.1 遍历算法
 
-### 图遍历算法
+#### 3.1.1 深度优先搜索 (DFS)
 
-#### 深度优先搜索 (DFS)
-
-**算法 1 (DFS)**:
+**算法描述**:
 ```go
-func DFS(g *Graph, start Vertex) {
-    visited := make(map[Vertex]bool)
-    dfsHelper(g, start, visited)
-}
-
-func dfsHelper(g *Graph, v Vertex, visited map[Vertex]bool) {
-    visited[v] = true
-    fmt.Printf("Visit: %v\n", v)
-
-    for _, neighbor := range g.AdjacencyList[v] {
+func DFS(graph *Graph, start int, visited map[int]bool) {
+    visited[start] = true
+    fmt.Printf("Visit: %d\n", start)
+    
+    for _, neighbor := range graph.adjList[start] {
         if !visited[neighbor] {
-            dfsHelper(g, neighbor, visited)
+            DFS(graph, neighbor, visited)
         }
     }
 }
 ```
 
 **时间复杂度**: $O(|V| + |E|)$
-**空间复杂度**: $O(|V|)$
 
-#### 广度优先搜索 (BFS)
+#### 3.1.2 广度优先搜索 (BFS)
 
-**算法 2 (BFS)**:
+**算法描述**:
 ```go
-func BFS(g *Graph, start Vertex) {
-    visited := make(map[Vertex]bool)
-    queue := []Vertex{start}
+func BFS(graph *Graph, start int) {
+    queue := []int{start}
+    visited := make(map[int]bool)
     visited[start] = true
-
+    
     for len(queue) > 0 {
-        v := queue[0]
+        current := queue[0]
         queue = queue[1:]
-        fmt.Printf("Visit: %v\n", v)
-
-        for _, neighbor := range g.AdjacencyList[v] {
+        fmt.Printf("Visit: %d\n", current)
+        
+        for _, neighbor := range graph.adjList[current] {
             if !visited[neighbor] {
                 visited[neighbor] = true
                 queue = append(queue, neighbor)
@@ -149,386 +135,303 @@ func BFS(g *Graph, start Vertex) {
 ```
 
 **时间复杂度**: $O(|V| + |E|)$
-**空间复杂度**: $O(|V|)$
 
-### 最短路径算法
+### 3.2 最短路径
 
-#### Dijkstra算法
+#### 3.2.1 Dijkstra算法
 
-**算法 3 (Dijkstra)**:
-```go
-func Dijkstra(g *Graph, start Vertex) map[Vertex]int {
-    distances := make(map[Vertex]int)
-    for v := range g.AdjacencyList {
-        distances[v] = math.MaxInt32
-    }
-    distances[start] = 0
+**定理 3.1**: Dijkstra算法正确性
+对于非负权图，Dijkstra算法能找到从源点到所有其他顶点的最短路径。
 
-    pq := &PriorityQueue{}
-    heap.Push(pq, &Item{vertex: start, distance: 0})
+**算法复杂度**: $O((|V| + |E|) \log |V|)$
 
-    for pq.Len() > 0 {
-        item := heap.Pop(pq).(*Item)
-        u := item.vertex
+#### 3.2.2 Floyd-Warshall算法
 
-        if item.distance > distances[u] {
-            continue
-        }
+**定理 3.2**: Floyd-Warshall算法
+对于任意图，Floyd-Warshall算法能找到所有顶点对之间的最短路径。
 
-        for v, weight := range g.AdjacencyList[u] {
-            if distances[u]+weight < distances[v] {
-                distances[v] = distances[u] + weight
-                heap.Push(pq, &Item{vertex: v, distance: distances[v]})
-            }
-        }
-    }
+**算法复杂度**: $O(|V|^3)$
 
-    return distances
-}
-```
+### 3.3 最小生成树
 
-**时间复杂度**: $O((|V| + |E|) \log |V|)$
-**空间复杂度**: $O(|V|)$
+#### 3.3.1 Kruskal算法
 
-### 最小生成树算法
+**定理 3.3**: Kruskal算法正确性
+Kruskal算法能找到图的最小生成树。
 
-#### Kruskal算法
+**算法复杂度**: $O(|E| \log |E|)$
 
-**算法 4 (Kruskal)**:
-```go
-func Kruskal(g *Graph) []Edge {
-    var edges []Edge
-    for u := range g.AdjacencyList {
-        for v, weight := range g.AdjacencyList[u] {
-            edges = append(edges, Edge{u, v, weight})
-        }
-    }
+#### 3.3.2 Prim算法
 
-    sort.Slice(edges, func(i, j int) bool {
-        return edges[i].Weight < edges[j].Weight
-    })
+**定理 3.4**: Prim算法正确性
+Prim算法能找到图的最小生成树。
 
-    uf := NewUnionFind(len(g.AdjacencyList))
-    var mst []Edge
+**算法复杂度**: $O((|V| + |E|) \log |V|)$
 
-    for _, edge := range edges {
-        if uf.Find(edge.From) != uf.Find(edge.To) {
-            mst = append(mst, edge)
-            uf.Union(edge.From, edge.To)
-        }
-    }
+## 4. 形式化定义
 
-    return mst
-}
-```
+### 4.1 图的同构
 
-**时间复杂度**: $O(|E| \log |E|)$
-**空间复杂度**: $O(|V|)$
+**定义 4.1**: 图同构
+两个图 $G_1 = (V_1, E_1)$ 和 $G_2 = (V_2, E_2)$ 是同构的，如果存在双射 $f: V_1 \rightarrow V_2$ 使得：
+$$(u, v) \in E_1 \iff (f(u), f(v)) \in E_2$$
 
-### 网络流算法
+### 4.2 图的连通性
 
-#### Ford-Fulkerson算法
+**定义 4.2**: 连通图
+无向图 $G$ 是连通的，如果对于任意两个顶点 $u, v \in V$，存在从 $u$ 到 $v$ 的路径。
 
-**算法 5 (Ford-Fulkerson)**:
-```go
-func FordFulkerson(g *Graph, source, sink Vertex) int {
-    residual := g.Copy()
-    maxFlow := 0
+**定义 4.3**: 强连通图
+有向图 $G$ 是强连通的，如果对于任意两个顶点 $u, v \in V$，存在从 $u$ 到 $v$ 的有向路径。
 
-    for {
-        path := findAugmentingPath(residual, source, sink)
-        if path == nil {
-            break
-        }
+### 4.3 图的着色
 
-        minCapacity := findMinCapacity(path)
-        maxFlow += minCapacity
+**定义 4.4**: 图着色
+图 $G$ 的 $k$-着色是一个函数 $c: V \rightarrow \{1, 2, \ldots, k\}$，使得相邻顶点有不同的颜色。
 
-        // 更新残量图
-        for i := 0; i < len(path)-1; i++ {
-            u, v := path[i], path[i+1]
-            residual.AdjacencyList[u][v] -= minCapacity
-            residual.AdjacencyList[v][u] += minCapacity
-        }
-    }
+**定理 4.1**: 四色定理
+任何平面图都可以用四种颜色着色。
 
-    return maxFlow
-}
-```
+## 5. Go语言实现
 
-**时间复杂度**: $O(|E| \cdot f^*)$，其中 $f^*$ 是最大流值
-**空间复杂度**: $O(|V| + |E|)$
-
-## Go语言实现
-
-### 图的数据结构
+### 5.1 图的数据结构
 
 ```go
-// Vertex 表示图的顶点
-type Vertex int
+package graph
 
-// Edge 表示图的边
-type Edge struct {
-    From   Vertex
-    To     Vertex
-    Weight int
-}
+import (
+    "container/heap"
+    "fmt"
+    "math"
+)
 
-// Graph 表示图
+// Graph 表示图的数据结构
 type Graph struct {
-    AdjacencyList map[Vertex]map[Vertex]int
-    Directed      bool
+    vertices int
+    adjList  map[int][]Edge
+}
+
+// Edge 表示边
+type Edge struct {
+    to     int
+    weight float64
 }
 
 // NewGraph 创建新图
-func NewGraph(directed bool) *Graph {
+func NewGraph(vertices int) *Graph {
     return &Graph{
-        AdjacencyList: make(map[Vertex]map[Vertex]int),
-        Directed:      directed,
-    }
-}
-
-// AddVertex 添加顶点
-func (g *Graph) AddVertex(v Vertex) {
-    if g.AdjacencyList[v] == nil {
-        g.AdjacencyList[v] = make(map[Vertex]int)
+        vertices: vertices,
+        adjList:  make(map[int][]Edge),
     }
 }
 
 // AddEdge 添加边
-func (g *Graph) AddEdge(from, to Vertex, weight int) {
-    g.AddVertex(from)
-    g.AddVertex(to)
-
-    g.AdjacencyList[from][to] = weight
-    if !g.Directed {
-        g.AdjacencyList[to][from] = weight
-    }
+func (g *Graph) AddEdge(from, to int, weight float64) {
+    g.adjList[from] = append(g.adjList[from], Edge{to: to, weight: weight})
 }
 
-// RemoveEdge 删除边
-func (g *Graph) RemoveEdge(from, to Vertex) {
-    delete(g.AdjacencyList[from], to)
-    if !g.Directed {
-        delete(g.AdjacencyList[to], from)
-    }
-}
-
-// GetDegree 获取顶点度数
-func (g *Graph) GetDegree(v Vertex) int {
-    return len(g.AdjacencyList[v])
-}
-
-// IsConnected 检查图是否连通
-func (g *Graph) IsConnected() bool {
-    if len(g.AdjacencyList) == 0 {
-        return true
-    }
-
-    visited := make(map[Vertex]bool)
-    var start Vertex
-    for v := range g.AdjacencyList {
-        start = v
-        break
-    }
-
-    g.dfs(start, visited)
-
-    return len(visited) == len(g.AdjacencyList)
-}
-
-// dfs 深度优先搜索辅助函数
-func (g *Graph) dfs(v Vertex, visited map[Vertex]bool) {
-    visited[v] = true
-    for neighbor := range g.AdjacencyList[v] {
-        if !visited[neighbor] {
-            g.dfs(neighbor, visited)
-        }
-    }
+// AddUndirectedEdge 添加无向边
+func (g *Graph) AddUndirectedEdge(u, v int, weight float64) {
+    g.AddEdge(u, v, weight)
+    g.AddEdge(v, u, weight)
 }
 ```
 
-### 图的基本操作
+### 5.2 Dijkstra算法实现
 
 ```go
-// Copy 复制图
-func (g *Graph) Copy() *Graph {
-    newGraph := NewGraph(g.Directed)
-    for v, neighbors := range g.AdjacencyList {
-        newGraph.AdjacencyList[v] = make(map[Vertex]int)
-        for neighbor, weight := range neighbors {
-            newGraph.AdjacencyList[v][neighbor] = weight
+// Dijkstra 实现Dijkstra最短路径算法
+func (g *Graph) Dijkstra(start int) map[int]float64 {
+    distances := make(map[int]float64)
+    for i := 0; i < g.vertices; i++ {
+        distances[i] = math.Inf(1)
+    }
+    distances[start] = 0
+    
+    pq := &PriorityQueue{}
+    heap.Init(pq)
+    heap.Push(pq, &Item{vertex: start, distance: 0})
+    
+    for pq.Len() > 0 {
+        current := heap.Pop(pq).(*Item)
+        
+        if current.distance > distances[current.vertex] {
+            continue
+        }
+        
+        for _, edge := range g.adjList[current.vertex] {
+            newDist := distances[current.vertex] + edge.weight
+            if newDist < distances[edge.to] {
+                distances[edge.to] = newDist
+                heap.Push(pq, &Item{vertex: edge.to, distance: newDist})
+            }
         }
     }
-    return newGraph
+    
+    return distances
 }
 
-// Transpose 转置图（仅对有向图有效）
-func (g *Graph) Transpose() *Graph {
-    if !g.Directed {
-        return g.Copy()
-    }
+// PriorityQueue 优先队列实现
+type PriorityQueue []*Item
 
-    transposed := NewGraph(true)
-    for v, neighbors := range g.AdjacencyList {
-        for neighbor, weight := range neighbors {
-            transposed.AddEdge(neighbor, v, weight)
-        }
-    }
-    return transposed
+type Item struct {
+    vertex   int
+    distance float64
+    index    int
 }
 
-// GetConnectedComponents 获取连通分量
-func (g *Graph) GetConnectedComponents() [][]Vertex {
-    visited := make(map[Vertex]bool)
-    var components [][]Vertex
+func (pq PriorityQueue) Len() int { return len(pq) }
 
-    for v := range g.AdjacencyList {
-        if !visited[v] {
-            var component []Vertex
-            g.dfsComponent(v, visited, &component)
-            components = append(components, component)
-        }
-    }
-
-    return components
+func (pq PriorityQueue) Less(i, j int) bool {
+    return pq[i].distance < pq[j].distance
 }
 
-// dfsComponent 获取连通分量的DFS辅助函数
-func (g *Graph) dfsComponent(v Vertex, visited map[Vertex]bool, component *[]Vertex) {
-    visited[v] = true
-    *component = append(*component, v)
+func (pq PriorityQueue) Swap(i, j int) {
+    pq[i], pq[j] = pq[j], pq[i]
+    pq[i].index = i
+    pq[j].index = j
+}
 
-    for neighbor := range g.AdjacencyList[v] {
-        if !visited[neighbor] {
-            g.dfsComponent(neighbor, visited, component)
-        }
-    }
+func (pq *PriorityQueue) Push(x interface{}) {
+    n := len(*pq)
+    item := x.(*Item)
+    item.index = n
+    *pq = append(*pq, item)
+}
+
+func (pq *PriorityQueue) Pop() interface{} {
+    old := *pq
+    n := len(old)
+    item := old[n-1]
+    old[n-1] = nil
+    item.index = -1
+    *pq = old[0 : n-1]
+    return item
 }
 ```
 
-### 图算法实现
+### 5.3 最小生成树实现
 
 ```go
-// TopologicalSort 拓扑排序（仅对有向无环图）
-func (g *Graph) TopologicalSort() ([]Vertex, error) {
-    if !g.Directed {
-        return nil, fmt.Errorf("topological sort only works on directed graphs")
-    }
-
-    inDegree := make(map[Vertex]int)
-    for v := range g.AdjacencyList {
-        inDegree[v] = 0
-    }
-
-    // 计算入度
-    for _, neighbors := range g.AdjacencyList {
-        for neighbor := range neighbors {
-            inDegree[neighbor]++
-        }
-    }
-
-    // 使用队列进行拓扑排序
-    var queue []Vertex
-    for v, degree := range inDegree {
-        if degree == 0 {
-            queue = append(queue, v)
-        }
-    }
-
-    var result []Vertex
-    for len(queue) > 0 {
-        v := queue[0]
-        queue = queue[1:]
-        result = append(result, v)
-
-        for neighbor := range g.AdjacencyList[v] {
-            inDegree[neighbor]--
-            if inDegree[neighbor] == 0 {
-                queue = append(queue, neighbor)
+// Kruskal 实现Kruskal最小生成树算法
+func (g *Graph) Kruskal() []Edge {
+    var edges []Edge
+    for from, edgeList := range g.adjList {
+        for _, edge := range edgeList {
+            if from < edge.to { // 避免重复边
+                edges = append(edges, Edge{from: from, to: edge.to, weight: edge.weight})
             }
         }
     }
-
-    if len(result) != len(g.AdjacencyList) {
-        return nil, fmt.Errorf("graph contains cycle")
+    
+    // 按权重排序
+    sort.Slice(edges, func(i, j int) bool {
+        return edges[i].weight < edges[j].weight
+    })
+    
+    uf := NewUnionFind(g.vertices)
+    var mst []Edge
+    
+    for _, edge := range edges {
+        if uf.Find(edge.from) != uf.Find(edge.to) {
+            uf.Union(edge.from, edge.to)
+            mst = append(mst, edge)
+        }
     }
-
-    return result, nil
+    
+    return mst
 }
 
-// FloydWarshall 全源最短路径算法
-func (g *Graph) FloydWarshall() map[Vertex]map[Vertex]int {
-    // 初始化距离矩阵
-    dist := make(map[Vertex]map[Vertex]int)
-    for u := range g.AdjacencyList {
-        dist[u] = make(map[Vertex]int)
-        for v := range g.AdjacencyList {
-            if u == v {
-                dist[u][v] = 0
-            } else if weight, exists := g.AdjacencyList[u][v]; exists {
-                dist[u][v] = weight
-            } else {
-                dist[u][v] = math.MaxInt32
-            }
-        }
-    }
+// UnionFind 并查集实现
+type UnionFind struct {
+    parent []int
+    rank   []int
+}
 
-    // Floyd-Warshall算法核心
-    for k := range g.AdjacencyList {
-        for i := range g.AdjacencyList {
-            for j := range g.AdjacencyList {
-                if dist[i][k] != math.MaxInt32 && dist[k][j] != math.MaxInt32 {
-                    if dist[i][k]+dist[k][j] < dist[i][j] {
-                        dist[i][j] = dist[i][k] + dist[k][j]
-                    }
-                }
-            }
-        }
+func NewUnionFind(n int) *UnionFind {
+    uf := &UnionFind{
+        parent: make([]int, n),
+        rank:   make([]int, n),
     }
+    for i := 0; i < n; i++ {
+        uf.parent[i] = i
+    }
+    return uf
+}
 
-    return dist
+func (uf *UnionFind) Find(x int) int {
+    if uf.parent[x] != x {
+        uf.parent[x] = uf.Find(uf.parent[x])
+    }
+    return uf.parent[x]
+}
+
+func (uf *UnionFind) Union(x, y int) {
+    px, py := uf.Find(x), uf.Find(y)
+    if px == py {
+        return
+    }
+    
+    if uf.rank[px] < uf.rank[py] {
+        uf.parent[px] = py
+    } else if uf.rank[px] > uf.rank[py] {
+        uf.parent[py] = px
+    } else {
+        uf.parent[py] = px
+        uf.rank[px]++
+    }
 }
 ```
 
-## 应用领域
+### 5.4 使用示例
 
-### 网络分析
+```go
+func main() {
+    // 创建图
+    g := NewGraph(5)
+    
+    // 添加边
+    g.AddUndirectedEdge(0, 1, 4)
+    g.AddUndirectedEdge(0, 2, 2)
+    g.AddUndirectedEdge(1, 2, 1)
+    g.AddUndirectedEdge(1, 3, 5)
+    g.AddUndirectedEdge(2, 3, 8)
+    g.AddUndirectedEdge(2, 4, 10)
+    g.AddUndirectedEdge(3, 4, 2)
+    
+    // 计算最短路径
+    distances := g.Dijkstra(0)
+    fmt.Println("Shortest distances from vertex 0:")
+    for vertex, distance := range distances {
+        fmt.Printf("To %d: %.2f\n", vertex, distance)
+    }
+    
+    // 计算最小生成树
+    mst := g.Kruskal()
+    fmt.Println("\nMinimum Spanning Tree:")
+    totalWeight := 0.0
+    for _, edge := range mst {
+        fmt.Printf("Edge %d-%d: %.2f\n", edge.from, edge.to, edge.weight)
+        totalWeight += edge.weight
+    }
+    fmt.Printf("Total weight: %.2f\n", totalWeight)
+}
+```
 
-图论在网络分析中用于：
-- 网络拓扑分析
-- 路由算法设计
-- 网络流量优化
-- 故障检测和恢复
+## 总结
 
-### 社交网络
+图论是计算机科学中的基础理论，广泛应用于网络分析、路由算法、社交网络分析等领域。通过形式化定义和Go语言实现，我们建立了从理论到实践的完整框架。
 
-图论在社交网络分析中用于：
-- 社区发现
-- 影响力分析
-- 信息传播建模
-- 推荐系统
+### 关键要点
 
-### 路由算法
+1. **理论基础**: 图的定义、性质和基本定理
+2. **算法设计**: 遍历、最短路径、最小生成树等经典算法
+3. **实现技术**: 邻接表、优先队列、并查集等数据结构
+4. **应用场景**: 网络路由、社交网络、生物信息学等
 
-图论在路由算法中用于：
-- 最短路径计算
-- 负载均衡
-- 网络规划
-- 流量工程
+### 进一步研究方向
 
-### 依赖分析
-
-图论在软件工程中用于：
-- 模块依赖分析
-- 编译顺序确定
-- 循环依赖检测
-- 软件架构分析
-
-## 相关链接
-
-- [01-集合论 (Set Theory)](../01-Set-Theory/README.md)
-- [02-逻辑学 (Logic)](../02-Logic/README.md)
-- [04-概率论 (Probability Theory)](../04-Probability-Theory/README.md)
-- [08-软件工程形式化 (Software Engineering Formalization)](../../08-Software-Engineering-Formalization/README.md)
-- [09-编程语言理论 (Programming Language Theory)](../../09-Programming-Language-Theory/README.md)
+1. **高级图算法**: 最大流、匹配、着色等
+2. **图神经网络**: 深度学习在图上的应用
+3. **动态图**: 随时间变化的图结构
+4. **大规模图处理**: 分布式图计算框架

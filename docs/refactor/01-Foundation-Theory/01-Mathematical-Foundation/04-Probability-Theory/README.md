@@ -4,171 +4,218 @@
 
 - [04-概率论 (Probability Theory)](#04-概率论-probability-theory)
   - [目录](#目录)
-  - [概述](#概述)
-  - [基本概念](#基本概念)
-    - [概率空间](#概率空间)
-    - [随机变量](#随机变量)
-    - [概率分布](#概率分布)
-  - [形式化理论](#形式化理论)
-    - [概率公理](#概率公理)
-    - [条件概率](#条件概率)
-    - [独立性](#独立性)
-    - [大数定律](#大数定律)
-  - [随机过程](#随机过程)
-    - [马尔可夫链](#马尔可夫链)
-    - [泊松过程](#泊松过程)
-    - [布朗运动](#布朗运动)
-  - [Go语言实现](#go语言实现)
-    - [随机数生成](#随机数生成)
-    - [概率分布](#概率分布-1)
-    - [统计函数](#统计函数)
-    - [随机过程模拟](#随机过程模拟)
-  - [应用领域](#应用领域)
-    - [机器学习](#机器学习)
-    - [金融建模](#金融建模)
-    - [网络分析](#网络分析)
-    - [性能分析](#性能分析)
-  - [相关链接](#相关链接)
+  - [1. 基础概念](#1-基础概念)
+    - [1.1 概率空间](#11-概率空间)
+    - [1.2 随机变量](#12-随机变量)
+    - [1.3 概率分布](#13-概率分布)
+  - [2. 概率公理](#2-概率公理)
+    - [2.1 Kolmogorov公理](#21-kolmogorov公理)
+    - [2.2 基本性质](#22-基本性质)
+  - [3. 条件概率与独立性](#3-条件概率与独立性)
+    - [3.1 条件概率](#31-条件概率)
+    - [3.2 独立性](#32-独立性)
+    - [3.3 贝叶斯定理](#33-贝叶斯定理)
+  - [4. 随机变量](#4-随机变量)
+    - [4.1 离散随机变量](#41-离散随机变量)
+    - [4.2 连续随机变量](#42-连续随机变量)
+    - [4.3 期望与方差](#43-期望与方差)
+  - [5. 大数定律与中心极限定理](#5-大数定律与中心极限定理)
+    - [5.1 大数定律](#51-大数定律)
+    - [5.2 中心极限定理](#52-中心极限定理)
+  - [6. Go语言实现](#6-go语言实现)
 
-## 概述
+## 1. 基础概念
 
-概率论是研究随机现象数量规律的数学分支，为统计学、机器学习、金融工程等领域提供理论基础。概率论通过严格的数学公理化体系，建立了处理不确定性的理论框架。
+### 1.1 概率空间
 
-## 基本概念
+**定义 1.1**: 概率空间
+概率空间是一个三元组 $(\Omega, \mathcal{F}, P)$，其中：
+- $\Omega$ 是样本空间（sample space），包含所有可能的结果
+- $\mathcal{F}$ 是事件域（event space），是 $\Omega$ 的子集的 $\sigma$-代数
+- $P$ 是概率测度（probability measure），$P: \mathcal{F} \rightarrow [0,1]$
 
-### 概率空间
+**定义 1.2**: $\sigma$-代数
+集合 $\mathcal{F}$ 是 $\sigma$-代数，如果满足：
+1. $\Omega \in \mathcal{F}$
+2. 如果 $A \in \mathcal{F}$，则 $A^c \in \mathcal{F}$
+3. 如果 $A_1, A_2, \ldots \in \mathcal{F}$，则 $\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$
 
-**定义 1 (概率空间)**: 概率空间 $(\Omega, \mathcal{F}, P)$ 由三部分组成：
+### 1.2 随机变量
 
-- $\Omega$: 样本空间，所有可能结果的集合
-- $\mathcal{F}$: 事件域，$\Omega$ 的子集的 $\sigma$-代数
-- $P$: 概率测度，满足概率公理的函数
+**定义 1.3**: 随机变量
+随机变量 $X$ 是从概率空间 $(\Omega, \mathcal{F}, P)$ 到实数集 $\mathbb{R}$ 的可测函数：
+$$X: \Omega \rightarrow \mathbb{R}$$
 
-**定义 2 (事件)**: 事件是样本空间 $\Omega$ 的子集，属于事件域 $\mathcal{F}$。
-
-**定义 3 (概率)**: 概率 $P: \mathcal{F} \rightarrow [0,1]$ 满足：
-
-1. $P(\Omega) = 1$
-2. 对于互斥事件序列 $\{A_i\}$，$P(\bigcup_i A_i) = \sum_i P(A_i)$
-
-### 随机变量
-
-**定义 4 (随机变量)**: 随机变量 $X: \Omega \rightarrow \mathbb{R}$ 是可测函数，满足：
-$$\{\omega \in \Omega : X(\omega) \leq x\} \in \mathcal{F}, \forall x \in \mathbb{R}$$
-
-**定义 5 (分布函数)**: 随机变量 $X$ 的分布函数 $F_X: \mathbb{R} \rightarrow [0,1]$ 定义为：
+**定义 1.4**: 分布函数
+随机变量 $X$ 的分布函数 $F_X: \mathbb{R} \rightarrow [0,1]$ 定义为：
 $$F_X(x) = P(X \leq x)$$
 
-**定义 6 (概率密度函数)**: 连续随机变量 $X$ 的概率密度函数 $f_X$ 满足：
-$$F_X(x) = \int_{-\infty}^x f_X(t) dt$$
+### 1.3 概率分布
 
-### 概率分布
+**定义 1.5**: 离散分布
+如果随机变量 $X$ 只取有限或可数无限个值，则称 $X$ 为离散随机变量。
 
-**定义 7 (离散分布)**: 离散随机变量的概率质量函数 $p_X$ 满足：
-$$P(X = x) = p_X(x), \sum_x p_X(x) = 1$$
+**定义 1.6**: 连续分布
+如果随机变量 $X$ 的分布函数 $F_X$ 是连续的，则称 $X$ 为连续随机变量。
 
-**定义 8 (连续分布)**: 连续随机变量的概率密度函数 $f_X$ 满足：
-$$P(a \leq X \leq b) = \int_a^b f_X(x) dx$$
+## 2. 概率公理
 
-## 形式化理论
+### 2.1 Kolmogorov公理
 
-### 概率公理
+**公理 2.1**: Kolmogorov概率公理
+概率测度 $P$ 满足以下公理：
 
-**公理 1 (非负性)**: $P(A) \geq 0$ 对所有事件 $A \in \mathcal{F}$
+1. **非负性**: 对于所有 $A \in \mathcal{F}$，$P(A) \geq 0$
+2. **规范性**: $P(\Omega) = 1$
+3. **可列可加性**: 对于互不相容的事件 $A_1, A_2, \ldots$，
+   $$P\left(\bigcup_{i=1}^{\infty} A_i\right) = \sum_{i=1}^{\infty} P(A_i)$$
 
-**公理 2 (规范性)**: $P(\Omega) = 1$
+### 2.2 基本性质
 
-**公理 3 (可列可加性)**: 对于互斥事件序列 $\{A_i\}_{i=1}^{\infty}$，
-$$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$$
-
-**定理 1 (概率的基本性质)**:
+**定理 2.1**: 概率的基本性质
+对于任意事件 $A, B \in \mathcal{F}$：
 
 1. $P(\emptyset) = 0$
 2. $P(A^c) = 1 - P(A)$
-3. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+3. 如果 $A \subseteq B$，则 $P(A) \leq P(B)$
+4. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
 
 **证明**:
-
-1. 由公理2和3，$P(\Omega) = P(\Omega \cup \emptyset) = P(\Omega) + P(\emptyset)$，因此 $P(\emptyset) = 0$
+1. 由可列可加性，$P(\emptyset) = P(\emptyset \cup \emptyset \cup \cdots) = P(\emptyset) + P(\emptyset) + \cdots$，因此 $P(\emptyset) = 0$
 2. $1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)$，因此 $P(A^c) = 1 - P(A)$
-3. $P(A \cup B) = P(A \cup (B \setminus A)) = P(A) + P(B \setminus A) = P(A) + P(B) - P(A \cap B)$
+3. 如果 $A \subseteq B$，则 $B = A \cup (B \setminus A)$，因此 $P(B) = P(A) + P(B \setminus A) \geq P(A)$
+4. $A \cup B = A \cup (B \setminus A)$，且 $A$ 和 $B \setminus A$ 互不相容，因此 $P(A \cup B) = P(A) + P(B \setminus A) = P(A) + P(B) - P(A \cap B)$
 
-### 条件概率
+## 3. 条件概率与独立性
 
-**定义 9 (条件概率)**: 在事件 $B$ 发生的条件下，事件 $A$ 发生的概率为：
-$$P(A|B) = \frac{P(A \cap B)}{P(B)}, \text{ if } P(B) > 0$$
+### 3.1 条件概率
 
-**定理 2 (乘法公式)**: 对于事件 $A_1, A_2, \ldots, A_n$，
+**定义 3.1**: 条件概率
+对于事件 $A, B \in \mathcal{F}$，且 $P(B) > 0$，$A$ 在 $B$ 条件下的条件概率定义为：
+$$P(A|B) = \frac{P(A \cap B)}{P(B)}$$
+
+**定理 3.1**: 乘法公式
+对于事件 $A_1, A_2, \ldots, A_n$，如果 $P(A_1 \cap A_2 \cap \cdots \cap A_{n-1}) > 0$，则：
 $$P(A_1 \cap A_2 \cap \cdots \cap A_n) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2) \cdots P(A_n|A_1 \cap A_2 \cap \cdots \cap A_{n-1})$$
 
-**定理 3 (全概率公式)**: 如果 $\{B_i\}$ 是样本空间的分割，则：
-$$P(A) = \sum_i P(A|B_i) \cdot P(B_i)$$
+### 3.2 独立性
 
-**定理 4 (贝叶斯公式)**:
-$$P(B_i|A) = \frac{P(A|B_i) \cdot P(B_i)}{\sum_j P(A|B_j) \cdot P(B_j)}$$
-
-### 独立性
-
-**定义 10 (独立性)**: 事件 $A$ 和 $B$ 独立，如果：
+**定义 3.2**: 独立性
+事件 $A$ 和 $B$ 是独立的，如果：
 $$P(A \cap B) = P(A) \cdot P(B)$$
 
-**定义 11 (条件独立性)**: 在事件 $C$ 的条件下，事件 $A$ 和 $B$ 条件独立，如果：
+**定义 3.3**: 条件独立性
+事件 $A$ 和 $B$ 在事件 $C$ 条件下是独立的，如果：
 $$P(A \cap B|C) = P(A|C) \cdot P(B|C)$$
 
-**定理 5 (独立性的性质)**: 如果 $A$ 和 $B$ 独立，则：
+### 3.3 贝叶斯定理
 
-1. $A$ 和 $B^c$ 独立
-2. $A^c$ 和 $B$ 独立
-3. $A^c$ 和 $B^c$ 独立
+**定理 3.2**: 贝叶斯定理
+对于事件 $A, B \in \mathcal{F}$，且 $P(A) > 0, P(B) > 0$：
+$$P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}$$
 
-### 大数定律
+**证明**:
+由条件概率定义，$P(A|B) = \frac{P(A \cap B)}{P(B)}$ 和 $P(B|A) = \frac{P(A \cap B)}{P(A)}$
+因此 $P(A \cap B) = P(B|A) \cdot P(A)$
+代入第一个等式得到贝叶斯定理。
 
-**定理 6 (弱大数定律)**: 设 $\{X_i\}$ 是独立同分布的随机变量序列，期望为 $\mu$，则：
-$$\frac{1}{n} \sum_{i=1}^n X_i \xrightarrow{P} \mu$$
+## 4. 随机变量
 
-**定理 7 (强大数定律)**: 在相同条件下，
-$$\frac{1}{n} \sum_{i=1}^n X_i \xrightarrow{a.s.} \mu$$
+### 4.1 离散随机变量
 
-**定理 8 (中心极限定理)**: 设 $\{X_i\}$ 是独立同分布的随机变量序列，期望为 $\mu$，方差为 $\sigma^2$，则：
-$$\frac{\sum_{i=1}^n X_i - n\mu}{\sqrt{n}\sigma} \xrightarrow{d} N(0,1)$$
+**定义 4.1**: 概率质量函数
+离散随机变量 $X$ 的概率质量函数 $p_X: \mathbb{R} \rightarrow [0,1]$ 定义为：
+$$p_X(x) = P(X = x)$$
 
-## 随机过程
+**性质**:
+1. $p_X(x) \geq 0$ 对于所有 $x \in \mathbb{R}$
+2. $\sum_{x \in \text{range}(X)} p_X(x) = 1$
 
-### 马尔可夫链
+**常见离散分布**:
 
-**定义 12 (马尔可夫链)**: 随机过程 $\{X_n\}$ 是马尔可夫链，如果：
-$$P(X_{n+1} = j | X_n = i, X_{n-1} = i_{n-1}, \ldots, X_0 = i_0) = P(X_{n+1} = j | X_n = i)$$
+1. **伯努利分布** $X \sim \text{Bernoulli}(p)$
+   $$p_X(x) = \begin{cases}
+   p & \text{if } x = 1 \\
+   1-p & \text{if } x = 0 \\
+   0 & \text{otherwise}
+   \end{cases}$$
 
-**定义 13 (转移矩阵)**: 马尔可夫链的转移矩阵 $P$ 满足：
-$$P_{ij} = P(X_{n+1} = j | X_n = i)$$
+2. **二项分布** $X \sim \text{Binomial}(n, p)$
+   $$p_X(x) = \binom{n}{x} p^x (1-p)^{n-x}, \quad x = 0, 1, \ldots, n$$
 
-**定理 9 (Chapman-Kolmogorov方程)**:
-$$P^{(n+m)}_{ij} = \sum_k P^{(n)}_{ik} P^{(m)}_{kj}$$
+3. **泊松分布** $X \sim \text{Poisson}(\lambda)$
+   $$p_X(x) = \frac{e^{-\lambda} \lambda^x}{x!}, \quad x = 0, 1, 2, \ldots$$
 
-### 泊松过程
+### 4.2 连续随机变量
 
-**定义 14 (泊松过程)**: 计数过程 $\{N(t), t \geq 0\}$ 是强度为 $\lambda$ 的泊松过程，如果：
+**定义 4.2**: 概率密度函数
+连续随机变量 $X$ 的概率密度函数 $f_X: \mathbb{R} \rightarrow [0, \infty)$ 满足：
+$$F_X(x) = \int_{-\infty}^x f_X(t) dt$$
 
-1. $N(0) = 0$
-2. 具有独立增量
-3. 具有平稳增量
-4. $P(N(t) = k) = \frac{(\lambda t)^k}{k!} e^{-\lambda t}$
+**性质**:
+1. $f_X(x) \geq 0$ 对于所有 $x \in \mathbb{R}$
+2. $\int_{-\infty}^{\infty} f_X(x) dx = 1$
 
-**定理 10 (泊松过程的性质)**: 泊松过程的到达间隔时间服从指数分布：
-$$P(T > t) = e^{-\lambda t}$$
+**常见连续分布**:
 
-### 布朗运动
+1. **均匀分布** $X \sim \text{Uniform}(a, b)$
+   $$f_X(x) = \begin{cases}
+   \frac{1}{b-a} & \text{if } a \leq x \leq b \\
+   0 & \text{otherwise}
+   \end{cases}$$
 
-**定义 15 (布朗运动)**: 随机过程 $\{B(t), t \geq 0\}$ 是标准布朗运动，如果：
+2. **正态分布** $X \sim \text{Normal}(\mu, \sigma^2)$
+   $$f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
 
-1. $B(0) = 0$
-2. 具有独立增量
-3. 具有平稳增量
-4. $B(t) - B(s) \sim N(0, t-s)$
+3. **指数分布** $X \sim \text{Exponential}(\lambda)$
+   $$f_X(x) = \begin{cases}
+   \lambda e^{-\lambda x} & \text{if } x \geq 0 \\
+   0 & \text{otherwise}
+   \end{cases}$$
 
-## Go语言实现
+### 4.3 期望与方差
 
-### 随机数生成
+**定义 4.3**: 期望
+随机变量 $X$ 的期望定义为：
+
+- 离散情况：$E[X] = \sum_{x} x \cdot p_X(x)$
+- 连续情况：$E[X] = \int_{-\infty}^{\infty} x \cdot f_X(x) dx$
+
+**定义 4.4**: 方差
+随机变量 $X$ 的方差定义为：
+$$\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2$$
+
+**定理 4.1**: 期望的线性性质
+对于随机变量 $X, Y$ 和常数 $a, b$：
+$$E[aX + bY] = aE[X] + bE[Y]$$
+
+**定理 4.2**: 方差的线性性质
+对于独立随机变量 $X, Y$ 和常数 $a, b$：
+$$\text{Var}(aX + bY) = a^2\text{Var}(X) + b^2\text{Var}(Y)$$
+
+## 5. 大数定律与中心极限定理
+
+### 5.1 大数定律
+
+**定理 5.1**: 弱大数定律
+设 $X_1, X_2, \ldots$ 是独立同分布的随机变量，期望为 $\mu$，则对于任意 $\epsilon > 0$：
+$$\lim_{n \rightarrow \infty} P\left(\left|\frac{1}{n}\sum_{i=1}^n X_i - \mu\right| > \epsilon\right) = 0$$
+
+**定理 5.2**: 强大数定律
+设 $X_1, X_2, \ldots$ 是独立同分布的随机变量，期望为 $\mu$，则：
+$$P\left(\lim_{n \rightarrow \infty} \frac{1}{n}\sum_{i=1}^n X_i = \mu\right) = 1$$
+
+### 5.2 中心极限定理
+
+**定理 5.3**: 中心极限定理
+设 $X_1, X_2, \ldots$ 是独立同分布的随机变量，期望为 $\mu$，方差为 $\sigma^2$，则：
+$$\frac{\sum_{i=1}^n X_i - n\mu}{\sqrt{n}\sigma} \xrightarrow{d} \text{Normal}(0, 1)$$
+
+其中 $\xrightarrow{d}$ 表示依分布收敛。
+
+## 6. Go语言实现
+
+### 6.1 基础概率结构
 
 ```go
 package probability
@@ -179,178 +226,104 @@ import (
     "time"
 )
 
-// RandomGenerator 随机数生成器接口
-type RandomGenerator interface {
-    Next() float64
-    NextInt(n int) int
-    SetSeed(seed int64)
+// RandomVariable 表示随机变量接口
+type RandomVariable interface {
+    Sample() float64
+    PDF(x float64) float64
+    CDF(x float64) float64
+    Mean() float64
+    Variance() float64
 }
 
-// StandardRandomGenerator 标准随机数生成器
-type StandardRandomGenerator struct {
-    rng *rand.Rand
+// Bernoulli 伯努利分布
+type Bernoulli struct {
+    p float64 // 成功概率
 }
 
-// NewStandardRandomGenerator 创建标准随机数生成器
-func NewStandardRandomGenerator() *StandardRandomGenerator {
-    return &StandardRandomGenerator{
-        rng: rand.New(rand.NewSource(time.Now().UnixNano())),
+func NewBernoulli(p float64) *Bernoulli {
+    if p < 0 || p > 1 {
+        panic("probability must be between 0 and 1")
     }
+    return &Bernoulli{p: p}
 }
 
-// Next 生成 [0,1) 之间的随机数
-func (r *StandardRandomGenerator) Next() float64 {
-    return r.rng.Float64()
-}
-
-// NextInt 生成 [0,n) 之间的随机整数
-func (r *StandardRandomGenerator) NextInt(n int) int {
-    return r.rng.Intn(n)
-}
-
-// SetSeed 设置随机数种子
-func (r *StandardRandomGenerator) SetSeed(seed int64) {
-    r.rng.Seed(seed)
-}
-
-// ProbabilitySpace 概率空间
-type ProbabilitySpace struct {
-    SampleSpace []interface{}
-    Events      map[string][]interface{}
-    Probabilities map[string]float64
-}
-
-// NewProbabilitySpace 创建概率空间
-func NewProbabilitySpace() *ProbabilitySpace {
-    return &ProbabilitySpace{
-        SampleSpace:   make([]interface{}, 0),
-        Events:        make(map[string][]interface{}),
-        Probabilities: make(map[string]float64),
-    }
-}
-
-// AddSamplePoint 添加样本点
-func (ps *ProbabilitySpace) AddSamplePoint(point interface{}) {
-    ps.SampleSpace = append(ps.SampleSpace, point)
-}
-
-// AddEvent 添加事件
-func (ps *ProbabilitySpace) AddEvent(name string, outcomes []interface{}) {
-    ps.Events[name] = outcomes
-}
-
-// SetProbability 设置事件概率
-func (ps *ProbabilitySpace) SetProbability(event string, prob float64) {
-    if prob >= 0 && prob <= 1 {
-        ps.Probabilities[event] = prob
-    }
-}
-
-// GetProbability 获取事件概率
-func (ps *ProbabilitySpace) GetProbability(event string) float64 {
-    return ps.Probabilities[event]
-}
-```
-
-### 概率分布
-
-```go
-// Distribution 概率分布接口
-type Distribution interface {
-    PDF(x float64) float64    // 概率密度函数
-    CDF(x float64) float64    // 累积分布函数
-    Mean() float64            // 期望
-    Variance() float64        // 方差
-    Sample(rng RandomGenerator) float64 // 采样
-}
-
-// UniformDistribution 均匀分布
-type UniformDistribution struct {
-    a, b float64 // 区间 [a,b]
-}
-
-// NewUniformDistribution 创建均匀分布
-func NewUniformDistribution(a, b float64) *UniformDistribution {
-    return &UniformDistribution{a: a, b: b}
-}
-
-// PDF 概率密度函数
-func (u *UniformDistribution) PDF(x float64) float64 {
-    if x >= u.a && x <= u.b {
-        return 1.0 / (u.b - u.a)
+func (b *Bernoulli) Sample() float64 {
+    if rand.Float64() < b.p {
+        return 1.0
     }
     return 0.0
 }
 
-// CDF 累积分布函数
-func (u *UniformDistribution) CDF(x float64) float64 {
-    if x < u.a {
-        return 0.0
-    } else if x >= u.b {
-        return 1.0
-    } else {
-        return (x - u.a) / (u.b - u.a)
+func (b *Bernoulli) PDF(x float64) float64 {
+    if x == 1 {
+        return b.p
+    } else if x == 0 {
+        return 1 - b.p
     }
+    return 0
 }
 
-// Mean 期望
-func (u *UniformDistribution) Mean() float64 {
-    return (u.a + u.b) / 2.0
+func (b *Bernoulli) CDF(x float64) float64 {
+    if x < 0 {
+        return 0
+    } else if x < 1 {
+        return 1 - b.p
+    }
+    return 1
 }
 
-// Variance 方差
-func (u *UniformDistribution) Variance() float64 {
-    return math.Pow(u.b-u.a, 2) / 12.0
+func (b *Bernoulli) Mean() float64 {
+    return b.p
 }
 
-// Sample 采样
-func (u *UniformDistribution) Sample(rng RandomGenerator) float64 {
-    return u.a + (u.b-u.a)*rng.Next()
+func (b *Bernoulli) Variance() float64 {
+    return b.p * (1 - b.p)
+}
+```
+
+### 6.2 正态分布实现
+
+```go
+// Normal 正态分布
+type Normal struct {
+    mu    float64 // 均值
+    sigma float64 // 标准差
 }
 
-// NormalDistribution 正态分布
-type NormalDistribution struct {
-    mu, sigma float64 // 均值，标准差
+func NewNormal(mu, sigma float64) *Normal {
+    if sigma <= 0 {
+        panic("standard deviation must be positive")
+    }
+    return &Normal{mu: mu, sigma: sigma}
 }
 
-// NewNormalDistribution 创建正态分布
-func NewNormalDistribution(mu, sigma float64) *NormalDistribution {
-    return &NormalDistribution{mu: mu, sigma: sigma}
-}
-
-// PDF 概率密度函数
-func (n *NormalDistribution) PDF(x float64) float64 {
-    z := (x - n.mu) / n.sigma
-    return math.Exp(-0.5*z*z) / (n.sigma * math.Sqrt(2*math.Pi))
-}
-
-// CDF 累积分布函数（近似）
-func (n *NormalDistribution) CDF(x float64) float64 {
-    z := (x - n.mu) / n.sigma
-    return 0.5 * (1 + erf(z/math.Sqrt(2)))
-}
-
-// Mean 期望
-func (n *NormalDistribution) Mean() float64 {
-    return n.mu
-}
-
-// Variance 方差
-func (n *NormalDistribution) Variance() float64 {
-    return n.sigma * n.sigma
-}
-
-// Sample 采样（Box-Muller变换）
-func (n *NormalDistribution) Sample(rng RandomGenerator) float64 {
-    u1 := rng.Next()
-    u2 := rng.Next()
-    
+func (n *Normal) Sample() float64 {
     // Box-Muller变换
+    u1 := rand.Float64()
+    u2 := rand.Float64()
     z0 := math.Sqrt(-2*math.Log(u1)) * math.Cos(2*math.Pi*u2)
     return n.mu + n.sigma*z0
 }
 
-// erf 误差函数（近似）
+func (n *Normal) PDF(x float64) float64 {
+    exponent := -0.5 * math.Pow((x-n.mu)/n.sigma, 2)
+    return (1.0 / (n.sigma * math.Sqrt(2*math.Pi))) * math.Exp(exponent)
+}
+
+func (n *Normal) CDF(x float64) float64 {
+    z := (x - n.mu) / n.sigma
+    return 0.5 * (1 + erf(z/math.Sqrt(2)))
+}
+
+func (n *Normal) Mean() float64 {
+    return n.mu
+}
+
+func (n *Normal) Variance() float64 {
+    return n.sigma * n.sigma
+}
+
+// erf 误差函数近似
 func erf(x float64) float64 {
     // 使用近似公式
     a1 := 0.254829592
@@ -359,73 +332,31 @@ func erf(x float64) float64 {
     a4 := -1.453152027
     a5 := 1.061405429
     p := 0.3275911
-    
+
     sign := 1.0
     if x < 0 {
         sign = -1.0
-        x = -x
     }
-    
+    x = math.Abs(x)
+
     t := 1.0 / (1.0 + p*x)
     y := 1.0 - (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*math.Exp(-x*x)
-    
+
     return sign * y
-}
-
-// ExponentialDistribution 指数分布
-type ExponentialDistribution struct {
-    lambda float64 // 参数
-}
-
-// NewExponentialDistribution 创建指数分布
-func NewExponentialDistribution(lambda float64) *ExponentialDistribution {
-    return &ExponentialDistribution{lambda: lambda}
-}
-
-// PDF 概率密度函数
-func (e *ExponentialDistribution) PDF(x float64) float64 {
-    if x >= 0 {
-        return e.lambda * math.Exp(-e.lambda*x)
-    }
-    return 0.0
-}
-
-// CDF 累积分布函数
-func (e *ExponentialDistribution) CDF(x float64) float64 {
-    if x >= 0 {
-        return 1.0 - math.Exp(-e.lambda*x)
-    }
-    return 0.0
-}
-
-// Mean 期望
-func (e *ExponentialDistribution) Mean() float64 {
-    return 1.0 / e.lambda
-}
-
-// Variance 方差
-func (e *ExponentialDistribution) Variance() float64 {
-    return 1.0 / (e.lambda * e.lambda)
-}
-
-// Sample 采样
-func (e *ExponentialDistribution) Sample(rng RandomGenerator) float64 {
-    return -math.Log(1-rng.Next()) / e.lambda
 }
 ```
 
-### 统计函数
+### 6.3 统计函数
 
 ```go
 // Statistics 统计函数
 type Statistics struct{}
 
-// Mean 计算均值
+// Mean 计算样本均值
 func (s *Statistics) Mean(data []float64) float64 {
     if len(data) == 0 {
-        return 0.0
+        return 0
     }
-    
     sum := 0.0
     for _, x := range data {
         sum += x
@@ -433,62 +364,28 @@ func (s *Statistics) Mean(data []float64) float64 {
     return sum / float64(len(data))
 }
 
-// Variance 计算方差
+// Variance 计算样本方差
 func (s *Statistics) Variance(data []float64) float64 {
-    if len(data) == 0 {
-        return 0.0
+    if len(data) <= 1 {
+        return 0
     }
-    
     mean := s.Mean(data)
     sum := 0.0
     for _, x := range data {
         sum += math.Pow(x-mean, 2)
     }
-    return sum / float64(len(data))
+    return sum / float64(len(data)-1) // 无偏估计
 }
 
-// StandardDeviation 计算标准差
+// StandardDeviation 计算样本标准差
 func (s *Statistics) StandardDeviation(data []float64) float64 {
     return math.Sqrt(s.Variance(data))
-}
-
-// Covariance 计算协方差
-func (s *Statistics) Covariance(x, y []float64) float64 {
-    if len(x) != len(y) || len(x) == 0 {
-        return 0.0
-    }
-    
-    meanX := s.Mean(x)
-    meanY := s.Mean(y)
-    
-    sum := 0.0
-    for i := 0; i < len(x); i++ {
-        sum += (x[i] - meanX) * (y[i] - meanY)
-    }
-    return sum / float64(len(x))
-}
-
-// Correlation 计算相关系数
-func (s *Statistics) Correlation(x, y []float64) float64 {
-    if len(x) != len(y) || len(x) == 0 {
-        return 0.0
-    }
-    
-    cov := s.Covariance(x, y)
-    stdX := s.StandardDeviation(x)
-    stdY := s.StandardDeviation(y)
-    
-    if stdX == 0 || stdY == 0 {
-        return 0.0
-    }
-    
-    return cov / (stdX * stdY)
 }
 
 // ConfidenceInterval 计算置信区间
 func (s *Statistics) ConfidenceInterval(data []float64, confidence float64) (float64, float64) {
     if len(data) == 0 {
-        return 0.0, 0.0
+        return 0, 0
     }
     
     mean := s.Mean(data)
@@ -496,176 +393,127 @@ func (s *Statistics) ConfidenceInterval(data []float64, confidence float64) (flo
     n := float64(len(data))
     
     // 使用正态分布近似（大样本）
-    z := 1.96 // 95% 置信水平
-    if confidence == 0.99 {
-        z = 2.576
-    } else if confidence == 0.90 {
-        z = 1.645
-    }
-    
+    z := 1.96 // 95%置信区间对应的z值
     margin := z * std / math.Sqrt(n)
+    
     return mean - margin, mean + margin
 }
 ```
 
-### 随机过程模拟
+### 6.4 蒙特卡洛方法
 
 ```go
-// MarkovChain 马尔可夫链
-type MarkovChain struct {
-    States     []int
-    Transition [][]float64
-    Current    int
-    rng        RandomGenerator
-}
+// MonteCarlo 蒙特卡洛方法
+type MonteCarlo struct{}
 
-// NewMarkovChain 创建马尔可夫链
-func NewMarkovChain(states []int, transition [][]float64, initial int, rng RandomGenerator) *MarkovChain {
-    return &MarkovChain{
-        States:     states,
-        Transition: transition,
-        Current:    initial,
-        rng:        rng,
+// Integrate 使用蒙特卡洛方法计算定积分
+func (mc *MonteCarlo) Integrate(f func(float64) float64, a, b float64, n int) float64 {
+    sum := 0.0
+    for i := 0; i < n; i++ {
+        x := a + rand.Float64()*(b-a)
+        sum += f(x)
     }
+    return (b - a) * sum / float64(n)
 }
 
-// NextState 转移到下一个状态
-func (mc *MarkovChain) NextState() int {
-    u := mc.rng.Next()
-    cumulative := 0.0
-    
-    for nextState := 0; nextState < len(mc.States); nextState++ {
-        cumulative += mc.Transition[mc.Current][nextState]
-        if u <= cumulative {
-            mc.Current = nextState
-            return nextState
+// EstimatePi 使用蒙特卡洛方法估计π
+func (mc *MonteCarlo) EstimatePi(n int) float64 {
+    inside := 0
+    for i := 0; i < n; i++ {
+        x := rand.Float64()
+        y := rand.Float64()
+        if x*x+y*y <= 1 {
+            inside++
         }
     }
-    
-    mc.Current = len(mc.States) - 1
-    return mc.Current
+    return 4.0 * float64(inside) / float64(n)
 }
 
-// Simulate 模拟马尔可夫链
-func (mc *MarkovChain) Simulate(steps int) []int {
-    path := make([]int, steps+1)
-    path[0] = mc.Current
+// SimulateRandomWalk 模拟随机游走
+func (mc *MonteCarlo) SimulateRandomWalk(steps int) []float64 {
+    position := 0.0
+    positions := make([]float64, steps+1)
+    positions[0] = position
     
     for i := 1; i <= steps; i++ {
-        path[i] = mc.NextState()
-    }
-    
-    return path
-}
-
-// PoissonProcess 泊松过程
-type PoissonProcess struct {
-    lambda float64 // 强度
-    rng    RandomGenerator
-}
-
-// NewPoissonProcess 创建泊松过程
-func NewPoissonProcess(lambda float64, rng RandomGenerator) *PoissonProcess {
-    return &PoissonProcess{
-        lambda: lambda,
-        rng:    rng,
-    }
-}
-
-// NextArrival 下一个到达时间
-func (pp *PoissonProcess) NextArrival() float64 {
-    return -math.Log(1-pp.rng.Next()) / pp.lambda
-}
-
-// Simulate 模拟泊松过程
-func (pp *PoissonProcess) Simulate(duration float64) []float64 {
-    var arrivals []float64
-    currentTime := 0.0
-    
-    for currentTime < duration {
-        arrival := pp.NextArrival()
-        currentTime += arrival
-        if currentTime < duration {
-            arrivals = append(arrivals, currentTime)
+        if rand.Float64() < 0.5 {
+            position += 1
+        } else {
+            position -= 1
         }
+        positions[i] = position
     }
     
-    return arrivals
-}
-
-// BrownianMotion 布朗运动
-type BrownianMotion struct {
-    rng RandomGenerator
-}
-
-// NewBrownianMotion 创建布朗运动
-func NewBrownianMotion(rng RandomGenerator) *BrownianMotion {
-    return &BrownianMotion{rng: rng}
-}
-
-// Simulate 模拟布朗运动
-func (bm *BrownianMotion) Simulate(duration float64, steps int) []float64 {
-    dt := duration / float64(steps)
-    path := make([]float64, steps+1)
-    path[0] = 0.0
-    
-    for i := 1; i <= steps; i++ {
-        // 生成标准正态随机变量
-        u1 := bm.rng.Next()
-        u2 := bm.rng.Next()
-        z := math.Sqrt(-2*math.Log(u1)) * math.Cos(2*math.Pi*u2)
-        
-        // 布朗运动增量
-        increment := z * math.Sqrt(dt)
-        path[i] = path[i-1] + increment
-    }
-    
-    return path
+    return positions
 }
 ```
 
-## 应用领域
+### 6.5 使用示例
 
-### 机器学习
+```go
+func main() {
+    rand.Seed(time.Now().UnixNano())
+    
+    // 创建随机变量
+    bernoulli := NewBernoulli(0.3)
+    normal := NewNormal(0, 1)
+    
+    // 生成样本
+    bernoulliSamples := make([]float64, 1000)
+    normalSamples := make([]float64, 1000)
+    
+    for i := 0; i < 1000; i++ {
+        bernoulliSamples[i] = bernoulli.Sample()
+        normalSamples[i] = normal.Sample()
+    }
+    
+    // 计算统计量
+    stats := &Statistics{}
+    
+    fmt.Printf("Bernoulli Distribution (p=0.3):\n")
+    fmt.Printf("Sample Mean: %.4f (Expected: %.4f)\n", 
+        stats.Mean(bernoulliSamples), bernoulli.Mean())
+    fmt.Printf("Sample Variance: %.4f (Expected: %.4f)\n", 
+        stats.Variance(bernoulliSamples), bernoulli.Variance())
+    
+    fmt.Printf("\nNormal Distribution (μ=0, σ=1):\n")
+    fmt.Printf("Sample Mean: %.4f (Expected: %.4f)\n", 
+        stats.Mean(normalSamples), normal.Mean())
+    fmt.Printf("Sample Variance: %.4f (Expected: %.4f)\n", 
+        stats.Variance(normalSamples), normal.Variance())
+    
+    // 蒙特卡洛方法
+    mc := &MonteCarlo{}
+    
+    // 计算积分 ∫[0,1] x^2 dx
+    f := func(x float64) float64 { return x * x }
+    integral := mc.Integrate(f, 0, 1, 10000)
+    fmt.Printf("\nMonte Carlo Integration: ∫[0,1] x^2 dx ≈ %.4f (Exact: 0.3333)\n", integral)
+    
+    // 估计π
+    piEstimate := mc.EstimatePi(100000)
+    fmt.Printf("Monte Carlo π estimation: %.4f (Exact: 3.1416)\n", piEstimate)
+    
+    // 随机游走
+    walk := mc.SimulateRandomWalk(100)
+    fmt.Printf("\nRandom Walk final position: %.2f\n", walk[len(walk)-1])
+}
+```
 
-概率论在机器学习中的应用：
+## 总结
 
-- 贝叶斯分类器
-- 概率图模型
-- 期望最大化算法
-- 变分推断
+概率论是数学和统计学的基础，在机器学习、数据科学、金融工程等领域有广泛应用。通过形式化定义和Go语言实现，我们建立了从理论到实践的完整框架。
 
-### 金融建模
+### 关键要点
 
-概率论在金融建模中的应用：
+1. **理论基础**: 概率空间、随机变量、概率分布
+2. **核心定理**: 大数定律、中心极限定理、贝叶斯定理
+3. **实现技术**: 随机数生成、统计计算、蒙特卡洛方法
+4. **应用场景**: 机器学习、金融建模、风险评估等
 
-- 期权定价
-- 风险度量
-- 投资组合优化
-- 信用风险模型
+### 进一步研究方向
 
-### 网络分析
-
-概率论在网络分析中的应用：
-
-- 随机图模型
-- 网络可靠性分析
-- 流量建模
-- 性能预测
-
-### 性能分析
-
-概率论在性能分析中的应用：
-
-- 排队论
-- 系统可靠性
-- 负载均衡
-- 容量规划
-
-## 相关链接
-
-- [01-集合论 (Set Theory)](../01-Set-Theory/README.md)
-- [02-逻辑学 (Logic)](../02-Logic/README.md)
-- [03-图论 (Graph Theory)](../03-Graph-Theory/README.md)
-- [08-软件工程形式化 (Software Engineering Formalization)](../../08-Software-Engineering-Formalization/README.md)
-- [09-编程语言理论 (Programming Language Theory)](../../09-Programming-Language-Theory/README.md)
+1. **随机过程**: 马尔可夫链、布朗运动、泊松过程
+2. **贝叶斯统计**: 贝叶斯推断、马尔可夫链蒙特卡洛
+3. **信息论**: 熵、互信息、信道容量
+4. **随机优化**: 随机梯度下降、遗传算法
