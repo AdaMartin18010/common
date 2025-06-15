@@ -36,6 +36,8 @@
     - [6.3 数据库](#63-数据库)
     - [6.4 硬件设计](#64-硬件设计)
   - [7. 总结](#7-总结)
+    - [关键要点](#关键要点)
+    - [进一步研究方向](#进一步研究方向)
 
 ## 1. 命题逻辑 (Propositional Logic)
 
@@ -54,12 +56,14 @@
 
 **定义 1.4**: 命题逻辑语言
 命题逻辑语言由以下部分组成：
+
 - 命题变元集合 $P = \{p, q, r, \ldots\}$
 - 逻辑连接词：$\neg$（否定）、$\wedge$（合取）、$\vee$（析取）、$\rightarrow$（蕴含）、$\leftrightarrow$（等价）
 - 辅助符号：$($ 和 $)$
 
 **定义 1.5**: 合式公式
 合式公式（well-formed formula）递归定义如下：
+
 1. 每个命题变元 $p \in P$ 是合式公式
 2. 如果 $\phi$ 是合式公式，则 $\neg\phi$ 是合式公式
 3. 如果 $\phi$ 和 $\psi$ 是合式公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是合式公式
@@ -72,6 +76,7 @@
 
 **定义 1.7**: 真值函数
 真值函数 $\overline{v}$ 递归定义如下：
+
 1. $\overline{v}(p) = v(p)$ 对于 $p \in P$
 2. $\overline{v}(\neg\phi) = T$ 当且仅当 $\overline{v}(\phi) = F$
 3. $\overline{v}(\phi \wedge \psi) = T$ 当且仅当 $\overline{v}(\phi) = T$ 且 $\overline{v}(\psi) = T$
@@ -80,6 +85,7 @@
 6. $\overline{v}(\phi \leftrightarrow \psi) = T$ 当且仅当 $\overline{v}(\phi) = \overline{v}(\psi)$
 
 **定义 1.8**: 重言式、矛盾式和可满足式
+
 - 公式 $\phi$ 是重言式（tautology），如果对于所有真值赋值 $v$，$\overline{v}(\phi) = T$
 - 公式 $\phi$ 是矛盾式（contradiction），如果对于所有真值赋值 $v$，$\overline{v}(\phi) = F$
 - 公式 $\phi$ 是可满足式（satisfiable），如果存在真值赋值 $v$ 使得 $\overline{v}(\phi) = T$
@@ -106,6 +112,7 @@
 
 **定理 1.1**: 德摩根律
 对于任意公式 $\phi$ 和 $\psi$：
+
 1. $\neg(\phi \wedge \psi) \equiv \neg\phi \vee \neg\psi$
 2. $\neg(\phi \vee \psi) \equiv \neg\phi \wedge \neg\psi$
 
@@ -117,11 +124,13 @@
 谓词是描述对象性质或关系的符号。
 
 **定义 2.2**: 量词
+
 - 全称量词 $\forall$：表示"对于所有"
 - 存在量词 $\exists$：表示"存在"
 
 **定义 2.3**: 项
 项递归定义如下：
+
 1. 变量和常量是项
 2. 如果 $f$ 是 $n$ 元函数符号，$t_1, \ldots, t_n$ 是项，则 $f(t_1, \ldots, t_n)$ 是项
 
@@ -129,6 +138,7 @@
 
 **定义 2.4**: 一阶逻辑语言
 一阶逻辑语言由以下部分组成：
+
 - 变量集合 $V = \{x, y, z, \ldots\}$
 - 常量集合 $C = \{a, b, c, \ldots\}$
 - 函数符号集合 $F = \{f, g, h, \ldots\}$
@@ -142,6 +152,7 @@
 
 **定义 2.6**: 合式公式
 合式公式递归定义如下：
+
 1. 每个原子公式是合式公式
 2. 如果 $\phi$ 是合式公式，则 $\neg\phi$ 是合式公式
 3. 如果 $\phi$ 和 $\psi$ 是合式公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是合式公式
@@ -151,6 +162,7 @@
 
 **定义 2.7**: 解释
 解释 $\mathcal{I} = (D, \cdot^{\mathcal{I}})$ 由以下部分组成：
+
 - 论域 $D$（非空集合）
 - 解释函数 $\cdot^{\mathcal{I}}$，将常量、函数符号和谓词符号映射到论域中的对象
 
@@ -159,6 +171,7 @@
 
 **定义 2.9**: 满足关系
 满足关系 $\models$ 递归定义如下：
+
 1. $\mathcal{I}, \sigma \models P(t_1, \ldots, t_n)$ 当且仅当 $(t_1^{\mathcal{I},\sigma}, \ldots, t_n^{\mathcal{I},\sigma}) \in P^{\mathcal{I}}$
 2. $\mathcal{I}, \sigma \models \neg\phi$ 当且仅当 $\mathcal{I}, \sigma \not\models \phi$
 3. $\mathcal{I}, \sigma \models \phi \wedge \psi$ 当且仅当 $\mathcal{I}, \sigma \models \phi$ 且 $\mathcal{I}, \sigma \models \psi$
@@ -190,11 +203,13 @@
 ### 3.1 基本概念
 
 **定义 3.1**: 模态算子
+
 - $\Box$：必然算子（necessarily）
 - $\Diamond$：可能算子（possibly）
 
 **定义 3.2**: 模态公式
 模态公式在命题逻辑基础上增加：
+
 - 如果 $\phi$ 是模态公式，则 $\Box\phi$ 和 $\Diamond\phi$ 是模态公式
 
 ### 3.2 语法
@@ -204,6 +219,7 @@
 
 **定义 3.4**: 模态公式
 模态公式递归定义如下：
+
 1. 每个命题变元是模态公式
 2. 如果 $\phi$ 是模态公式，则 $\neg\phi$、$\Box\phi$、$\Diamond\phi$ 是模态公式
 3. 如果 $\phi$ 和 $\psi$ 是模态公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是模态公式
@@ -212,12 +228,14 @@
 
 **定义 3.5**: 克里普克模型
 克里普克模型是一个三元组 $\mathcal{M} = (W, R, V)$，其中：
+
 - $W$ 是可能世界集合
 - $R \subseteq W \times W$ 是可达关系
 - $V: W \times P \rightarrow \{T, F\}$ 是赋值函数
 
 **定义 3.6**: 模态逻辑满足关系
 满足关系 $\models$ 递归定义如下：
+
 1. $\mathcal{M}, w \models p$ 当且仅当 $V(w, p) = T$
 2. $\mathcal{M}, w \models \neg\phi$ 当且仅当 $\mathcal{M}, w \not\models \phi$
 3. $\mathcal{M}, w \models \phi \wedge \psi$ 当且仅当 $\mathcal{M}, w \models \phi$ 且 $\mathcal{M}, w \models \psi$
@@ -239,6 +257,7 @@
 ### 4.1 基本概念
 
 **定义 4.1**: 时态算子
+
 - $G$：全局算子（always）
 - $F$：未来算子（eventually）
 - $X$：下一个算子（next）
@@ -248,12 +267,14 @@
 
 **定义 4.2**: LTL语法
 线性时态逻辑（Linear Temporal Logic, LTL）公式递归定义如下：
+
 1. 每个命题变元是LTL公式
 2. 如果 $\phi$ 和 $\psi$ 是LTL公式，则 $\neg\phi$、$\phi \wedge \psi$、$\phi \vee \psi$、$\phi \rightarrow \psi$ 是LTL公式
 3. 如果 $\phi$ 和 $\psi$ 是LTL公式，则 $X\phi$、$G\phi$、$F\phi$、$\phi U\psi$ 是LTL公式
 
 **定义 4.3**: LTL语义
 LTL公式在无限序列 $\pi = \pi_0\pi_1\pi_2\ldots$ 上的满足关系：
+
 1. $\pi \models p$ 当且仅当 $p \in \pi_0$
 2. $\pi \models \neg\phi$ 当且仅当 $\pi \not\models \phi$
 3. $\pi \models \phi \wedge \psi$ 当且仅当 $\pi \models \phi$ 且 $\pi \models \psi$
@@ -266,6 +287,7 @@ LTL公式在无限序列 $\pi = \pi_0\pi_1\pi_2\ldots$ 上的满足关系：
 
 **定义 4.4**: CTL语法
 计算树逻辑（Computation Tree Logic, CTL）公式递归定义如下：
+
 1. 每个命题变元是CTL公式
 2. 如果 $\phi$ 和 $\psi$ 是CTL公式，则 $\neg\phi$、$\phi \wedge \psi$、$\phi \vee \psi$、$\phi \rightarrow \psi$ 是CTL公式
 3. 如果 $\phi$ 和 $\psi$ 是CTL公式，则 $AX\phi$、$EX\phi$、$AG\phi$、$EG\phi$、$AF\phi$、$EF\phi$、$A[\phi U\psi]$、$E[\phi U\psi]$ 是CTL公式
@@ -276,6 +298,7 @@ LTL公式在无限序列 $\pi = \pi_0\pi_1\pi_2\ldots$ 上的满足关系：
 给定一个系统模型 $\mathcal{M}$ 和一个时态逻辑公式 $\phi$，判断是否 $\mathcal{M} \models \phi$。
 
 **算法 4.1**: CTL模型检验算法
+
 ```go
 func ModelCheckCTL(model *KripkeModel, formula CTLFormula) bool {
     // 递归计算满足公式的状态集合

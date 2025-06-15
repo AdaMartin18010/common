@@ -38,6 +38,7 @@
 **定义 1.1**: 集合是不同对象的无序聚集，这些对象称为集合的元素。
 
 **形式化表达**:
+
 - 设 $A$ 是一个集合，$a \in A$ 表示 $a$ 是 $A$ 的元素
 - 集合的表示：$A = \{a_1, a_2, \ldots, a_n\}$
 - 空集：$\emptyset = \{\}$
@@ -112,6 +113,7 @@ $$(A \cap B)^c = A^c \cup B^c$$
 **证明**:
 
 设 $x \in (A \cup B)^c$，则：
+
 1. $x \notin (A \cup B)$
 2. $x \notin A$ 且 $x \notin B$
 3. $x \in A^c$ 且 $x \in B^c$
@@ -120,6 +122,7 @@ $$(A \cap B)^c = A^c \cup B^c$$
 因此 $(A \cup B)^c \subseteq A^c \cap B^c$。
 
 反之，设 $x \in A^c \cap B^c$，则：
+
 1. $x \in A^c$ 且 $x \in B^c$
 2. $x \notin A$ 且 $x \notin B$
 3. $x \notin (A \cup B)$
@@ -139,6 +142,7 @@ $$A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$$
 **证明**:
 
 设 $x \in A \cap (B \cup C)$，则：
+
 1. $x \in A$ 且 $x \in (B \cup C)$
 2. $x \in A$ 且 ($x \in B$ 或 $x \in C$)
 3. ($x \in A$ 且 $x \in B$) 或 ($x \in A$ 且 $x \in C$)
@@ -633,6 +637,7 @@ func BenchmarkSetOperations(b *testing.B) {
 ---
 
 **相关链接**:
+
 - [02-逻辑学 (Logic)](../02-Logic/README.md)
 - [03-图论 (Graph Theory)](../03-Graph-Theory/README.md)
-- [04-概率论 (Probability Theory)](../04-Probability-Theory/README.md) 
+- [04-概率论 (Probability Theory)](../04-Probability-Theory/README.md)

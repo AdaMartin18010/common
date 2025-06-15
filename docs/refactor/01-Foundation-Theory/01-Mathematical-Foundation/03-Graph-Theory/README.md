@@ -14,20 +14,38 @@
     - [2.3 边列表](#23-边列表)
   - [3. 图算法](#3-图算法)
     - [3.1 遍历算法](#31-遍历算法)
+      - [3.1.1 深度优先搜索 (DFS)](#311-深度优先搜索-dfs)
+      - [3.1.2 广度优先搜索 (BFS)](#312-广度优先搜索-bfs)
     - [3.2 最短路径](#32-最短路径)
+      - [3.2.1 Dijkstra算法](#321-dijkstra算法)
+      - [3.2.2 Floyd-Warshall算法](#322-floyd-warshall算法)
     - [3.3 最小生成树](#33-最小生成树)
+      - [3.3.1 Kruskal算法](#331-kruskal算法)
+      - [3.3.2 Prim算法](#332-prim算法)
   - [4. 形式化定义](#4-形式化定义)
+    - [4.1 图的同构](#41-图的同构)
+    - [4.2 图的连通性](#42-图的连通性)
+    - [4.3 图的着色](#43-图的着色)
   - [5. Go语言实现](#5-go语言实现)
+    - [5.1 图的数据结构](#51-图的数据结构)
+    - [5.2 Dijkstra算法实现](#52-dijkstra算法实现)
+    - [5.3 最小生成树实现](#53-最小生成树实现)
+    - [5.4 使用示例](#54-使用示例)
+  - [总结](#总结)
+    - [关键要点](#关键要点)
+    - [进一步研究方向](#进一步研究方向)
 
 ## 1. 基础概念
 
 ### 1.1 图的定义
 
 **定义 1.1**: 图 $G = (V, E)$ 是一个有序对，其中：
+
 - $V$ 是顶点集（vertex set），$V \neq \emptyset$
 - $E$ 是边集（edge set），$E \subseteq V \times V$
 
 **定义 1.2**: 对于边 $e = (u, v) \in E$：
+
 - $u$ 和 $v$ 是 $e$ 的端点
 - $u$ 和 $v$ 是相邻的（adjacent）
 - $e$ 与 $u$ 和 $v$ 相关联（incident）
@@ -35,19 +53,23 @@
 ### 1.2 图的类型
 
 **定义 1.3**: 无向图（Undirected Graph）
+
 - 边是无序对：$(u, v) = (v, u)$
 - 邻接关系是对称的
 
 **定义 1.4**: 有向图（Directed Graph）
+
 - 边是有序对：$(u, v) \neq (v, u)$
 - 邻接关系不对称
 
 **定义 1.5**: 加权图（Weighted Graph）
+
 - 每条边 $e$ 关联一个权重 $w(e) \in \mathbb{R}$
 
 ### 1.3 基本性质
 
 **定义 1.6**: 顶点的度（Degree）
+
 - 无向图：$deg(v) = |\{e \in E : v \text{ 是 } e \text{ 的端点}\}|$
 - 有向图：入度 $deg^-(v)$ 和出度 $deg^+(v)$
 
@@ -63,12 +85,16 @@ $$\sum_{v \in V} deg(v) = 2|E|$$
 ### 2.1 邻接矩阵
 
 **定义 2.1**: 邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵：
-$$A[i][j] = \begin{cases}
+
+$$
+A[i][j] = \begin{cases}
 1 & \text{if } (i, j) \in E \\
 0 & \text{otherwise}
-\end{cases}$$
+\end{cases}
+$$
 
 **性质**:
+
 - 无向图的邻接矩阵是对称的
 - 对角线元素为0（无自环）
 - 空间复杂度：$O(|V|^2)$
@@ -79,6 +105,7 @@ $$A[i][j] = \begin{cases}
 $$Adj[v] = \{u \in V : (v, u) \in E\}$$
 
 **性质**:
+
 - 空间复杂度：$O(|V| + |E|)$
 - 适合稀疏图
 - 遍历邻接顶点效率高
@@ -95,11 +122,12 @@ $$E = \{(u_1, v_1), (u_2, v_2), \ldots, (u_m, v_m)\}$$
 #### 3.1.1 深度优先搜索 (DFS)
 
 **算法描述**:
+
 ```go
 func DFS(graph *Graph, start int, visited map[int]bool) {
     visited[start] = true
     fmt.Printf("Visit: %d\n", start)
-    
+
     for _, neighbor := range graph.adjList[start] {
         if !visited[neighbor] {
             DFS(graph, neighbor, visited)
@@ -113,17 +141,18 @@ func DFS(graph *Graph, start int, visited map[int]bool) {
 #### 3.1.2 广度优先搜索 (BFS)
 
 **算法描述**:
+
 ```go
 func BFS(graph *Graph, start int) {
     queue := []int{start}
     visited := make(map[int]bool)
     visited[start] = true
-    
+
     for len(queue) > 0 {
         current := queue[0]
         queue = queue[1:]
         fmt.Printf("Visit: %d\n", current)
-        
+
         for _, neighbor := range graph.adjList[current] {
             if !visited[neighbor] {
                 visited[neighbor] = true
@@ -247,18 +276,18 @@ func (g *Graph) Dijkstra(start int) map[int]float64 {
         distances[i] = math.Inf(1)
     }
     distances[start] = 0
-    
+
     pq := &PriorityQueue{}
     heap.Init(pq)
     heap.Push(pq, &Item{vertex: start, distance: 0})
-    
+
     for pq.Len() > 0 {
         current := heap.Pop(pq).(*Item)
-        
+
         if current.distance > distances[current.vertex] {
             continue
         }
-        
+
         for _, edge := range g.adjList[current.vertex] {
             newDist := distances[current.vertex] + edge.weight
             if newDist < distances[edge.to] {
@@ -267,7 +296,7 @@ func (g *Graph) Dijkstra(start int) map[int]float64 {
             }
         }
     }
-    
+
     return distances
 }
 
@@ -323,22 +352,22 @@ func (g *Graph) Kruskal() []Edge {
             }
         }
     }
-    
+
     // 按权重排序
     sort.Slice(edges, func(i, j int) bool {
         return edges[i].weight < edges[j].weight
     })
-    
+
     uf := NewUnionFind(g.vertices)
     var mst []Edge
-    
+
     for _, edge := range edges {
         if uf.Find(edge.from) != uf.Find(edge.to) {
             uf.Union(edge.from, edge.to)
             mst = append(mst, edge)
         }
     }
-    
+
     return mst
 }
 
@@ -371,7 +400,7 @@ func (uf *UnionFind) Union(x, y int) {
     if px == py {
         return
     }
-    
+
     if uf.rank[px] < uf.rank[py] {
         uf.parent[px] = py
     } else if uf.rank[px] > uf.rank[py] {
@@ -389,7 +418,7 @@ func (uf *UnionFind) Union(x, y int) {
 func main() {
     // 创建图
     g := NewGraph(5)
-    
+
     // 添加边
     g.AddUndirectedEdge(0, 1, 4)
     g.AddUndirectedEdge(0, 2, 2)
@@ -398,14 +427,14 @@ func main() {
     g.AddUndirectedEdge(2, 3, 8)
     g.AddUndirectedEdge(2, 4, 10)
     g.AddUndirectedEdge(3, 4, 2)
-    
+
     // 计算最短路径
     distances := g.Dijkstra(0)
     fmt.Println("Shortest distances from vertex 0:")
     for vertex, distance := range distances {
         fmt.Printf("To %d: %.2f\n", vertex, distance)
     }
-    
+
     // 计算最小生成树
     mst := g.Kruskal()
     fmt.Println("\nMinimum Spanning Tree:")

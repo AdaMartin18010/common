@@ -2,956 +2,804 @@
 
 ## 目录
 
-- [04-时态逻辑](#04-时态逻辑)
+- [04-时态逻辑 (Temporal Logic)](#04-时态逻辑-temporal-logic)
   - [目录](#目录)
-  - [1. 概念定义](#1-概念定义)
+  - [1. 时态逻辑基础](#1-时态逻辑基础)
+    - [1.1 时态逻辑定义](#11-时态逻辑定义)
+    - [1.2 时态算子](#12-时态算子)
+    - [1.3 线性时态逻辑](#13-线性时态逻辑)
+    - [1.4 分支时态逻辑](#14-分支时态逻辑)
   - [2. 形式化定义](#2-形式化定义)
-  - [3. 定理证明](#3-定理证明)
-  - [4. Go语言实现](#4-go语言实现)
-  - [5. 应用示例](#5-应用示例)
-  - [6. 性能分析](#6-性能分析)
-  - [7. 参考文献](#7-参考文献)
-
-## 1. 概念定义
-
-### 1.1 基本概念
-
-**时态逻辑**是模态逻辑的一个分支，专门用于描述和推理关于时间的概念。它扩展了经典逻辑，引入了时态算子来表达"总是"、"有时"、"下一个时刻"、"直到"等时间相关的概念。
-
-**核心概念**：
-- **时态算子**：G（总是）、F（有时）、X（下一个）、U（直到）
-- **时间结构**：线性时间、分支时间、离散时间、连续时间
-- **状态序列**：表示系统在不同时间点的状态
-- **路径**：时间结构中的一条执行路径
-
-### 1.2 核心思想
-
-时态逻辑的核心思想是通过时态算子来描述系统在时间维度上的行为：
-
-1. **Gφ (Globally)**：φ在所有未来时刻都为真
-2. **Fφ (Finally)**：φ在某个未来时刻为真
-3. **Xφ (Next)**：φ在下一个时刻为真
-4. **φUψ (Until)**：φ为真直到ψ为真
-5. **Pφ (Past)**：φ在某个过去时刻为真
-
-## 2. 形式化定义
-
-### 2.1 数学定义
-
-**线性时态逻辑 (LTL) 语言**：
-
-给定命题变量集合 $P$，LTL的语言 $\mathcal{L}_{LTL}$ 递归定义如下：
-
-$$\varphi ::= p \mid \neg \varphi \mid \varphi \land \psi \mid \varphi \lor \psi \mid \varphi \rightarrow \psi \mid X \varphi \mid F \varphi \mid G \varphi \mid \varphi U \psi$$
-
-其中 $p \in P$，$\varphi, \psi$ 是公式。
-
-**Kripke结构**：
-
-一个Kripke结构是一个三元组 $\mathcal{K} = (S, R, L)$，其中：
-- $S$ 是非空的状态集合
-- $R \subseteq S \times S$ 是转移关系
-- $L: S \rightarrow 2^P$ 是标记函数
-
-**路径**：
-
-给定Kripke结构 $\mathcal{K}$，路径 $\pi = s_0, s_1, s_2, \ldots$ 是状态序列，满足 $(s_i, s_{i+1}) \in R$ 对所有 $i \geq 0$。
-
-**语义定义**：
-
-对于路径 $\pi = s_0, s_1, s_2, \ldots$ 和位置 $i \geq 0$，满足关系 $\models$ 定义如下：
-
-$$\begin{align}
-\pi, i &\models p \text{ 当且仅当 } p \in L(s_i) \\
-\pi, i &\models \neg \varphi \text{ 当且仅当 } \pi, i \not\models \varphi \\
-\pi, i &\models \varphi \land \psi \text{ 当且仅当 } \pi, i \models \varphi \text{ 且 } \pi, i \models \psi \\
-\pi, i &\models X \varphi \text{ 当且仅当 } \pi, i+1 \models \varphi \\
-\pi, i &\models F \varphi \text{ 当且仅当 } \exists j \geq i: \pi, j \models \varphi \\
-\pi, i &\models G \varphi \text{ 当且仅当 } \forall j \geq i: \pi, j \models \varphi \\
-\pi, i &\models \varphi U \psi \text{ 当且仅当 } \exists j \geq i: \pi, j \models \psi \text{ 且 } \forall k \in [i, j): \pi, k \models \varphi
-\end{align}$$
-
-### 2.2 类型定义
-
-```go
-// TemporalLogic 时态逻辑核心类型
-package temporallogic
-
-import (
-    "fmt"
-    "strings"
-)
-
-// Formula 表示时态逻辑公式
-type Formula interface {
-    String() string
-    IsAtomic() bool
-    IsTemporal() bool
-}
-
-// AtomicFormula 原子公式
-type AtomicFormula struct {
-    Name string
-}
-
-func (a AtomicFormula) String() string {
-    return a.Name
-}
-
-func (a AtomicFormula) IsAtomic() bool {
-    return true
-}
-
-func (a AtomicFormula) IsTemporal() bool {
-    return false
-}
-
-// Negation 否定公式
-type Negation struct {
-    Formula Formula
-}
-
-func (n Negation) String() string {
-    return fmt.Sprintf("¬(%s)", n.Formula.String())
-}
-
-func (n Negation) IsAtomic() bool {
-    return false
-}
-
-func (n Negation) IsTemporal() bool {
-    return n.Formula.IsTemporal()
-}
-
-// Conjunction 合取公式
-type Conjunction struct {
-    Left  Formula
-    Right Formula
-}
-
-func (c Conjunction) String() string {
-    return fmt.Sprintf("(%s ∧ %s)", c.Left.String(), c.Right.String())
-}
-
-func (c Conjunction) IsAtomic() bool {
-    return false
-}
-
-func (c Conjunction) IsTemporal() bool {
-    return c.Left.IsTemporal() || c.Right.IsTemporal()
-}
-
-// Next 下一个时刻公式
-type Next struct {
-    Formula Formula
-}
-
-func (n Next) String() string {
-    return fmt.Sprintf("X(%s)", n.Formula.String())
-}
-
-func (n Next) IsAtomic() bool {
-    return false
-}
-
-func (n Next) IsTemporal() bool {
-    return true
-}
-
-// Finally 最终公式
-type Finally struct {
-    Formula Formula
-}
-
-func (f Finally) String() string {
-    return fmt.Sprintf("F(%s)", f.Formula.String())
-}
-
-func (f Finally) IsAtomic() bool {
-    return false
-}
-
-func (f Finally) IsTemporal() bool {
-    return true
-}
-
-// Globally 全局公式
-type Globally struct {
-    Formula Formula
-}
-
-func (g Globally) String() string {
-    return fmt.Sprintf("G(%s)", g.Formula.String())
-}
-
-func (g Globally) IsAtomic() bool {
-    return false
-}
-
-func (g Globally) IsTemporal() bool {
-    return true
-}
-
-// Until 直到公式
-type Until struct {
-    Left  Formula
-    Right Formula
-}
-
-func (u Until) String() string {
-    return fmt.Sprintf("(%s U %s)", u.Left.String(), u.Right.String())
-}
-
-func (u Until) IsAtomic() bool {
-    return false
-}
-
-func (u Until) IsTemporal() bool {
-    return true
-}
-
-// State 状态
-type State struct {
-    ID       string
-    Name     string
-    Propositions map[string]bool
-}
-
-// Transition 转移关系
-type Transition struct {
-    From string
-    To   string
-}
-
-// KripkeStructure Kripke结构
-type KripkeStructure struct {
-    States      map[string]*State
-    Transitions []Transition
-    Initial     string
-}
-
-// Path 路径
-type Path struct {
-    States []string
-}
-
-// NewKripkeStructure 创建新的Kripke结构
-func NewKripkeStructure(initial string) *KripkeStructure {
-    return &KripkeStructure{
-        States:      make(map[string]*State),
-        Transitions: make([]Transition, 0),
-        Initial:     initial,
-    }
-}
-```
-
-## 3. 定理证明
-
-### 3.1 定理陈述
-
-**定理 4.1 (时态对偶性)**：对于任意公式 φ，Gφ ≡ ¬F¬φ
-
-**定理 4.2 (时态分配律)**：G(φ ∧ ψ) ≡ Gφ ∧ Gψ
-
-**定理 4.3 (直到展开)**：φUψ ≡ ψ ∨ (φ ∧ X(φUψ))
-
-### 3.2 证明过程
-
-**定理 4.1 的证明**：
-
-我们需要证明 Gφ ≡ ¬F¬φ
-
-**证明**：
-1. 假设在某个位置 i 中 Gφ 为真
-2. 根据语义定义，对于所有 j ≥ i，φ 在位置 j 为真
-3. 这意味着不存在 j ≥ i 使得 ¬φ 在位置 j 为真
-4. 因此 F¬φ 为假
-5. 所以 ¬F¬φ 为真
-6. 反之亦然
-
-**定理 4.2 的证明**：
-
-**证明**：
-1. 假设 G(φ ∧ ψ) 在位置 i 为真
-2. 对于所有 j ≥ i，φ ∧ ψ 在位置 j 为真
-3. 这意味着对于所有 j ≥ i，φ 和 ψ 都在位置 j 为真
-4. 因此 Gφ 和 Gψ 都在位置 i 为真
-5. 所以 Gφ ∧ Gψ 在位置 i 为真
-6. 反之亦然
-
-```go
-// TemporalTheorem 时态逻辑定理
-type TemporalTheorem struct {
-    Name       string
-    Premises   []Formula
-    Conclusion Formula
-}
-
-// TemporalProof 时态逻辑证明
-type TemporalProof struct {
-    Steps []TemporalProofStep
-}
-
-type TemporalProofStep struct {
-    StepNumber   int
-    Formula      Formula
-    Justification string
-    Path         *Path
-    Position     int
-}
-
-// ProveTemporalDuality 证明时态对偶性定理
-func ProveTemporalDuality() *TemporalProof {
-    proof := &TemporalProof{
-        Steps: []TemporalProofStep{
-            {
-                StepNumber: 1,
-                Formula:    &Globally{Formula: &AtomicFormula{Name: "φ"}},
-                Justification: "假设",
-                Position:   0,
-            },
-            {
-                StepNumber: 2,
-                Formula:    &Negation{Formula: &Finally{Formula: &Negation{Formula: &AtomicFormula{Name: "φ"}}}},
-                Justification: "语义定义",
-                Position:   0,
-            },
-            {
-                StepNumber: 3,
-                Formula:    &Conjunction{
-                    Left:  &Globally{Formula: &AtomicFormula{Name: "φ"}},
-                    Right: &Negation{Formula: &Finally{Formula: &Negation{Formula: &AtomicFormula{Name: "φ"}}}},
-                },
-                Justification: "等价性",
-                Position:   0,
-            },
-        },
-    }
-    return proof
-}
-```
-
-## 4. Go语言实现
-
-### 4.1 基础实现
-
-```go
-// TemporalLogicEvaluator 时态逻辑求值器
-type TemporalLogicEvaluator struct {
-    structure *KripkeStructure
-}
-
-// NewTemporalLogicEvaluator 创建新的求值器
-func NewTemporalLogicEvaluator(structure *KripkeStructure) *TemporalLogicEvaluator {
-    return &TemporalLogicEvaluator{
-        structure: structure,
-    }
-}
-
-// Evaluate 在指定路径和位置上求值公式
-func (e *TemporalLogicEvaluator) Evaluate(path *Path, position int, formula Formula) (bool, error) {
-    if position >= len(path.States) {
-        return false, fmt.Errorf("position %d out of bounds", position)
-    }
-    
-    return e.evaluateFormula(path, position, formula)
-}
-
-// evaluateFormula 递归求值公式
-func (e *TemporalLogicEvaluator) evaluateFormula(path *Path, position int, formula Formula) (bool, error) {
-    switch f := formula.(type) {
-    case *AtomicFormula:
-        return e.evaluateAtomic(path, position, f)
-    case *Negation:
-        return e.evaluateNegation(path, position, f)
-    case *Conjunction:
-        return e.evaluateConjunction(path, position, f)
-    case *Next:
-        return e.evaluateNext(path, position, f)
-    case *Finally:
-        return e.evaluateFinally(path, position, f)
-    case *Globally:
-        return e.evaluateGlobally(path, position, f)
-    case *Until:
-        return e.evaluateUntil(path, position, f)
-    default:
-        return false, fmt.Errorf("unknown formula type: %T", formula)
-    }
-}
-
-// evaluateAtomic 求值原子公式
-func (e *TemporalLogicEvaluator) evaluateAtomic(path *Path, position int, formula *AtomicFormula) (bool, error) {
-    if position >= len(path.States) {
-        return false, nil
-    }
-    
-    stateID := path.States[position]
-    state, exists := e.structure.States[stateID]
-    if !exists {
-        return false, fmt.Errorf("state %s not found", stateID)
-    }
-    
-    value, exists := state.Propositions[formula.Name]
-    if !exists {
-        return false, nil // 默认值为假
-    }
-    return value, nil
-}
-
-// evaluateNegation 求值否定公式
-func (e *TemporalLogicEvaluator) evaluateNegation(path *Path, position int, formula *Negation) (bool, error) {
-    value, err := e.evaluateFormula(path, position, formula.Formula)
-    if err != nil {
-        return false, err
-    }
-    return !value, nil
-}
-
-// evaluateConjunction 求值合取公式
-func (e *TemporalLogicEvaluator) evaluateConjunction(path *Path, position int, formula *Conjunction) (bool, error) {
-    leftValue, err := e.evaluateFormula(path, position, formula.Left)
-    if err != nil {
-        return false, err
-    }
-    
-    rightValue, err := e.evaluateFormula(path, position, formula.Right)
-    if err != nil {
-        return false, err
-    }
-    
-    return leftValue && rightValue, nil
-}
-
-// evaluateNext 求值下一个时刻公式
-func (e *TemporalLogicEvaluator) evaluateNext(path *Path, position int, formula *Next) (bool, error) {
-    if position+1 >= len(path.States) {
-        return false, nil // 没有下一个时刻
-    }
-    
-    return e.evaluateFormula(path, position+1, formula.Formula)
-}
-
-// evaluateFinally 求值最终公式
-func (e *TemporalLogicEvaluator) evaluateFinally(path *Path, position int, formula *Finally) (bool, error) {
-    // 检查从当前位置开始的所有未来位置
-    for i := position; i < len(path.States); i++ {
-        value, err := e.evaluateFormula(path, i, formula.Formula)
-        if err != nil {
-            return false, err
-        }
-        if value {
-            return true, nil
-        }
-    }
-    
-    return false, nil
-}
-
-// evaluateGlobally 求值全局公式
-func (e *TemporalLogicEvaluator) evaluateGlobally(path *Path, position int, formula *Globally) (bool, error) {
-    // 检查从当前位置开始的所有未来位置
-    for i := position; i < len(path.States); i++ {
-        value, err := e.evaluateFormula(path, i, formula.Formula)
-        if err != nil {
-            return false, err
-        }
-        if !value {
-            return false, nil
-        }
-    }
-    
-    return true, nil
-}
-
-// evaluateUntil 求值直到公式
-func (e *TemporalLogicEvaluator) evaluateUntil(path *Path, position int, formula *Until) (bool, error) {
-    // 检查是否存在位置j使得ψ为真，且φ在所有中间位置为真
-    for j := position; j < len(path.States); j++ {
-        rightValue, err := e.evaluateFormula(path, j, formula.Right)
-        if err != nil {
-            return false, err
-        }
-        
-        if rightValue {
-            // 检查φ是否在所有中间位置为真
-            allLeftTrue := true
-            for k := position; k < j; k++ {
-                leftValue, err := e.evaluateFormula(path, k, formula.Left)
-                if err != nil {
-                    return false, err
-                }
-                if !leftValue {
-                    allLeftTrue = false
-                    break
-                }
-            }
-            if allLeftTrue {
-                return true, nil
-            }
-        }
-    }
-    
-    return false, nil
-}
-```
-
-### 4.2 泛型实现
-
-```go
-// GenericTemporalLogic 泛型时态逻辑实现
-type GenericTemporalLogic[T any] struct {
-    States      map[string]*GenericState[T]
-    Transitions []Transition
-    Initial     string
-}
-
-type GenericState[T any] struct {
-    ID           string
-    Name         string
-    Propositions map[string]T
-    Metadata     map[string]interface{}
-}
-
-// GenericTemporalEvaluator 泛型时态求值器
-type GenericTemporalEvaluator[T any] struct {
-    logic   *GenericTemporalLogic[T]
-    evalFunc func(T) bool
-}
-
-func NewGenericTemporalEvaluator[T any](logic *GenericTemporalLogic[T], evalFunc func(T) bool) *GenericTemporalEvaluator[T] {
-    return &GenericTemporalEvaluator[T]{
-        logic:    logic,
-        evalFunc: evalFunc,
-    }
-}
-
-// EvaluateGeneric 泛型求值
-func (e *GenericTemporalEvaluator[T]) EvaluateGeneric(path *Path, position int, formula Formula) (bool, error) {
-    if position >= len(path.States) {
-        return false, fmt.Errorf("position %d out of bounds", position)
-    }
-    
-    return e.evaluateGenericFormula(path, position, formula)
-}
-
-func (e *GenericTemporalEvaluator[T]) evaluateGenericFormula(path *Path, position int, formula Formula) (bool, error) {
-    switch f := formula.(type) {
-    case *AtomicFormula:
-        if position >= len(path.States) {
-            return false, nil
-        }
-        
-        stateID := path.States[position]
-        state, exists := e.logic.States[stateID]
-        if !exists {
-            return false, fmt.Errorf("state %s not found", stateID)
-        }
-        
-        if value, exists := state.Propositions[f.Name]; exists {
-            return e.evalFunc(value), nil
-        }
-        return false, nil
-    // 其他情况类似...
-    default:
-        return false, fmt.Errorf("unsupported formula type")
-    }
-}
-```
-
-### 4.3 并发实现
-
-```go
-// ConcurrentTemporalLogic 并发时态逻辑实现
-type ConcurrentTemporalLogic struct {
-    structure *KripkeStructure
-    mu        sync.RWMutex
-}
-
-// ConcurrentTemporalEvaluator 并发时态求值器
-type ConcurrentTemporalEvaluator struct {
-    logic *ConcurrentTemporalLogic
-    pool  *sync.Pool
-}
-
-func NewConcurrentTemporalEvaluator(structure *KripkeStructure) *ConcurrentTemporalEvaluator {
-    return &ConcurrentTemporalEvaluator{
-        logic: &ConcurrentTemporalLogic{
-            structure: structure,
-            mu:        sync.RWMutex{},
-        },
-        pool: &sync.Pool{
-            New: func() interface{} {
-                return make([]bool, 0, 100)
-            },
-        },
-    }
-}
-
-// EvaluateConcurrent 并发求值
-func (e *ConcurrentTemporalEvaluator) EvaluateConcurrent(path *Path, position int, formula Formula) (bool, error) {
-    e.logic.mu.RLock()
-    defer e.logic.mu.RUnlock()
-    
-    if position >= len(path.States) {
-        return false, fmt.Errorf("position %d out of bounds", position)
-    }
-    
-    return e.evaluateConcurrentFormula(path, position, formula)
-}
-
-// evaluateConcurrentFormula 并发求值公式
-func (e *ConcurrentTemporalEvaluator) evaluateConcurrentFormula(path *Path, position int, formula Formula) (bool, error) {
-    switch f := formula.(type) {
-    case *Conjunction:
-        return e.evaluateConcurrentConjunction(path, position, f)
-    case *Finally:
-        return e.evaluateConcurrentFinally(path, position, f)
-    case *Globally:
-        return e.evaluateConcurrentGlobally(path, position, f)
-    case *Until:
-        return e.evaluateConcurrentUntil(path, position, f)
-    default:
-        return e.evaluateFormulaSync(path, position, formula)
-    }
-}
-
-// evaluateConcurrentFinally 并发求值最终公式
-func (e *ConcurrentTemporalEvaluator) evaluateConcurrentFinally(path *Path, position int, formula *Finally) (bool, error) {
-    if position >= len(path.States) {
-        return false, nil
-    }
-    
-    // 使用goroutine并行检查所有未来位置
-    results := make(chan bool, len(path.States)-position)
-    errors := make(chan error, len(path.States)-position)
-    
-    for i := position; i < len(path.States); i++ {
-        go func(pos int) {
-            value, err := e.evaluateFormulaSync(path, pos, formula.Formula)
-            if err != nil {
-                errors <- err
-                return
-            }
-            results <- value
-        }(i)
-    }
-    
-    // 收集结果
-    for i := position; i < len(path.States); i++ {
-        select {
-        case err := <-errors:
-            return false, err
-        case result := <-results:
-            if result {
-                return true, nil
-            }
-        }
-    }
-    
-    return false, nil
-}
-
-// evaluateConcurrentGlobally 并发求值全局公式
-func (e *ConcurrentTemporalEvaluator) evaluateConcurrentGlobally(path *Path, position int, formula *Globally) (bool, error) {
-    if position >= len(path.States) {
-        return true, nil
-    }
-    
-    results := make(chan bool, len(path.States)-position)
-    errors := make(chan error, len(path.States)-position)
-    
-    for i := position; i < len(path.States); i++ {
-        go func(pos int) {
-            value, err := e.evaluateFormulaSync(path, pos, formula.Formula)
-            if err != nil {
-                errors <- err
-                return
-            }
-            results <- value
-        }(i)
-    }
-    
-    // 收集结果
-    for i := position; i < len(path.States); i++ {
-        select {
-        case err := <-errors:
-            return false, err
-        case result := <-results:
-            if !result {
-                return false, nil
-            }
-        }
-    }
-    
-    return true, nil
-}
-
-// evaluateFormulaSync 同步求值（辅助方法）
-func (e *ConcurrentTemporalEvaluator) evaluateFormulaSync(path *Path, position int, formula Formula) (bool, error) {
-    switch f := formula.(type) {
-    case *AtomicFormula:
-        if position >= len(path.States) {
-            return false, nil
-        }
-        
-        stateID := path.States[position]
-        state, exists := e.logic.structure.States[stateID]
-        if !exists {
-            return false, fmt.Errorf("state %s not found", stateID)
-        }
-        
-        value, exists := state.Propositions[f.Name]
-        return value, nil
-    case *Negation:
-        value, err := e.evaluateFormulaSync(path, position, f.Formula)
-        if err != nil {
-            return false, err
-        }
-        return !value, nil
-    default:
-        return false, fmt.Errorf("unsupported formula type")
-    }
-}
-```
-
-## 5. 应用示例
-
-### 5.1 基础示例
-
-```go
-// 创建简单的时态逻辑模型
-func createSimpleTemporalModel() *KripkeStructure {
-    structure := NewKripkeStructure("s1")
-    
-    // 创建状态
-    state1 := &State{
-        ID: "s1",
-        Name: "状态1",
-        Propositions: map[string]bool{
-            "p": true,
-            "q": false,
-        },
-    }
-    
-    state2 := &State{
-        ID: "s2",
-        Name: "状态2",
-        Propositions: map[string]bool{
-            "p": false,
-            "q": true,
-        },
-    }
-    
-    state3 := &State{
-        ID: "s3",
-        Name: "状态3",
-        Propositions: map[string]bool{
-            "p": true,
-            "q": true,
-        },
-    }
-    
-    structure.States["s1"] = state1
-    structure.States["s2"] = state2
-    structure.States["s3"] = state3
-    
-    // 设置转移关系
-    structure.Transitions = []Transition{
-        {From: "s1", To: "s2"},
-        {From: "s2", To: "s3"},
-        {From: "s3", To: "s1"},
-    }
-    
-    return structure
-}
-
-// 示例：验证时态对偶性
-func ExampleTemporalDuality() {
-    structure := createSimpleTemporalModel()
-    evaluator := NewTemporalLogicEvaluator(structure)
-    
-    // 创建路径
-    path := &Path{States: []string{"s1", "s2", "s3", "s1"}}
-    
-    // 创建公式 Gp
-    globallyP := &Globally{Formula: &AtomicFormula{Name: "p"}}
-    
-    // 创建公式 ¬F¬p
-    notFinallyNotP := &Negation{
-        Formula: &Finally{
-            Formula: &Negation{Formula: &AtomicFormula{Name: "p"}},
-        },
-    }
-    
-    // 在位置0求值
-    value1, err1 := evaluator.Evaluate(path, 0, globallyP)
-    value2, err2 := evaluator.Evaluate(path, 0, notFinallyNotP)
-    
-    if err1 == nil && err2 == nil {
-        fmt.Printf("Gp 在位置0的值: %v\n", value1)
-        fmt.Printf("¬F¬p 在位置0的值: %v\n", value2)
-        fmt.Printf("时态对偶性成立: %v\n", value1 == value2)
-    }
-}
-```
-
-### 5.2 高级示例
-
-```go
-// 工作流验证示例
-type WorkflowValidator struct {
-    temporalLogic *TemporalLogicEvaluator
-    structure     *KripkeStructure
-}
-
-func NewWorkflowValidator(structure *KripkeStructure) *WorkflowValidator {
-    return &WorkflowValidator{
-        temporalLogic: NewTemporalLogicEvaluator(structure),
-        structure:     structure,
-    }
-}
-
-// ValidateSafety 验证安全性属性
-func (wv *WorkflowValidator) ValidateSafety(path *Path, property string) (bool, error) {
-    // 安全性：坏事永远不会发生
-    // G¬bad_thing
-    safetyFormula := &Globally{
-        Formula: &Negation{Formula: &AtomicFormula{Name: property}},
-    }
-    
-    return wv.temporalLogic.Evaluate(path, 0, safetyFormula)
-}
-
-// ValidateLiveness 验证活性属性
-func (wv *WorkflowValidator) ValidateLiveness(path *Path, property string) (bool, error) {
-    // 活性：好事最终会发生
-    // Fgood_thing
-    livenessFormula := &Finally{
-        Formula: &AtomicFormula{Name: property},
-    }
-    
-    return wv.temporalLogic.Evaluate(path, 0, livenessFormula)
-}
-
-// ValidateResponse 验证响应属性
-func (wv *WorkflowValidator) ValidateResponse(path *Path, request, response string) (bool, error) {
-    // 响应：请求最终会导致响应
-    // G(request → Fresponse)
-    responseFormula := &Globally{
-        Formula: &Conjunction{
-            Left: &Negation{Formula: &AtomicFormula{Name: request}},
-            Right: &Finally{Formula: &AtomicFormula{Name: response}},
-        },
-    }
-    
-    return wv.temporalLogic.Evaluate(path, 0, responseFormula)
-}
-
-// 分布式系统中的应用
-type DistributedSystemValidator struct {
-    workflowValidator *WorkflowValidator
-    nodes            map[string]*Node
-}
-
-func (dsv *DistributedSystemValidator) ValidateConsensus(path *Path) (bool, error) {
-    // 验证共识属性：所有节点最终会达成一致
-    consensusFormula := &Finally{
-        Formula: &Globally{
-            Formula: &AtomicFormula{Name: "consensus_reached"},
-        },
-    }
-    
-    return dsv.workflowValidator.temporalLogic.Evaluate(path, 0, consensusFormula)
-}
-
-func (dsv *DistributedSystemValidator) ValidateFaultTolerance(path *Path) (bool, error) {
-    // 验证容错性：即使有节点故障，系统仍能继续运行
-    faultToleranceFormula := &Globally{
-        Formula: &Conjunction{
-            Left: &Negation{Formula: &AtomicFormula{Name: "system_failed"}},
-            Right: &Finally{Formula: &AtomicFormula{Name: "operation_completed"}},
-        },
-    }
-    
-    return dsv.workflowValidator.temporalLogic.Evaluate(path, 0, faultToleranceFormula)
-}
-```
-
-## 6. 性能分析
-
-### 6.1 时间复杂度
-
-**基础求值算法**：
-- 原子公式：O(1)
-- 否定公式：O(T(n))
-- 合取公式：O(T(n₁) + T(n₂))
-- 下一个公式：O(T(n))
-- 最终公式：O(|π| × T(n))
-- 全局公式：O(|π| × T(n))
-- 直到公式：O(|π|² × T(n))
-
-**总体复杂度**：
-- 最坏情况：O(|π|^d)，其中d是公式的时态深度
-- 平均情况：O(|π| × |φ|)
-
-### 6.2 空间复杂度
-
-**内存使用**：
-- Kripke结构：O(|S|² + |P| × |S|)
-- 求值器：O(|π|)
-- 公式表示：O(|φ|)
-
-### 6.3 基准测试
-
-```go
-func BenchmarkTemporalLogicEvaluation(b *testing.B) {
-    structure := createLargeTemporalModel(1000) // 创建1000个状态的模型
-    evaluator := NewTemporalLogicEvaluator(structure)
-    
-    // 创建长路径
-    path := createLongPath(1000)
-    
-    // 创建复杂公式
-    formula := createComplexTemporalFormula(10) // 深度为10的公式
-    
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        evaluator.Evaluate(path, 0, formula)
-    }
-}
-
-func BenchmarkConcurrentTemporalEvaluation(b *testing.B) {
-    structure := createLargeTemporalModel(1000)
-    evaluator := NewConcurrentTemporalEvaluator(structure)
-    
-    path := createLongPath(1000)
-    formula := createComplexTemporalFormula(10)
-    
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        evaluator.EvaluateConcurrent(path, 0, formula)
-    }
-}
-
-// 性能优化建议
-func TemporalPerformanceOptimizations() {
-    // 1. 缓存求值结果
-    // 2. 使用符号模型检查
-    // 3. 并行处理多个路径
-    // 4. 预计算常用公式
-    // 5. 使用增量求值
-    // 6. 优化路径表示
-}
-```
-
-## 7. 参考文献
-
-1. Clarke, E. M., Grumberg, O., & Peled, D. A. (1999). *Model Checking*. MIT Press.
-2. Baier, C., & Katoen, J. (2008). *Principles of Model Checking*. MIT Press.
-3. Pnueli, A. (1977). The temporal logic of programs. *Proceedings of the 18th Annual Symposium on Foundations of Computer Science*, 46-57.
-4. Vardi, M. Y., & Wolper, P. (1986). An automata-theoretic approach to automatic program verification. *Proceedings of the First Annual Symposium on Logic in Computer Science*, 332-344.
-5. Emerson, E. A. (1990). Temporal and modal logic. *Handbook of Theoretical Computer Science*, 995-1072.
+    - [2.1 LTL语法](#21-ltl语法)
+    - [2.2 CTL语法](#22-ctl语法)
+    - [2.3 语义定义](#23-语义定义)
+  - [3. Go语言实现](#3-go语言实现)
+    - [3.1 LTL解析器](#31-ltl解析器)
+    - [3.2 CTL解析器](#32-ctl解析器)
+    - [3.3 模型检查器](#33-模型检查器)
+  - [4. 应用场景](#4-应用场景)
+    - [4.1 程序验证](#41-程序验证)
+    - [4.2 硬件验证](#42-硬件验证)
+    - [4.3 协议验证](#43-协议验证)
+  - [5. 数学证明](#5-数学证明)
+    - [5.1 完备性定理](#51-完备性定理)
+    - [5.2 模型检查算法](#52-模型检查算法)
+    - [5.3 复杂度分析](#53-复杂度分析)
 
 ---
 
-**激情澎湃的持续构建** <(￣︶￣)↗[GO!] **时态逻辑模块完成！** 🚀
+## 1. 时态逻辑基础
+
+### 1.1 时态逻辑定义
+
+时态逻辑是研究时间相关性质的模态逻辑分支，用于描述系统在时间上的行为。在软件工程中，时态逻辑广泛应用于程序验证、硬件验证和协议验证。
+
+**定义 1.1**: 时态逻辑语言 $\mathcal{L}_{TL}$ 由以下部分组成：
+- 原子命题集合 $AP = \{p, q, r, \ldots\}$
+- 逻辑连接词：$\neg, \land, \lor, \rightarrow$
+- 时态算子：$\mathbf{X}$ (下一个), $\mathbf{F}$ (将来), $\mathbf{G}$ (全局), $\mathbf{U}$ (直到)
+- 路径量词：$\mathbf{A}$ (所有路径), $\mathbf{E}$ (存在路径)
+
+### 1.2 时态算子
+
+**定义 1.2**: 基本时态算子的语义：
+- $\mathbf{X} \phi$ 表示"下一个时刻 $\phi$"
+- $\mathbf{F} \phi$ 表示"将来某个时刻 $\phi$"
+- $\mathbf{G} \phi$ 表示"全局 $\phi$"（所有时刻都 $\phi$）
+- $\phi \mathbf{U} \psi$ 表示"$\phi$ 直到 $\psi$"
+
+### 1.3 线性时态逻辑
+
+**定义 1.3**: 线性时态逻辑 (LTL) 描述单个执行路径上的时态性质。
+
+**LTL公式示例**:
+- $\mathbf{G}(request \rightarrow \mathbf{F} response)$ - "每个请求最终都会得到响应"
+- $\mathbf{G}(mutex \rightarrow \mathbf{X}(\neg mutex))$ - "互斥锁在下一个时刻会被释放"
+
+### 1.4 分支时态逻辑
+
+**定义 1.4**: 计算树逻辑 (CTL) 描述状态树上的分支时态性质。
+
+**CTL公式示例**:
+- $\mathbf{AG}(safe)$ - "在所有可达状态中都是安全的"
+- $\mathbf{EF}(error)$ - "存在一条路径最终会到达错误状态"
+
+## 2. 形式化定义
+
+### 2.1 LTL语法
+
+**定义 2.1**: LTL公式的归纳定义：
+
+$$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \psi$$
+
+其中 $p \in AP$ 是原子命题。
+
+### 2.2 CTL语法
+
+**定义 2.2**: CTL公式的归纳定义：
+
+$$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{AX} \phi \mid \mathbf{EX} \phi \mid \mathbf{AF} \phi \mid \mathbf{EF} \phi \mid \mathbf{AG} \phi \mid \mathbf{EG} \phi \mid \mathbf{A}[\phi \mathbf{U} \psi] \mid \mathbf{E}[\phi \mathbf{U} \psi]$$
+
+### 2.3 语义定义
+
+**定义 2.3**: 对于Kripke结构 $M = (S, S_0, R, L)$，其中：
+- $S$ 是状态集合
+- $S_0 \subseteq S$ 是初始状态集合
+- $R \subseteq S \times S$ 是转移关系
+- $L: S \rightarrow 2^{AP}$ 是标记函数
+
+**LTL语义**:
+$$\begin{align}
+\pi, i &\models p \text{ 当且仅当 } p \in L(\pi[i]) \\
+\pi, i &\models \neg \phi \text{ 当且仅当 } \pi, i \not\models \phi \\
+\pi, i &\models \phi \land \psi \text{ 当且仅当 } \pi, i \models \phi \text{ 且 } \pi, i \models \psi \\
+\pi, i &\models \mathbf{X} \phi \text{ 当且仅当 } \pi, i+1 \models \phi \\
+\pi, i &\models \mathbf{F} \phi \text{ 当且仅当 } \exists j \geq i: \pi, j \models \phi \\
+\pi, i &\models \mathbf{G} \phi \text{ 当且仅当 } \forall j \geq i: \pi, j \models \phi \\
+\pi, i &\models \phi \mathbf{U} \psi \text{ 当且仅当 } \exists j \geq i: \pi, j \models \psi \text{ 且 } \forall k \in [i,j): \pi, k \models \phi
+\end{align}$$
+
+## 3. Go语言实现
+
+### 3.1 LTL解析器
+
+```go
+package temporallogic
+
+import (
+	"fmt"
+	"strings"
+)
+
+// LTLFormula 表示LTL公式
+type LTLFormula interface {
+	String() string
+	Evaluate(path []string, labels map[string][]string, index int) bool
+}
+
+// AtomicProposition 原子命题
+type AtomicProposition struct {
+	Name string
+}
+
+func (ap *AtomicProposition) String() string {
+	return ap.Name
+}
+
+func (ap *AtomicProposition) Evaluate(path []string, labels map[string][]string, index int) bool {
+	if index >= len(path) {
+		return false
+	}
+	state := path[index]
+	for _, label := range labels[state] {
+		if label == ap.Name {
+			return true
+		}
+	}
+	return false
+}
+
+// LTLNegation LTL否定
+type LTLNegation struct {
+	Formula LTLFormula
+}
+
+func (n *LTLNegation) String() string {
+	return fmt.Sprintf("¬(%s)", n.Formula)
+}
+
+func (n *LTLNegation) Evaluate(path []string, labels map[string][]string, index int) bool {
+	return !n.Formula.Evaluate(path, labels, index)
+}
+
+// LTLConjunction LTL合取
+type LTLConjunction struct {
+	Left, Right LTLFormula
+}
+
+func (c *LTLConjunction) String() string {
+	return fmt.Sprintf("(%s ∧ %s)", c.Left, c.Right)
+}
+
+func (c *LTLConjunction) Evaluate(path []string, labels map[string][]string, index int) bool {
+	return c.Left.Evaluate(path, labels, index) && c.Right.Evaluate(path, labels, index)
+}
+
+// LTLNext LTL下一个算子
+type LTLNext struct {
+	Formula LTLFormula
+}
+
+func (x *LTLNext) String() string {
+	return fmt.Sprintf("X(%s)", x.Formula)
+}
+
+func (x *LTLNext) Evaluate(path []string, labels map[string][]string, index int) bool {
+	return x.Formula.Evaluate(path, labels, index+1)
+}
+
+// LTLFuture LTL将来算子
+type LTLFuture struct {
+	Formula LTLFormula
+}
+
+func (f *LTLFuture) String() string {
+	return fmt.Sprintf("F(%s)", f.Formula)
+}
+
+func (f *LTLFuture) Evaluate(path []string, labels map[string][]string, index int) bool {
+	for i := index; i < len(path); i++ {
+		if f.Formula.Evaluate(path, labels, i) {
+			return true
+		}
+	}
+	return false
+}
+
+// LTLGlobal LTL全局算子
+type LTLGlobal struct {
+	Formula LTLFormula
+}
+
+func (g *LTLGlobal) String() string {
+	return fmt.Sprintf("G(%s)", g.Formula)
+}
+
+func (g *LTLGlobal) Evaluate(path []string, labels map[string][]string, index int) bool {
+	for i := index; i < len(path); i++ {
+		if !g.Formula.Evaluate(path, labels, i) {
+			return false
+		}
+	}
+	return true
+}
+
+// LTLUntil LTL直到算子
+type LTLUntil struct {
+	Left, Right LTLFormula
+}
+
+func (u *LTLUntil) String() string {
+	return fmt.Sprintf("(%s U %s)", u.Left, u.Right)
+}
+
+func (u *LTLUntil) Evaluate(path []string, labels map[string][]string, index int) bool {
+	for i := index; i < len(path); i++ {
+		if u.Right.Evaluate(path, labels, i) {
+			return true
+		}
+		if !u.Left.Evaluate(path, labels, i) {
+			return false
+		}
+	}
+	return false
+}
+```
+
+### 3.2 CTL解析器
+
+```go
+// CTLFormula 表示CTL公式
+type CTLFormula interface {
+	String() string
+	Evaluate(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string) bool
+}
+
+// CTLAtomicProposition CTL原子命题
+type CTLAtomicProposition struct {
+	Name string
+}
+
+func (ap *CTLAtomicProposition) String() string {
+	return ap.Name
+}
+
+func (ap *CTLAtomicProposition) Evaluate(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string) bool {
+	for _, label := range labels[state] {
+		if label == ap.Name {
+			return true
+		}
+	}
+	return false
+}
+
+// CTLNegation CTL否定
+type CTLNegation struct {
+	Formula CTLFormula
+}
+
+func (n *CTLNegation) String() string {
+	return fmt.Sprintf("¬(%s)", n.Formula)
+}
+
+func (n *CTLNegation) Evaluate(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string) bool {
+	return !n.Formula.Evaluate(states, transitions, labels, state)
+}
+
+// CTLConjunction CTL合取
+type CTLConjunction struct {
+	Left, Right CTLFormula
+}
+
+func (c *CTLConjunction) String() string {
+	return fmt.Sprintf("(%s ∧ %s)", c.Left, c.Right)
+}
+
+func (c *CTLConjunction) Evaluate(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string) bool {
+	return c.Left.Evaluate(states, transitions, labels, state) && c.Right.Evaluate(states, transitions, labels, state)
+}
+
+// CTLExistsNext CTL存在下一个
+type CTLExistsNext struct {
+	Formula CTLFormula
+}
+
+func (ex *CTLExistsNext) String() string {
+	return fmt.Sprintf("EX(%s)", ex.Formula)
+}
+
+func (ex *CTLExistsNext) Evaluate(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string) bool {
+	for _, nextState := range transitions[state] {
+		if ex.Formula.Evaluate(states, transitions, labels, nextState) {
+			return true
+		}
+	}
+	return false
+}
+
+// CTLForAllNext CTL所有下一个
+type CTLForAllNext struct {
+	Formula CTLFormula
+}
+
+func (ax *CTLForAllNext) String() string {
+	return fmt.Sprintf("AX(%s)", ax.Formula)
+}
+
+func (ax *CTLForAllNext) Evaluate(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string) bool {
+	for _, nextState := range transitions[state] {
+		if !ax.Formula.Evaluate(states, transitions, labels, nextState) {
+			return false
+		}
+	}
+	return true
+}
+
+// CTLExistsFuture CTL存在将来
+type CTLExistsFuture struct {
+	Formula CTLFormula
+}
+
+func (ef *CTLExistsFuture) String() string {
+	return fmt.Sprintf("EF(%s)", ef.Formula)
+}
+
+func (ef *CTLExistsFuture) Evaluate(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string) bool {
+	visited := make(map[string]bool)
+	return ef.existsPath(states, transitions, labels, state, visited)
+}
+
+func (ef *CTLExistsFuture) existsPath(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string, visited map[string]bool) bool {
+	if visited[state] {
+		return false
+	}
+	visited[state] = true
+	
+	if ef.Formula.Evaluate(states, transitions, labels, state) {
+		return true
+	}
+	
+	for _, nextState := range transitions[state] {
+		if ef.existsPath(states, transitions, labels, nextState, visited) {
+			return true
+		}
+	}
+	return false
+}
+
+// CTLForAllFuture CTL所有将来
+type CTLForAllFuture struct {
+	Formula CTLFormula
+}
+
+func (af *CTLForAllFuture) String() string {
+	return fmt.Sprintf("AF(%s)", af.Formula)
+}
+
+func (af *CTLForAllFuture) Evaluate(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string) bool {
+	visited := make(map[string]bool)
+	return af.allPaths(states, transitions, labels, state, visited)
+}
+
+func (af *CTLForAllFuture) allPaths(states map[string]bool, transitions map[string][]string, labels map[string][]string, state string, visited map[string]bool) bool {
+	if visited[state] {
+		return true // 避免循环
+	}
+	visited[state] = true
+	
+	if af.Formula.Evaluate(states, transitions, labels, state) {
+		return true
+	}
+	
+	for _, nextState := range transitions[state] {
+		if !af.allPaths(states, transitions, labels, nextState, visited) {
+			return false
+		}
+	}
+	return true
+}
+```
+
+### 3.3 模型检查器
+
+```go
+// KripkeStructure Kripke结构
+type KripkeStructure struct {
+	States      map[string]bool
+	InitialStates map[string]bool
+	Transitions map[string][]string
+	Labels      map[string][]string
+}
+
+// NewKripkeStructure 创建新的Kripke结构
+func NewKripkeStructure() *KripkeStructure {
+	return &KripkeStructure{
+		States:       make(map[string]bool),
+		InitialStates: make(map[string]bool),
+		Transitions:  make(map[string][]string),
+		Labels:       make(map[string][]string),
+	}
+}
+
+// AddState 添加状态
+func (ks *KripkeStructure) AddState(state string, isInitial bool) {
+	ks.States[state] = true
+	if isInitial {
+		ks.InitialStates[state] = true
+	}
+}
+
+// AddTransition 添加转移
+func (ks *KripkeStructure) AddTransition(from, to string) {
+	ks.Transitions[from] = append(ks.Transitions[from], to)
+}
+
+// AddLabel 添加标签
+func (ks *KripkeStructure) AddLabel(state, label string) {
+	if ks.Labels[state] == nil {
+		ks.Labels[state] = make([]string, 0)
+	}
+	ks.Labels[state] = append(ks.Labels[state], label)
+}
+
+// ModelChecker 模型检查器
+type ModelChecker struct {
+	structure *KripkeStructure
+}
+
+// NewModelChecker 创建新的模型检查器
+func NewModelChecker(structure *KripkeStructure) *ModelChecker {
+	return &ModelChecker{structure: structure}
+}
+
+// CheckLTL 检查LTL公式
+func (mc *ModelChecker) CheckLTL(formula LTLFormula) bool {
+	// 检查所有初始状态
+	for initialState := range mc.structure.InitialStates {
+		if !mc.checkLTLFromState(formula, initialState) {
+			return false
+		}
+	}
+	return true
+}
+
+// checkLTLFromState 从指定状态检查LTL公式
+func (mc *ModelChecker) checkLTLFromState(formula LTLFormula, state string) bool {
+	// 生成从该状态开始的所有路径
+	paths := mc.generatePaths(state)
+	
+	for _, path := range paths {
+		if !formula.Evaluate(path, mc.structure.Labels, 0) {
+			return false
+		}
+	}
+	return true
+}
+
+// generatePaths 生成路径
+func (mc *ModelChecker) generatePaths(startState string) [][]string {
+	// 简化的路径生成，实际实现需要更复杂的算法
+	paths := make([][]string, 0)
+	path := []string{startState}
+	paths = append(paths, path)
+	return paths
+}
+
+// CheckCTL 检查CTL公式
+func (mc *ModelChecker) CheckCTL(formula CTLFormula) bool {
+	// 检查所有初始状态
+	for initialState := range mc.structure.InitialStates {
+		if !formula.Evaluate(mc.structure.States, mc.structure.Transitions, mc.structure.Labels, initialState) {
+			return false
+		}
+	}
+	return true
+}
+```
+
+## 4. 应用场景
+
+### 4.1 程序验证
+
+```go
+// ProgramVerification 程序验证
+type ProgramVerification struct {
+	program *Program
+	checker *ModelChecker
+}
+
+// Program 程序模型
+type Program struct {
+	Variables map[string]int
+	States    map[string]bool
+	Transitions map[string][]string
+	Labels    map[string][]string
+}
+
+// NewProgram 创建新程序
+func NewProgram() *Program {
+	return &Program{
+		Variables:   make(map[string]int),
+		States:      make(map[string]bool),
+		Transitions: make(map[string][]string),
+		Labels:      make(map[string][]string),
+	}
+}
+
+// AddVariable 添加变量
+func (p *Program) AddVariable(name string, value int) {
+	p.Variables[name] = value
+}
+
+// AddState 添加状态
+func (p *Program) AddState(state string) {
+	p.States[state] = true
+}
+
+// AddTransition 添加转移
+func (p *Program) AddTransition(from, to string) {
+	p.Transitions[from] = append(p.Transitions[from], to)
+}
+
+// AddLabel 添加标签
+func (p *Program) AddLabel(state, label string) {
+	if p.Labels[state] == nil {
+		p.Labels[state] = make([]string, 0)
+	}
+	p.Labels[state] = append(p.Labels[state], label)
+}
+
+// VerifyLiveness 验证活性性质
+func (pv *ProgramVerification) VerifyLiveness() bool {
+	// 验证：每个请求最终都会得到响应
+	formula := &LTLGlobal{
+		Formula: &LTLNegation{
+			Formula: &LTLUntil{
+				Left: &AtomicProposition{Name: "request"},
+				Right: &AtomicProposition{Name: "response"},
+			},
+		},
+	}
+	
+	return pv.checker.CheckLTL(formula)
+}
+
+// VerifySafety 验证安全性性质
+func (pv *ProgramVerification) VerifySafety() bool {
+	// 验证：永远不会同时持有两个锁
+	formula := &LTLGlobal{
+		Formula: &LTLNegation{
+			Formula: &LTLConjunction{
+				Left:  &AtomicProposition{Name: "lock1"},
+				Right: &AtomicProposition{Name: "lock2"},
+			},
+		},
+	}
+	
+	return pv.checker.CheckLTL(formula)
+}
+```
+
+### 4.2 硬件验证
+
+```go
+// HardwareVerification 硬件验证
+type HardwareVerification struct {
+	circuit *Circuit
+	checker *ModelChecker
+}
+
+// Circuit 电路模型
+type Circuit struct {
+	Inputs     map[string]bool
+	Outputs    map[string]bool
+	States     map[string]bool
+	Transitions map[string][]string
+	Labels     map[string][]string
+}
+
+// NewCircuit 创建新电路
+func NewCircuit() *Circuit {
+	return &Circuit{
+		Inputs:      make(map[string]bool),
+		Outputs:     make(map[string]bool),
+		States:      make(map[string]bool),
+		Transitions: make(map[string][]string),
+		Labels:      make(map[string][]string),
+	}
+}
+
+// AddInput 添加输入
+func (c *Circuit) AddInput(name string, value bool) {
+	c.Inputs[name] = value
+}
+
+// AddOutput 添加输出
+func (c *Circuit) AddOutput(name string, value bool) {
+	c.Outputs[name] = value
+}
+
+// AddState 添加状态
+func (c *Circuit) AddState(state string) {
+	c.States[state] = true
+}
+
+// AddTransition 添加转移
+func (c *Circuit) AddTransition(from, to string) {
+	c.Transitions[from] = append(c.Transitions[from], to)
+}
+
+// AddLabel 添加标签
+func (c *Circuit) AddLabel(state, label string) {
+	if c.Labels[state] == nil {
+		c.Labels[state] = make([]string, 0)
+	}
+	c.Labels[state] = append(c.Labels[state], label)
+}
+
+// VerifyCorrectness 验证正确性
+func (hw *HardwareVerification) VerifyCorrectness() bool {
+	// 验证：输出总是正确的
+	formula := &CTLForAllGlobal{
+		Formula: &CTLAtomicProposition{Name: "correct_output"},
+	}
+	
+	return hw.checker.CheckCTL(formula)
+}
+
+// VerifyDeadlockFreedom 验证无死锁
+func (hw *HardwareVerification) VerifyDeadlockFreedom() bool {
+	// 验证：总是存在下一个状态
+	formula := &CTLForAllGlobal{
+		Formula: &CTLExistsNext{
+			Formula: &CTLAtomicProposition{Name: "true"},
+		},
+	}
+	
+	return hw.checker.CheckCTL(formula)
+}
+```
+
+### 4.3 协议验证
+
+```go
+// ProtocolVerification 协议验证
+type ProtocolVerification struct {
+	protocol *Protocol
+	checker  *ModelChecker
+}
+
+// Protocol 协议模型
+type Protocol struct {
+	Nodes      map[string]*Node
+	Messages   map[string]*Message
+	States     map[string]bool
+	Transitions map[string][]string
+	Labels     map[string][]string
+}
+
+// Node 节点
+type Node struct {
+	ID       string
+	State    string
+	Neighbors []string
+}
+
+// Message 消息
+type Message struct {
+	ID     string
+	From   string
+	To     string
+	Type   string
+	Data   interface{}
+}
+
+// NewProtocol 创建新协议
+func NewProtocol() *Protocol {
+	return &Protocol{
+		Nodes:      make(map[string]*Node),
+		Messages:   make(map[string]*Message),
+		States:     make(map[string]bool),
+		Transitions: make(map[string][]string),
+		Labels:     make(map[string][]string),
+	}
+}
+
+// AddNode 添加节点
+func (p *Protocol) AddNode(id, state string) {
+	p.Nodes[id] = &Node{
+		ID:       id,
+		State:    state,
+		Neighbors: make([]string, 0),
+	}
+}
+
+// AddMessage 添加消息
+func (p *Protocol) AddMessage(id, from, to, msgType string, data interface{}) {
+	p.Messages[id] = &Message{
+		ID:   id,
+		From: from,
+		To:   to,
+		Type: msgType,
+		Data: data,
+	}
+}
+
+// AddState 添加状态
+func (p *Protocol) AddState(state string) {
+	p.States[state] = true
+}
+
+// AddTransition 添加转移
+func (p *Protocol) AddTransition(from, to string) {
+	p.Transitions[from] = append(p.Transitions[from], to)
+}
+
+// AddLabel 添加标签
+func (p *Protocol) AddLabel(state, label string) {
+	if p.Labels[state] == nil {
+		p.Labels[state] = make([]string, 0)
+	}
+	p.Labels[state] = append(p.Labels[state], label)
+}
+
+// VerifyConsistency 验证一致性
+func (pv *ProtocolVerification) VerifyConsistency() bool {
+	// 验证：所有节点最终会达成一致
+	formula := &CTLForAllFuture{
+		Formula: &CTLAtomicProposition{Name: "consensus"},
+	}
+	
+	return pv.checker.CheckCTL(formula)
+}
+
+// VerifyLiveness 验证活性
+func (pv *ProtocolVerification) VerifyLiveness() bool {
+	// 验证：每个请求最终都会得到响应
+	formula := &LTLGlobal{
+		Formula: &LTLNegation{
+			Formula: &LTLUntil{
+				Left: &AtomicProposition{Name: "request"},
+				Right: &AtomicProposition{Name: "response"},
+			},
+		},
+	}
+	
+	return pv.checker.CheckLTL(formula)
+}
+```
+
+## 5. 数学证明
+
+### 5.1 完备性定理
+
+**定理 5.1** (LTL完备性): 对于任意LTL公式 $\phi$，如果 $\phi$ 在所有Kripke结构中有效，则 $\phi$ 在LTL公理系统中可证。
+
+**证明**:
+1. 假设 $\phi$ 在LTL公理系统中不可证
+2. 构造典范模型 $M^c$
+3. 证明 $M^c \not\models \phi$
+4. 这与 $\phi$ 在所有模型中有效矛盾
+5. 因此 $\phi$ 在LTL公理系统中可证
+
+### 5.2 模型检查算法
+
+**算法 5.1** (LTL模型检查):
+```
+输入: Kripke结构 M, LTL公式 φ
+输出: M ⊨ φ 或反例
+
+1. 构造 φ 的否定自动机 A_¬φ
+2. 构造 M 与 A_¬φ 的乘积自动机 P
+3. 检查 P 是否为空
+4. 如果 P 为空，则 M ⊨ φ
+5. 否则，返回 P 中的接受路径作为反例
+```
+
+**定理 5.2**: LTL模型检查的时间复杂度为 $O(|M| \times 2^{|\phi|})$。
+
+### 5.3 复杂度分析
+
+**定理 5.3**: 
+- LTL可满足性问题是PSPACE完全的
+- CTL模型检查问题是P完全的
+- CTL*模型检查问题是PSPACE完全的
+
+**证明**:
+1. LTL可满足性：通过非确定性多项式空间算法
+2. CTL模型检查：通过动态规划算法
+3. CTL*模型检查：通过LTL和CTL的组合
+
+---
+
+**总结**: 时态逻辑为软件工程提供了强大的形式化验证工具，通过Go语言实现，我们可以构建实用的模型检查器，用于验证程序、硬件和协议的正确性。LTL和CTL分别适用于不同的验证场景，提供了完整的时态性质表达能力。

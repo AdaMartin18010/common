@@ -38,12 +38,14 @@
 
 **定义 1.1**: 概率空间
 概率空间是一个三元组 $(\Omega, \mathcal{F}, P)$，其中：
+
 - $\Omega$ 是样本空间（sample space），包含所有可能的结果
 - $\mathcal{F}$ 是事件域（event space），是 $\Omega$ 的子集的 $\sigma$-代数
 - $P$ 是概率测度（probability measure），$P: \mathcal{F} \rightarrow [0,1]$
 
 **定义 1.2**: $\sigma$-代数
 集合 $\mathcal{F}$ 是 $\sigma$-代数，如果满足：
+
 1. $\Omega \in \mathcal{F}$
 2. 如果 $A \in \mathcal{F}$，则 $A^c \in \mathcal{F}$
 3. 如果 $A_1, A_2, \ldots \in \mathcal{F}$，则 $\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$
@@ -89,6 +91,7 @@ $$F_X(x) = P(X \leq x)$$
 4. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
 
 **证明**:
+
 1. 由可列可加性，$P(\emptyset) = P(\emptyset \cup \emptyset \cup \cdots) = P(\emptyset) + P(\emptyset) + \cdots$，因此 $P(\emptyset) = 0$
 2. $1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)$，因此 $P(A^c) = 1 - P(A)$
 3. 如果 $A \subseteq B$，则 $B = A \cup (B \setminus A)$，因此 $P(B) = P(A) + P(B \setminus A) \geq P(A)$
@@ -136,6 +139,7 @@ $$P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}$$
 $$p_X(x) = P(X = x)$$
 
 **性质**:
+
 1. $p_X(x) \geq 0$ 对于所有 $x \in \mathbb{R}$
 2. $\sum_{x \in \text{range}(X)} p_X(x) = 1$
 
@@ -161,6 +165,7 @@ $$p_X(x) = P(X = x)$$
 $$F_X(x) = \int_{-\infty}^x f_X(t) dt$$
 
 **性质**:
+
 1. $f_X(x) \geq 0$ 对于所有 $x \in \mathbb{R}$
 2. $\int_{-\infty}^{\infty} f_X(x) dx = 1$
 

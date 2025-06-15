@@ -2,13 +2,28 @@
 
 ## 目录
 
-- [02-形式语言](#02-形式语言)
+- [02-形式语言 (Formal Languages)](#02-形式语言-formal-languages)
+  - [目录](#目录)
   - [1. 概念定义](#1-概念定义)
+    - [1.1 基本概念](#11-基本概念)
+    - [1.2 核心思想](#12-核心思想)
   - [2. 形式化定义](#2-形式化定义)
+    - [2.1 数学定义](#21-数学定义)
+    - [2.2 类型定义](#22-类型定义)
   - [3. 定理证明](#3-定理证明)
+    - [3.1 定理陈述](#31-定理陈述)
+    - [3.2 证明过程](#32-证明过程)
   - [4. Go语言实现](#4-go语言实现)
+    - [4.1 基础实现](#41-基础实现)
+    - [4.2 泛型实现](#42-泛型实现)
+    - [4.3 并发实现](#43-并发实现)
   - [5. 应用示例](#5-应用示例)
+    - [5.1 基础示例](#51-基础示例)
+    - [5.2 高级示例](#52-高级示例)
   - [6. 性能分析](#6-性能分析)
+    - [6.1 时间复杂度](#61-时间复杂度)
+    - [6.2 空间复杂度](#62-空间复杂度)
+    - [6.3 基准测试](#63-基准测试)
   - [7. 参考文献](#7-参考文献)
 
 ## 1. 概念定义
@@ -49,6 +64,7 @@
 4. **克林闭包**: $L^* = \bigcup_{i=0}^{\infty} L^i$
 
 **定义 2.3**: 乔姆斯基层次结构
+
 1. **正则语言**: 由正则表达式定义
 2. **上下文无关语言**: 由上下文无关文法定义
 3. **上下文有关语言**: 由上下文有关文法定义
@@ -120,12 +136,14 @@ type Production struct {
 
 **定理 3.1**: 泵引理 (Pumping Lemma)
 设 $L$ 是正则语言，则存在常数 $n$，使得对于任意 $w \in L$ 且 $|w| \geq n$，存在分解 $w = xyz$，满足：
+
 1. $|xy| \leq n$
 2. $|y| > 0$
 3. 对于所有 $i \geq 0$，$xy^iz \in L$
 
 **定理 3.2**: 上下文无关语言的泵引理
 设 $L$ 是上下文无关语言，则存在常数 $n$，使得对于任意 $w \in L$ 且 $|w| \geq n$，存在分解 $w = uvxyz$，满足：
+
 1. $|vxy| \leq n$
 2. $|vy| > 0$
 3. 对于所有 $i \geq 0$，$uv^ixy^iz \in L$
@@ -147,6 +165,7 @@ $$q_0 \xrightarrow{a_1} q_1 \xrightarrow{a_2} q_2 \ldots \xrightarrow{a_n} q_n$$
 设 $x = a_1\ldots a_i$，$y = a_{i+1}\ldots a_j$，$z = a_{j+1}\ldots a_m$。
 
 则 $w = xyz$，且：
+
 1. $|xy| = j \leq n$
 2. $|y| = j - i > 0$
 3. 对于任意 $k \geq 0$，$xy^kz \in L$
@@ -852,4 +871,4 @@ func BenchmarkLanguageOperations(b *testing.B) {
 2. Sipser, M. (2012). *Introduction to the Theory of Computation*. Cengage Learning.
 3. Kozen, D. C. (1997). *Automata and Computability*. Springer-Verlag.
 4. Lewis, H. R., & Papadimitriou, C. H. (1998). *Elements of the Theory of Computation*. Prentice Hall.
-5. Linz, P. (2011). *An Introduction to Formal Languages and Automata*. Jones & Bartlett Learning. 
+5. Linz, P. (2011). *An Introduction to Formal Languages and Automata*. Jones & Bartlett Learning.

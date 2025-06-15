@@ -28,6 +28,9 @@
     - [6.1 模式组合](#61-模式组合)
     - [6.2 模式演化](#62-模式演化)
     - [6.3 形式化验证](#63-形式化验证)
+  - [总结](#总结)
+    - [关键要点](#关键要点)
+    - [进一步研究方向](#进一步研究方向)
 
 ## 1. 架构模式理论基础
 
@@ -35,12 +38,14 @@
 
 **定义 1.1**: 架构模式
 架构模式是一个三元组 $\mathcal{P} = (S, C, R)$，其中：
+
 - $S$ 是结构集合（Structure Set）
 - $C$ 是约束集合（Constraint Set）
 - $R$ 是关系集合（Relation Set）
 
 **定义 1.2**: 模式实例
 模式实例是一个四元组 $\mathcal{I} = (S, C, R, M)$，其中：
+
 - $(S, C, R)$ 是模式定义
 - $M$ 是映射函数，将抽象模式映射到具体实现
 
@@ -67,6 +72,7 @@ $$\mathcal{H} = \{\mathcal{P}_1, \mathcal{P}_2, \ldots, \mathcal{P}_n\}$$
 
 **定义 1.6**: 模式代数
 模式代数是一个五元组 $(\mathcal{P}, \oplus, \otimes, \mathbf{0}, \mathbf{1})$，其中：
+
 - $\mathcal{P}$ 是模式集合
 - $\oplus$ 是模式组合操作
 - $\otimes$ 是模式变换操作
@@ -87,6 +93,7 @@ $$(\mathcal{P}_1 \oplus \mathcal{P}_2) \oplus \mathcal{P}_3 = \mathcal{P}_1 \opl
 
 **定义 2.1**: 分层架构
 分层架构是一个四元组 $\mathcal{L} = (L, \prec, \phi, \psi)$，其中：
+
 - $L = \{L_1, L_2, \ldots, L_n\}$ 是层集合
 - $\prec$ 是层的偏序关系，$L_i \prec L_j$ 表示 $L_i$ 在 $L_j$ 之下
 - $\phi: L \rightarrow \mathcal{F}$ 是层到功能的映射
@@ -94,6 +101,7 @@ $$(\mathcal{P}_1 \oplus \mathcal{P}_2) \oplus \mathcal{P}_3 = \mathcal{P}_1 \opl
 
 **定义 2.2**: 分层约束
 分层架构必须满足以下约束：
+
 1. **层次性**: $\forall L_i, L_j \in L: L_i \prec L_j \Rightarrow L_i \neq L_j$
 2. **传递性**: $\forall L_i, L_j, L_k \in L: L_i \prec L_j \wedge L_j \prec L_k \Rightarrow L_i \prec L_k$
 3. **反自反性**: $\forall L_i \in L: \neg(L_i \prec L_i)$
@@ -109,6 +117,7 @@ $$I_{i,j} = \{(f, g) \in \phi(L_i) \times \phi(L_j) : f \text{ can call } g\}$$
 分层架构形成一个有向无环图（DAG）。
 
 **证明**:
+
 1. 反自反性：$\neg(L_i \prec L_i)$ 确保无自环
 2. 传递性：$L_i \prec L_j \wedge L_j \prec L_k \Rightarrow L_i \prec L_k$ 确保传递性
 3. 依赖单向性：$L_i \prec L_j \Rightarrow \neg(L_j \prec L_i)$ 确保无环
@@ -323,6 +332,7 @@ func (la *LayeredArchitecture) CanCall(fromLayer, toLayer string) bool {
 
 **定义 3.1**: 微服务架构
 微服务架构是一个五元组 $\mathcal{M} = (S, N, C, D, P)$，其中：
+
 - $S = \{s_1, s_2, \ldots, s_n\}$ 是服务集合
 - $N$ 是网络拓扑
 - $C$ 是通信协议集合
@@ -331,6 +341,7 @@ func (la *LayeredArchitecture) CanCall(fromLayer, toLayer string) bool {
 
 **定义 3.2**: 服务定义
 服务 $s_i$ 是一个四元组 $(I_i, O_i, F_i, Q_i)$，其中：
+
 - $I_i$ 是输入接口集合
 - $O_i$ 是输出接口集合
 - $F_i$ 是功能集合
@@ -345,11 +356,13 @@ $$Comm_{i,j} = \{(m, p, t) : m \in M, p \in P, t \in T\}$$
 
 **定义 3.4**: 服务注册表
 服务注册表是一个三元组 $\mathcal{R} = (S, L, T)$，其中：
+
 - $S$ 是服务集合
 - $L$ 是位置映射 $L: S \rightarrow \mathcal{P}(A)$，其中 $A$ 是地址集合
 - $T$ 是时间戳映射 $T: S \rightarrow \mathbb{R}$
 
 **算法 3.1**: 服务发现算法
+
 ```go
 type ServiceRegistry struct {
     services map[string]*ServiceInfo
@@ -428,12 +441,14 @@ func (sr *ServiceRegistry) HealthCheck() {
 
 **定义 3.5**: 负载均衡器
 负载均衡器是一个四元组 $\mathcal{L} = (S, A, W, F)$，其中：
+
 - $S$ 是服务实例集合
 - $A$ 是算法集合
 - $W$ 是权重函数 $W: S \rightarrow \mathbb{R}^+$
 - $F$ 是选择函数 $F: S \times A \rightarrow S$
 
 **算法 3.2**: 负载均衡算法
+
 ```go
 type LoadBalancer struct {
     instances []*ServiceInstance
@@ -544,6 +559,7 @@ func (lb *LoadBalancer) random() (*ServiceInstance, error) {
 
 **定义 4.1**: 事件驱动架构
 事件驱动架构是一个六元组 $\mathcal{E} = (E, P, C, B, H, T)$，其中：
+
 - $E$ 是事件集合
 - $P$ 是生产者集合
 - $C$ 是消费者集合
@@ -553,6 +569,7 @@ func (lb *LoadBalancer) random() (*ServiceInstance, error) {
 
 **定义 4.2**: 事件
 事件 $e$ 是一个四元组 $(id, type, data, timestamp)$，其中：
+
 - $id$ 是事件唯一标识符
 - $type$ 是事件类型
 - $data$ 是事件数据
@@ -568,6 +585,7 @@ $$\forall i < j: e_i.timestamp \leq e_j.timestamp$$
 事件处理器是一个函数 $h: E \rightarrow \mathcal{P}(E)$，将输入事件映射到输出事件集合。
 
 **算法 4.1**: 事件流处理
+
 ```go
 type Event struct {
     ID        string
@@ -649,6 +667,7 @@ $$\forall e_i, e_j \in \sigma: e_i.timestamp < e_j.timestamp \Rightarrow e_i \te
 $$\forall e_i, e_j \in \sigma: e_i \text{ causes } e_j \Rightarrow e_i \text{ processed before } e_j$$
 
 **算法 4.2**: 因果一致性实现
+
 ```go
 type CausalEvent struct {
     Event
@@ -748,6 +767,7 @@ func (ceb *CausalEventBus) updateVectorClock(otherClock map[string]int) {
 
 **定义 5.1**: 领域驱动设计
 领域驱动设计是一个五元组 $\mathcal{D} = (D, E, A, S, R)$，其中：
+
 - $D$ 是领域集合
 - $E$ 是实体集合
 - $A$ 是聚合根集合
@@ -756,12 +776,14 @@ func (ceb *CausalEventBus) updateVectorClock(otherClock map[string]int) {
 
 **定义 5.2**: 实体
 实体 $e$ 是一个三元组 $(id, state, behavior)$，其中：
+
 - $id$ 是实体标识符
 - $state$ 是实体状态
 - $behavior$ 是实体行为集合
 
 **定义 5.3**: 值对象
 值对象 $v$ 是一个二元组 $(value, equality)$，其中：
+
 - $value$ 是值的内容
 - $equality$ 是相等性判断函数
 
@@ -769,12 +791,14 @@ func (ceb *CausalEventBus) updateVectorClock(otherClock map[string]int) {
 
 **定义 5.4**: 聚合根
 聚合根是一个四元组 $\mathcal{A} = (root, entities, invariants, commands)$，其中：
+
 - $root$ 是根实体
 - $entities$ 是聚合内的实体集合
 - $invariants$ 是不变式集合
 - $commands$ 是命令集合
 
 **算法 5.1**: 聚合根实现
+
 ```go
 type AggregateRoot interface {
     ID() string
@@ -918,12 +942,14 @@ func (o *Order) Confirm() error {
 
 **定义 5.5**: 领域事件
 领域事件是一个四元组 $\mathcal{E} = (id, type, data, metadata)$，其中：
+
 - $id$ 是事件标识符
 - $type$ 是事件类型
 - $data$ 是事件数据
 - $metadata$ 是事件元数据
 
 **算法 5.2**: 事件溯源实现
+
 ```go
 type DomainEvent interface {
     ID() string
@@ -1052,6 +1078,7 @@ $$(\mathcal{P}_1 \oplus \mathcal{P}_2) \oplus \mathcal{P}_3 = \mathcal{P}_1 \opl
 
 **定义 6.3**: 演化规则
 演化规则是一个三元组 $(condition, transformation, constraint)$，其中：
+
 - $condition$ 是演化条件
 - $transformation$ 是变换函数
 - $constraint$ 是约束条件
@@ -1062,6 +1089,7 @@ $$(\mathcal{P}_1 \oplus \mathcal{P}_2) \oplus \mathcal{P}_3 = \mathcal{P}_1 \opl
 模式验证是一个函数 $V: \mathcal{P} \rightarrow \{true, false\}$，检查模式是否满足所有约束。
 
 **算法 6.1**: 模式验证算法
+
 ```go
 type PatternValidator struct {
     rules []ValidationRule

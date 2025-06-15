@@ -24,6 +24,9 @@
     - [5.1 基础类型](#51-基础类型)
     - [5.2 接口类型](#52-接口类型)
     - [5.3 泛型类型](#53-泛型类型)
+  - [总结](#总结)
+    - [关键要点](#关键要点)
+    - [进一步研究方向](#进一步研究方向)
 
 ## 1. 类型基础 (Type Foundations)
 
@@ -48,6 +51,7 @@ $$\frac{\text{premises}}{\text{conclusion}}$$
 
 **定义 1.5**: 基本类型
 基本类型包括：
+
 - $\text{Bool}$：布尔类型
 - $\text{Int}$：整数类型
 - $\text{Float}$：浮点类型
@@ -56,6 +60,7 @@ $$\frac{\text{premises}}{\text{conclusion}}$$
 
 **定义 1.6**: 复合类型
 复合类型包括：
+
 - **函数类型**：$\tau_1 \rightarrow \tau_2$
 - **积类型**：$\tau_1 \times \tau_2$
 - **和类型**：$\tau_1 + \tau_2$
@@ -64,6 +69,7 @@ $$\frac{\text{premises}}{\text{conclusion}}$$
 
 **定义 1.7**: 类型构造器
 类型构造器是高阶类型，如：
+
 - $\text{List}$：列表构造器
 - $\text{Option}$：可选构造器
 - $\text{Either}$：或构造器
@@ -78,11 +84,13 @@ $$\frac{\text{premises}}{\text{conclusion}}$$
 类型等价 $\tau_1 \equiv \tau_2$ 表示 $\tau_1$ 和 $\tau_2$ 是等价的。
 
 **定理 1.1**: 子类型的基本性质
+
 1. **自反性**：$\tau \leq \tau$
 2. **传递性**：$\tau_1 \leq \tau_2 \wedge \tau_2 \leq \tau_3 \Rightarrow \tau_1 \leq \tau_3$
 3. **反对称性**：$\tau_1 \leq \tau_2 \wedge \tau_2 \leq \tau_1 \Rightarrow \tau_1 \equiv \tau_2$
 
 **定义 1.10**: 协变和逆变
+
 - 类型构造器 $F$ 是协变的，如果 $\tau_1 \leq \tau_2 \Rightarrow F[\tau_1] \leq F[\tau_2]$
 - 类型构造器 $F$ 是逆变的，如果 $\tau_1 \leq \tau_2 \Rightarrow F[\tau_2] \leq F[\tau_1]$
 - 类型构造器 $F$ 是不变的，如果既不是协变也不是逆变
@@ -101,6 +109,7 @@ Hindley-Milner类型推导算法是函数式编程语言中最常用的类型推
 类型模式是包含类型变量的类型表达式。
 
 **算法 2.2**: 类型推导规则
+
 ```go
 type TypeVariable struct {
     ID string
@@ -197,6 +206,7 @@ func inferAbstraction(abs *Abstraction, env TypeEnvironment) (Type, error) {
 类型统一是找到类型变量的替换，使得两个类型表达式相等。
 
 **算法 2.3**: Robinson统一算法
+
 ```go
 type Substitution map[string]Type
 
@@ -304,6 +314,7 @@ func ApplySubstitution(t Type, s Substitution) Type {
 约束系统是类型约束的集合。
 
 **算法 2.4**: 约束求解算法
+
 ```go
 type Constraint struct {
     Left  Type
@@ -355,6 +366,7 @@ func (cs *ConstraintSystem) applySubstitution(s Substitution) {
 
 **定义 3.2**: 类型错误
 类型错误包括：
+
 - 类型不匹配
 - 未定义变量
 - 函数参数类型错误
@@ -375,6 +387,7 @@ func (cs *ConstraintSystem) applySubstitution(s Substitution) {
 如果 $\vdash e: \tau$，则 $e$ 不会陷入错误状态。
 
 **证明**:
+
 1. 由进展定理，$e$ 要么是值，要么可以继续求值
 2. 由保持定理，求值过程中类型保持不变
 3. 因此 $e$ 不会出现类型错误
@@ -382,6 +395,7 @@ func (cs *ConstraintSystem) applySubstitution(s Substitution) {
 ### 3.3 类型错误处理
 
 **算法 3.1**: 类型错误检测
+
 ```go
 type TypeError struct {
     Message string
@@ -474,6 +488,7 @@ func (tc *TypeChecker) GetErrors() []TypeError {
 特设多态允许同一函数名用于不同类型，如函数重载。
 
 **算法 4.1**: 多态类型推导
+
 ```go
 type PolymorphicType struct {
     Variables []string
@@ -519,6 +534,7 @@ func Instantiate(poly PolymorphicType) Type {
 依赖函数类型 $\Pi x: A. B[x]$ 表示对于所有 $x: A$，返回类型为 $B[x]$。
 
 **算法 4.2**: 依赖类型检查
+
 ```go
 type DependentType struct {
     Parameter string
@@ -564,6 +580,7 @@ func CheckDependentFunction(abs *Abstraction, expectedType Type) error {
 线性函数类型 $A \multimap B$ 表示函数使用参数一次并返回结果。
 
 **算法 4.3**: 线性类型检查
+
 ```go
 type LinearType struct {
     Type     Type
@@ -619,6 +636,7 @@ func checkLinearVariable(v *Variable, env LinearEnvironment) (LinearType, error)
 
 **定义 5.1**: Go基础类型
 Go语言的基础类型包括：
+
 - `bool`：布尔类型
 - `int`, `int8`, `int16`, `int32`, `int64`：整数类型
 - `uint`, `uint8`, `uint16`, `uint32`, `uint64`：无符号整数类型
@@ -629,6 +647,7 @@ Go语言的基础类型包括：
 - `rune`：Unicode字符类型（`int32`的别名）
 
 **算法 5.1**: Go类型检查
+
 ```go
 package types
 
@@ -837,6 +856,7 @@ func (tc *GoTypeChecker) promoteTypes(t1, t2 Type) Type {
 Go接口类型定义了一组方法签名，任何实现了这些方法的类型都实现了该接口。
 
 **算法 5.2**: 接口类型检查
+
 ```go
 // checkInterfaceImplementation 检查接口实现
 func (tc *GoTypeChecker) checkInterfaceImplementation(typ Type, iface *InterfaceType) error {
@@ -903,6 +923,7 @@ func (tc *GoTypeChecker) checkMethodSignature(actual, expected FunctionType) boo
 Go 1.18引入的泛型支持参数化类型，使用类型参数来定义通用类型。
 
 **算法 5.3**: 泛型类型检查
+
 ```go
 type GenericType struct {
     Name       string

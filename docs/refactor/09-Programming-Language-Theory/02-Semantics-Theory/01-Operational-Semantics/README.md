@@ -24,6 +24,9 @@
     - [5.1 语义解释器](#51-语义解释器)
     - [5.2 规则引擎](#52-规则引擎)
     - [5.3 语义分析器](#53-语义分析器)
+  - [总结](#总结)
+    - [关键要点](#关键要点)
+    - [进一步研究方向](#进一步研究方向)
 
 ## 1. 操作语义基础
 
@@ -34,6 +37,7 @@
 
 **定义 1.2**: 配置
 配置是一个二元组 $(e, \sigma)$，其中：
+
 - $e$ 是程序表达式
 - $\sigma$ 是程序状态（通常是变量到值的映射）
 
@@ -53,10 +57,12 @@ $$(e, \sigma) \rightarrow^* (e', \sigma')$$
 $$\frac{\text{premises}}{\text{conclusion}}$$
 
 其中：
+
 - premises 是前提条件
 - conclusion 是结论
 
 **定义 1.6**: 规则类型
+
 1. **公理规则**: 没有前提的规则
 2. **推理规则**: 有前提的规则
 3. **条件规则**: 包含条件的规则
@@ -80,6 +86,7 @@ $$\forall \sigma, \sigma': (e_2, \sigma) \rightarrow^* (v, \sigma') \Rightarrow 
 
 **定义 2.2**: 小步转换关系
 小步转换关系 $\rightarrow$ 满足：
+
 1. **确定性**: 对于每个配置，最多有一个后继配置
 2. **终止性**: 每个执行序列要么终止，要么无限执行
 3. **局部性**: 每次转换只影响表达式的局部部分
@@ -90,6 +97,7 @@ $$\forall \sigma, \sigma': (e_2, \sigma) \rightarrow^* (v, \sigma') \Rightarrow 
 ### 2.2 规则系统
 
 **算法 2.1**: 算术表达式的小步语义
+
 ```go
 // 算术表达式语法
 type Expression interface {
@@ -235,6 +243,7 @@ $$(e, \sigma) \Downarrow (v, \sigma')$$
 ### 3.2 规则系统
 
 **算法 3.1**: 算术表达式的大步语义
+
 ```go
 type BigStepSemantics struct{}
 
@@ -333,6 +342,7 @@ func (iv *IntValue) String() string {
 $$(e, \sigma) \Downarrow (v, \sigma') \iff (e, \sigma) \rightarrow^* (v, \sigma')$$
 
 **证明**:
+
 1. **充分性**: 如果 $(e, \sigma) \Downarrow (v, \sigma')$，则存在有限的小步序列 $(e, \sigma) \rightarrow^* (v, \sigma')$
 2. **必要性**: 如果 $(e, \sigma) \rightarrow^* (v, \sigma')$，则 $(e, \sigma) \Downarrow (v, \sigma')$
 
@@ -348,12 +358,14 @@ $$(e, \sigma) \Downarrow (v, \sigma') \iff (e, \sigma) \rightarrow^* (v, \sigma'
 
 **定义 4.2**: 标签转换系统
 标签转换系统是一个四元组 $(S, L, \rightarrow, s_0)$，其中：
+
 - $S$ 是状态集合
 - $L$ 是标签集合
 - $\rightarrow \subseteq S \times L \times S$ 是转换关系
 - $s_0 \in S$ 是初始状态
 
 **算法 4.1**: SOS规则实现
+
 ```go
 type SOSRule struct {
     Premises []Premise
@@ -436,6 +448,7 @@ func (engine *SOSEngine) applyConclusion(state State, conclusion Conclusion) Sta
 标签转换是一个三元组 $(s, l, s')$，表示状态 $s$ 通过标签 $l$ 转换到状态 $s'$。
 
 **算法 4.2**: 标签转换系统实现
+
 ```go
 type LabeledTransitionSystem struct {
     States     []State
@@ -501,6 +514,7 @@ func (lts *LabeledTransitionSystem) CheckLiveness(property func(State) bool) boo
 交错语义允许进程的执行步骤交错进行，但不允许真正的并行执行。
 
 **算法 4.3**: 并发语义实现
+
 ```go
 type ConcurrentProcess struct {
     ID       string
@@ -584,6 +598,7 @@ func (cs *ConcurrentSemantics) canMakeProgress(process ConcurrentProcess) bool {
 ### 5.1 语义解释器
 
 **算法 5.1**: 通用语义解释器
+
 ```go
 type SemanticInterpreter struct {
     smallStep *SmallStepSemantics
@@ -652,6 +667,7 @@ func (si *SemanticInterpreter) InterpretSOS(expr Expression, env Environment) ([
 ### 5.2 规则引擎
 
 **算法 5.2**: 规则引擎实现
+
 ```go
 type RuleEngine struct {
     rules []Rule
@@ -750,6 +766,7 @@ func isNumber(expr Expression) bool {
 ### 5.3 语义分析器
 
 **算法 5.3**: 语义分析器实现
+
 ```go
 type SemanticAnalyzer struct {
     interpreter *SemanticInterpreter
@@ -905,4 +922,4 @@ type TraceStep struct {
 1. **高级语义**: 指称语义、公理语义、并发语义
 2. **语义优化**: 语义等价性、语义转换、语义优化
 3. **工具支持**: 语义分析工具、验证工具、调试工具
-4. **实际应用**: 编译器实现、解释器实现、程序分析 
+4. **实际应用**: 编译器实现、解释器实现、程序分析
