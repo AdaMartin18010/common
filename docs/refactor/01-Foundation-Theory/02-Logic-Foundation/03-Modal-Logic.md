@@ -1,8 +1,10 @@
-# 03-模态逻辑 (Modal Logic)
+# 03-模态逻辑
+
+ (Modal Logic)
 
 ## 目录
 
-- [03-模态逻辑 (Modal Logic)](#03-模态逻辑-modal-logic)
+- [03-模态逻辑](#03-模态逻辑)
 	- [目录](#目录)
 	- [1. 模态逻辑基础](#1-模态逻辑基础)
 		- [1.1 模态逻辑定义](#11-模态逻辑定义)
@@ -34,6 +36,7 @@
 模态逻辑是研究"必然性"和"可能性"等模态概念的逻辑分支。在软件工程中，模态逻辑用于描述系统的动态行为和状态转换。
 
 **定义 1.1**: 模态逻辑语言 $\mathcal{L}$ 由以下部分组成：
+
 - 命题变元集合 $P = \{p, q, r, \ldots\}$
 - 逻辑连接词：$\neg, \land, \lor, \rightarrow, \leftrightarrow$
 - 模态算子：$\Box$ (必然), $\Diamond$ (可能)
@@ -42,6 +45,7 @@
 ### 1.2 模态算子
 
 **定义 1.2**: 模态算子的语义：
+
 - $\Box \phi$ 表示"必然 $\phi$"
 - $\Diamond \phi$ 表示"可能 $\phi$"
 - 关系：$\Diamond \phi \equiv \neg \Box \neg \phi$
@@ -49,6 +53,7 @@
 ### 1.3 可能世界语义学
 
 **定义 1.3**: 克里普克模型 $M = (W, R, V)$ 其中：
+
 - $W$ 是可能世界集合
 - $R \subseteq W \times W$ 是可达关系
 - $V: P \rightarrow 2^W$ 是赋值函数
@@ -95,129 +100,129 @@ M, w &\models \Diamond \phi \text{ 当且仅当 } \exists v \in W: wRv \land M, 
 package modallogic
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
+ "fmt"
+ "strconv"
+ "strings"
 )
 
 // Formula 表示模态逻辑公式
 type Formula interface {
-	String() string
-	Evaluate(model *KripkeModel, world int) bool
+ String() string
+ Evaluate(model *KripkeModel, world int) bool
 }
 
 // Proposition 命题变元
 type Proposition struct {
-	Name string
+ Name string
 }
 
 func (p *Proposition) String() string {
-	return p.Name
+ return p.Name
 }
 
 func (p *Proposition) Evaluate(model *KripkeModel, world int) bool {
-	return model.Valuation[p.Name][world]
+ return model.Valuation[p.Name][world]
 }
 
 // Negation 否定
 type Negation struct {
-	Formula Formula
+ Formula Formula
 }
 
 func (n *Negation) String() string {
-	return fmt.Sprintf("¬(%s)", n.Formula)
+ return fmt.Sprintf("¬(%s)", n.Formula)
 }
 
 func (n *Negation) Evaluate(model *KripkeModel, world int) bool {
-	return !n.Formula.Evaluate(model, world)
+ return !n.Formula.Evaluate(model, world)
 }
 
 // Conjunction 合取
 type Conjunction struct {
-	Left, Right Formula
+ Left, Right Formula
 }
 
 func (c *Conjunction) String() string {
-	return fmt.Sprintf("(%s ∧ %s)", c.Left, c.Right)
+ return fmt.Sprintf("(%s ∧ %s)", c.Left, c.Right)
 }
 
 func (c *Conjunction) Evaluate(model *KripkeModel, world int) bool {
-	return c.Left.Evaluate(model, world) && c.Right.Evaluate(model, world)
+ return c.Left.Evaluate(model, world) && c.Right.Evaluate(model, world)
 }
 
 // Necessity 必然算子
 type Necessity struct {
-	Formula Formula
+ Formula Formula
 }
 
 func (n *Necessity) String() string {
-	return fmt.Sprintf("□(%s)", n.Formula)
+ return fmt.Sprintf("□(%s)", n.Formula)
 }
 
 func (n *Necessity) Evaluate(model *KripkeModel, world int) bool {
-	for v := range model.Worlds {
-		if model.Accessibility[world][v] && !n.Formula.Evaluate(model, v) {
-			return false
-		}
-	}
-	return true
+ for v := range model.Worlds {
+  if model.Accessibility[world][v] && !n.Formula.Evaluate(model, v) {
+   return false
+  }
+ }
+ return true
 }
 
 // Possibility 可能算子
 type Possibility struct {
-	Formula Formula
+ Formula Formula
 }
 
 func (p *Possibility) String() string {
-	return fmt.Sprintf("◇(%s)", p.Formula)
+ return fmt.Sprintf("◇(%s)", p.Formula)
 }
 
 func (p *Possibility) Evaluate(model *KripkeModel, world int) bool {
-	for v := range model.Worlds {
-		if model.Accessibility[world][v] && p.Formula.Evaluate(model, v) {
-			return true
-		}
-	}
-	return false
+ for v := range model.Worlds {
+  if model.Accessibility[world][v] && p.Formula.Evaluate(model, v) {
+   return true
+  }
+ }
+ return false
 }
 
 // KripkeModel 克里普克模型
 type KripkeModel struct {
-	Worlds        map[int]bool
-	Accessibility map[int]map[int]bool
-	Valuation     map[string]map[int]bool
+ Worlds        map[int]bool
+ Accessibility map[int]map[int]bool
+ Valuation     map[string]map[int]bool
 }
 
 // NewKripkeModel 创建新的克里普克模型
 func NewKripkeModel(worlds []int) *KripkeModel {
-	model := &KripkeModel{
-		Worlds:        make(map[int]bool),
-		Accessibility: make(map[int]map[int]bool),
-		Valuation:     make(map[string]map[int]bool),
-	}
-	
-	for _, w := range worlds {
-		model.Worlds[w] = true
-		model.Accessibility[w] = make(map[int]bool)
-	}
-	
-	return model
+ model := &KripkeModel{
+  Worlds:        make(map[int]bool),
+  Accessibility: make(map[int]map[int]bool),
+  Valuation:     make(map[string]map[int]bool),
+ }
+
+ for _, w := range worlds {
+  model.Worlds[w] = true
+  model.Accessibility[w] = make(map[int]bool)
+ }
+
+ return model
 }
 
 // AddAccessibility 添加可达关系
 func (m *KripkeModel) AddAccessibility(from, to int) {
-	if m.Accessibility[from] == nil {
-		m.Accessibility[from] = make(map[int]bool)
-	}
-	m.Accessibility[from][to] = true
+ if m.Accessibility[from] == nil {
+  m.Accessibility[from] = make(map[int]bool)
+ }
+ m.Accessibility[from][to] = true
 }
 
 // SetValuation 设置命题变元的赋值
 func (m *KripkeModel) SetValuation(prop string, world int, value bool) {
-	if m.Valuation[prop] == nil {
-		m.Valuation[prop] = make(map[int]bool)
-	}
-	m.Valuation[prop][world] = value
+ if m.Valuation[prop] == nil {
+  m.Valuation[prop] = make(map[int]bool)
+ }
+ m.Valuation[prop][world] = value
 }
 ```
 
@@ -226,41 +231,41 @@ func (m *KripkeModel) SetValuation(prop string, world int, value bool) {
 ```go
 // ModelChecker 模型检查器
 type ModelChecker struct {
-	model *KripkeModel
+ model *KripkeModel
 }
 
 // NewModelChecker 创建新的模型检查器
 func NewModelChecker(model *KripkeModel) *ModelChecker {
-	return &ModelChecker{model: model}
+ return &ModelChecker{model: model}
 }
 
 // CheckFormula 检查公式在所有世界中的有效性
 func (mc *ModelChecker) CheckFormula(formula Formula) map[int]bool {
-	result := make(map[int]bool)
-	for world := range mc.model.Worlds {
-		result[world] = formula.Evaluate(mc.model, world)
-	}
-	return result
+ result := make(map[int]bool)
+ for world := range mc.model.Worlds {
+  result[world] = formula.Evaluate(mc.model, world)
+ }
+ return result
 }
 
 // CheckValidity 检查公式的有效性（在所有世界中为真）
 func (mc *ModelChecker) CheckValidity(formula Formula) bool {
-	for world := range mc.model.Worlds {
-		if !formula.Evaluate(mc.model, world) {
-			return false
-		}
-	}
-	return true
+ for world := range mc.model.Worlds {
+  if !formula.Evaluate(mc.model, world) {
+   return false
+  }
+ }
+ return true
 }
 
 // CheckSatisfiability 检查公式的可满足性（在某个世界中为真）
 func (mc *ModelChecker) CheckSatisfiability(formula Formula) bool {
-	for world := range mc.model.Worlds {
-		if formula.Evaluate(mc.model, world) {
-			return true
-		}
-	}
-	return false
+ for world := range mc.model.Worlds {
+  if formula.Evaluate(mc.model, world) {
+   return true
+  }
+ }
+ return false
 }
 ```
 
@@ -269,41 +274,41 @@ func (mc *ModelChecker) CheckSatisfiability(formula Formula) bool {
 ```go
 // TheoremProver 定理证明器
 type TheoremProver struct {
-	axioms    []Formula
-	theorems  map[string]Formula
+ axioms    []Formula
+ theorems  map[string]Formula
 }
 
 // NewTheoremProver 创建新的定理证明器
 func NewTheoremProver() *TheoremProver {
-	return &TheoremProver{
-		axioms:   make([]Formula, 0),
-		theorems: make(map[string]Formula),
-	}
+ return &TheoremProver{
+  axioms:   make([]Formula, 0),
+  theorems: make(map[string]Formula),
+ }
 }
 
 // AddAxiom 添加公理
 func (tp *TheoremProver) AddAxiom(name string, formula Formula) {
-	tp.axioms = append(tp.axioms, formula)
-	tp.theorems[name] = formula
+ tp.axioms = append(tp.axioms, formula)
+ tp.theorems[name] = formula
 }
 
 // Prove 证明定理
 func (tp *TheoremProver) Prove(formula Formula) bool {
-	// 简化的证明过程
-	// 实际实现需要更复杂的推理规则
-	for _, axiom := range tp.axioms {
-		if tp.isEquivalent(axiom, formula) {
-			return true
-		}
-	}
-	return false
+ // 简化的证明过程
+ // 实际实现需要更复杂的推理规则
+ for _, axiom := range tp.axioms {
+  if tp.isEquivalent(axiom, formula) {
+   return true
+  }
+ }
+ return false
 }
 
 // isEquivalent 检查两个公式是否等价
 func (tp *TheoremProver) isEquivalent(f1, f2 Formula) bool {
-	// 简化的等价性检查
-	// 实际实现需要更复杂的算法
-	return f1.String() == f2.String()
+ // 简化的等价性检查
+ // 实际实现需要更复杂的算法
+ return f1.String() == f2.String()
 }
 ```
 
@@ -314,43 +319,43 @@ func (tp *TheoremProver) isEquivalent(f1, f2 Formula) bool {
 ```go
 // ConcurrentSystem 并发系统模型
 type ConcurrentSystem struct {
-	States     map[string]bool
-	Transitions map[string][]string
-	Properties map[string]Formula
+ States     map[string]bool
+ Transitions map[string][]string
+ Properties map[string]Formula
 }
 
 // NewConcurrentSystem 创建并发系统
 func NewConcurrentSystem() *ConcurrentSystem {
-	return &ConcurrentSystem{
-		States:      make(map[string]bool),
-		Transitions: make(map[string][]string),
-		Properties:  make(map[string]Formula),
-	}
+ return &ConcurrentSystem{
+  States:      make(map[string]bool),
+  Transitions: make(map[string][]string),
+  Properties:  make(map[string]Formula),
+ }
 }
 
 // AddState 添加状态
 func (cs *ConcurrentSystem) AddState(state string) {
-	cs.States[state] = true
+ cs.States[state] = true
 }
 
 // AddTransition 添加状态转换
 func (cs *ConcurrentSystem) AddTransition(from, to string) {
-	cs.Transitions[from] = append(cs.Transitions[from], to)
+ cs.Transitions[from] = append(cs.Transitions[from], to)
 }
 
 // VerifyProperty 验证属性
 func (cs *ConcurrentSystem) VerifyProperty(property Formula) bool {
-	// 将并发系统转换为克里普克模型
-	model := cs.toKripkeModel()
-	checker := NewModelChecker(model)
-	return checker.CheckValidity(property)
+ // 将并发系统转换为克里普克模型
+ model := cs.toKripkeModel()
+ checker := NewModelChecker(model)
+ return checker.CheckValidity(property)
 }
 
 // toKripkeModel 转换为克里普克模型
 func (cs *ConcurrentSystem) toKripkeModel() *KripkeModel {
-	// 实现转换逻辑
-	model := NewKripkeModel([]int{0, 1, 2}) // 示例
-	return model
+ // 实现转换逻辑
+ model := NewKripkeModel([]int{0, 1, 2}) // 示例
+ return model
 }
 ```
 
@@ -359,64 +364,64 @@ func (cs *ConcurrentSystem) toKripkeModel() *KripkeModel {
 ```go
 // DistributedSystem 分布式系统模型
 type DistributedSystem struct {
-	Nodes      map[string]*Node
-	Messages   map[string]*Message
-	Properties map[string]Formula
+ Nodes      map[string]*Node
+ Messages   map[string]*Message
+ Properties map[string]Formula
 }
 
 // Node 节点
 type Node struct {
-	ID       string
-	State    string
-	Neighbors []string
+ ID       string
+ State    string
+ Neighbors []string
 }
 
 // Message 消息
 type Message struct {
-	ID     string
-	From   string
-	To     string
-	Data   interface{}
+ ID     string
+ From   string
+ To     string
+ Data   interface{}
 }
 
 // NewDistributedSystem 创建分布式系统
 func NewDistributedSystem() *DistributedSystem {
-	return &DistributedSystem{
-		Nodes:      make(map[string]*Node),
-		Messages:   make(map[string]*Message),
-		Properties: make(map[string]Formula),
-	}
+ return &DistributedSystem{
+  Nodes:      make(map[string]*Node),
+  Messages:   make(map[string]*Message),
+  Properties: make(map[string]Formula),
+ }
 }
 
 // AddNode 添加节点
 func (ds *DistributedSystem) AddNode(id, state string) {
-	ds.Nodes[id] = &Node{
-		ID:       id,
-		State:    state,
-		Neighbors: make([]string, 0),
-	}
+ ds.Nodes[id] = &Node{
+  ID:       id,
+  State:    state,
+  Neighbors: make([]string, 0),
+ }
 }
 
 // AddMessage 添加消息
 func (ds *DistributedSystem) AddMessage(id, from, to string, data interface{}) {
-	ds.Messages[id] = &Message{
-		ID:   id,
-		From: from,
-		To:   to,
-		Data: data,
-	}
+ ds.Messages[id] = &Message{
+  ID:   id,
+  From: from,
+  To:   to,
+  Data: data,
+ }
 }
 
 // VerifyConsistency 验证一致性
 func (ds *DistributedSystem) VerifyConsistency() bool {
-	// 使用模态逻辑验证分布式一致性
-	consistencyFormula := &Necessity{
-		Formula: &Proposition{Name: "consistent"},
-	}
-	
-	model := ds.toKripkeModel()
-	checker := NewModelChecker(model)
-	return checker.CheckValidity(consistencyFormula)
+ // 使用模态逻辑验证分布式一致性
+ consistencyFormula := &Necessity{
+  Formula: &Proposition{Name: "consistent"},
+ }
+
+ model := ds.toKripkeModel()
+ checker := NewModelChecker(model)
+ return checker.CheckValidity(consistencyFormula)
 }
 ```
 
@@ -425,61 +430,61 @@ func (ds *DistributedSystem) VerifyConsistency() bool {
 ```go
 // SoftwareArchitecture 软件架构模型
 type SoftwareArchitecture struct {
-	Components map[string]*Component
-	Connections map[string]*Connection
-	Properties map[string]Formula
+ Components map[string]*Component
+ Connections map[string]*Connection
+ Properties map[string]Formula
 }
 
 // Component 组件
 type Component struct {
-	Name     string
-	Type     string
-	State    string
-	Interfaces []string
+ Name     string
+ Type     string
+ State    string
+ Interfaces []string
 }
 
 // Connection 连接
 type Connection struct {
-	ID       string
-	From     string
-	To       string
-	Protocol string
+ ID       string
+ From     string
+ To       string
+ Protocol string
 }
 
 // NewSoftwareArchitecture 创建软件架构
 func NewSoftwareArchitecture() *SoftwareArchitecture {
-	return &SoftwareArchitecture{
-		Components:  make(map[string]*Component),
-		Connections: make(map[string]*Connection),
-		Properties:  make(map[string]Formula),
-	}
+ return &SoftwareArchitecture{
+  Components:  make(map[string]*Component),
+  Connections: make(map[string]*Connection),
+  Properties:  make(map[string]Formula),
+ }
 }
 
 // AddComponent 添加组件
 func (sa *SoftwareArchitecture) AddComponent(name, compType string) {
-	sa.Components[name] = &Component{
-		Name:      name,
-		Type:      compType,
-		State:     "initial",
-		Interfaces: make([]string, 0),
-	}
+ sa.Components[name] = &Component{
+  Name:      name,
+  Type:      compType,
+  State:     "initial",
+  Interfaces: make([]string, 0),
+ }
 }
 
 // AddConnection 添加连接
 func (sa *SoftwareArchitecture) AddConnection(id, from, to, protocol string) {
-	sa.Connections[id] = &Connection{
-		ID:       id,
-		From:     from,
-		To:       to,
-		Protocol: protocol,
-	}
+ sa.Connections[id] = &Connection{
+  ID:       id,
+  From:     from,
+  To:       to,
+  Protocol: protocol,
+ }
 }
 
 // VerifyArchitecture 验证架构属性
 func (sa *SoftwareArchitecture) VerifyArchitecture(property Formula) bool {
-	model := sa.toKripkeModel()
-	checker := NewModelChecker(model)
-	return checker.CheckValidity(property)
+ model := sa.toKripkeModel()
+ checker := NewModelChecker(model)
+ return checker.CheckValidity(property)
 }
 ```
 
@@ -489,7 +494,7 @@ func (sa *SoftwareArchitecture) VerifyArchitecture(property Formula) bool {
 
 **定理 5.1** (K系统完备性): 对于任意公式 $\phi$，如果 $\phi$ 在所有克里普克模型中有效，则 $\phi$ 在系统K中可证。
 
-**证明**: 
+**证明**:
 1. 假设 $\phi$ 在系统K中不可证
 2. 构造典范模型 $M^c = (W^c, R^c, V^c)$
 3. 证明 $M^c, w \not\models \phi$ 对于某个 $w \in W^c$

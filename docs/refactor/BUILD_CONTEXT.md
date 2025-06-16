@@ -205,7 +205,7 @@
 
 基于对 `/docs/model` 目录的深入分析，发现需要进一步规范和补充的内容：
 
-#### 1. 基础理论层 (01-Foundation-Theory) - 75% 完成
+#### 1. 基础理论层 (01-Foundation-Theory) - 100% 完成 ✅
 
 **目标**: 建立完整的数学和理论基础
 
@@ -233,7 +233,7 @@
   - ✅ 03-计算复杂性 (Computational Complexity) - 已完成
   - ✅ 04-算法分析 (Algorithm Analysis) - 已完成
 
-#### 2. 软件工程形式化 (08-Software-Engineering-Formalization) - 50% 完成
+#### 2. 软件工程形式化 (08-Software-Engineering-Formalization) - 75% 完成 🔄
 
 **目标**: 将软件工程概念形式化
 
@@ -261,7 +261,7 @@
   - 03-系统属性 (System Properties)
   - 04-系统验证 (System Verification)
 
-#### 3. 编程语言理论 (09-Programming-Language-Theory) - 50% 完成
+#### 3. 编程语言理论 (09-Programming-Language-Theory) - 75% 完成 🔄
 
 **目标**: 建立编程语言的形式化理论
 
