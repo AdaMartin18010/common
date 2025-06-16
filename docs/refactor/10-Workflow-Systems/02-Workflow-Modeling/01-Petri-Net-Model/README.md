@@ -7,24 +7,28 @@ Petri网是描述并发系统的经典形式化工具，特别适用于工作流
 ## 目录结构
 
 ### [01-Petri网基础](01-Petri-Net-Foundation/README.md)
+
 - **01-Petri网定义** - 基本概念、形式化定义、图形表示
 - **02-Petri网类型** - 基本Petri网、高级Petri网、有色Petri网
 - **03-Petri网性质** - 可达性、活性、有界性、安全性
 - **04-Petri网分析** - 状态空间分析、不变性分析、覆盖性分析
 
 ### [02-WF-net模型](02-WF-Net-Model/README.md)
+
 - **01-WF-net定义** - 工作流Petri网、WF-net特性、健全性
 - **02-WF-net性质** - 可达性、活性、有界性、健全性验证
 - **03-WF-net分析** - 死锁检测、活锁检测、性能分析
 - **04-WF-net优化** - 结构优化、性能优化、资源优化
 
 ### [03-工作流Petri网](03-Workflow-Petri-Net/README.md)
+
 - **01-工作流映射** - 工作流到Petri网的映射规则
 - **02-模式建模** - 顺序、并行、选择、循环模式建模
 - **03-数据流建模** - 数据传递、数据转换、数据聚合建模
 - **04-资源建模** - 资源分配、资源竞争、资源优化建模
 
 ### [04-Petri网分析](04-Petri-Net-Analysis/README.md)
+
 - **01-可达性分析** - 可达性算法、状态空间构建、路径分析
 - **02-死锁检测** - 死锁检测算法、死锁预防、死锁恢复
 - **03-性能分析** - 执行时间分析、吞吐量分析、瓶颈识别
@@ -47,6 +51,7 @@ Petri网是一个五元组 $N = (P, T, F, W, M_0)$，其中：
 #### 1.2 图形表示
 
 Petri网用图形表示：
+
 - **库所**：用圆圈表示，包含令牌数量
 - **变迁**：用矩形表示，表示事件或活动
 - **弧**：用箭头表示，连接库所和变迁
@@ -55,6 +60,7 @@ Petri网用图形表示：
 #### 1.3 激发规则
 
 变迁 $t$ 在标识 $M$ 下可激发的条件：
+
 1. $\forall p \in \bullet t: M(p) \geq W(p, t)$
 2. 激发后产生新标识 $M'$：
    - $M'(p) = M(p) - W(p, t)$ 如果 $p \in \bullet t$
@@ -101,6 +107,7 @@ p_1 \xrightarrow{t_A} p_2 \xrightarrow{t_B} p_3 \xrightarrow{t_C} p_4
 ```
 
 其中：
+
 - $p_1$：开始库所
 - $p_4$：结束库所
 - $t_A, t_B, t_C$：对应活动A、B、C的变迁
@@ -117,6 +124,7 @@ p_4 \parallel p_5 \xrightarrow{t_{join}} p_6
 ```
 
 其中：
+
 - $t_{split}$：AND-split变迁
 - $t_{join}$：AND-join变迁
 - $p_2, p_3$：并行分支库所
@@ -133,6 +141,7 @@ p_4 | p_5 \xrightarrow{t_{merge}} p_6
 ```
 
 其中：
+
 - $t_{choice}$：OR-split变迁
 - $t_{merge}$：OR-join变迁
 - 选择基于条件或概率
@@ -148,6 +157,7 @@ p_3 \xrightarrow{t_{exit}} p_4 \xrightarrow{t_C} p_5
 ```
 
 其中：
+
 - $t_{loop}$：循环变迁
 - $t_{exit}$：退出变迁
 - 循环条件在 $t_{loop}$ 中定义
@@ -163,6 +173,7 @@ p_3 \xrightarrow{t_{exit}} p_4 \xrightarrow{t_C} p_5
 ```
 
 算法实现：
+
 1. **状态空间构建**：从初始标识开始，探索所有可能的激发序列
 2. **可达性图**：构建状态转换图
 3. **可达性检查**：在图搜索中检查目标标识
@@ -176,6 +187,7 @@ p_3 \xrightarrow{t_{exit}} p_4 \xrightarrow{t_C} p_5
 ```
 
 算法实现：
+
 1. **状态空间探索**：构建完整的可达性图
 2. **死锁识别**：识别没有出边的状态
 3. **死锁路径**：找到导致死锁的激发序列
@@ -625,12 +637,14 @@ func (wtpnm *WorkflowToPetriNetMapper) MapWorkflow(workflow *Workflow) *PetriNet
 ## 质量保证
 
 ### 内容质量
+
 - 不重复、分类严谨
 - 与当前最新最成熟的哲科工程想法一致
 - 符合学术要求
 - 内容一致性、证明一致性、相关性一致性
 
 ### 结构质量
+
 - 语义一致性
 - 不交不空不漏的层次化分类
 - 由理念到理性到形式化论证证明
@@ -649,4 +663,4 @@ func (wtpnm *WorkflowToPetriNetMapper) MapWorkflow(workflow *Workflow) *PetriNet
 
 **最后更新**: 2024年12月19日
 **当前状态**: 🔄 第15轮重构进行中
-**激情澎湃的持续构建** <(￣︶￣)↗[GO!] 🚀 
+**激情澎湃的持续构建** <(￣︶￣)↗[GO!] 🚀
