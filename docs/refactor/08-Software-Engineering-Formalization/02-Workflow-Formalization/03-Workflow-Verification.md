@@ -10,6 +10,7 @@
 
 **定义 1.1** (工作流验证)
 工作流验证是一个四元组 $\mathcal{V} = (W, \Phi, \mathcal{M}, \mathcal{P})$，其中：
+
 - $W$ 是工作流模型
 - $\Phi$ 是属性集合
 - $\mathcal{M}$ 是验证方法
@@ -51,7 +52,7 @@ func (ap *AtomicProposition) Evaluate(trace []State) bool {
     if len(trace) == 0 {
         return false
     }
-    
+
     // 在当前状态评估谓词
     return ap.evaluateInState(trace[0])
 }
@@ -65,7 +66,7 @@ func (no *NextOperator) Evaluate(trace []State) bool {
     if len(trace) < 2 {
         return false
     }
-    
+
     // 在下一个状态评估表达式
     return no.Expression.Evaluate(trace[1:])
 }
@@ -112,7 +113,7 @@ func (uo *UntilOperator) Evaluate(trace []State) bool {
         if uo.Right.Evaluate([]State{state}) {
             return true
         }
-        
+
         // 检查左表达式是否在当前状态满足
         if !uo.Left.Evaluate([]State{state}) {
             return false
@@ -145,17 +146,17 @@ func (sse *StateSpaceExplorer) Explore() [][]string {
     sse.visited = make(map[string]bool)
     sse.stack = []string{}
     sse.paths = [][]string{}
-    
+
     // 从初始状态开始探索
     sse.dfs(sse.workflow.InitialState)
-    
+
     return sse.paths
 }
 
 func (sse *StateSpaceExplorer) dfs(state string) {
     sse.visited[state] = true
     sse.stack = append(sse.stack, state)
-    
+
     // 检查是否为终止状态
     if sse.isFinalState(state) {
         // 记录路径
@@ -163,7 +164,7 @@ func (sse *StateSpaceExplorer) dfs(state string) {
         copy(path, sse.stack)
         sse.paths = append(sse.paths, path)
     }
-    
+
     // 探索所有可能的转移
     for _, transition := range sse.workflow.Transitions {
         if transition.From == state {
@@ -172,7 +173,7 @@ func (sse *StateSpaceExplorer) dfs(state string) {
             }
         }
     }
-    
+
     // 回溯
     sse.stack = sse.stack[:len(sse.stack)-1]
     sse.visited[state] = false
@@ -198,21 +199,21 @@ type State struct {
 
 func (cmc *CTLModelChecker) CheckCTL(formula CTLFormula) map[string]bool {
     result := make(map[string]bool)
-    
+
     switch f := formula.(type) {
     case *AtomicProposition:
         // 原子命题
         for stateID := range cmc.states {
             result[stateID] = cmc.evaluateAtomic(f, stateID)
         }
-        
+
     case *NotOperator:
         // 否定操作符
         subResult := cmc.CheckCTL(f.Formula)
         for stateID := range cmc.states {
             result[stateID] = !subResult[stateID]
         }
-        
+
     case *AndOperator:
         // 合取操作符
         leftResult := cmc.CheckCTL(f.Left)
@@ -220,21 +221,21 @@ func (cmc *CTLModelChecker) CheckCTL(formula CTLFormula) map[string]bool {
         for stateID := range cmc.states {
             result[stateID] = leftResult[stateID] && rightResult[stateID]
         }
-        
+
     case *EXOperator:
         // EX操作符
         subResult := cmc.CheckCTL(f.Formula)
         for stateID := range cmc.states {
             result[stateID] = cmc.checkEX(subResult, stateID)
         }
-        
+
     case *EGOperator:
         // EG操作符
         subResult := cmc.CheckCTL(f.Formula)
         for stateID := range cmc.states {
             result[stateID] = cmc.checkEG(subResult, stateID)
         }
-        
+
     case *EUOperator:
         // EU操作符
         leftResult := cmc.CheckCTL(f.Left)
@@ -243,7 +244,7 @@ func (cmc *CTLModelChecker) CheckCTL(formula CTLFormula) map[string]bool {
             result[stateID] = cmc.checkEU(leftResult, rightResult, stateID)
         }
     }
-    
+
     return result
 }
 
@@ -263,7 +264,7 @@ func (cmc *CTLModelChecker) checkEG(satisfied map[string]bool, stateID string) b
     for id := range cmc.states {
         result[id] = satisfied[id]
     }
-    
+
     changed := true
     for changed {
         changed = false
@@ -271,7 +272,7 @@ func (cmc *CTLModelChecker) checkEG(satisfied map[string]bool, stateID string) b
             if !result[id] {
                 continue
             }
-            
+
             // 检查是否有后继状态满足条件
             state := cmc.states[id]
             hasSatisfyingSuccessor := false
@@ -281,14 +282,14 @@ func (cmc *CTLModelChecker) checkEG(satisfied map[string]bool, stateID string) b
                     break
                 }
             }
-            
+
             if !hasSatisfyingSuccessor {
                 result[id] = false
                 changed = true
             }
         }
     }
-    
+
     return result[stateID]
 }
 ```
@@ -324,30 +325,30 @@ func (pc *PropertyChecker) CheckTermination() (bool, error) {
     if len(cycles) > 0 {
         return false, fmt.Errorf("workflow contains cycles: %v", cycles)
     }
-    
+
     // 检查是否所有路径都能到达终止状态
     reachable := pc.findReachableStates()
     finalStates := pc.findFinalStates()
-    
+
     for state := range reachable {
         if !pc.canReachFinalState(state, finalStates) {
             return false, fmt.Errorf("state %s cannot reach any final state", state)
         }
     }
-    
+
     return true, nil
 }
 
 // 死锁检查
 func (pc *PropertyChecker) CheckDeadlock() (bool, error) {
     reachable := pc.findReachableStates()
-    
+
     for state := range reachable {
         if !pc.isFinalState(state) && len(pc.getOutgoingTransitions(state)) == 0 {
             return false, fmt.Errorf("deadlock detected in state %s", state)
         }
     }
-    
+
     return true, nil
 }
 
@@ -355,7 +356,7 @@ func (pc *PropertyChecker) CheckDeadlock() (bool, error) {
 func (pc *PropertyChecker) CheckLiveness() (bool, error) {
     // 检查是否所有可达状态都能继续执行
     reachable := pc.findReachableStates()
-    
+
     for state := range reachable {
         if !pc.isFinalState(state) {
             transitions := pc.getOutgoingTransitions(state)
@@ -364,7 +365,7 @@ func (pc *PropertyChecker) CheckLiveness() (bool, error) {
             }
         }
     }
-    
+
     return true, nil
 }
 ```
@@ -406,30 +407,30 @@ func (ip *InvariantProver) CheckInvariant() (bool, error) {
     if !ip.invariant.Evaluate(initialState) {
         return false, fmt.Errorf("invariant violated in initial state")
     }
-    
+
     // 检查所有转移
     for _, transition := range ip.workflow.Transitions {
         if !ip.checkTransitionInvariant(transition) {
-            return false, fmt.Errorf("invariant not preserved by transition %s -> %s", 
+            return false, fmt.Errorf("invariant not preserved by transition %s -> %s",
                 transition.From, transition.To)
         }
     }
-    
+
     return true, nil
 }
 
 func (ip *InvariantProver) checkTransitionInvariant(transition Transition) bool {
     // 获取转移前的状态
     preState := ip.workflow.GetState(transition.From)
-    
+
     // 检查转移前不变式是否成立
     if !ip.invariant.Evaluate(preState) {
         return false
     }
-    
+
     // 模拟转移
     postState := ip.simulateTransition(preState, transition)
-    
+
     // 检查转移后不变式是否成立
     return ip.invariant.Evaluate(postState)
 }
@@ -465,26 +466,26 @@ type CFGNode struct {
 // 可达定义分析
 func (dfa *DataFlowAnalyzer) ReachingDefinitions() map[string]map[string]bool {
     result := make(map[string]map[string]bool)
-    
+
     // 初始化
     for nodeID := range dfa.cfg.nodes {
         result[nodeID] = make(map[string]bool)
     }
-    
+
     // 迭代计算
     changed := true
     for changed {
         changed = false
-        
+
         for nodeID, node := range dfa.cfg.nodes {
             oldReaching := make(map[string]bool)
             for k, v := range result[nodeID] {
                 oldReaching[k] = v
             }
-            
+
             // 计算新的可达定义
             newReaching := dfa.computeReachingDefinitions(nodeID, result)
-            
+
             // 检查是否有变化
             if !maps.Equal(oldReaching, newReaching) {
                 result[nodeID] = newReaching
@@ -492,30 +493,30 @@ func (dfa *DataFlowAnalyzer) ReachingDefinitions() map[string]map[string]bool {
             }
         }
     }
-    
+
     return result
 }
 
-func (dfa *DataFlowAnalyzer) computeReachingDefinitions(nodeID string, 
+func (dfa *DataFlowAnalyzer) computeReachingDefinitions(nodeID string,
     current map[string]map[string]bool) map[string]bool {
-    
+
     node := dfa.cfg.nodes[nodeID]
     result := make(map[string]bool)
-    
+
     // 合并所有前驱节点的输出
     for _, predID := range dfa.cfg.edges[nodeID] {
         for def := range current[predID] {
             result[def] = true
         }
     }
-    
+
     // 添加当前节点的定义
     for _, action := range node.Actions {
         if def := action.GetDefinition(); def != "" {
             result[def] = true
         }
     }
-    
+
     return result
 }
 ```
@@ -562,13 +563,13 @@ func (ft *FunctionType) IsCompatible(other Type) bool {
         if len(ft.Params) != len(otherFT.Params) {
             return false
         }
-        
+
         for i, param := range ft.Params {
             if !param.IsCompatible(otherFT.Params[i]) {
                 return false
             }
         }
-        
+
         return ft.Return.IsCompatible(otherFT.Return)
     }
     return false
@@ -577,28 +578,28 @@ func (ft *FunctionType) IsCompatible(other Type) bool {
 // 类型检查
 func (tc *TypeChecker) CheckTypes() (bool, []TypeError) {
     var errors []TypeError
-    
+
     // 检查状态类型
     for _, state := range tc.workflow.States {
         if err := tc.checkStateTypes(state); err != nil {
             errors = append(errors, err)
         }
     }
-    
+
     // 检查转移类型
     for _, transition := range tc.workflow.Transitions {
         if err := tc.checkTransitionTypes(transition); err != nil {
             errors = append(errors, err)
         }
     }
-    
+
     // 检查事件类型
     for _, event := range tc.workflow.Events {
         if err := tc.checkEventTypes(event); err != nil {
             errors = append(errors, err)
         }
     }
-    
+
     return len(errors) == 0, errors
 }
 
@@ -651,23 +652,23 @@ type Alert struct {
 }
 
 // 监控工作流执行
-func (rm *RuntimeMonitor) MonitorExecution(traceID string, 
+func (rm *RuntimeMonitor) MonitorExecution(traceID string,
     stateStream <-chan TraceState, eventStream <-chan TraceEvent) {
-    
+
     trace := &ExecutionTrace{
         ID:       traceID,
         States:   []TraceState{},
         Events:   []TraceEvent{},
         StartTime: time.Now(),
     }
-    
+
     go func() {
         for {
             select {
             case state := <-stateStream:
                 trace.States = append(trace.States, state)
                 rm.checkStateInvariants(trace, state)
-                
+
             case event := <-eventStream:
                 trace.Events = append(trace.Events, event)
                 rm.checkEventInvariants(trace, event)
@@ -713,11 +714,11 @@ func (pa *PerformanceAnalyzer) CollectMetrics(trace ExecutionTrace) {
     // 执行时间
     executionTime := trace.EndTime.Sub(trace.StartTime)
     pa.addMetric("execution_time", executionTime.Seconds())
-    
+
     // 状态转换次数
     stateTransitions := len(trace.States) - 1
     pa.addMetric("state_transitions", float64(stateTransitions))
-    
+
     // 事件处理时间
     for i := 1; i < len(trace.Events); i++ {
         eventTime := trace.Events[i].Timestamp.Sub(trace.Events[i-1].Timestamp)
@@ -734,7 +735,7 @@ func (pa *PerformanceAnalyzer) addMetric(name string, value float64) {
             Timestamps: []time.Time{},
         }
     }
-    
+
     pa.metrics[name].Values = append(pa.metrics[name].Values, value)
     pa.metrics[name].Timestamps = append(pa.metrics[name].Timestamps, time.Now())
 }
@@ -746,13 +747,13 @@ func (pa *PerformanceAnalyzer) GenerateReport() *PerformanceReport {
         Timestamp:  time.Now(),
         Metrics:    make(map[string]MetricSummary),
     }
-    
+
     for name, metric := range pa.metrics {
         if len(metric.Values) > 0 {
             report.Metrics[name] = pa.computeSummary(metric)
         }
     }
-    
+
     return report
 }
 

@@ -10,6 +10,7 @@
 
 **定义 1.1** (指称语义)
 指称语义是一个三元组 $\mathcal{D} = (\mathcal{S}, \mathcal{V}, \mathcal{M})$，其中：
+
 - $\mathcal{S}$ 是语法域
 - $\mathcal{V}$ 是值域
 - $\mathcal{M}: \mathcal{S} \rightarrow \mathcal{V}$ 是语义函数
@@ -18,6 +19,7 @@
 对于任意程序 $P \in \mathcal{S}$，存在唯一的语义值 $\mathcal{M}[\![P]\!] \in \mathcal{V}$。
 
 **证明**:
+
 1. 通过结构归纳法证明
 2. 每个语法构造都有对应的语义函数
 3. 语义函数是良定义的
@@ -26,16 +28,19 @@
 
 **定义 1.2** (偏序集)
 偏序集是一个二元组 $(D, \sqsubseteq)$，其中：
+
 - $D$ 是集合
 - $\sqsubseteq$ 是偏序关系
 
 **定义 1.3** (完全偏序集)
 完全偏序集(CPO)是一个偏序集 $(D, \sqsubseteq)$，其中：
+
 1. 存在最小元素 $\bot$
 2. 每个有向集都有最小上界
 
 **定义 1.4** (连续函数)
 函数 $f: D \rightarrow E$ 是连续的，当且仅当：
+
 1. $f$ 是单调的
 2. 对于每个有向集 $X \subseteq D$，$f(\bigsqcup X) = \bigsqcup f(X)$
 
@@ -107,6 +112,7 @@ func (cf *ContinuousFunction) IsMonotonic() bool {
 
 **定义 2.1** (基本域)
 基本域包括：
+
 - $\mathbb{N}_\bot$: 自然数域
 - $\mathbb{B}_\bot$: 布尔域
 - $\mathbb{Z}_\bot$: 整数域
@@ -433,6 +439,7 @@ func (sf *SemanticFunction) domainsEqual(d1, d2 Domain) bool {
 在完全偏序集 $(D, \sqsubseteq)$ 上，每个连续函数 $f: D \rightarrow D$ 都有最小不动点 $\text{fix}(f)$。
 
 **证明**:
+
 1. 定义序列 $x_0 = \bot, x_{n+1} = f(x_n)$
 2. 证明序列是递增的
 3. 证明极限是 $f$ 的不动点
@@ -718,6 +725,7 @@ func (pt *ProgramTransformer) VerifyTransformation(original, transformed Program
 ---
 
 **相关链接**:
+
 - [01-操作语义](./01-Operational-Semantics.md)
 - [03-公理语义](./03-Axiomatic-Semantics.md)
 - [04-并发语义](./04-Concurrent-Semantics.md)

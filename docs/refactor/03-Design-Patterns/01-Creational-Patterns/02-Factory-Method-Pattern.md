@@ -9,12 +9,12 @@
     - [1.2 核心特征](#12-核心特征)
     - [1.3 设计原则](#13-设计原则)
   - [2. 形式化定义](#2-形式化定义)
-    - [2.1 类型理论定义](#21-类型理论定义)
-    - [2.2 范畴论定义](#22-范畴论定义)
-    - [2.3 形式化约束](#23-形式化约束)
+    - [2.1 集合论定义](#21-集合论定义)
+    - [2.2 函数式定义](#22-函数式定义)
+    - [2.3 类型论定义](#23-类型论定义)
   - [3. 数学证明](#3-数学证明)
-    - [3.1 开闭原则证明](#31-开闭原则证明)
-    - [3.2 依赖倒置证明](#32-依赖倒置证明)
+    - [3.1 多态性证明](#31-多态性证明)
+    - [3.2 扩展性证明](#32-扩展性证明)
   - [4. Go语言实现](#4-go语言实现)
     - [4.1 基础实现](#41-基础实现)
     - [4.2 泛型实现](#42-泛型实现)
@@ -22,15 +22,15 @@
   - [5. 性能分析](#5-性能分析)
     - [5.1 时间复杂度](#51-时间复杂度)
     - [5.2 空间复杂度](#52-空间复杂度)
-    - [5.3 性能对比](#53-性能对比)
+    - [5.3 性能优化](#53-性能优化)
   - [6. 应用场景](#6-应用场景)
     - [6.1 数据库连接工厂](#61-数据库连接工厂)
     - [6.2 日志记录器工厂](#62-日志记录器工厂)
     - [6.3 支付处理器工厂](#63-支付处理器工厂)
   - [7. 相关模式](#7-相关模式)
     - [7.1 与抽象工厂模式的关系](#71-与抽象工厂模式的关系)
-    - [7.2 与模板方法模式的关系](#72-与模板方法模式的关系)
-    - [7.3 与策略模式的关系](#73-与策略模式的关系)
+    - [7.2 与简单工厂模式的关系](#72-与简单工厂模式的关系)
+    - [7.3 与建造者模式的关系](#73-与建造者模式的关系)
   - [总结](#总结)
 
 ---
@@ -44,89 +44,68 @@
 ### 1.2 核心特征
 
 - **抽象化**: 将对象创建过程抽象化
-- **多态性**: 子类决定具体产品类型
-- **扩展性**: 新增产品类型不影响现有代码
-- **封装性**: 隐藏对象创建的复杂逻辑
+- **多态性**: 通过接口实现多态创建
+- **扩展性**: 易于添加新的产品类型
+- **封装性**: 隐藏对象创建的复杂性
 
 ### 1.3 设计原则
 
-```go
-// 设计原则：开闭原则 + 依赖倒置原则
-type Creator interface {
-    FactoryMethod() Product
-    SomeOperation() string
-}
-
-type Product interface {
-    Operation() string
-}
-```
+- **开闭原则**: 对扩展开放，对修改封闭
+- **依赖倒置原则**: 依赖于抽象而不是具体实现
+- **单一职责原则**: 每个工厂只负责创建特定类型的产品
 
 ---
 
 ## 2. 形式化定义
 
-### 2.1 类型理论定义
+### 2.1 集合论定义
 
-设 $C$ 为创建者类型，$P$ 为产品类型，$F$ 为工厂方法，则：
+设 $P$ 为产品集合，$F$ 为工厂集合，$C$ 为创建者集合，则工厂方法模式满足：
 
-$$F: C \rightarrow P$$
+$$\forall f \in F, \exists c \in C : f = \text{createProduct}(c)$$
 
-对于任意创建者 $c \in C$，存在对应的产品 $p \in P$，使得：
+其中 $\text{createProduct}: C \rightarrow P$ 为工厂方法。
 
-$$p = F(c)$$
+### 2.2 函数式定义
 
-### 2.2 范畴论定义
+定义工厂方法函数族 $\mathcal{F} = \{f_c : \emptyset \rightarrow P \mid c \in C\}$，满足：
 
-工厂方法模式可以表示为范畴中的态射：
+$$f_c() = \text{createProduct}(c)$$
 
-```mermaid
-graph LR
-    A[Creator] --> B[Product]
-    A --> C[ConcreteCreator]
-    C --> D[ConcreteProduct]
-    B -.-> D
-```
+### 2.3 类型论定义
 
-### 2.3 形式化约束
+在类型论中，工厂方法模式可以表示为：
 
-```go
-// 形式化约束定义
-type FactoryConstraints struct {
-    Abstraction    bool // ∃F: Creator → Product
-    Polymorphism   bool // ∀c ∈ Creator: F(c) ∈ Product
-    Extensibility  bool // ∀P' ⊃ P: F'(c) ∈ P'
-    Encapsulation  bool // create() ∉ Client
-}
-```
+$$\text{Factory} = \Pi_{c:C} \Sigma_{p:P} \text{Product}(p)$$
+
+其中 $\text{Product}(p)$ 表示产品 $p$ 的类型。
 
 ---
 
 ## 3. 数学证明
 
-### 3.1 开闭原则证明
+### 3.1 多态性证明
 
-**定理**: 工厂方法模式满足开闭原则
-
-**证明**:
-
-1. 设现有产品集合 $P = \{p_1, p_2, ..., p_n\}$
-2. 新增产品 $p_{n+1}$ 时，创建新创建者 $c_{n+1}$
-3. 现有代码无需修改：$\forall c_i \in C_{old}: F(c_i) \in P_{old}$
-4. 新代码通过新创建者：$F(c_{n+1}) = p_{n+1}$
-5. 因此满足开闭原则
-
-### 3.2 依赖倒置证明
-
-**定理**: 工厂方法模式实现依赖倒置
+**定理**: 工厂方法模式支持多态创建。
 
 **证明**:
 
-1. 高层模块依赖抽象接口：$\text{Client} \rightarrow \text{Creator}$
-2. 低层模块实现具体类：$\text{ConcreteCreator} \rightarrow \text{ConcreteProduct}$
-3. 抽象不依赖细节：$\text{Creator} \not\rightarrow \text{ConcreteProduct}$
-4. 细节依赖抽象：$\text{ConcreteCreator} \rightarrow \text{Creator}$
-5. 因此实现依赖倒置
+1. 设 $P_1, P_2$ 为两个不同的产品类型
+2. 存在工厂方法 $f_1, f_2$ 分别创建 $P_1, P_2$
+3. 通过接口 $I$，$f_1, f_2$ 都实现相同的签名
+4. 因此支持多态调用：$\text{create}(f_1) \neq \text{create}(f_2)$
+5. 多态性得证
+
+### 3.2 扩展性证明
+
+**定理**: 工厂方法模式支持开闭原则。
+
+**证明**:
+
+1. 设现有工厂集合 $F = \{f_1, f_2, \ldots, f_n\}$
+2. 添加新工厂 $f_{n+1}$ 时，只需实现相同的接口
+3. 不需要修改现有代码
+4. 因此满足开闭原则
 
 ---
 
@@ -137,15 +116,50 @@ type FactoryConstraints struct {
 ```go
 package factory
 
-import (
-    "fmt"
-    "time"
-)
+import "fmt"
 
 // Product 产品接口
 type Product interface {
     Operation() string
-    GetID() string
+    GetName() string
+}
+
+// ConcreteProductA 具体产品A
+type ConcreteProductA struct {
+    name string
+}
+
+func NewConcreteProductA() *ConcreteProductA {
+    return &ConcreteProductA{
+        name: "Product A",
+    }
+}
+
+func (p *ConcreteProductA) Operation() string {
+    return "Result of ConcreteProductA"
+}
+
+func (p *ConcreteProductA) GetName() string {
+    return p.name
+}
+
+// ConcreteProductB 具体产品B
+type ConcreteProductB struct {
+    name string
+}
+
+func NewConcreteProductB() *ConcreteProductB {
+    return &ConcreteProductB{
+        name: "Product B",
+    }
+}
+
+func (p *ConcreteProductB) Operation() string {
+    return "Result of ConcreteProductB"
+}
+
+func (p *ConcreteProductB) GetName() string {
+    return p.name
 }
 
 // Creator 创建者接口
@@ -154,64 +168,41 @@ type Creator interface {
     SomeOperation() string
 }
 
-// ConcreteProductA 具体产品A
-type ConcreteProductA struct {
-    id        string
-    createdAt time.Time
-}
-
-func (p *ConcreteProductA) Operation() string {
-    return fmt.Sprintf("ConcreteProductA[%s] operation", p.id)
-}
-
-func (p *ConcreteProductA) GetID() string {
-    return p.id
-}
-
-// ConcreteProductB 具体产品B
-type ConcreteProductB struct {
-    id        string
-    createdAt time.Time
-    metadata  map[string]interface{}
-}
-
-func (p *ConcreteProductB) Operation() string {
-    return fmt.Sprintf("ConcreteProductB[%s] operation with metadata", p.id)
-}
-
-func (p *ConcreteProductB) GetID() string {
-    return p.id
-}
-
 // ConcreteCreatorA 具体创建者A
 type ConcreteCreatorA struct{}
 
+func NewConcreteCreatorA() *ConcreteCreatorA {
+    return &ConcreteCreatorA{}
+}
+
 func (c *ConcreteCreatorA) FactoryMethod() Product {
-    return &ConcreteProductA{
-        id:        fmt.Sprintf("product-a-%d", time.Now().UnixNano()),
-        createdAt: time.Now(),
-    }
+    return NewConcreteProductA()
 }
 
 func (c *ConcreteCreatorA) SomeOperation() string {
     product := c.FactoryMethod()
-    return fmt.Sprintf("CreatorA created: %s", product.Operation())
+    return fmt.Sprintf("Creator A: %s", product.Operation())
 }
 
 // ConcreteCreatorB 具体创建者B
 type ConcreteCreatorB struct{}
 
+func NewConcreteCreatorB() *ConcreteCreatorB {
+    return &ConcreteCreatorB{}
+}
+
 func (c *ConcreteCreatorB) FactoryMethod() Product {
-    return &ConcreteProductB{
-        id:        fmt.Sprintf("product-b-%d", time.Now().UnixNano()),
-        createdAt: time.Now(),
-        metadata:  make(map[string]interface{}),
-    }
+    return NewConcreteProductB()
 }
 
 func (c *ConcreteCreatorB) SomeOperation() string {
     product := c.FactoryMethod()
-    return fmt.Sprintf("CreatorB created: %s", product.Operation())
+    return fmt.Sprintf("Creator B: %s", product.Operation())
+}
+
+// ClientCode 客户端代码
+func ClientCode(creator Creator) {
+    fmt.Println(creator.SomeOperation())
 }
 ```
 
@@ -222,70 +213,87 @@ package factory
 
 import (
     "fmt"
-    "sync"
+    "reflect"
 )
 
 // GenericProduct 泛型产品接口
 type GenericProduct[T any] interface {
-    GetValue() T
-    SetValue(T)
-    Operation() string
+    Operation() T
+    GetType() string
 }
 
 // GenericCreator 泛型创建者接口
 type GenericCreator[T any] interface {
     FactoryMethod() GenericProduct[T]
-    SomeOperation() string
+    SomeOperation() T
 }
 
-// genericProduct 泛型产品实现
-type genericProduct[T any] struct {
-    value T
-    id    string
-    mu    sync.RWMutex
+// GenericFactory 泛型工厂
+type GenericFactory[T any] struct {
+    productType reflect.Type
+    factoryFunc func() GenericProduct[T]
 }
 
-func (p *genericProduct[T]) GetValue() T {
-    p.mu.RLock()
-    defer p.mu.RUnlock()
+// NewGenericFactory 创建泛型工厂
+func NewGenericFactory[T any](factoryFunc func() GenericProduct[T]) *GenericFactory[T] {
+    return &GenericFactory[T]{
+        productType: reflect.TypeOf((*T)(nil)).Elem(),
+        factoryFunc: factoryFunc,
+    }
+}
+
+// CreateProduct 创建产品
+func (f *GenericFactory[T]) CreateProduct() GenericProduct[T] {
+    return f.factoryFunc()
+}
+
+// GetProductType 获取产品类型
+func (f *GenericFactory[T]) GetProductType() string {
+    return f.productType.String()
+}
+
+// 使用示例
+type StringProduct struct {
+    value string
+}
+
+func NewStringProduct() GenericProduct[string] {
+    return &StringProduct{
+        value: "String Product",
+    }
+}
+
+func (p *StringProduct) Operation() string {
     return p.value
 }
 
-func (p *genericProduct[T]) SetValue(value T) {
-    p.mu.Lock()
-    defer p.mu.Unlock()
-    p.value = value
+func (p *StringProduct) GetType() string {
+    return "StringProduct"
 }
 
-func (p *genericProduct[T]) Operation() string {
-    p.mu.RLock()
-    defer p.mu.RUnlock()
-    return fmt.Sprintf("GenericProduct[%s] operation with value: %v", p.id, p.value)
+type IntProduct struct {
+    value int
 }
 
-// genericCreator 泛型创建者实现
-type genericCreator[T any] struct {
-    defaultValue T
-}
-
-func (c *genericCreator[T]) FactoryMethod() GenericProduct[T] {
-    return &genericProduct[T]{
-        value: c.defaultValue,
-        id:    fmt.Sprintf("generic-%d", time.Now().UnixNano()),
+func NewIntProduct() GenericProduct[int] {
+    return &IntProduct{
+        value: 42,
     }
 }
 
-func (c *genericCreator[T]) SomeOperation() string {
-    product := c.FactoryMethod()
-    return fmt.Sprintf("GenericCreator created: %s", product.Operation())
+func (p *IntProduct) Operation() int {
+    return p.value
 }
 
-// NewGenericCreator 创建泛型创建者
-func NewGenericCreator[T any](defaultValue T) GenericCreator[T] {
-    return &genericCreator[T]{
-        defaultValue: defaultValue,
-    }
+func (p *IntProduct) GetType() string {
+    return "IntProduct"
 }
+
+// 全局工厂实例
+var (
+    stringFactory = NewGenericFactory(NewStringProduct)
+    intFactory    = NewGenericFactory(NewIntProduct)
+)
 ```
 
 ### 4.3 函数式实现
@@ -295,54 +303,183 @@ package factory
 
 import (
     "fmt"
-    "time"
+    "sync"
 )
 
 // FunctionalProduct 函数式产品
 type FunctionalProduct struct {
-    operations []func() string
-    id         string
+    operation func() string
+    name      string
 }
 
-func (p *FunctionalProduct) AddOperation(op func() string) {
-    p.operations = append(p.operations, op)
-}
-
-func (p *FunctionalProduct) ExecuteOperations() []string {
-    results := make([]string, len(p.operations))
-    for i, op := range p.operations {
-        results[i] = op()
+// NewFunctionalProduct 创建函数式产品
+func NewFunctionalProduct(name string, operation func() string) *FunctionalProduct {
+    return &FunctionalProduct{
+        operation: operation,
+        name:      name,
     }
-    return results
 }
 
-func (p *FunctionalProduct) Operation() string {
-    return fmt.Sprintf("FunctionalProduct[%s] with %d operations", p.id, len(p.operations))
+func (p *FunctionalProduct) Execute() string {
+    return p.operation()
 }
 
-// FunctionalCreator 函数式创建者
-type FunctionalCreator struct {
-    productFactories []func() *FunctionalProduct
+func (p *FunctionalProduct) GetName() string {
+    return p.name
 }
 
-func (c *FunctionalCreator) AddProductFactory(factory func() *FunctionalProduct) {
-    c.productFactories = append(c.productFactories, factory)
+// FunctionalFactory 函数式工厂
+type FunctionalFactory struct {
+    factories map[string]func() *FunctionalProduct
+    mutex     sync.RWMutex
 }
 
-func (c *FunctionalCreator) FactoryMethod() *FunctionalProduct {
-    if len(c.productFactories) == 0 {
-        return &FunctionalProduct{
-            id: fmt.Sprintf("default-%d", time.Now().UnixNano()),
-        }
+// NewFunctionalFactory 创建函数式工厂
+func NewFunctionalFactory() *FunctionalFactory {
+    return &FunctionalFactory{
+        factories: make(map[string]func() *FunctionalProduct),
+    }
+}
+
+// RegisterFactory 注册工厂方法
+func (f *FunctionalFactory) RegisterFactory(name string, factory func() *FunctionalProduct) {
+    f.mutex.Lock()
+    defer f.mutex.Unlock()
+    f.factories[name] = factory
+}
+
+// CreateProduct 创建产品
+func (f *FunctionalFactory) CreateProduct(name string) (*FunctionalProduct, error) {
+    f.mutex.RLock()
+    defer f.mutex.RUnlock()
+    
+    factory, exists := f.factories[name]
+    if !exists {
+        return nil, fmt.Errorf("factory not found: %s", name)
     }
     
-    // 使用第一个工厂函数
-    return c.productFactories[0]()
+    return factory(), nil
 }
 
-func (c *FunctionalCreator) SomeOperation() string {
-    product := c.FactoryMethod()
-    return fmt.Sprintf("FunctionalCreator created: %s", product.Operation())
+// GetAvailableFactories 获取可用的工厂列表
+func (f *FunctionalFactory) GetAvailableFactories() []string {
+    f.mutex.RLock()
+    defer f.mutex.RUnlock()
+    
+    names := make([]string, 0, len(f.factories))
+    for name := range f.factories {
+        names = append(names, name)
+    }
+    return names
+}
+```
+
+### 4.4 测试代码
+
+```go
+package factory
+
+import (
+    "testing"
+)
+
+// TestFactoryMethod 测试工厂方法
+func TestFactoryMethod(t *testing.T) {
+    creatorA := NewConcreteCreatorA()
+    creatorB := NewConcreteCreatorB()
+    
+    productA := creatorA.FactoryMethod()
+    productB := creatorB.FactoryMethod()
+    
+    if productA.GetName() != "Product A" {
+        t.Errorf("Expected Product A, got %s", productA.GetName())
+    }
+    
+    if productB.GetName() != "Product B" {
+        t.Errorf("Expected Product B, got %s", productB.GetName())
+    }
+    
+    if productA.Operation() == productB.Operation() {
+        t.Error("Different products should have different operations")
+    }
+}
+
+// TestGenericFactory 测试泛型工厂
+func TestGenericFactory(t *testing.T) {
+    stringProduct := stringFactory.CreateProduct()
+    intProduct := intFactory.CreateProduct()
+    
+    if stringProduct.GetType() != "StringProduct" {
+        t.Errorf("Expected StringProduct, got %s", stringProduct.GetType())
+    }
+    
+    if intProduct.GetType() != "IntProduct" {
+        t.Errorf("Expected IntProduct, got %s", intProduct.GetType())
+    }
+    
+    stringResult := stringProduct.Operation()
+    intResult := intProduct.Operation()
+    
+    if stringResult != "String Product" {
+        t.Errorf("Expected 'String Product', got %s", stringResult)
+    }
+    
+    if intResult != 42 {
+        t.Errorf("Expected 42, got %d", intResult)
+    }
+}
+
+// TestFunctionalFactory 测试函数式工厂
+func TestFunctionalFactory(t *testing.T) {
+    factory := NewFunctionalFactory()
+    
+    // 注册工厂方法
+    factory.RegisterFactory("greeting", func() *FunctionalProduct {
+        return NewFunctionalProduct("Greeting", func() string {
+            return "Hello, World!"
+        })
+    })
+    
+    factory.RegisterFactory("calculation", func() *FunctionalProduct {
+        return NewFunctionalProduct("Calculation", func() string {
+            return "2 + 2 = 4"
+        })
+    })
+    
+    // 创建产品
+    greeting, err := factory.CreateProduct("greeting")
+    if err != nil {
+        t.Errorf("Failed to create greeting product: %v", err)
+    }
+    
+    calculation, err := factory.CreateProduct("calculation")
+    if err != nil {
+        t.Errorf("Failed to create calculation product: %v", err)
+    }
+    
+    if greeting.Execute() != "Hello, World!" {
+        t.Errorf("Expected 'Hello, World!', got %s", greeting.Execute())
+    }
+    
+    if calculation.Execute() != "2 + 2 = 4" {
+        t.Errorf("Expected '2 + 2 = 4', got %s", calculation.Execute())
+    }
+    
+    // 测试不存在的工厂
+    _, err = factory.CreateProduct("nonexistent")
+    if err == nil {
+        t.Error("Expected error for nonexistent factory")
+    }
+}
+
+// BenchmarkFactoryMethod 性能基准测试
+func BenchmarkFactoryMethod(b *testing.B) {
+    creator := NewConcreteCreatorA()
+    
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        creator.FactoryMethod()
+    }
 }
 ```
 
@@ -352,39 +489,53 @@ func (c *FunctionalCreator) SomeOperation() string {
 
 ### 5.1 时间复杂度
 
-| 操作 | 时间复杂度 | 说明 |
-|------|------------|------|
-| 创建产品 | O(1) | 直接实例化 |
-| 工厂方法调用 | O(1) | 方法调用开销 |
-| 产品操作 | O(1) | 具体产品操作 |
+- **创建产品**: $O(1)$
+- **工厂注册**: $O(1)$
+- **产品查找**: $O(1)$ (使用map)
 
 ### 5.2 空间复杂度
 
-- **空间复杂度**: O(1) - 每个产品独立存储
-- **内存占用**: 与产品数量成正比
+- **工厂存储**: $O(n)$ (n为工厂数量)
+- **产品实例**: $O(1)$ 每个产品
 
-### 5.3 性能对比
+### 5.3 性能优化
 
 ```go
-// 性能测试代码
-func BenchmarkFactoryMethod(b *testing.B) {
-    creator := &ConcreteCreatorA{}
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        product := creator.FactoryMethod()
-        _ = product.Operation()
+// 缓存工厂实现
+type CachedFactory struct {
+    cache  map[string]Product
+    mutex  sync.RWMutex
+    factory func(string) Product
+}
+
+func NewCachedFactory(factory func(string) Product) *CachedFactory {
+    return &CachedFactory{
+        cache:   make(map[string]Product),
+        factory: factory,
     }
 }
 
-func BenchmarkDirectCreation(b *testing.B) {
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
-        product := &ConcreteProductA{
-            id:        fmt.Sprintf("direct-%d", i),
-            createdAt: time.Now(),
-        }
-        _ = product.Operation()
+func (cf *CachedFactory) CreateProduct(key string) Product {
+    // 先检查缓存
+    cf.mutex.RLock()
+    if product, exists := cf.cache[key]; exists {
+        cf.mutex.RUnlock()
+        return product
     }
+    cf.mutex.RUnlock()
+    
+    // 创建新产品
+    cf.mutex.Lock()
+    defer cf.mutex.Unlock()
+    
+    // 双重检查
+    if product, exists := cf.cache[key]; exists {
+        return product
+    }
+    
+    product := cf.factory(key)
+    cf.cache[key] = product
+    return product
 }
 ```
 
@@ -396,10 +547,10 @@ func BenchmarkDirectCreation(b *testing.B) {
 
 ```go
 // 数据库连接工厂
-type DBConnection interface {
+type DatabaseConnection interface {
     Connect() error
-    Query(sql string) ([]map[string]interface{}, error)
-    Close() error
+    Disconnect() error
+    Execute(query string) (interface{}, error)
 }
 
 type MySQLConnection struct {
@@ -410,22 +561,7 @@ type MySQLConnection struct {
     password string
 }
 
-type PostgreSQLConnection struct {
-    host     string
-    port     int
-    database string
-    username string
-    password string
-    sslmode  string
-}
-
-type DBConnectionCreator interface {
-    CreateConnection(config map[string]interface{}) DBConnection
-}
-
-type MySQLCreator struct{}
-
-func (c *MySQLCreator) CreateConnection(config map[string]interface{}) DBConnection {
+func NewMySQLConnection(config map[string]interface{}) *MySQLConnection {
     return &MySQLConnection{
         host:     config["host"].(string),
         port:     config["port"].(int),
@@ -435,16 +571,69 @@ func (c *MySQLCreator) CreateConnection(config map[string]interface{}) DBConnect
     }
 }
 
-type PostgreSQLCreator struct{}
+func (m *MySQLConnection) Connect() error {
+    // MySQL连接逻辑
+    return nil
+}
 
-func (c *PostgreSQLCreator) CreateConnection(config map[string]interface{}) DBConnection {
+func (m *MySQLConnection) Disconnect() error {
+    // MySQL断开连接逻辑
+    return nil
+}
+
+func (m *MySQLConnection) Execute(query string) (interface{}, error) {
+    // MySQL执行查询逻辑
+    return nil, nil
+}
+
+type PostgreSQLConnection struct {
+    host     string
+    port     int
+    database string
+    username string
+    password string
+}
+
+func NewPostgreSQLConnection(config map[string]interface{}) *PostgreSQLConnection {
     return &PostgreSQLConnection{
         host:     config["host"].(string),
         port:     config["port"].(int),
         database: config["database"].(string),
         username: config["username"].(string),
         password: config["password"].(string),
-        sslmode:  config["sslmode"].(string),
+    }
+}
+
+func (p *PostgreSQLConnection) Connect() error {
+    // PostgreSQL连接逻辑
+    return nil
+}
+
+func (p *PostgreSQLConnection) Disconnect() error {
+    // PostgreSQL断开连接逻辑
+    return nil
+}
+
+func (p *PostgreSQLConnection) Execute(query string) (interface{}, error) {
+    // PostgreSQL执行查询逻辑
+    return nil, nil
+}
+
+// 数据库工厂
+type DatabaseFactory struct{}
+
+func NewDatabaseFactory() *DatabaseFactory {
+    return &DatabaseFactory{}
+}
+
+func (df *DatabaseFactory) CreateConnection(dbType string, config map[string]interface{}) (DatabaseConnection, error) {
+    switch dbType {
+    case "mysql":
+        return NewMySQLConnection(config), nil
+    case "postgresql":
+        return NewPostgreSQLConnection(config), nil
+    default:
+        return nil, fmt.Errorf("unsupported database type: %s", dbType)
     }
 }
 ```
@@ -456,35 +645,81 @@ func (c *PostgreSQLCreator) CreateConnection(config map[string]interface{}) DBCo
 type Logger interface {
     Log(level, message string) error
     SetLevel(level string)
+    GetLevel() string
 }
 
 type ConsoleLogger struct {
     level string
 }
 
-type FileLogger struct {
-    level    string
-    filepath string
-}
-
-type LoggerCreator interface {
-    CreateLogger(config map[string]interface{}) Logger
-}
-
-type ConsoleLoggerCreator struct{}
-
-func (c *ConsoleLoggerCreator) CreateLogger(config map[string]interface{}) Logger {
+func NewConsoleLogger() *ConsoleLogger {
     return &ConsoleLogger{
-        level: config["level"].(string),
+        level: "INFO",
     }
 }
 
-type FileLoggerCreator struct{}
+func (c *ConsoleLogger) Log(level, message string) error {
+    fmt.Printf("[%s] %s: %s\n", time.Now().Format("2006-01-02 15:04:05"), level, message)
+    return nil
+}
 
-func (c *FileLoggerCreator) CreateLogger(config map[string]interface{}) Logger {
+func (c *ConsoleLogger) SetLevel(level string) {
+    c.level = level
+}
+
+func (c *ConsoleLogger) GetLevel() string {
+    return c.level
+}
+
+type FileLogger struct {
+    level string
+    file  *os.File
+}
+
+func NewFileLogger(filename string) (*FileLogger, error) {
+    file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+    if err != nil {
+        return nil, err
+    }
+    
     return &FileLogger{
-        level:    config["level"].(string),
-        filepath: config["filepath"].(string),
+        level: "INFO",
+        file:  file,
+    }, nil
+}
+
+func (f *FileLogger) Log(level, message string) error {
+    _, err := fmt.Fprintf(f.file, "[%s] %s: %s\n", time.Now().Format("2006-01-02 15:04:05"), level, message)
+    return err
+}
+
+func (f *FileLogger) SetLevel(level string) {
+    f.level = level
+}
+
+func (f *FileLogger) GetLevel() string {
+    return f.level
+}
+
+// 日志工厂
+type LoggerFactory struct{}
+
+func NewLoggerFactory() *LoggerFactory {
+    return &LoggerFactory{}
+}
+
+func (lf *LoggerFactory) CreateLogger(loggerType string, config map[string]interface{}) (Logger, error) {
+    switch loggerType {
+    case "console":
+        return NewConsoleLogger(), nil
+    case "file":
+        filename, ok := config["filename"].(string)
+        if !ok {
+            return nil, fmt.Errorf("filename is required for file logger")
+        }
+        return NewFileLogger(filename)
+    default:
+        return nil, fmt.Errorf("unsupported logger type: %s", loggerType)
     }
 }
 ```
@@ -495,40 +730,84 @@ func (c *FileLoggerCreator) CreateLogger(config map[string]interface{}) Logger {
 // 支付处理器工厂
 type PaymentProcessor interface {
     ProcessPayment(amount float64, currency string) error
-    RefundPayment(paymentID string) error
+    RefundPayment(transactionID string) error
+    GetSupportedCurrencies() []string
 }
 
 type CreditCardProcessor struct {
     apiKey string
-    secret string
 }
 
-type PayPalProcessor struct {
-    clientID string
-    secret   string
-    sandbox  bool
-}
-
-type PaymentProcessorCreator interface {
-    CreateProcessor(config map[string]interface{}) PaymentProcessor
-}
-
-type CreditCardCreator struct{}
-
-func (c *CreditCardCreator) CreateProcessor(config map[string]interface{}) PaymentProcessor {
+func NewCreditCardProcessor(apiKey string) *CreditCardProcessor {
     return &CreditCardProcessor{
-        apiKey: config["api_key"].(string),
-        secret: config["secret"].(string),
+        apiKey: apiKey,
     }
 }
 
-type PayPalCreator struct{}
+func (c *CreditCardProcessor) ProcessPayment(amount float64, currency string) error {
+    // 信用卡支付处理逻辑
+    return nil
+}
 
-func (c *PayPalCreator) CreateProcessor(config map[string]interface{}) PaymentProcessor {
+func (c *CreditCardProcessor) RefundPayment(transactionID string) error {
+    // 信用卡退款逻辑
+    return nil
+}
+
+func (c *CreditCardProcessor) GetSupportedCurrencies() []string {
+    return []string{"USD", "EUR", "GBP", "JPY"}
+}
+
+type PayPalProcessor struct {
+    clientID     string
+    clientSecret string
+}
+
+func NewPayPalProcessor(clientID, clientSecret string) *PayPalProcessor {
     return &PayPalProcessor{
-        clientID: config["client_id"].(string),
-        secret:   config["secret"].(string),
-        sandbox:  config["sandbox"].(bool),
+        clientID:     clientID,
+        clientSecret: clientSecret,
+    }
+}
+
+func (p *PayPalProcessor) ProcessPayment(amount float64, currency string) error {
+    // PayPal支付处理逻辑
+    return nil
+}
+
+func (p *PayPalProcessor) RefundPayment(transactionID string) error {
+    // PayPal退款逻辑
+    return nil
+}
+
+func (p *PayPalProcessor) GetSupportedCurrencies() []string {
+    return []string{"USD", "EUR", "GBP", "CAD", "AUD"}
+}
+
+// 支付工厂
+type PaymentFactory struct{}
+
+func NewPaymentFactory() *PaymentFactory {
+    return &PaymentFactory{}
+}
+
+func (pf *PaymentFactory) CreateProcessor(processorType string, config map[string]interface{}) (PaymentProcessor, error) {
+    switch processorType {
+    case "creditcard":
+        apiKey, ok := config["apiKey"].(string)
+        if !ok {
+            return nil, fmt.Errorf("apiKey is required for credit card processor")
+        }
+        return NewCreditCardProcessor(apiKey), nil
+    case "paypal":
+        clientID, ok1 := config["clientID"].(string)
+        clientSecret, ok2 := config["clientSecret"].(string)
+        if !ok1 || !ok2 {
+            return nil, fmt.Errorf("clientID and clientSecret are required for PayPal processor")
+        }
+        return NewPayPalProcessor(clientID, clientSecret), nil
+    default:
+        return nil, fmt.Errorf("unsupported payment processor type: %s", processorType)
     }
 }
 ```
@@ -539,62 +818,32 @@ func (c *PayPalCreator) CreateProcessor(config map[string]interface{}) PaymentPr
 
 ### 7.1 与抽象工厂模式的关系
 
-- **工厂方法**: 创建单个产品
-- **抽象工厂**: 创建产品族
-- **关系**: 抽象工厂可以使用工厂方法
+- **工厂方法模式**: 创建单个产品
+- **抽象工厂模式**: 创建产品族
 
-### 7.2 与模板方法模式的关系
+### 7.2 与简单工厂模式的关系
 
-```go
-// 模板方法模式中的工厂方法
-type TemplateCreator struct{}
+- **工厂方法模式**: 多态创建，支持扩展
+- **简单工厂模式**: 静态创建，不易扩展
 
-func (c *TemplateCreator) TemplateMethod() string {
-    // 模板方法定义算法骨架
-    product := c.FactoryMethod() // 工厂方法
-    return c.ProcessProduct(product)
-}
+### 7.3 与建造者模式的关系
 
-func (c *TemplateCreator) FactoryMethod() Product {
-    // 子类重写此方法
-    return &DefaultProduct{}
-}
-
-func (c *TemplateCreator) ProcessProduct(product Product) string {
-    return fmt.Sprintf("Processed: %s", product.Operation())
-}
-```
-
-### 7.3 与策略模式的关系
-
-```go
-// 策略模式中的工厂方法
-type StrategyFactory interface {
-    CreateStrategy(context string) Strategy
-}
-
-type Strategy interface {
-    Execute(data interface{}) interface{}
-}
-
-type Context struct {
-    strategy Strategy
-}
-
-func (c *Context) SetStrategy(factory StrategyFactory, context string) {
-    c.strategy = factory.CreateStrategy(context)
-}
-
-func (c *Context) ExecuteStrategy(data interface{}) interface{} {
-    return c.strategy.Execute(data)
-}
-```
+- **工厂方法模式**: 创建简单对象
+- **建造者模式**: 创建复杂对象
 
 ---
 
 ## 总结
 
-工厂方法模式通过抽象化对象创建过程，实现了开闭原则和依赖倒置原则。通过Go语言的接口和泛型特性，可以灵活地实现各种产品类型的创建。该模式在数据库连接、日志记录、支付处理等场景中广泛应用，是软件工程中的重要设计模式。
+工厂方法模式通过抽象化对象创建过程，实现了创建者与产品的解耦。它支持多态创建，易于扩展，是面向对象设计中重要的创建型模式。
+
+**关键要点**:
+- 使用接口实现多态创建
+- 支持开闭原则，易于扩展
+- 隐藏对象创建的复杂性
+- 合理选择实现方式（基础、泛型、函数式）
+
+**激情澎湃的持续构建** <(￣︶￣)↗[GO!] **工厂方法模式完成！** 🚀
 
 **相关链接**:
 

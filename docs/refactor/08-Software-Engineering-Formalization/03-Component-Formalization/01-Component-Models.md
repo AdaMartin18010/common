@@ -10,6 +10,7 @@
 
 **定义 1.1** (组件代数)
 组件代数是一个六元组 $\mathcal{C} = (C, \Sigma, \mathcal{I}, \mathcal{O}, \circ, \oplus)$，其中：
+
 - $C$ 是组件集合
 - $\Sigma$ 是接口集合
 - $\mathcal{I}$ 是输入接口映射
@@ -21,6 +22,7 @@
 对于任意组件 $c_1, c_2 \in C$，如果 $\mathcal{O}(c_1) \cap \mathcal{I}(c_2) \neq \emptyset$，则存在组合 $c_1 \circ c_2$。
 
 **证明**:
+
 1. 由于接口兼容，存在接口映射 $f: \mathcal{O}(c_1) \rightarrow \mathcal{I}(c_2)$
 2. 组合操作 $\circ$ 定义了接口连接
 3. 因此 $c_1 \circ c_2$ 是良定义的
@@ -123,6 +125,7 @@ type Lifecycle interface {
 
 **定义 2.1** (基础组件)
 基础组件是一个四元组 $c = (id, \mathcal{I}, \mathcal{O}, \mathcal{B})$，其中：
+
 - $id$ 是组件标识符
 - $\mathcal{I}$ 是输入接口集合
 - $\mathcal{O}$ 是输出接口集合
@@ -244,6 +247,7 @@ func (dl *DefaultLifecycle) Destroy(ctx context.Context) error {
 
 **定义 2.2** (复合组件)
 复合组件是一个五元组 $cc = (id, \mathcal{C}, \mathcal{I}, \mathcal{O}, \mathcal{W})$，其中：
+
 - $id$ 是组件标识符
 - $\mathcal{C}$ 是子组件集合
 - $\mathcal{I}$ 是外部输入接口
@@ -328,6 +332,7 @@ type ExecutionContext struct {
 接口定义语言(IDL)是用于描述组件接口的形式化语言。
 
 **BNF语法定义**:
+
 ```
 interface_def ::= 'interface' ID '{' interface_body '}'
 interface_body ::= method_def* property_def*
@@ -433,6 +438,7 @@ type PropertyDefinition struct {
 
 **定义 3.2** (接口兼容性)
 接口 $I_1$ 与接口 $I_2$ 兼容，当且仅当：
+
 1. $I_1$ 的所有方法在 $I_2$ 中都有对应的方法
 2. 对应方法的签名兼容
 3. $I_1$ 的所有属性在 $I_2$ 中都有对应的属性
@@ -1206,6 +1212,7 @@ func (ea *EvolutionAnalyzer) identifyPattern(intervals []time.Duration) *Evoluti
 ---
 
 **相关链接**:
+
 - [02-组件接口](./02-Component-Interfaces.md)
 - [03-组件组合](./03-Component-Composition.md)
-- [04-组件演化](./04-Component-Evolution.md) 
+- [04-组件演化](./04-Component-Evolution.md)

@@ -12,6 +12,7 @@
 
 **定义 1.1** (工作流代数)
 工作流代数是一个五元组 $\mathcal{W} = (S, \Sigma, \delta, s_0, F)$，其中：
+
 - $S$ 是状态集合
 - $\Sigma$ 是事件集合  
 - $\delta: S \times \Sigma \rightarrow S$ 是状态转移函数
@@ -97,12 +98,12 @@ type SequentialWorkflow struct {
 func (sw *SequentialWorkflow) Execute(ctx context.Context) error {
     for i, workflow := range sw.workflows {
         sw.current = i
-        
+
         // 执行当前工作流
         if err := sw.executeWorkflow(ctx, workflow); err != nil {
             return fmt.Errorf("workflow %s failed: %w", workflow.ID, err)
         }
-        
+
         // 检查是否所有工作流都完成
         if i == len(sw.workflows)-1 {
             return nil
@@ -114,7 +115,7 @@ func (sw *SequentialWorkflow) Execute(ctx context.Context) error {
 func (sw *SequentialWorkflow) executeWorkflow(ctx context.Context, wf WorkflowDefinition) error {
     // 工作流执行逻辑
     state := wf.InitialState
-    
+
     for {
         select {
         case <-ctx.Done():
@@ -128,7 +129,7 @@ func (sw *SequentialWorkflow) executeWorkflow(ctx context.Context, wf WorkflowDe
                 }
                 return fmt.Errorf("no available transitions from state %s", state)
             }
-            
+
             // 执行转移
             for _, trans := range transitions {
                 if trans.Condition == nil || trans.Condition(sw.state) {
@@ -169,37 +170,37 @@ type ParallelWorkflow struct {
 
 func (pw *ParallelWorkflow) Execute(ctx context.Context) error {
     pw.errors = make(chan error, len(pw.workflows))
-    
+
     // 启动所有工作流
     for id, workflow := range pw.workflows {
         pw.wg.Add(1)
         go pw.executeWorkflow(ctx, id, workflow)
     }
-    
+
     // 等待所有工作流完成
     go func() {
         pw.wg.Wait()
         close(pw.errors)
     }()
-    
+
     // 收集错误
     for err := range pw.errors {
         if err != nil {
             return err
         }
     }
-    
+
     return nil
 }
 
 func (pw *ParallelWorkflow) executeWorkflow(ctx context.Context, id string, wf WorkflowDefinition) {
     defer pw.wg.Done()
-    
+
     state := wf.InitialState
     pw.mutex.Lock()
     pw.states[id] = state
     pw.mutex.Unlock()
-    
+
     for {
         select {
         case <-ctx.Done():
@@ -211,7 +212,7 @@ func (pw *ParallelWorkflow) executeWorkflow(ctx context.Context, id string, wf W
                 pw.errors <- err
                 return
             }
-            
+
             // 检查是否完成
             if pw.isFinalState(wf, state) {
                 return
@@ -248,7 +249,7 @@ func (cw *ChoiceWorkflow) Execute(ctx context.Context) error {
     if !exists {
         return fmt.Errorf("branch %s not found", branchID)
     }
-    
+
     // 执行选中的分支
     return cw.executeWorkflow(ctx, workflow)
 }
@@ -296,10 +297,10 @@ func (we *WorkflowEngine) Execute(ctx context.Context) error {
 func (we *WorkflowEngine) processEvent(ctx context.Context, event WorkflowEvent) error {
     we.mutex.Lock()
     defer we.mutex.Unlock()
-    
+
     // 查找可用转移
     transitions := we.findTransitions(we.state, event.GetType())
-    
+
     for _, trans := range transitions {
         if trans.Condition == nil || trans.Condition(we.context) {
             // 执行转移
@@ -308,12 +309,12 @@ func (we *WorkflowEngine) processEvent(ctx context.Context, event WorkflowEvent)
                     return err
                 }
             }
-            
+
             we.state = trans.To
             return nil
         }
     }
-    
+
     return fmt.Errorf("no valid transition for event %s in state %s", event.GetType(), we.state)
 }
 ```
@@ -337,7 +338,7 @@ type WorkflowInterpreter struct {
 
 func (wi *WorkflowInterpreter) Interpret(input interface{}) interface{} {
     state := wi.definition.InitialState
-    
+
     // 应用语义函数
     for {
         if sem, exists := wi.semantics[state]; exists {
@@ -419,18 +420,18 @@ func (lf *LivenessFormula) GetType() string {
 func (wmv *WorkflowModelVerifier) ModelCheck(formula TemporalFormula) (bool, []string) {
     // 构建状态空间
     states := wmv.buildStateSpace()
-    
+
     // 初始化标记
     marked := make(map[string]bool)
-    
+
     // 递归标记满足公式的状态
     wmv.markStates(states, formula, marked)
-    
+
     // 检查初始状态是否被标记
     if !marked[wmv.workflow.InitialState] {
         return false, wmv.generateCounterexample(formula)
     }
-    
+
     return true, nil
 }
 
@@ -463,17 +464,17 @@ type WorkflowPerformanceAnalyzer struct {
 func (wpa *WorkflowPerformanceAnalyzer) AnalyzePerformance() PerformanceReport {
     // 计算状态访问概率
     probabilities := wpa.calculateStateProbabilities()
-    
+
     // 计算执行成本
     costs := wpa.calculateExecutionCosts()
-    
+
     // 计算总性能
     totalPerformance := 0.0
     for state, prob := range probabilities {
         cost := costs[state]
         totalPerformance += cost * prob
     }
-    
+
     return PerformanceReport{
         TotalCost:     totalPerformance,
         Bottlenecks:   wpa.identifyBottlenecks(probabilities, costs),
@@ -489,15 +490,15 @@ func (wpa *WorkflowPerformanceAnalyzer) AnalyzePerformance() PerformanceReport {
 func (wro *WorkflowResourceOptimizer) OptimizeResourceAllocation() ResourceAllocation {
     // 构建资源约束图
     constraintGraph := wro.buildConstraintGraph()
-    
+
     // 应用线性规划求解
     allocation := wro.solveLinearProgramming(constraintGraph)
-    
+
     // 验证分配的有效性
     if wro.validateAllocation(allocation) {
         return allocation
     }
-    
+
     // 回退到启发式算法
     return wro.heuristicAllocation()
 }
@@ -540,9 +541,9 @@ func NewIoTDeviceWorkflow(device Device) *IoTDeviceWorkflow {
         InitialState: "initialized",
         FinalStates:  []string{"disconnected"},
     }
-    
+
     engine := NewWorkflowEngine(definition)
-    
+
     return &IoTDeviceWorkflow{
         engine: engine,
         device: device,
@@ -556,7 +557,7 @@ func (iw *IoTDeviceWorkflow) StartMonitoring(ctx context.Context) error {
             log.Printf("Workflow execution failed: %v", err)
         }
     }()
-    
+
     // 发送初始事件
     return iw.engine.SendEvent(WorkflowEvent{
         Type: "device_connected",
@@ -603,9 +604,9 @@ func NewFinancialTransactionWorkflow(tx Transaction) *FinancialTransactionWorkfl
         InitialState: "pending",
         FinalStates:  []string{"settled", "rejected"},
     }
-    
+
     engine := NewWorkflowEngine(definition)
-    
+
     return &FinancialTransactionWorkflow{
         engine: engine,
         transaction: tx,
@@ -623,13 +624,13 @@ func NewFinancialTransactionWorkflow(tx Transaction) *FinancialTransactionWorkfl
 ```go
 func (wmv *WorkflowModelVerifier) DetectDeadlocks() []string {
     deadlocks := []string{}
-    
+
     for state := range wmv.workflow.States {
         if wmv.isDeadlockState(state) {
             deadlocks = append(deadlocks, state)
         }
     }
-    
+
     return deadlocks
 }
 
@@ -638,7 +639,7 @@ func (wmv *WorkflowModelVerifier) isDeadlockState(state string) bool {
     if wmv.isFinalState(state) {
         return false
     }
-    
+
     // 检查是否有可用转移
     transitions := wmv.findTransitionsFromState(state)
     return len(transitions) == 0
@@ -652,17 +653,17 @@ func (wmv *WorkflowModelVerifier) isDeadlockState(state string) bool {
 func (wmv *WorkflowModelVerifier) ReachabilityAnalysis() map[string]bool {
     reachable := make(map[string]bool)
     queue := []string{wmv.workflow.InitialState}
-    
+
     for len(queue) > 0 {
         state := queue[0]
         queue = queue[1:]
-        
+
         if reachable[state] {
             continue
         }
-        
+
         reachable[state] = true
-        
+
         // 添加可达的后继状态
         for _, trans := range wmv.findTransitionsFromState(state) {
             if !reachable[trans.To] {
@@ -670,7 +671,7 @@ func (wmv *WorkflowModelVerifier) ReachabilityAnalysis() map[string]bool {
             }
         }
     }
-    
+
     return reachable
 }
 ```

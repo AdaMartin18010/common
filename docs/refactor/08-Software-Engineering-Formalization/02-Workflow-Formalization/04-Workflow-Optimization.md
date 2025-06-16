@@ -10,6 +10,7 @@
 
 **定义 1.1** (工作流优化问题)
 工作流优化问题是一个五元组 $\mathcal{O} = (W, C, F, \Omega, \mathcal{A})$，其中：
+
 - $W$ 是工作流模型
 - $C$ 是约束集合
 - $F$ 是目标函数
@@ -20,6 +21,7 @@
 工作流优化问题是NP难问题，即不存在多项式时间算法可以找到全局最优解。
 
 **证明**:
+
 1. 工作流优化可以规约到调度问题
 2. 调度问题是NP难问题
 3. 因此工作流优化也是NP难问题
@@ -112,6 +114,7 @@ type Cost struct {
 工作流重构是在保持语义等价的前提下，改变工作流结构以提高性能的过程。
 
 **算法 2.1** (工作流合并优化)
+
 ```go
 // 工作流重构优化器
 type WorkflowRefactoringOptimizer struct {
@@ -215,6 +218,7 @@ func (wro *WorkflowRefactoringOptimizer) isMergeable(stateID string) bool {
 工作流的并行度是同时执行的任务数量。
 
 **算法 2.2** (并行化检测)
+
 ```go
 // 并行化优化器
 type ParallelizationOptimizer struct {
@@ -1019,6 +1023,7 @@ func (ao *AdaptiveOptimizer) Optimize(workflow *WorkflowDefinition) *WorkflowDef
 ---
 
 **相关链接**:
+
 - [01-工作流模型](./01-Workflow-Models.md)
 - [02-工作流语言](./02-Workflow-Languages.md)
-- [03-工作流验证](./03-Workflow-Verification.md) 
+- [03-工作流验证](./03-Workflow-Verification.md)
