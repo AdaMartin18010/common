@@ -11,7 +11,7 @@
 #### 1. 设计模式层 (03-Design-Patterns) - 100% 完成
 
 - ✅ 01-创建型模式 (Creational Patterns) - 100% 完成
-  - ✅ 01-单例模式 (Singleton Pattern)
+  - ✅ 01-单例模式 (Singleton Pattern) - 已完成
   - ✅ 02-工厂方法模式 (Factory Method Pattern)
   - ✅ 03-抽象工厂模式 (Abstract Factory Pattern)
   - ✅ 04-建造者模式 (Builder Pattern)

@@ -4,356 +4,299 @@
 
 - [01-类型系统理论 (Type System Theory)](#01-类型系统理论-type-system-theory)
   - [目录](#目录)
+  - [概述](#概述)
   - [1. 类型基础 (Type Foundations)](#1-类型基础-type-foundations)
-    - [1.1 类型概念](#11-类型概念)
-    - [1.2 类型分类](#12-类型分类)
+    - [1.1 类型定义](#11-类型定义)
+    - [1.2 基本类型](#12-基本类型)
     - [1.3 类型关系](#13-类型关系)
   - [2. 类型推导 (Type Inference)](#2-类型推导-type-inference)
-    - [2.1 类型推导算法](#21-类型推导算法)
+    - [2.1 类型推导规则](#21-类型推导规则)
     - [2.2 统一算法](#22-统一算法)
-    - [2.3 约束求解](#23-约束求解)
+    - [2.3 Hindley-Milner类型系统](#23-hindley-milner类型系统)
   - [3. 类型安全 (Type Safety)](#3-类型安全-type-safety)
     - [3.1 类型安全定义](#31-类型安全定义)
-    - [3.2 进展和保持](#32-进展和保持)
-    - [3.3 类型错误处理](#33-类型错误处理)
+    - [3.2 类型安全证明](#32-类型安全证明)
+    - [3.3 运行时类型检查](#33-运行时类型检查)
   - [4. 高级类型系统 (Advanced Type Systems)](#4-高级类型系统-advanced-type-systems)
-    - [4.1 多态类型](#41-多态类型)
-    - [4.2 依赖类型](#42-依赖类型)
-    - [4.3 线性类型](#43-线性类型)
+    - [4.1 依赖类型](#41-依赖类型)
+    - [4.2 高阶类型](#42-高阶类型)
+    - [4.3 类型族](#43-类型族)
   - [5. Go语言类型系统](#5-go语言类型系统)
-    - [5.1 基础类型](#51-基础类型)
+    - [5.1 Go类型系统特征](#51-go类型系统特征)
     - [5.2 接口类型](#52-接口类型)
-    - [5.3 泛型类型](#53-泛型类型)
-  - [总结](#总结)
-    - [关键要点](#关键要点)
-    - [进一步研究方向](#进一步研究方向)
+    - [5.3 泛型实现](#53-泛型实现)
+  - [6. 形式化验证](#6-形式化验证)
+    - [6.1 类型检查算法](#61-类型检查算法)
+    - [6.2 类型安全证明](#62-类型安全证明)
+  - [7. 性能分析](#7-性能分析)
+    - [7.1 类型检查复杂度](#71-类型检查复杂度)
+    - [7.2 类型推导复杂度](#72-类型推导复杂度)
+    - [7.3 性能优化](#73-性能优化)
+  - [8. 应用实例](#8-应用实例)
+    - [8.1 类型安全的计算器](#81-类型安全的计算器)
+    - [8.2 类型安全的数据库查询](#82-类型安全的数据库查询)
+  - [参考文献](#参考文献)
+
+## 概述
+
+类型系统理论是编程语言理论的核心组成部分，研究类型的概念、类型检查算法、类型安全性和类型推导等问题。本章节从形式化角度分析类型系统，并结合Go语言的类型系统进行实践。
+
+### 核心概念
+
+- **类型**: 值的集合和操作的规范
+- **类型检查**: 验证程序类型正确性的过程
+- **类型推导**: 自动推断表达式类型的过程
+- **类型安全**: 防止类型错误的保证
 
 ## 1. 类型基础 (Type Foundations)
 
-### 1.1 类型概念
+### 1.1 类型定义
 
-**定义 1.1**: 类型
-类型是一个集合，表示程序中值的集合。类型系统是用于防止程序错误的静态分析工具。
+**定义 1.1** (类型): 类型 $T$ 是值的集合 $V_T$ 和操作集合 $O_T$ 的二元组：
+```latex
+T = (V_T, O_T)
+```
 
-**定义 1.2**: 类型环境
-类型环境 $\Gamma$ 是一个从变量到类型的映射：
-$$\Gamma: Var \rightarrow Type$$
+其中：
+- $V_T$ 是类型 $T$ 的值域
+- $O_T$ 是类型 $T$ 支持的操作集合
 
-**定义 1.3**: 类型判断
-类型判断是一个三元组 $\Gamma \vdash e: \tau$，表示在环境 $\Gamma$ 下，表达式 $e$ 具有类型 $\tau$。
+### 1.2 基本类型
 
-**定义 1.4**: 类型规则
-类型规则是推导类型判断的规则，通常采用自然演绎的形式：
+**定义 1.2** (基本类型): 基本类型是语言预定义的类型，包括：
 
-$$\frac{\text{premises}}{\text{conclusion}}$$
-
-### 1.2 类型分类
-
-**定义 1.5**: 基本类型
-基本类型包括：
-
-- $\text{Bool}$：布尔类型
-- $\text{Int}$：整数类型
-- $\text{Float}$：浮点类型
-- $\text{String}$：字符串类型
-- $\text{Unit}$：单位类型
-
-**定义 1.6**: 复合类型
-复合类型包括：
-
-- **函数类型**：$\tau_1 \rightarrow \tau_2$
-- **积类型**：$\tau_1 \times \tau_2$
-- **和类型**：$\tau_1 + \tau_2$
-- **列表类型**：$\text{List}[\tau]$
-- **引用类型**：$\text{Ref}[\tau]$
-
-**定义 1.7**: 类型构造器
-类型构造器是高阶类型，如：
-
-- $\text{List}$：列表构造器
-- $\text{Option}$：可选构造器
-- $\text{Either}$：或构造器
-- $\text{Map}$：映射构造器
+- **布尔类型**: $\text{Bool} = (\{\text{true}, \text{false}\}, \{\land, \lor, \neg\})$
+- **整数类型**: $\text{Int} = (\mathbb{Z}, \{+, -, \times, \div, \mod\})$
+- **浮点类型**: $\text{Float} = (\mathbb{R}, \{+, -, \times, \div\})$
+- **字符串类型**: $\text{String} = (\Sigma^*, \{\text{concat}, \text{length}, \text{substring}\})$
 
 ### 1.3 类型关系
 
-**定义 1.8**: 子类型关系
-子类型关系 $\tau_1 \leq \tau_2$ 表示 $\tau_1$ 是 $\tau_2$ 的子类型。
+**定义 1.3** (子类型关系): 类型 $S$ 是类型 $T$ 的子类型，记作 $S \leq T$，如果：
+```latex
+V_S \subseteq V_T \land O_S \supseteq O_T
+```
 
-**定义 1.9**: 类型等价
-类型等价 $\tau_1 \equiv \tau_2$ 表示 $\tau_1$ 和 $\tau_2$ 是等价的。
+**定义 1.4** (类型等价): 类型 $S$ 和 $T$ 等价，记作 $S \equiv T$，如果：
+```latex
+S \leq T \land T \leq S
+```
 
-**定理 1.1**: 子类型的基本性质
+### 1.4 类型环境
 
-1. **自反性**：$\tau \leq \tau$
-2. **传递性**：$\tau_1 \leq \tau_2 \wedge \tau_2 \leq \tau_3 \Rightarrow \tau_1 \leq \tau_3$
-3. **反对称性**：$\tau_1 \leq \tau_2 \wedge \tau_2 \leq \tau_1 \Rightarrow \tau_1 \equiv \tau_2$
+**定义 1.5** (类型环境): 类型环境 $\Gamma$ 是从变量到类型的映射：
+```latex
+\Gamma: \text{Var} \rightarrow \text{Type}
+```
 
-**定义 1.10**: 协变和逆变
+**定义 1.6** (类型判断): 类型判断的形式为：
+```latex
+\Gamma \vdash e: T
+```
 
-- 类型构造器 $F$ 是协变的，如果 $\tau_1 \leq \tau_2 \Rightarrow F[\tau_1] \leq F[\tau_2]$
-- 类型构造器 $F$ 是逆变的，如果 $\tau_1 \leq \tau_2 \Rightarrow F[\tau_2] \leq F[\tau_1]$
-- 类型构造器 $F$ 是不变的，如果既不是协变也不是逆变
+表示在环境 $\Gamma$ 下，表达式 $e$ 具有类型 $T$。
 
 ## 2. 类型推导 (Type Inference)
 
-### 2.1 类型推导算法
+### 2.1 类型推导规则
 
-**算法 2.1**: Hindley-Milner类型推导
-Hindley-Milner类型推导算法是函数式编程语言中最常用的类型推导算法。
+**规则 2.1** (变量规则):
+```latex
+\frac{x: T \in \Gamma}{\Gamma \vdash x: T}
+```
 
-**定义 2.1**: 类型变量
-类型变量 $\alpha, \beta, \gamma, \ldots$ 表示未知类型。
+**规则 2.2** (函数应用规则):
+```latex
+\frac{\Gamma \vdash e_1: T_1 \rightarrow T_2 \quad \Gamma \vdash e_2: T_1}{\Gamma \vdash e_1(e_2): T_2}
+```
 
-**定义 2.2**: 类型模式
-类型模式是包含类型变量的类型表达式。
-
-**算法 2.2**: 类型推导规则
-
-```go
-type TypeVariable struct {
-    ID string
-}
-
-type Type struct {
-    Kind TypeKind
-    Args []Type
-}
-
-type TypeKind int
-
-const (
-    BasicType TypeKind = iota
-    FunctionType
-    ProductType
-    SumType
-    VariableType
-    ConstructorType
-)
-
-type TypeEnvironment struct {
-    Bindings map[string]Type
-}
-
-// InferType 类型推导
-func InferType(expr Expression, env TypeEnvironment) (Type, error) {
-    switch e := expr.(type) {
-    case *Variable:
-        return env.Lookup(e.Name)
-    case *Application:
-        return inferApplication(e, env)
-    case *Abstraction:
-        return inferAbstraction(e, env)
-    case *Let:
-        return inferLet(e, env)
-    default:
-        return nil, fmt.Errorf("unsupported expression type")
-    }
-}
-
-// inferApplication 推导函数应用类型
-func inferApplication(app *Application, env TypeEnvironment) (Type, error) {
-    funType, err := InferType(app.Function, env)
-    if err != nil {
-        return nil, err
-    }
-    
-    argType, err := InferType(app.Argument, env)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 检查函数类型是否为函数类型
-    if funType.Kind != FunctionType {
-        return nil, fmt.Errorf("expected function type, got %v", funType)
-    }
-    
-    // 统一参数类型
-    substitution, err := Unify(funType.Args[0], argType)
-    if err != nil {
-        return nil, fmt.Errorf("type mismatch: %v", err)
-    }
-    
-    // 应用替换
-    return ApplySubstitution(funType.Args[1], substitution), nil
-}
-
-// inferAbstraction 推导lambda抽象类型
-func inferAbstraction(abs *Abstraction, env TypeEnvironment) (Type, error) {
-    // 创建新的类型变量
-    paramType := NewTypeVariable()
-    
-    // 扩展环境
-    newEnv := env.Extend(abs.Parameter, paramType)
-    
-    // 推导函数体类型
-    bodyType, err := InferType(abs.Body, newEnv)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 返回函数类型
-    return &Type{
-        Kind: FunctionType,
-        Args: []Type{paramType, bodyType},
-    }, nil
-}
+**规则 2.3** (函数抽象规则):
+```latex
+\frac{\Gamma, x: T_1 \vdash e: T_2}{\Gamma \vdash \lambda x: T_1.e: T_1 \rightarrow T_2}
 ```
 
 ### 2.2 统一算法
 
-**定义 2.3**: 类型统一
-类型统一是找到类型变量的替换，使得两个类型表达式相等。
+**定义 2.1** (类型方程): 类型方程的形式为 $T_1 = T_2$，其中 $T_1$ 和 $T_2$ 是类型表达式。
 
-**算法 2.3**: Robinson统一算法
+**算法 2.1** (Robinson统一算法):
 
 ```go
-type Substitution map[string]Type
-
-// Unify 统一两个类型
-func Unify(t1, t2 Type) (Substitution, error) {
-    switch {
-    case t1.Kind == VariableType:
-        return unifyVariable(t1, t2)
-    case t2.Kind == VariableType:
-        return unifyVariable(t2, t1)
-    case t1.Kind == FunctionType && t2.Kind == FunctionType:
-        return unifyFunction(t1, t2)
-    case t1.Kind == ConstructorType && t2.Kind == ConstructorType:
-        return unifyConstructor(t1, t2)
-    default:
-        if t1.Kind == t2.Kind {
-            return unifySameKind(t1, t2)
-        }
-        return nil, fmt.Errorf("cannot unify %v and %v", t1, t2)
-    }
+// 类型表达式
+type TypeExpr interface {
+    Unify(other TypeExpr) (Substitution, error)
 }
 
-// unifyVariable 统一类型变量
-func unifyVariable(variable Type, other Type) (Substitution, error) {
-    // 检查变量是否出现在其他类型中
-    if occursIn(variable, other) {
-        return nil, fmt.Errorf("occurs check failed")
-    }
-    
-    substitution := make(Substitution)
-    substitution[variable.ID] = other
-    return substitution, nil
+// 类型变量
+type TypeVar struct {
+    name string
 }
 
-// unifyFunction 统一函数类型
-func unifyFunction(f1, f2 Type) (Substitution, error) {
-    if len(f1.Args) != 2 || len(f2.Args) != 2 {
-        return nil, fmt.Errorf("invalid function type")
-    }
-    
-    // 统一参数类型
-    s1, err := Unify(f1.Args[0], f2.Args[0])
-    if err != nil {
-        return nil, err
-    }
-    
-    // 应用替换到返回类型
-    t1 := ApplySubstitution(f1.Args[1], s1)
-    t2 := ApplySubstitution(f2.Args[1], s1)
-    
-    // 统一返回类型
-    s2, err := Unify(t1, t2)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 组合替换
-    return ComposeSubstitutions(s1, s2)
+// 函数类型
+type FuncType struct {
+    domain   TypeExpr
+    codomain TypeExpr
 }
 
-// occursIn 检查变量是否出现在类型中
-func occursIn(variable Type, other Type) bool {
-    switch other.Kind {
-    case VariableType:
-        return variable.ID == other.ID
-    case FunctionType, ConstructorType:
-        for _, arg := range other.Args {
-            if occursIn(variable, arg) {
-                return true
+// 基本类型
+type BasicType struct {
+    name string
+}
+
+// 替换
+type Substitution map[string]TypeExpr
+
+// 统一算法
+func Unify(e1, e2 TypeExpr) (Substitution, error) {
+    switch t1 := e1.(type) {
+    case *TypeVar:
+        return unifyVar(t1, e2)
+    case *BasicType:
+        if t2, ok := e2.(*BasicType); ok {
+            if t1.name == t2.name {
+                return Substitution{}, nil
             }
+            return nil, fmt.Errorf("type mismatch: %s != %s", t1.name, t2.name)
         }
+        return nil, fmt.Errorf("cannot unify basic type with %T", e2)
+    case *FuncType:
+        if t2, ok := e2.(*FuncType); ok {
+            s1, err := Unify(t1.domain, t2.domain)
+            if err != nil {
+                return nil, err
+            }
+            
+            s2, err := Unify(applySubstitution(t1.codomain, s1), 
+                           applySubstitution(t2.codomain, s1))
+            if err != nil {
+                return nil, err
+            }
+            
+            return composeSubstitutions(s1, s2), nil
+        }
+        return nil, fmt.Errorf("cannot unify function type with %T", e2)
+    default:
+        return nil, fmt.Errorf("unknown type expression: %T", e1)
     }
-    return false
 }
 
-// ApplySubstitution 应用替换
-func ApplySubstitution(t Type, s Substitution) Type {
-    switch t.Kind {
-    case VariableType:
-        if replacement, exists := s[t.ID]; exists {
-            return ApplySubstitution(replacement, s)
-        }
-        return t
-    case FunctionType, ConstructorType:
-        newArgs := make([]Type, len(t.Args))
-        for i, arg := range t.Args {
-            newArgs[i] = ApplySubstitution(arg, s)
-        }
-        return &Type{
-            Kind: t.Kind,
-            Args: newArgs,
-        }
+// 统一类型变量
+func unifyVar(v *TypeVar, t TypeExpr) (Substitution, error) {
+    if v2, ok := t.(*TypeVar); ok && v.name == v2.name {
+        return Substitution{}, nil
+    }
+    
+    if occursIn(v, t) {
+        return nil, fmt.Errorf("circular type: %s occurs in %v", v.name, t)
+    }
+    
+    return Substitution{v.name: t}, nil
+}
+
+// 检查类型变量是否出现在类型中
+func occursIn(v *TypeVar, t TypeExpr) bool {
+    switch t2 := t.(type) {
+    case *TypeVar:
+        return v.name == t2.name
+    case *FuncType:
+        return occursIn(v, t2.domain) || occursIn(v, t2.codomain)
     default:
-        return t
+        return false
     }
 }
 ```
 
-### 2.3 约束求解
+### 2.3 Hindley-Milner类型系统
 
-**定义 2.4**: 类型约束
-类型约束是一个等式 $t_1 = t_2$，其中 $t_1$ 和 $t_2$ 是类型表达式。
+**定义 2.2** (多态类型): 多态类型的形式为 $\forall \alpha. T$，其中 $\alpha$ 是类型变量。
 
-**定义 2.5**: 约束系统
-约束系统是类型约束的集合。
-
-**算法 2.4**: 约束求解算法
+**算法 2.2** (Hindley-Milner类型推导):
 
 ```go
-type Constraint struct {
-    Left  Type
-    Right Type
+// 多态类型
+type PolyType struct {
+    vars []string
+    body TypeExpr
 }
 
-type ConstraintSystem struct {
-    Constraints []Constraint
+// 类型推导器
+type TypeInferrer struct {
+    env     map[string]TypeExpr
+    counter int
 }
 
-// SolveConstraints 求解约束系统
-func (cs *ConstraintSystem) SolveConstraints() (Substitution, error) {
-    substitution := make(Substitution)
-    
-    for len(cs.Constraints) > 0 {
-        constraint := cs.Constraints[0]
-        cs.Constraints = cs.Constraints[1:]
+func NewTypeInferrer() *TypeInferrer {
+    return &TypeInferrer{
+        env:     make(map[string]TypeExpr),
+        counter: 0,
+    }
+}
+
+// 生成新的类型变量
+func (ti *TypeInferrer) freshVar() *TypeVar {
+    ti.counter++
+    return &TypeVar{name: fmt.Sprintf("α%d", ti.counter)}
+}
+
+// 推导表达式类型
+func (ti *TypeInferrer) Infer(expr Expr) (TypeExpr, error) {
+    switch e := expr.(type) {
+    case *VarExpr:
+        if t, ok := ti.env[e.name]; ok {
+            return ti.instantiate(t), nil
+        }
+        return nil, fmt.Errorf("undefined variable: %s", e.name)
         
-        newSubstitution, err := Unify(constraint.Left, constraint.Right)
+    case *AppExpr:
+        t1, err := ti.Infer(e.func)
         if err != nil {
             return nil, err
         }
         
-        // 应用新替换到所有约束
-        cs.applySubstitution(newSubstitution)
+        t2, err := ti.Infer(e.arg)
+        if err != nil {
+            return nil, err
+        }
         
-        // 组合替换
-        substitution = ComposeSubstitutions(substitution, newSubstitution)
+        resultType := ti.freshVar()
+        funcType := &FuncType{domain: t2, codomain: resultType}
+        
+        substitution, err := Unify(t1, funcType)
+        if err != nil {
+            return nil, err
+        }
+        
+        return applySubstitution(resultType, substitution), nil
+        
+    case *LambdaExpr:
+        paramType := ti.freshVar()
+        oldEnv := ti.env
+        ti.env[e.param] = paramType
+        
+        bodyType, err := ti.Infer(e.body)
+        if err != nil {
+            ti.env = oldEnv
+            return nil, err
+        }
+        
+        ti.env = oldEnv
+        return &FuncType{domain: paramType, codomain: bodyType}, nil
+        
+    default:
+        return nil, fmt.Errorf("unknown expression type: %T", expr)
     }
-    
-    return substitution, nil
 }
 
-// applySubstitution 应用替换到约束系统
-func (cs *ConstraintSystem) applySubstitution(s Substitution) {
-    for i := range cs.Constraints {
-        cs.Constraints[i].Left = ApplySubstitution(cs.Constraints[i].Left, s)
-        cs.Constraints[i].Right = ApplySubstitution(cs.Constraints[i].Right, s)
+// 实例化多态类型
+func (ti *TypeInferrer) instantiate(polyType TypeExpr) TypeExpr {
+    if poly, ok := polyType.(*PolyType); ok {
+        substitution := make(Substitution)
+        for _, varName := range poly.vars {
+            substitution[varName] = ti.freshVar()
+        }
+        return applySubstitution(poly.body, substitution)
     }
+    return polyType
 }
 ```
 
@@ -361,720 +304,806 @@ func (cs *ConstraintSystem) applySubstitution(s Substitution) {
 
 ### 3.1 类型安全定义
 
-**定义 3.1**: 类型安全
-类型安全是指程序在运行时不会出现类型错误。
+**定义 3.1** (类型安全): 语言是类型安全的，如果所有类型正确的程序都不会产生运行时类型错误。
 
-**定义 3.2**: 类型错误
-类型错误包括：
+**定理 3.1** (进展定理): 如果 $\vdash e: T$ 且 $e$ 不是值，则存在 $e'$ 使得 $e \rightarrow e'$。
 
-- 类型不匹配
-- 未定义变量
-- 函数参数类型错误
-- 返回值类型错误
+**定理 3.2** (保持定理): 如果 $\vdash e: T$ 且 $e \rightarrow e'$，则 $\vdash e': T$。
 
-**定义 3.3**: 类型安全定理
-如果 $\Gamma \vdash e: \tau$ 且 $e \rightarrow e'$，则 $\Gamma \vdash e': \tau$。
+### 3.2 类型安全证明
 
-### 3.2 进展和保持
+**证明 3.1** (进展定理证明):
 
-**定理 3.1**: 进展定理 (Progress)
-如果 $\vdash e: \tau$，则要么 $e$ 是值，要么存在 $e'$ 使得 $e \rightarrow e'$。
+1. 对表达式 $e$ 的结构进行归纳
+2. 对于每种表达式形式，证明要么是值，要么可以继续求值
+3. 利用类型推导规则确保类型一致性
 
-**定理 3.2**: 保持定理 (Preservation)
-如果 $\Gamma \vdash e: \tau$ 且 $e \rightarrow e'$，则 $\Gamma \vdash e': \tau$。
+**证明 3.2** (保持定理证明):
 
-**定理 3.3**: 类型安全定理
-如果 $\vdash e: \tau$，则 $e$ 不会陷入错误状态。
+1. 对求值规则进行归纳
+2. 证明每个求值步骤保持类型
+3. 利用类型推导规则验证类型保持
 
-**证明**:
-
-1. 由进展定理，$e$ 要么是值，要么可以继续求值
-2. 由保持定理，求值过程中类型保持不变
-3. 因此 $e$ 不会出现类型错误
-
-### 3.3 类型错误处理
-
-**算法 3.1**: 类型错误检测
+### 3.3 运行时类型检查
 
 ```go
-type TypeError struct {
-    Message string
-    Location Position
+// 运行时类型检查器
+type RuntimeTypeChecker struct {
+    typeMap map[interface{}]reflect.Type
 }
 
-type TypeChecker struct {
-    errors []TypeError
-}
-
-// CheckType 类型检查
-func (tc *TypeChecker) CheckType(expr Expression, env TypeEnvironment) (Type, error) {
-    switch e := expr.(type) {
-    case *Variable:
-        return tc.checkVariable(e, env)
-    case *Application:
-        return tc.checkApplication(e, env)
-    case *Abstraction:
-        return tc.checkAbstraction(e, env)
-    case *Let:
-        return tc.checkLet(e, env)
-    default:
-        return nil, fmt.Errorf("unsupported expression type")
+func NewRuntimeTypeChecker() *RuntimeTypeChecker {
+    return &RuntimeTypeChecker{
+        typeMap: make(map[interface{}]reflect.Type),
     }
 }
 
-// checkVariable 检查变量
-func (tc *TypeChecker) checkVariable(v *Variable, env TypeEnvironment) (Type, error) {
-    if t, exists := env.Bindings[v.Name]; exists {
-        return t, nil
+// 检查类型
+func (rtc *RuntimeTypeChecker) CheckType(value interface{}, expectedType reflect.Type) error {
+    actualType := reflect.TypeOf(value)
+    
+    if actualType != expectedType {
+        return fmt.Errorf("type mismatch: expected %v, got %v", expectedType, actualType)
     }
     
-    tc.addError(TypeError{
-        Message:  fmt.Sprintf("undefined variable: %s", v.Name),
-        Location: v.Position,
-    })
-    return nil, fmt.Errorf("undefined variable: %s", v.Name)
+    return nil
 }
 
-// checkApplication 检查函数应用
-func (tc *TypeChecker) checkApplication(app *Application, env TypeEnvironment) (Type, error) {
-    funType, err := tc.CheckType(app.Function, env)
-    if err != nil {
-        return nil, err
+// 类型安全的函数调用
+func (rtc *RuntimeTypeChecker) SafeCall(fn interface{}, args ...interface{}) ([]interface{}, error) {
+    fnValue := reflect.ValueOf(fn)
+    fnType := fnValue.Type()
+    
+    if fnType.Kind() != reflect.Func {
+        return nil, fmt.Errorf("not a function: %v", fnType)
     }
     
-    argType, err := tc.CheckType(app.Argument, env)
-    if err != nil {
-        return nil, err
+    // 检查参数数量
+    if fnType.NumIn() != len(args) {
+        return nil, fmt.Errorf("argument count mismatch: expected %d, got %d", 
+            fnType.NumIn(), len(args))
     }
     
-    if funType.Kind != FunctionType {
-        tc.addError(TypeError{
-            Message:  fmt.Sprintf("expected function type, got %v", funType),
-            Location: app.Position,
-        })
-        return nil, fmt.Errorf("expected function type, got %v", funType)
+    // 检查参数类型
+    for i := 0; i < fnType.NumIn(); i++ {
+        if err := rtc.CheckType(args[i], fnType.In(i)); err != nil {
+            return nil, fmt.Errorf("argument %d: %v", i, err)
+        }
     }
     
-    if !tc.isSubtype(argType, funType.Args[0]) {
-        tc.addError(TypeError{
-            Message:  fmt.Sprintf("type mismatch: expected %v, got %v", funType.Args[0], argType),
-            Location: app.Position,
-        })
-        return nil, fmt.Errorf("type mismatch")
+    // 调用函数
+    argValues := make([]reflect.Value, len(args))
+    for i, arg := range args {
+        argValues[i] = reflect.ValueOf(arg)
     }
     
-    return funType.Args[1], nil
-}
-
-// addError 添加类型错误
-func (tc *TypeChecker) addError(err TypeError) {
-    tc.errors = append(tc.errors, err)
-}
-
-// GetErrors 获取所有类型错误
-func (tc *TypeChecker) GetErrors() []TypeError {
-    return tc.errors
+    results := fnValue.Call(argValues)
+    
+    // 转换结果
+    resultValues := make([]interface{}, len(results))
+    for i, result := range results {
+        resultValues[i] = result.Interface()
+    }
+    
+    return resultValues, nil
 }
 ```
 
 ## 4. 高级类型系统 (Advanced Type Systems)
 
-### 4.1 多态类型
+### 4.1 依赖类型
 
-**定义 4.1**: 参数多态
-参数多态允许类型包含类型变量，如 $\forall \alpha. \alpha \rightarrow \alpha$。
-
-**定义 4.2**: 特设多态
-特设多态允许同一函数名用于不同类型，如函数重载。
-
-**算法 4.1**: 多态类型推导
+**定义 4.1** (依赖类型): 依赖类型是依赖于值的类型，形式为 $\Pi x: A. B(x)$。
 
 ```go
-type PolymorphicType struct {
-    Variables []string
-    Type      Type
-}
-
-// Generalize 泛化类型
-func Generalize(t Type, env TypeEnvironment) PolymorphicType {
-    freeVars := freeTypeVariables(t)
-    envVars := env.FreeTypeVariables()
-    
-    // 计算可以泛化的变量
-    generalizable := make([]string, 0)
-    for _, v := range freeVars {
-        if !contains(envVars, v) {
-            generalizable = append(generalizable, v)
-        }
-    }
-    
-    return PolymorphicType{
-        Variables: generalizable,
-        Type:      t,
-    }
-}
-
-// Instantiate 实例化多态类型
-func Instantiate(poly PolymorphicType) Type {
-    substitution := make(Substitution)
-    for _, v := range poly.Variables {
-        substitution[v] = NewTypeVariable()
-    }
-    
-    return ApplySubstitution(poly.Type, substitution)
-}
-```
-
-### 4.2 依赖类型
-
-**定义 4.3**: 依赖类型
-依赖类型允许类型依赖于值，如 $\Pi x: \text{Nat}. \text{Vec}[x]$。
-
-**定义 4.4**: 依赖函数类型
-依赖函数类型 $\Pi x: A. B[x]$ 表示对于所有 $x: A$，返回类型为 $B[x]$。
-
-**算法 4.2**: 依赖类型检查
-
-```go
+// 依赖类型系统
 type DependentType struct {
-    Parameter string
-    Domain    Type
-    Codomain  func(Type) Type
+    paramType TypeExpr
+    bodyType  func(Value) TypeExpr
 }
 
-// CheckDependentFunction 检查依赖函数
-func CheckDependentFunction(abs *Abstraction, expectedType Type) error {
-    if expectedType.Kind != DependentType {
-        return fmt.Errorf("expected dependent function type")
+// 向量类型（长度依赖类型）
+type VectorType struct {
+    elementType TypeExpr
+    length      int
+}
+
+// 类型安全的向量
+type Vector[T any] struct {
+    elements []T
+    length   int
+}
+
+func NewVector[T any](length int) *Vector[T] {
+    return &Vector[T]{
+        elements: make([]T, length),
+        length:   length,
+    }
+}
+
+func (v *Vector[T]) Get(index int) T {
+    if index < 0 || index >= v.length {
+        panic("index out of bounds")
+    }
+    return v.elements[index]
+}
+
+func (v *Vector[T]) Set(index int, value T) {
+    if index < 0 || index >= v.length {
+        panic("index out of bounds")
+    }
+    v.elements[index] = value
+}
+
+// 类型安全的向量连接
+func ConcatVectors[T any](v1, v2 *Vector[T]) *Vector[T] {
+    newLength := v1.length + v2.length
+    result := NewVector[T](newLength)
+    
+    for i := 0; i < v1.length; i++ {
+        result.Set(i, v1.Get(i))
     }
     
-    // 检查参数类型
-    if !isSubtype(abs.ParameterType, expectedType.Domain) {
-        return fmt.Errorf("parameter type mismatch")
+    for i := 0; i < v2.length; i++ {
+        result.Set(v1.length+i, v2.Get(i))
     }
     
-    // 扩展环境
-    newEnv := env.Extend(abs.Parameter, abs.ParameterType)
-    
-    // 检查函数体类型
-    expectedBodyType := expectedType.Codomain(abs.ParameterType)
-    bodyType, err := CheckType(abs.Body, newEnv)
-    if err != nil {
-        return err
-    }
-    
-    if !isSubtype(bodyType, expectedBodyType) {
-        return fmt.Errorf("body type mismatch")
-    }
-    
-    return nil
+    return result
 }
 ```
 
-### 4.3 线性类型
+### 4.2 高阶类型
 
-**定义 4.5**: 线性类型
-线性类型确保值被使用且仅使用一次。
-
-**定义 4.6**: 线性函数类型
-线性函数类型 $A \multimap B$ 表示函数使用参数一次并返回结果。
-
-**算法 4.3**: 线性类型检查
+**定义 4.2** (高阶类型): 高阶类型是接受类型作为参数的类型构造器。
 
 ```go
-type LinearType struct {
-    Type     Type
-    Usage    Usage
+// 类型构造器
+type TypeConstructor interface {
+    Apply(args []TypeExpr) TypeExpr
 }
 
-type Usage int
-
-const (
-    Unused Usage = iota
-    Used
-    Consumed
-)
-
-// CheckLinearType 检查线性类型
-func CheckLinearType(expr Expression, env LinearEnvironment) (LinearType, error) {
-    switch e := expr.(type) {
-    case *Variable:
-        return checkLinearVariable(e, env)
-    case *Application:
-        return checkLinearApplication(e, env)
-    case *Abstraction:
-        return checkLinearAbstraction(e, env)
-    default:
-        return LinearType{}, fmt.Errorf("unsupported expression")
-    }
+// 函子类型
+type Functor[T any] interface {
+    Map[U any](f func(T) U) Functor[U]
 }
 
-// checkLinearVariable 检查线性变量
-func checkLinearVariable(v *Variable, env LinearEnvironment) (LinearType, error) {
-    linearType, exists := env.Bindings[v.Name]
-    if !exists {
-        return LinearType{}, fmt.Errorf("undefined variable: %s", v.Name)
+// 单子类型
+type Monad[T any] interface {
+    Functor[T]
+    Bind[U any](f func(T) Monad[U]) Monad[U]
+    Return(value T) Monad[T]
+}
+
+// Maybe类型实现
+type Maybe[T any] struct {
+    value *T
+}
+
+func Just[T any](value T) Maybe[T] {
+    return Maybe[T]{value: &value}
+}
+
+func Nothing[T any]() Maybe[T] {
+    return Maybe[T]{value: nil}
+}
+
+func (m Maybe[T]) IsJust() bool {
+    return m.value != nil
+}
+
+func (m Maybe[T]) IsNothing() bool {
+    return m.value == nil
+}
+
+func (m Maybe[T]) FromJust() T {
+    if m.value == nil {
+        panic("fromJust: Nothing")
     }
-    
-    if linearType.Usage == Consumed {
-        return LinearType{}, fmt.Errorf("variable %s already consumed", v.Name)
+    return *m.value
+}
+
+// Functor实现
+func (m Maybe[T]) Map[U any](f func(T) U) Maybe[U] {
+    if m.IsNothing() {
+        return Nothing[U]()
     }
-    
-    // 标记为已使用
-    env.Bindings[v.Name] = LinearType{
-        Type:  linearType.Type,
-        Usage: Consumed,
+    return Just(f(m.FromJust()))
+}
+
+// Monad实现
+func (m Maybe[T]) Bind[U any](f func(T) Maybe[U]) Maybe[U] {
+    if m.IsNothing() {
+        return Nothing[U]()
     }
-    
-    return linearType, nil
+    return f(m.FromJust())
+}
+
+func (m Maybe[T]) Return(value T) Maybe[T] {
+    return Just(value)
+}
+```
+
+### 4.3 类型族
+
+**定义 4.3** (类型族): 类型族是相关类型的集合，通过类型函数定义。
+
+```go
+// 类型族定义
+type TypeFamily interface {
+    Instance(args []TypeExpr) TypeExpr
+}
+
+// 数字类型族
+type NumberType interface {
+    Add(other NumberType) NumberType
+    Multiply(other NumberType) NumberType
+    Zero() NumberType
+}
+
+// 整数类型
+type IntType int
+
+func (i IntType) Add(other NumberType) NumberType {
+    if o, ok := other.(IntType); ok {
+        return IntType(int(i) + int(o))
+    }
+    panic("type mismatch")
+}
+
+func (i IntType) Multiply(other NumberType) NumberType {
+    if o, ok := other.(IntType); ok {
+        return IntType(int(i) * int(o))
+    }
+    panic("type mismatch")
+}
+
+func (i IntType) Zero() NumberType {
+    return IntType(0)
+}
+
+// 浮点类型
+type FloatType float64
+
+func (f FloatType) Add(other NumberType) NumberType {
+    if o, ok := other.(FloatType); ok {
+        return FloatType(float64(f) + float64(o))
+    }
+    panic("type mismatch")
+}
+
+func (f FloatType) Multiply(other NumberType) NumberType {
+    if o, ok := other.(FloatType); ok {
+        return FloatType(float64(f) * float64(o))
+    }
+    panic("type mismatch")
+}
+
+func (f FloatType) Zero() NumberType {
+    return FloatType(0.0)
+}
+
+// 泛型数字运算
+func Sum[T NumberType](values []T) T {
+    result := values[0].Zero().(T)
+    for _, value := range values {
+        result = result.Add(value).(T)
+    }
+    return result
 }
 ```
 
 ## 5. Go语言类型系统
 
-### 5.1 基础类型
+### 5.1 Go类型系统特征
 
-**定义 5.1**: Go基础类型
-Go语言的基础类型包括：
-
-- `bool`：布尔类型
-- `int`, `int8`, `int16`, `int32`, `int64`：整数类型
-- `uint`, `uint8`, `uint16`, `uint32`, `uint64`：无符号整数类型
-- `float32`, `float64`：浮点类型
-- `complex64`, `complex128`：复数类型
-- `string`：字符串类型
-- `byte`：字节类型（`uint8`的别名）
-- `rune`：Unicode字符类型（`int32`的别名）
-
-**算法 5.1**: Go类型检查
-
-```go
-package types
-
-import (
-    "go/ast"
-    "go/token"
-)
-
-type GoTypeChecker struct {
-    errors []TypeError
-    env    TypeEnvironment
-}
-
-type TypeEnvironment struct {
-    variables map[string]Type
-    functions map[string]FunctionType
-    types     map[string]Type
-}
-
-type Type interface {
-    String() string
-    IsAssignableTo(other Type) bool
-}
-
-type BasicType struct {
-    Name string
-}
-
-type FunctionType struct {
-    Params []Type
-    Result Type
-}
-
-type StructType struct {
-    Fields map[string]Type
-}
-
-type InterfaceType struct {
-    Methods map[string]FunctionType
-}
-
-type SliceType struct {
-    Element Type
-}
-
-type MapType struct {
-    Key   Type
-    Value Type
-}
-
-type PointerType struct {
-    Base Type
-}
-
-type ChannelType struct {
-    Element Type
-    Dir     ChanDir
-}
-
-type ChanDir int
-
-const (
-    SendRecv ChanDir = iota
-    SendOnly
-    RecvOnly
-)
-
-// CheckExpression 检查表达式类型
-func (tc *GoTypeChecker) CheckExpression(expr ast.Expr) (Type, error) {
-    switch e := expr.(type) {
-    case *ast.Ident:
-        return tc.checkIdentifier(e)
-    case *ast.BasicLit:
-        return tc.checkBasicLiteral(e)
-    case *ast.BinaryExpr:
-        return tc.checkBinaryExpression(e)
-    case *ast.CallExpr:
-        return tc.checkCallExpression(e)
-    case *ast.SelectorExpr:
-        return tc.checkSelectorExpression(e)
-    case *ast.IndexExpr:
-        return tc.checkIndexExpression(e)
-    case *ast.SliceExpr:
-        return tc.checkSliceExpression(e)
-    case *ast.TypeAssertExpr:
-        return tc.checkTypeAssertion(e)
-    case *ast.UnaryExpr:
-        return tc.checkUnaryExpression(e)
-    default:
-        return nil, fmt.Errorf("unsupported expression type: %T", expr)
-    }
-}
-
-// checkIdentifier 检查标识符
-func (tc *GoTypeChecker) checkIdentifier(ident *ast.Ident) (Type, error) {
-    // 检查变量
-    if t, exists := tc.env.variables[ident.Name]; exists {
-        return t, nil
-    }
-    
-    // 检查函数
-    if t, exists := tc.env.functions[ident.Name]; exists {
-        return t, nil
-    }
-    
-    // 检查类型
-    if t, exists := tc.env.types[ident.Name]; exists {
-        return t, nil
-    }
-    
-    tc.addError(TypeError{
-        Message: fmt.Sprintf("undefined identifier: %s", ident.Name),
-        Pos:     ident.Pos(),
-    })
-    return nil, fmt.Errorf("undefined identifier: %s", ident.Name)
-}
-
-// checkBinaryExpression 检查二元表达式
-func (tc *GoTypeChecker) checkBinaryExpression(expr *ast.BinaryExpr) (Type, error) {
-    leftType, err := tc.CheckExpression(expr.X)
-    if err != nil {
-        return nil, err
-    }
-    
-    rightType, err := tc.CheckExpression(expr.Y)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 检查操作符兼容性
-    resultType, err := tc.checkBinaryOperator(expr.Op, leftType, rightType)
-    if err != nil {
-        tc.addError(TypeError{
-            Message: err.Error(),
-            Pos:     expr.Pos(),
-        })
-        return nil, err
-    }
-    
-    return resultType, nil
-}
-
-// checkBinaryOperator 检查二元操作符
-func (tc *GoTypeChecker) checkBinaryOperator(op token.Token, left, right Type) (Type, error) {
-    switch op {
-    case token.ADD, token.SUB, token.MUL, token.QUO, token.REM:
-        return tc.checkArithmeticOperator(op, left, right)
-    case token.EQL, token.NEQ, token.LSS, token.LEQ, token.GTR, token.GEQ:
-        return tc.checkComparisonOperator(op, left, right)
-    case token.LAND, token.LOR:
-        return tc.checkLogicalOperator(op, left, right)
-    default:
-        return nil, fmt.Errorf("unsupported binary operator: %s", op)
-    }
-}
-
-// checkArithmeticOperator 检查算术操作符
-func (tc *GoTypeChecker) checkArithmeticOperator(op token.Token, left, right Type) (Type, error) {
-    // 检查类型兼容性
-    if !tc.isNumericType(left) || !tc.isNumericType(right) {
-        return nil, fmt.Errorf("arithmetic operator requires numeric types")
-    }
-    
-    // 类型提升规则
-    resultType := tc.promoteTypes(left, right)
-    
-    // 对于除法，结果类型可能是浮点
-    if op == token.QUO && tc.isIntegerType(left) && tc.isIntegerType(right) {
-        if tc.isIntegerDivision(expr) {
-            return resultType, nil
-        }
-        return tc.promoteToFloat(resultType), nil
-    }
-    
-    return resultType, nil
-}
-
-// isNumericType 检查是否为数值类型
-func (tc *GoTypeChecker) isNumericType(t Type) bool {
-    switch t.(type) {
-    case *BasicType:
-        name := t.(*BasicType).Name
-        return name == "int" || name == "int8" || name == "int16" || name == "int32" || name == "int64" ||
-               name == "uint" || name == "uint8" || name == "uint16" || name == "uint32" || name == "uint64" ||
-               name == "float32" || name == "float64" || name == "complex64" || name == "complex128"
-    }
-    return false
-}
-
-// promoteTypes 类型提升
-func (tc *GoTypeChecker) promoteTypes(t1, t2 Type) Type {
-    // 实现Go语言的类型提升规则
-    // 1. 如果两个操作数都是无类型常量，结果是无类型常量
-    // 2. 如果两个操作数都是无类型浮点常量，结果是float64
-    // 3. 如果两个操作数都是无类型复数常量，结果是complex128
-    // 4. 否则，结果类型是操作数的公共类型
-    
-    // 简化实现
-    return t1
-}
-```
+**特征 5.1** (Go类型系统):
+- 静态类型系统
+- 结构类型系统
+- 接口类型系统
+- 泛型支持（Go 1.18+）
 
 ### 5.2 接口类型
 
-**定义 5.2**: Go接口类型
-Go接口类型定义了一组方法签名，任何实现了这些方法的类型都实现了该接口。
-
-**算法 5.2**: 接口类型检查
-
 ```go
-// checkInterfaceImplementation 检查接口实现
-func (tc *GoTypeChecker) checkInterfaceImplementation(typ Type, iface *InterfaceType) error {
-    for methodName, methodType := range iface.Methods {
-        // 检查类型是否有对应的方法
-        if !tc.hasMethod(typ, methodName, methodType) {
-            return fmt.Errorf("type %v does not implement method %s", typ, methodName)
-        }
-    }
-    return nil
+// 接口定义
+type Shape interface {
+    Area() float64
+    Perimeter() float64
 }
 
-// hasMethod 检查类型是否有指定方法
-func (tc *GoTypeChecker) hasMethod(typ Type, methodName string, expectedType FunctionType) bool {
-    switch t := typ.(type) {
-    case *StructType:
-        // 检查结构体方法
-        return tc.checkStructMethod(t, methodName, expectedType)
-    case *BasicType:
-        // 检查基本类型方法
-        return tc.checkBasicTypeMethod(t, methodName, expectedType)
-    case *InterfaceType:
-        // 检查接口方法
-        return tc.checkInterfaceMethod(t, methodName, expectedType)
-    default:
-        return false
-    }
+// 结构体实现
+type Circle struct {
+    radius float64
 }
 
-// checkStructMethod 检查结构体方法
-func (tc *GoTypeChecker) checkStructMethod(structType *StructType, methodName string, expectedType FunctionType) bool {
-    // 查找方法
-    method, exists := tc.findMethod(structType, methodName)
-    if !exists {
-        return false
-    }
-    
-    // 检查方法签名
-    return tc.checkMethodSignature(method, expectedType)
+func (c Circle) Area() float64 {
+    return math.Pi * c.radius * c.radius
 }
 
-// checkMethodSignature 检查方法签名
-func (tc *GoTypeChecker) checkMethodSignature(actual, expected FunctionType) bool {
-    // 检查参数数量
-    if len(actual.Params) != len(expected.Params) {
-        return false
-    }
-    
-    // 检查参数类型
-    for i, expectedParam := range expected.Params {
-        if !actual.Params[i].IsAssignableTo(expectedParam) {
-            return false
-        }
-    }
-    
-    // 检查返回类型
-    return expected.Result.IsAssignableTo(actual.Result)
+func (c Circle) Perimeter() float64 {
+    return 2 * math.Pi * c.radius
+}
+
+type Rectangle struct {
+    width, height float64
+}
+
+func (r Rectangle) Area() float64 {
+    return r.width * r.height
+}
+
+func (r Rectangle) Perimeter() float64 {
+    return 2 * (r.width + r.height)
+}
+
+// 接口使用
+func PrintShapeInfo(s Shape) {
+    fmt.Printf("Area: %f, Perimeter: %f\n", s.Area(), s.Perimeter())
 }
 ```
 
-### 5.3 泛型类型
-
-**定义 5.3**: Go泛型类型
-Go 1.18引入的泛型支持参数化类型，使用类型参数来定义通用类型。
-
-**算法 5.3**: 泛型类型检查
+### 5.3 泛型实现
 
 ```go
-type GenericType struct {
-    Name       string
-    TypeParams []TypeParameter
-    BaseType   Type
+// 泛型容器
+type Container[T any] struct {
+    elements []T
 }
 
-type TypeParameter struct {
-    Name string
-    Constraint Type
+func NewContainer[T any]() *Container[T] {
+    return &Container[T]{
+        elements: make([]T, 0),
+    }
 }
 
-// CheckGenericFunction 检查泛型函数
-func (tc *GoTypeChecker) CheckGenericFunction(fun *ast.FuncDecl) error {
-    // 解析类型参数
-    typeParams, err := tc.parseTypeParameters(fun.Type.TypeParams)
+func (c *Container[T]) Add(element T) {
+    c.elements = append(c.elements, element)
+}
+
+func (c *Container[T]) Get(index int) T {
+    if index < 0 || index >= len(c.elements) {
+        panic("index out of bounds")
+    }
+    return c.elements[index]
+}
+
+func (c *Container[T]) Size() int {
+    return len(c.elements)
+}
+
+// 泛型算法
+func Map[T, U any](elements []T, f func(T) U) []U {
+    result := make([]U, len(elements))
+    for i, element := range elements {
+        result[i] = f(element)
+    }
+    return result
+}
+
+func Filter[T any](elements []T, predicate func(T) bool) []T {
+    result := make([]T, 0)
+    for _, element := range elements {
+        if predicate(element) {
+            result = append(result, element)
+        }
+    }
+    return result
+}
+
+func Reduce[T, U any](elements []T, initial U, f func(U, T) U) U {
+    result := initial
+    for _, element := range elements {
+        result = f(result, element)
+    }
+    return result
+}
+```
+
+## 6. 形式化验证
+
+### 6.1 类型检查算法
+
+```go
+// 类型检查器
+type TypeChecker struct {
+    env map[string]TypeExpr
+}
+
+func NewTypeChecker() *TypeChecker {
+    return &TypeChecker{
+        env: make(map[string]TypeExpr),
+    }
+}
+
+// 类型检查
+func (tc *TypeChecker) Check(expr Expr) (TypeExpr, error) {
+    switch e := expr.(type) {
+    case *LiteralExpr:
+        return tc.checkLiteral(e)
+    case *VarExpr:
+        return tc.checkVariable(e)
+    case *BinaryExpr:
+        return tc.checkBinary(e)
+    case *FuncExpr:
+        return tc.checkFunction(e)
+    case *CallExpr:
+        return tc.checkCall(e)
+    default:
+        return nil, fmt.Errorf("unknown expression type: %T", expr)
+    }
+}
+
+// 检查字面量
+func (tc *TypeChecker) checkLiteral(lit *LiteralExpr) (TypeExpr, error) {
+    switch lit.value.(type) {
+    case int:
+        return &BasicType{name: "int"}, nil
+    case float64:
+        return &BasicType{name: "float"}, nil
+    case string:
+        return &BasicType{name: "string"}, nil
+    case bool:
+        return &BasicType{name: "bool"}, nil
+    default:
+        return nil, fmt.Errorf("unknown literal type: %T", lit.value)
+    }
+}
+
+// 检查变量
+func (tc *TypeChecker) checkVariable(varExpr *VarExpr) (TypeExpr, error) {
+    if t, ok := tc.env[varExpr.name]; ok {
+        return t, nil
+    }
+    return nil, fmt.Errorf("undefined variable: %s", varExpr.name)
+}
+
+// 检查二元表达式
+func (tc *TypeChecker) checkBinary(bin *BinaryExpr) (TypeExpr, error) {
+    leftType, err := tc.Check(bin.left)
+    if err != nil {
+        return nil, err
+    }
+    
+    rightType, err := tc.Check(bin.right)
+    if err != nil {
+        return nil, err
+    }
+    
+    // 检查类型兼容性
+    if !tc.isCompatible(leftType, rightType) {
+        return nil, fmt.Errorf("type mismatch: %v %s %v", leftType, bin.operator, rightType)
+    }
+    
+    // 返回结果类型
+    return tc.getResultType(bin.operator, leftType), nil
+}
+```
+
+### 6.2 类型安全证明
+
+```go
+// 类型安全证明器
+type TypeSafetyProver struct {
+    checker *TypeChecker
+}
+
+func NewTypeSafetyProver() *TypeSafetyProver {
+    return &TypeSafetyProver{
+        checker: NewTypeChecker(),
+    }
+}
+
+// 证明类型安全
+func (tsp *TypeSafetyProver) ProveSafety(expr Expr) error {
+    // 1. 类型检查
+    _, err := tsp.checker.Check(expr)
+    if err != nil {
+        return fmt.Errorf("type check failed: %v", err)
+    }
+    
+    // 2. 证明进展定理
+    if err := tsp.proveProgress(expr); err != nil {
+        return fmt.Errorf("progress theorem failed: %v", err)
+    }
+    
+    // 3. 证明保持定理
+    if err := tsp.provePreservation(expr); err != nil {
+        return fmt.Errorf("preservation theorem failed: %v", err)
+    }
+    
+    return nil
+}
+
+// 证明进展定理
+func (tsp *TypeSafetyProver) proveProgress(expr Expr) error {
+    // 检查表达式是否可以继续求值
+    if tsp.isValue(expr) {
+        return nil // 已经是值
+    }
+    
+    // 检查是否可以应用求值规则
+    if tsp.canStep(expr) {
+        return nil // 可以继续求值
+    }
+    
+    return fmt.Errorf("expression cannot progress: %v", expr)
+}
+
+// 证明保持定理
+func (tsp *TypeSafetyProver) provePreservation(expr Expr) error {
+    // 获取原始类型
+    originalType, err := tsp.checker.Check(expr)
     if err != nil {
         return err
     }
     
-    // 创建泛型环境
-    genericEnv := tc.createGenericEnvironment(typeParams)
-    
-    // 检查函数体
-    return tc.checkFunctionBody(fun.Body, genericEnv)
-}
-
-// parseTypeParameters 解析类型参数
-func (tc *GoTypeChecker) parseTypeParameters(typeParams *ast.FieldList) ([]TypeParameter, error) {
-    if typeParams == nil {
-        return nil, nil
-    }
-    
-    params := make([]TypeParameter, 0)
-    for _, field := range typeParams.List {
-        for _, name := range field.Names {
-            var constraint Type
-            if field.Type != nil {
-                var err error
-                constraint, err = tc.CheckExpression(field.Type)
-                if err != nil {
-                    return nil, err
-                }
-            }
-            
-            params = append(params, TypeParameter{
-                Name:      name.Name,
-                Constraint: constraint,
-            })
-        }
-    }
-    
-    return params, nil
-}
-
-// createGenericEnvironment 创建泛型环境
-func (tc *GoTypeChecker) createGenericEnvironment(typeParams []TypeParameter) TypeEnvironment {
-    env := tc.env
-    
-    for _, param := range typeParams {
-        env.types[param.Name] = &GenericType{
-            Name:       param.Name,
-            TypeParams: []TypeParameter{param},
-        }
-    }
-    
-    return env
-}
-
-// InstantiateGeneric 实例化泛型
-func (tc *GoTypeChecker) InstantiateGeneric(genericType *GenericType, typeArgs []Type) (Type, error) {
-    if len(typeArgs) != len(genericType.TypeParams) {
-        return nil, fmt.Errorf("wrong number of type arguments")
-    }
-    
-    // 检查类型参数约束
-    for i, arg := range typeArgs {
-        param := genericType.TypeParams[i]
-        if param.Constraint != nil {
-            if !tc.satisfiesConstraint(arg, param.Constraint) {
-                return nil, fmt.Errorf("type argument %v does not satisfy constraint %v", arg, param.Constraint)
-            }
-        }
-    }
-    
-    // 替换类型参数
-    return tc.substituteType(genericType.BaseType, genericType.TypeParams, typeArgs)
-}
-
-// substituteType 替换类型中的类型参数
-func (tc *GoTypeChecker) substituteType(typ Type, params []TypeParameter, args []Type) (Type, error) {
-    // 创建替换映射
-    substitution := make(map[string]Type)
-    for i, param := range params {
-        substitution[param.Name] = args[i]
-    }
-    
-    return tc.applySubstitution(typ, substitution)
-}
-
-// applySubstitution 应用替换
-func (tc *GoTypeChecker) applySubstitution(typ Type, substitution map[string]Type) (Type, error) {
-    switch t := typ.(type) {
-    case *GenericType:
-        if replacement, exists := substitution[t.Name]; exists {
-            return replacement, nil
-        }
-        return t, nil
-    case *FunctionType:
-        newParams := make([]Type, len(t.Params))
-        for i, param := range t.Params {
-            newParam, err := tc.applySubstitution(param, substitution)
-            if err != nil {
-                return nil, err
-            }
-            newParams[i] = newParam
-        }
-        
-        newResult, err := tc.applySubstitution(t.Result, substitution)
+    // 模拟一步求值
+    if nextExpr, err := tsp.step(expr); err == nil {
+        // 检查求值后的类型
+        newType, err := tsp.checker.Check(nextExpr)
         if err != nil {
-            return nil, err
+            return err
         }
         
-        return &FunctionType{
-            Params: newParams,
-            Result: newResult,
-        }, nil
-    default:
-        return t, nil
+        // 验证类型保持
+        if !tsp.typesEqual(originalType, newType) {
+            return fmt.Errorf("type not preserved: %v -> %v", originalType, newType)
+        }
     }
+    
+    return nil
 }
 ```
 
-## 总结
+## 7. 性能分析
 
-类型系统理论是编程语言理论的核心，通过形式化定义和Go语言实现，我们建立了从理论到实践的完整框架。
+### 7.1 类型检查复杂度
 
-### 关键要点
+**定理 7.1**: 简单类型检查的时间复杂度为 $O(n)$，其中 $n$ 是表达式的大小。
 
-1. **理论基础**: 类型定义、类型关系、类型推导
-2. **核心算法**: Hindley-Milner算法、统一算法、约束求解
-3. **类型安全**: 进展定理、保持定理、错误处理
-4. **高级特性**: 多态类型、依赖类型、线性类型
+**证明**:
+1. 每个节点最多被访问一次
+2. 每个节点的类型检查操作是常数时间
+3. 总体时间复杂度为 $O(n)$
 
-### 进一步研究方向
+### 7.2 类型推导复杂度
 
-1. **类型系统设计**: 新类型系统、类型系统扩展
-2. **类型推导优化**: 高效算法、增量推导
-3. **类型安全证明**: 形式化证明、自动化验证
-4. **实际应用**: 编译器实现、IDE支持
+**定理 7.2**: Hindley-Milner类型推导的时间复杂度为 $O(n^3)$。
+
+**证明**:
+1. 统一算法的时间复杂度为 $O(n^2)$
+2. 每个节点可能需要统一操作
+3. 总体时间复杂度为 $O(n^3)$
+
+### 7.3 性能优化
+
+```go
+// 缓存类型检查器
+type CachedTypeChecker struct {
+    checker *TypeChecker
+    cache   map[string]TypeExpr
+    mu      sync.RWMutex
+}
+
+func NewCachedTypeChecker() *CachedTypeChecker {
+    return &CachedTypeChecker{
+        checker: NewTypeChecker(),
+        cache:   make(map[string]TypeExpr),
+    }
+}
+
+func (ctc *CachedTypeChecker) Check(expr Expr) (TypeExpr, error) {
+    // 生成缓存键
+    key := ctc.generateKey(expr)
+    
+    // 检查缓存
+    ctc.mu.RLock()
+    if cached, ok := ctc.cache[key]; ok {
+        ctc.mu.RUnlock()
+        return cached, nil
+    }
+    ctc.mu.RUnlock()
+    
+    // 执行类型检查
+    result, err := ctc.checker.Check(expr)
+    if err != nil {
+        return nil, err
+    }
+    
+    // 缓存结果
+    ctc.mu.Lock()
+    ctc.cache[key] = result
+    ctc.mu.Unlock()
+    
+    return result, nil
+}
+
+func (ctc *CachedTypeChecker) generateKey(expr Expr) string {
+    // 简化的键生成算法
+    return fmt.Sprintf("%T-%v", expr, expr)
+}
+```
+
+## 8. 应用实例
+
+### 8.1 类型安全的计算器
+
+```go
+// 类型安全的计算器
+type Calculator struct {
+    checker *TypeChecker
+}
+
+func NewCalculator() *Calculator {
+    return &Calculator{
+        checker: NewTypeChecker(),
+    }
+}
+
+// 表达式类型
+type Expr interface {
+    Eval() interface{}
+}
+
+type NumberExpr struct {
+    value float64
+}
+
+func (n NumberExpr) Eval() interface{} {
+    return n.value
+}
+
+type AddExpr struct {
+    left, right Expr
+}
+
+func (a AddExpr) Eval() interface{} {
+    left := a.left.Eval().(float64)
+    right := a.right.Eval().(float64)
+    return left + right
+}
+
+type MulExpr struct {
+    left, right Expr
+}
+
+func (m MulExpr) Eval() interface{} {
+    left := m.left.Eval().(float64)
+    right := m.right.Eval().(float64)
+    return left * right
+}
+
+// 类型安全的求值
+func (c *Calculator) SafeEval(expr Expr) (interface{}, error) {
+    // 类型检查
+    _, err := c.checker.Check(expr)
+    if err != nil {
+        return nil, err
+    }
+    
+    // 安全求值
+    return expr.Eval(), nil
+}
+```
+
+### 8.2 类型安全的数据库查询
+
+```go
+// 类型安全的查询构建器
+type QueryBuilder[T any] struct {
+    table   string
+    fields  []string
+    where   []Condition
+    orderBy []OrderBy
+    limit   *int
+    offset  *int
+}
+
+type Condition struct {
+    field    string
+    operator string
+    value    interface{}
+}
+
+type OrderBy struct {
+    field     string
+    direction string
+}
+
+func NewQueryBuilder[T any](table string) *QueryBuilder[T] {
+    return &QueryBuilder[T]{
+        table:  table,
+        fields: make([]string, 0),
+        where:  make([]Condition, 0),
+        orderBy: make([]OrderBy, 0),
+    }
+}
+
+func (qb *QueryBuilder[T]) Select(fields ...string) *QueryBuilder[T] {
+    qb.fields = append(qb.fields, fields...)
+    return qb
+}
+
+func (qb *QueryBuilder[T]) Where(field, operator string, value interface{}) *QueryBuilder[T] {
+    qb.where = append(qb.where, Condition{
+        field:    field,
+        operator: operator,
+        value:    value,
+    })
+    return qb
+}
+
+func (qb *QueryBuilder[T]) OrderBy(field, direction string) *QueryBuilder[T] {
+    qb.orderBy = append(qb.orderBy, OrderBy{
+        field:     field,
+        direction: direction,
+    })
+    return qb
+}
+
+func (qb *QueryBuilder[T]) Limit(limit int) *QueryBuilder[T] {
+    qb.limit = &limit
+    return qb
+}
+
+func (qb *QueryBuilder[T]) Offset(offset int) *QueryBuilder[T] {
+    qb.offset = &offset
+    return qb
+}
+
+func (qb *QueryBuilder[T]) Build() (string, []interface{}, error) {
+    // 构建SQL查询
+    query := "SELECT "
+    
+    if len(qb.fields) == 0 {
+        query += "*"
+    } else {
+        query += strings.Join(qb.fields, ", ")
+    }
+    
+    query += " FROM " + qb.table
+    
+    args := make([]interface{}, 0)
+    
+    if len(qb.where) > 0 {
+        query += " WHERE "
+        conditions := make([]string, 0)
+        for _, condition := range qb.where {
+            conditions = append(conditions, fmt.Sprintf("%s %s ?", condition.field, condition.operator))
+            args = append(args, condition.value)
+        }
+        query += strings.Join(conditions, " AND ")
+    }
+    
+    if len(qb.orderBy) > 0 {
+        query += " ORDER BY "
+        orders := make([]string, 0)
+        for _, order := range qb.orderBy {
+            orders = append(orders, fmt.Sprintf("%s %s", order.field, order.direction))
+        }
+        query += strings.Join(orders, ", ")
+    }
+    
+    if qb.limit != nil {
+        query += fmt.Sprintf(" LIMIT %d", *qb.limit)
+    }
+    
+    if qb.offset != nil {
+        query += fmt.Sprintf(" OFFSET %d", *qb.offset)
+    }
+    
+    return query, args, nil
+}
+```
+
+## 参考文献
+
+1. Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press.
+2. Cardelli, L., & Wegner, P. (1985). *On Understanding Types, Data Abstraction, and Polymorphism*. ACM Computing Surveys.
+3. Milner, R. (1978). *A Theory of Type Polymorphism in Programming*. Journal of Computer and System Sciences.
+4. Hindley, J. R. (1969). *The Principal Type-Scheme of an Object in Combinatory Logic*. Transactions of the American Mathematical Society.
+5. Reynolds, J. C. (1974). *Towards a Theory of Type Structure*. Programming Symposium.
 
 ---
 
-**激情澎湃的持续构建** <(￣︶￣)↗[GO!]
+**激情澎湃的持续构建** <(￣︶￣)↗[GO!] **类型系统理论完成！** 🚀
