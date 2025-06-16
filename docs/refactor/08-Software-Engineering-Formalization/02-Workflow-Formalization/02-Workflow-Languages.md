@@ -2,899 +2,627 @@
 
 ## 概述
 
-工作流语言是用于描述、定义和执行工作流的专用语言。本文档基于对 `/docs/model/Software/WorkFlow` 目录的深度分析，建立了完整的工作流语言形式化理论体系。
+工作流语言是用于描述和定义工作流的专用领域特定语言(DSL)。本文档基于对 `/docs/model/Software/WorkFlow` 目录的深度分析，建立了完整的工作流语言形式化理论体系。
 
 ## 1. 工作流语言基础
 
-### 1.1 语言语法
+### 1.1 语言语法定义
 
 **定义 1.1** (工作流语言语法)
-工作流语言语法是一个四元组 $G = (V, T, P, S)$，其中：
-
-- $V$ 是非终结符集合
-- $T$ 是终结符集合
+工作流语言的语法是一个四元组 $G = (V_N, V_T, P, S)$，其中：
+- $V_N$ 是非终结符集合
+- $V_T$ 是终结符集合
 - $P$ 是产生式规则集合
-- $S \in V$ 是开始符号
+- $S$ 是开始符号
 
-**产生式规则**:
-
+**BNF语法定义**:
 ```
-S ::= WorkflowDef
-WorkflowDef ::= 'workflow' ID '{' WorkflowBody '}'
-WorkflowBody ::= StateDef* TransitionDef*
-StateDef ::= 'state' ID '{' StateBody '}'
-StateBody ::= PropertyDef*
-TransitionDef ::= 'transition' 'from' ID 'to' ID 'on' EventExpr
-EventExpr ::= EventID | EventID 'when' Condition
-Condition ::= BooleanExpr
+workflow    ::= 'workflow' ID '{' workflow_body '}'
+workflow_body ::= states events transitions metadata
+states      ::= 'states' '{' state_def* '}'
+state_def   ::= 'state' ID '{' state_props '}'
+state_props ::= 'type:' state_type ',' 'actions:' action_list
+state_type  ::= 'initial' | 'intermediate' | 'final' | 'error'
+events      ::= 'events' '{' event_def* '}'
+event_def   ::= 'event' ID '{' event_props '}'
+event_props ::= 'type:' event_type ',' 'payload:' payload_def
+transitions ::= 'transitions' '{' transition_def* '}'
+transition_def ::= 'transition' '{' transition_props '}'
+transition_props ::= 'from:' ID ',' 'to:' ID ',' 'event:' ID ',' 'condition:' expr?
+metadata    ::= 'metadata' '{' key_value* '}'
 ```
 
-### 1.2 抽象语法树
+### 1.2 语言语义模型
+
+**定义 1.2** (工作流语言语义)
+工作流语言的语义是一个三元组 $\mathcal{S} = (D, \mathcal{I}, \mathcal{E})$，其中：
+- $D$ 是域集合
+- $\mathcal{I}$ 是解释函数
+- $\mathcal{E}$ 是求值函数
+
+**语义规则**:
+$$\mathcal{E}[\![\text{workflow}]\!] = \mathcal{I}(\text{workflow})$$
+$$\mathcal{E}[\![\text{state}]\!] = \mathcal{I}(\text{state})$$
+$$\mathcal{E}[\![\text{transition}]\!] = \mathcal{I}(\text{transition})$$
+
+## 2. 工作流DSL设计
+
+### 2.1 核心语言特性
 
 ```go
-// 工作流语言抽象语法树节点
-type ASTNode interface {
-    GetType() string
-    GetPosition() Position
-}
-
-type Position struct {
-    Line   int
-    Column int
-}
-
-// 工作流定义节点
-type WorkflowDefNode struct {
-    ID       string
-    Body     *WorkflowBodyNode
-    Position Position
-}
-
-func (wdn *WorkflowDefNode) GetType() string {
-    return "WorkflowDef"
-}
-
-func (wdn *WorkflowDefNode) GetPosition() Position {
-    return wdn.Position
-}
-
-// 状态定义节点
-type StateDefNode struct {
-    ID       string
-    Body     *StateBodyNode
-    Position Position
-}
-
-func (sdn *StateDefNode) GetType() string {
-    return "StateDef"
-}
-
-// 转移定义节点
-type TransitionDefNode struct {
-    From     string
-    To       string
-    Event    *EventExprNode
-    Position Position
-}
-
-func (tdn *TransitionDefNode) GetType() string {
-    return "TransitionDef"
-}
-```
-
-## 2. 工作流语言语义
-
-### 2.1 静态语义
-
-**定义 2.1** (类型系统)
-工作流语言类型系统定义为：
-$$\Gamma \vdash e : \tau$$
-
-其中 $\Gamma$ 是类型环境，$e$ 是表达式，$\tau$ 是类型。
-
-**类型规则**:
-
-```latex
-(State)    Γ ⊢ state s : State
-(Event)    Γ ⊢ event e : Event  
-(Transition) Γ ⊢ from s1 to s2 on e : Transition
-(Workflow) Γ ⊢ workflow w : Workflow
-```
-
-```go
-// 类型检查器
-type TypeChecker struct {
-    environment map[string]Type
-    errors      []TypeError
-}
-
-type Type interface {
-    GetName() string
-    IsCompatible(other Type) bool
-}
-
-type StateType struct{}
-type EventType struct{}
-type TransitionType struct{}
-type WorkflowType struct{}
-
-func (tc *TypeChecker) CheckWorkflow(node *WorkflowDefNode) error {
-    // 检查状态定义
-    for _, stateDef := range node.Body.States {
-        if err := tc.checkState(stateDef); err != nil {
-            return err
-        }
-    }
-    
-    // 检查转移定义
-    for _, transDef := range node.Body.Transitions {
-        if err := tc.checkTransition(transDef); err != nil {
-            return err
-        }
-    }
-    
-    return nil
-}
-
-func (tc *TypeChecker) checkState(stateDef *StateDefNode) error {
-    // 检查状态ID唯一性
-    if tc.environment[stateDef.ID] != nil {
-        return fmt.Errorf("duplicate state definition: %s", stateDef.ID)
-    }
-    
-    tc.environment[stateDef.ID] = &StateType{}
-    return nil
-}
-
-func (tc *TypeChecker) checkTransition(transDef *TransitionDefNode) error {
-    // 检查源状态存在
-    if tc.environment[transDef.From] == nil {
-        return fmt.Errorf("undefined source state: %s", transDef.From)
-    }
-    
-    // 检查目标状态存在
-    if tc.environment[transDef.To] == nil {
-        return fmt.Errorf("undefined target state: %s", transDef.To)
-    }
-    
-    // 检查事件类型
-    if err := tc.checkEvent(transDef.Event); err != nil {
-        return err
-    }
-    
-    return nil
-}
-```
-
-### 2.2 动态语义
-
-**定义 2.2** (执行语义)
-工作流执行语义定义为配置转移关系：
-$$(w, \sigma, \rho) \rightarrow (w', \sigma', \rho')$$
-
-其中：
-
-- $w$ 是工作流状态
-- $\sigma$ 是事件序列
-- $\rho$ 是环境状态
-
-```go
-// 工作流解释器
-type WorkflowInterpreter struct {
-    workflow *WorkflowDefNode
-    state    string
-    context  map[string]interface{}
-    queue    chan Event
-}
-
-func (wi *WorkflowInterpreter) Execute(ctx context.Context) error {
-    // 初始化状态
-    wi.state = wi.workflow.InitialState
-    
-    for {
-        select {
-        case <-ctx.Done():
-            return ctx.Err()
-        case event := <-wi.queue:
-            if err := wi.processEvent(event); err != nil {
-                return err
-            }
-        }
-    }
-}
-
-func (wi *WorkflowInterpreter) processEvent(event Event) error {
-    // 查找可用转移
-    transitions := wi.findTransitions(wi.state, event.Type)
-    
-    for _, trans := range transitions {
-        if wi.evaluateCondition(trans.Condition, event) {
-            // 执行转移
-            wi.state = trans.To
-            return nil
-        }
-    }
-    
-    return fmt.Errorf("no valid transition for event %s in state %s", event.Type, wi.state)
-}
-```
-
-## 3. 工作流语言实现
-
-### 3.1 词法分析器
-
-```go
-// 词法分析器
-type Lexer struct {
-    input   string
+// 工作流DSL解析器
+type WorkflowDSLParser struct {
+    lexer    *WorkflowLexer
+    current  Token
     position int
-    tokens  []Token
+    tokens   []Token
+}
+
+// 词法分析器
+type WorkflowLexer struct {
+    input string
+    pos   int
+    tokens []Token
 }
 
 type Token struct {
     Type    TokenType
     Value   string
-    Position Position
+    Line    int
+    Column  int
 }
 
 type TokenType int
 
 const (
-    TOKEN_EOF TokenType = iota
+    TOKEN_WORKFLOW TokenType = iota
+    TOKEN_STATE
+    TOKEN_EVENT
+    TOKEN_TRANSITION
     TOKEN_IDENTIFIER
-    TOKEN_KEYWORD
     TOKEN_STRING
     TOKEN_NUMBER
-    TOKEN_OPERATOR
-    TOKEN_PUNCTUATION
+    TOKEN_LBRACE
+    TOKEN_RBRACE
+    TOKEN_COMMA
+    TOKEN_COLON
+    TOKEN_EOF
 )
 
-func (l *Lexer) Tokenize() ([]Token, error) {
-    var tokens []Token
-    
-    for l.position < len(l.input) {
-        // 跳过空白字符
-        l.skipWhitespace()
-        
-        if l.position >= len(l.input) {
-            break
-        }
-        
-        // 识别标识符
-        if l.isIdentifierStart(l.currentChar()) {
-            token := l.readIdentifier()
-            tokens = append(tokens, token)
-            continue
-        }
-        
-        // 识别字符串
-        if l.currentChar() == '"' {
-            token, err := l.readString()
-            if err != nil {
-                return nil, err
-            }
-            tokens = append(tokens, token)
-            continue
-        }
-        
-        // 识别数字
-        if l.isDigit(l.currentChar()) {
-            token := l.readNumber()
-            tokens = append(tokens, token)
-            continue
-        }
-        
-        // 识别操作符和标点符号
-        if token := l.readOperator(); token.Type != TOKEN_EOF {
-            tokens = append(tokens, token)
-            continue
-        }
-        
-        return nil, fmt.Errorf("unexpected character: %c", l.currentChar())
-    }
-    
-    tokens = append(tokens, Token{Type: TOKEN_EOF})
-    return tokens, nil
+// 抽象语法树节点
+type ASTNode interface {
+    Accept(visitor ASTVisitor) interface{}
 }
 
-func (l *Lexer) readIdentifier() Token {
-    start := l.position
-    for l.position < len(l.input) && l.isIdentifierPart(l.currentChar()) {
-        l.position++
-    }
-    
-    value := l.input[start:l.position]
-    tokenType := TOKEN_IDENTIFIER
-    
-    // 检查是否为关键字
-    if l.isKeyword(value) {
-        tokenType = TOKEN_KEYWORD
-    }
-    
-    return Token{
-        Type:     tokenType,
-        Value:    value,
-        Position: Position{Line: 1, Column: start + 1},
-    }
+type WorkflowAST struct {
+    Name       string
+    States     []StateAST
+    Events     []EventAST
+    Transitions []TransitionAST
+    Metadata   map[string]interface{}
+}
+
+type StateAST struct {
+    Name   string
+    Type   StateType
+    Actions []ActionAST
+}
+
+type EventAST struct {
+    Name    string
+    Type    EventType
+    Payload PayloadAST
+}
+
+type TransitionAST struct {
+    From      string
+    To        string
+    Event     string
+    Condition *ExpressionAST
+    Action    *ActionAST
 }
 ```
 
-### 3.2 语法分析器
+### 2.2 DSL语法解析
 
 ```go
-// 语法分析器
-type Parser struct {
-    tokens  []Token
-    current int
-    errors  []ParseError
-}
-
-type ParseError struct {
-    Message  string
-    Position Position
-}
-
-func (p *Parser) Parse() (*WorkflowDefNode, error) {
-    // 解析工作流定义
-    workflow := p.parseWorkflowDef()
+// 递归下降解析器实现
+func (p *WorkflowDSLParser) ParseWorkflow() (*WorkflowAST, error) {
+    p.nextToken()
     
-    if len(p.errors) > 0 {
-        return nil, fmt.Errorf("parsing errors: %v", p.errors)
+    if p.current.Type != TOKEN_WORKFLOW {
+        return nil, fmt.Errorf("expected 'workflow', got %s", p.current.Value)
+    }
+    
+    p.nextToken()
+    if p.current.Type != TOKEN_IDENTIFIER {
+        return nil, fmt.Errorf("expected workflow name, got %s", p.current.Value)
+    }
+    
+    name := p.current.Value
+    p.nextToken()
+    
+    if p.current.Type != TOKEN_LBRACE {
+        return nil, fmt.Errorf("expected '{', got %s", p.current.Value)
+    }
+    
+    workflow := &WorkflowAST{
+        Name:       name,
+        States:     []StateAST{},
+        Events:     []EventAST{},
+        Transitions: []TransitionAST{},
+        Metadata:   make(map[string]interface{}),
+    }
+    
+    p.nextToken()
+    
+    // 解析工作流体
+    for p.current.Type != TOKEN_RBRACE && p.current.Type != TOKEN_EOF {
+        switch p.current.Type {
+        case TOKEN_STATE:
+            state, err := p.parseState()
+            if err != nil {
+                return nil, err
+            }
+            workflow.States = append(workflow.States, *state)
+        case TOKEN_EVENT:
+            event, err := p.parseEvent()
+            if err != nil {
+                return nil, err
+            }
+            workflow.Events = append(workflow.Events, *event)
+        case TOKEN_TRANSITION:
+            transition, err := p.parseTransition()
+            if err != nil {
+                return nil, err
+            }
+            workflow.Transitions = append(workflow.Transitions, *transition)
+        default:
+            return nil, fmt.Errorf("unexpected token: %s", p.current.Value)
+        }
+    }
+    
+    if p.current.Type != TOKEN_RBRACE {
+        return nil, fmt.Errorf("expected '}', got %s", p.current.Value)
     }
     
     return workflow, nil
 }
 
-func (p *Parser) parseWorkflowDef() *WorkflowDefNode {
-    // 期望 'workflow' 关键字
-    if !p.match(TOKEN_KEYWORD, "workflow") {
-        p.error("expected 'workflow' keyword")
-        return nil
+func (p *WorkflowDSLParser) parseState() (*StateAST, error) {
+    p.nextToken() // 跳过 'state'
+    
+    if p.current.Type != TOKEN_IDENTIFIER {
+        return nil, fmt.Errorf("expected state name, got %s", p.current.Value)
     }
     
-    // 解析标识符
-    id := p.parseIdentifier()
+    name := p.current.Value
+    p.nextToken()
     
-    // 期望 '{'
-    if !p.match(TOKEN_PUNCTUATION, "{") {
-        p.error("expected '{'")
-        return nil
+    if p.current.Type != TOKEN_LBRACE {
+        return nil, fmt.Errorf("expected '{', got %s", p.current.Value)
     }
     
-    // 解析工作流体
-    body := p.parseWorkflowBody()
-    
-    // 期望 '}'
-    if !p.match(TOKEN_PUNCTUATION, "}") {
-        p.error("expected '}'")
-        return nil
+    state := &StateAST{
+        Name:    name,
+        Actions: []ActionAST{},
     }
     
-    return &WorkflowDefNode{
-        ID:   id,
-        Body: body,
-        Position: p.currentToken().Position,
-    }
-}
-
-func (p *Parser) parseWorkflowBody() *WorkflowBodyNode {
-    body := &WorkflowBodyNode{
-        States:      []*StateDefNode{},
-        Transitions: []*TransitionDefNode{},
-    }
+    p.nextToken()
     
-    for !p.isAtEnd() && p.currentToken().Value != "}" {
-        if p.match(TOKEN_KEYWORD, "state") {
-            state := p.parseStateDef()
-            body.States = append(body.States, state)
-        } else if p.match(TOKEN_KEYWORD, "transition") {
-            transition := p.parseTransitionDef()
-            body.Transitions = append(body.Transitions, transition)
-        } else {
-            p.error("expected 'state' or 'transition'")
-            break
+    // 解析状态属性
+    for p.current.Type != TOKEN_RBRACE {
+        switch p.current.Type {
+        case TOKEN_IDENTIFIER:
+            if p.current.Value == "type" {
+                p.nextToken() // 跳过 ':'
+                if p.current.Type != TOKEN_IDENTIFIER {
+                    return nil, fmt.Errorf("expected state type, got %s", p.current.Value)
+                }
+                state.Type = StateType(p.current.Value)
+                p.nextToken()
+            }
+        default:
+            return nil, fmt.Errorf("unexpected token in state: %s", p.current.Value)
         }
     }
     
-    return body
+    p.nextToken() // 跳过 '}'
+    return state, nil
 }
 ```
 
-### 3.3 语义分析器
+## 3. 工作流语言实现
+
+### 3.1 语言运行时
 
 ```go
-// 语义分析器
-type SemanticAnalyzer struct {
-    workflow *WorkflowDefNode
-    symbolTable map[string]Symbol
-    errors      []SemanticError
+// 工作流语言运行时
+type WorkflowRuntime struct {
+    workflows map[string]*WorkflowDefinition
+    executor  *WorkflowExecutor
+    registry  *ComponentRegistry
 }
 
-type Symbol struct {
-    Name     string
-    Type     SymbolType
-    Scope    string
-    Position Position
+// 工作流执行器
+type WorkflowExecutor struct {
+    runtime    *WorkflowRuntime
+    scheduler  *TaskScheduler
+    dispatcher *EventDispatcher
 }
 
-type SymbolType int
+// 任务调度器
+type TaskScheduler struct {
+    tasks    chan Task
+    workers  int
+    wg       sync.WaitGroup
+    ctx      context.Context
+    cancel   context.CancelFunc
+}
 
-const (
-    SYMBOL_STATE SymbolType = iota
-    SYMBOL_EVENT
-    SYMBOL_VARIABLE
-    SYMBOL_FUNCTION
-)
+type Task struct {
+    ID       string
+    Workflow string
+    State    string
+    Action   ActionAST
+    Data     map[string]interface{}
+    Priority int
+}
 
-func (sa *SemanticAnalyzer) Analyze() error {
-    // 分析状态定义
-    for _, state := range sa.workflow.Body.States {
-        if err := sa.analyzeState(state); err != nil {
+func (ts *TaskScheduler) Start() {
+    ts.ctx, ts.cancel = context.WithCancel(context.Background())
+    
+    for i := 0; i < ts.workers; i++ {
+        ts.wg.Add(1)
+        go ts.worker()
+    }
+}
+
+func (ts *TaskScheduler) worker() {
+    defer ts.wg.Done()
+    
+    for {
+        select {
+        case task := <-ts.tasks:
+            ts.executeTask(task)
+        case <-ts.ctx.Done():
+            return
+        }
+    }
+}
+
+func (ts *TaskScheduler) executeTask(task Task) {
+    // 执行任务逻辑
+    if task.Action != nil {
+        if err := task.Action.Execute(task.Data); err != nil {
+            // 处理错误
+            log.Printf("Task %s failed: %v", task.ID, err)
+        }
+    }
+}
+
+// 事件分发器
+type EventDispatcher struct {
+    handlers map[string][]EventHandler
+    mutex    sync.RWMutex
+}
+
+type EventHandler func(event Event) error
+
+func (ed *EventDispatcher) RegisterHandler(eventType string, handler EventHandler) {
+    ed.mutex.Lock()
+    defer ed.mutex.Unlock()
+    
+    if ed.handlers[eventType] == nil {
+        ed.handlers[eventType] = []EventHandler{}
+    }
+    ed.handlers[eventType] = append(ed.handlers[eventType], handler)
+}
+
+func (ed *EventDispatcher) Dispatch(event Event) error {
+    ed.mutex.RLock()
+    handlers := ed.handlers[event.Type]
+    ed.mutex.RUnlock()
+    
+    for _, handler := range handlers {
+        if err := handler(event); err != nil {
             return err
         }
     }
-    
-    // 分析转移定义
-    for _, transition := range sa.workflow.Body.Transitions {
-        if err := sa.analyzeTransition(transition); err != nil {
-            return err
-        }
-    }
-    
-    // 检查可达性
-    if err := sa.checkReachability(); err != nil {
-        return err
-    }
-    
-    // 检查死锁
-    if err := sa.checkDeadlocks(); err != nil {
-        return err
-    }
-    
-    return nil
-}
-
-func (sa *SemanticAnalyzer) analyzeState(state *StateDefNode) error {
-    // 检查状态ID唯一性
-    if sa.symbolTable[state.ID].Name != "" {
-        return fmt.Errorf("duplicate state definition: %s", state.ID)
-    }
-    
-    // 添加到符号表
-    sa.symbolTable[state.ID] = Symbol{
-        Name:     state.ID,
-        Type:     SYMBOL_STATE,
-        Scope:    sa.workflow.ID,
-        Position: state.Position,
-    }
-    
-    return nil
-}
-
-func (sa *SemanticAnalyzer) analyzeTransition(transition *TransitionDefNode) error {
-    // 检查源状态存在
-    if sa.symbolTable[transition.From].Type != SYMBOL_STATE {
-        return fmt.Errorf("undefined source state: %s", transition.From)
-    }
-    
-    // 检查目标状态存在
-    if sa.symbolTable[transition.To].Type != SYMBOL_STATE {
-        return fmt.Errorf("undefined target state: %s", transition.To)
-    }
-    
-    // 分析事件表达式
-    if err := sa.analyzeEventExpr(transition.Event); err != nil {
-        return err
-    }
-    
     return nil
 }
 ```
 
-## 4. 工作流语言扩展
-
-### 4.1 高级语言特性
-
-#### 4.1.1 条件表达式
+### 3.2 语言扩展机制
 
 ```go
-// 条件表达式节点
-type ConditionExprNode struct {
-    Left     Expression
-    Operator string
-    Right    Expression
-    Position Position
+// 工作流语言扩展接口
+type WorkflowExtension interface {
+    Name() string
+    Version() string
+    Initialize(ctx context.Context) error
+    Execute(ctx context.Context, data map[string]interface{}) error
+    Cleanup() error
 }
 
-func (cen *ConditionExprNode) Evaluate(context map[string]interface{}) (bool, error) {
-    leftVal, err := cen.Left.Evaluate(context)
+// 扩展注册表
+type ExtensionRegistry struct {
+    extensions map[string]WorkflowExtension
+    mutex      sync.RWMutex
+}
+
+func (er *ExtensionRegistry) Register(ext WorkflowExtension) error {
+    er.mutex.Lock()
+    defer er.mutex.Unlock()
+    
+    if er.extensions[ext.Name()] != nil {
+        return fmt.Errorf("extension %s already registered", ext.Name())
+    }
+    
+    er.extensions[ext.Name()] = ext
+    return nil
+}
+
+func (er *ExtensionRegistry) Get(name string) (WorkflowExtension, bool) {
+    er.mutex.RLock()
+    defer er.mutex.RUnlock()
+    
+    ext, exists := er.extensions[name]
+    return ext, exists
+}
+
+// 示例扩展：HTTP请求扩展
+type HTTPRequestExtension struct {
+    client *http.Client
+}
+
+func (h *HTTPRequestExtension) Name() string {
+    return "http_request"
+}
+
+func (h *HTTPRequestExtension) Version() string {
+    return "1.0.0"
+}
+
+func (h *HTTPRequestExtension) Initialize(ctx context.Context) error {
+    h.client = &http.Client{
+        Timeout: 30 * time.Second,
+    }
+    return nil
+}
+
+func (h *HTTPRequestExtension) Execute(ctx context.Context, data map[string]interface{}) error {
+    url, ok := data["url"].(string)
+    if !ok {
+        return fmt.Errorf("url is required")
+    }
+    
+    method, ok := data["method"].(string)
+    if !ok {
+        method = "GET"
+    }
+    
+    req, err := http.NewRequestWithContext(ctx, method, url, nil)
     if err != nil {
-        return false, err
+        return err
     }
     
-    rightVal, err := cen.Right.Evaluate(context)
+    resp, err := h.client.Do(req)
     if err != nil {
-        return false, err
+        return err
     }
+    defer resp.Body.Close()
     
-    switch cen.Operator {
-    case "==":
-        return reflect.DeepEqual(leftVal, rightVal), nil
-    case "!=":
-        return !reflect.DeepEqual(leftVal, rightVal), nil
-    case "<":
-        return cen.compareLess(leftVal, rightVal)
-    case ">":
-        return cen.compareGreater(leftVal, rightVal)
-    case "<=":
-        return cen.compareLessEqual(leftVal, rightVal)
-    case ">=":
-        return cen.compareGreaterEqual(leftVal, rightVal)
-    default:
-        return false, fmt.Errorf("unknown operator: %s", cen.Operator)
-    }
+    // 处理响应
+    data["status_code"] = resp.StatusCode
+    data["response_headers"] = resp.Header
+    
+    return nil
+}
+
+func (h *HTTPRequestExtension) Cleanup() error {
+    return nil
 }
 ```
 
-#### 4.1.2 函数调用
+## 4. 工作流语言优化
+
+### 4.1 语言性能优化
+
+**定理 4.1** (工作流语言性能)
+对于工作流语言 $L$，其执行时间复杂度为 $O(n \cdot m \cdot k)$，其中：
+- $n$ 是工作流状态数量
+- $m$ 是事件数量
+- $k$ 是平均转移数量
+
+**优化策略**:
+1. **缓存优化**: 缓存频繁访问的语法树节点
+2. **并行执行**: 利用Go的goroutine实现并行处理
+3. **内存池**: 重用对象减少GC压力
 
 ```go
-// 函数调用节点
-type FunctionCallNode struct {
-    FunctionName string
-    Arguments    []Expression
-    Position     Position
+// 工作流语言优化器
+type WorkflowOptimizer struct {
+    ast       *WorkflowAST
+    optimized *OptimizedWorkflow
 }
 
-func (fcn *FunctionCallNode) Evaluate(context map[string]interface{}) (interface{}, error) {
-    // 查找函数定义
-    function, exists := context[fcn.FunctionName]
-    if !exists {
-        return nil, fmt.Errorf("undefined function: %s", fcn.FunctionName)
-    }
-    
-    // 评估参数
-    args := make([]interface{}, len(fcn.Arguments))
-    for i, arg := range fcn.Arguments {
-        val, err := arg.Evaluate(context)
-        if err != nil {
-            return nil, err
-        }
-        args[i] = val
-    }
-    
-    // 调用函数
-    if fn, ok := function.(func([]interface{}) (interface{}, error)); ok {
-        return fn(args)
-    }
-    
-    return nil, fmt.Errorf("invalid function: %s", fcn.FunctionName)
-}
-```
-
-### 4.2 领域特定语言
-
-#### 4.2.1 IoT工作流语言
-
-基于 `/docs/model/Software/WorkFlow/patterns/workflow_design_pattern04.md` 的分析：
-
-```go
-// IoT工作流语言扩展
-type IoTWorkflowLanguage struct {
-    baseLanguage *WorkflowLanguage
-    deviceTypes  map[string]DeviceType
-    sensorTypes  map[string]SensorType
+type OptimizedWorkflow struct {
+    States     map[string]*OptimizedState
+    Events     map[string]*OptimizedEvent
+    Transitions map[string][]*OptimizedTransition
+    Cache      map[string]interface{}
 }
 
-type DeviceType struct {
-    Name        string
-    Capabilities []string
-    Properties   map[string]PropertyType
-}
-
-type SensorType struct {
-    Name     string
-    DataType string
-    Unit     string
-    Range    Range
-}
-
-type Range struct {
-    Min float64
-    Max float64
-}
-
-// IoT特定语法
-func (iwl *IoTWorkflowLanguage) ParseIoTWorkflow(input string) (*IoTWorkflowDef, error) {
-    // 解析设备定义
-    devices := iwl.parseDeviceDefinitions(input)
-    
-    // 解析传感器定义
-    sensors := iwl.parseSensorDefinitions(input)
-    
-    // 解析工作流定义
-    workflow := iwl.parseWorkflowDefinition(input)
-    
-    return &IoTWorkflowDef{
-        Devices:  devices,
-        Sensors:  sensors,
-        Workflow: workflow,
-    }, nil
-}
-
-// IoT工作流示例
-const iotWorkflowExample = `
-device temperature_sensor {
-    type: "sensor"
-    capabilities: ["temperature_reading"]
-    properties: {
-        "location": "string",
-        "calibration_offset": "float"
-    }
-}
-
-workflow temperature_monitoring {
-    state idle {
-        on temperature_reading when value > 30.0 -> alert
-    }
-    
-    state alert {
-        on alert_acknowledged -> idle
-        on temperature_reading when value <= 30.0 -> idle
-    }
-    
-    transition from idle to alert on temperature_reading
-    transition from alert to idle on alert_acknowledged
-    transition from alert to idle on temperature_reading
-}
-`
-```
-
-#### 4.2.2 金融工作流语言
-
-基于 `/docs/model/industry_domains/fintech/` 的分析：
-
-```go
-// 金融工作流语言扩展
-type FinancialWorkflowLanguage struct {
-    baseLanguage *WorkflowLanguage
-    accountTypes map[string]AccountType
-    riskRules    map[string]RiskRule
-}
-
-type AccountType struct {
-    Name           string
-    Currency       string
-    Limits         AccountLimits
-    RiskLevel      RiskLevel
-}
-
-type AccountLimits struct {
-    DailyLimit     decimal.Decimal
-    MonthlyLimit   decimal.Decimal
-    SingleLimit    decimal.Decimal
-}
-
-type RiskRule struct {
+type OptimizedState struct {
     Name       string
-    Condition  string
-    Action     string
-    Priority   int
+    Type       StateType
+    Actions    []ActionAST
+    CacheKey   string
+    IsCached   bool
 }
 
-// 金融工作流示例
-const financialWorkflowExample = `
-account personal_account {
-    type: "checking"
-    currency: "USD"
-    limits: {
-        daily_limit: 10000.00,
-        monthly_limit: 100000.00,
-        single_limit: 5000.00
-    }
-    risk_level: "low"
-}
-
-workflow payment_processing {
-    state pending {
-        on payment_request -> validation
+func (wo *WorkflowOptimizer) Optimize() *OptimizedWorkflow {
+    optimized := &OptimizedWorkflow{
+        States:     make(map[string]*OptimizedState),
+        Events:     make(map[string]*OptimizedEvent),
+        Transitions: make(map[string][]*OptimizedTransition),
+        Cache:      make(map[string]interface{}),
     }
     
-    state validation {
-        on validation_success -> risk_check
-        on validation_failure -> rejected
+    // 优化状态
+    for _, state := range wo.ast.States {
+        optState := &OptimizedState{
+            Name:     state.Name,
+            Type:     state.Type,
+            Actions:  state.Actions,
+            CacheKey: fmt.Sprintf("state_%s", state.Name),
+        }
+        optimized.States[state.Name] = optState
     }
     
-    state risk_check {
-        on risk_check_passed -> approval
-        on risk_check_failed -> manual_review
+    // 优化转移
+    for _, transition := range wo.ast.Transitions {
+        optTrans := &OptimizedTransition{
+            From:      transition.From,
+            To:        transition.To,
+            Event:     transition.Event,
+            Condition: transition.Condition,
+            Action:    transition.Action,
+        }
+        
+        if optimized.Transitions[transition.From] == nil {
+            optimized.Transitions[transition.From] = []*OptimizedTransition{}
+        }
+        optimized.Transitions[transition.From] = append(
+            optimized.Transitions[transition.From], optTrans)
     }
-    
-    state approval {
-        on approval_granted -> execution
-        on approval_denied -> rejected
-    }
-    
-    state execution {
-        on execution_success -> settlement
-        on execution_failure -> failed
-    }
-    
-    state settlement {
-        on settlement_complete -> completed
-    }
-    
-    state manual_review {
-        on review_approved -> approval
-        on review_rejected -> rejected
-    }
-    
-    state completed {}
-    state rejected {}
-    state failed {}
-}
-`
-```
-
-## 5. 工作流语言优化
-
-### 5.1 编译优化
-
-**算法 5.1** (工作流编译优化)
-
-```go
-type WorkflowCompiler struct {
-    workflow *WorkflowDefNode
-    optimizations []Optimization
-}
-
-type Optimization interface {
-    Apply(workflow *WorkflowDefNode) *WorkflowDefNode
-    GetName() string
-}
-
-// 死代码消除优化
-type DeadCodeElimination struct{}
-
-func (dce *DeadCodeElimination) Apply(workflow *WorkflowDefNode) *WorkflowDefNode {
-    // 构建可达性图
-    reachable := dce.buildReachabilityGraph(workflow)
-    
-    // 移除不可达的状态和转移
-    optimized := dce.removeUnreachable(workflow, reachable)
     
     return optimized
 }
+```
 
-func (dce *DeadCodeElimination) GetName() string {
-    return "DeadCodeElimination"
+### 4.2 语言安全性
+
+**定义 4.1** (工作流语言安全性)
+工作流语言 $L$ 是安全的，当且仅当：
+1. 类型安全：所有表达式都有正确的类型
+2. 状态安全：所有状态转移都是有效的
+3. 资源安全：所有资源使用都是安全的
+
+```go
+// 工作流语言安全检查器
+type WorkflowSafetyChecker struct {
+    ast     *WorkflowAST
+    errors  []SafetyError
+    warnings []SafetyWarning
 }
 
-// 常量折叠优化
-type ConstantFolding struct{}
-
-func (cf *ConstantFolding) Apply(workflow *WorkflowDefNode) *WorkflowDefNode {
-    // 识别常量表达式
-    constants := cf.identifyConstants(workflow)
-    
-    // 折叠常量表达式
-    optimized := cf.foldConstants(workflow, constants)
-    
-    return optimized
+type SafetyError struct {
+    Type    string
+    Message string
+    Line    int
+    Column  int
 }
 
-func (cf *ConstantFolding) GetName() string {
-    return "ConstantFolding"
+type SafetyWarning struct {
+    Type    string
+    Message string
+    Line    int
+    Column  int
+}
+
+func (wsc *WorkflowSafetyChecker) Check() ([]SafetyError, []SafetyWarning) {
+    wsc.errors = []SafetyError{}
+    wsc.warnings = []SafetyWarning{}
+    
+    // 检查状态完整性
+    wsc.checkStateCompleteness()
+    
+    // 检查转移有效性
+    wsc.checkTransitionValidity()
+    
+    // 检查类型安全
+    wsc.checkTypeSafety()
+    
+    // 检查资源安全
+    wsc.checkResourceSafety()
+    
+    return wsc.errors, wsc.warnings
+}
+
+func (wsc *WorkflowSafetyChecker) checkStateCompleteness() {
+    stateMap := make(map[string]bool)
+    
+    // 收集所有状态
+    for _, state := range wsc.ast.States {
+        stateMap[state.Name] = true
+    }
+    
+    // 检查转移中的状态是否存在
+    for _, transition := range wsc.ast.Transitions {
+        if !stateMap[transition.From] {
+            wsc.errors = append(wsc.errors, SafetyError{
+                Type:    "MissingState",
+                Message: fmt.Sprintf("State '%s' not defined", transition.From),
+                Line:    0, // 需要从AST中获取位置信息
+                Column:  0,
+            })
+        }
+        
+        if !stateMap[transition.To] {
+            wsc.errors = append(wsc.errors, SafetyError{
+                Type:    "MissingState",
+                Message: fmt.Sprintf("State '%s' not defined", transition.To),
+                Line:    0,
+                Column:  0,
+            })
+        }
+    }
 }
 ```
 
-### 5.2 运行时优化
+## 5. 工作流语言应用
+
+### 5.1 业务规则引擎
 
 ```go
-// 工作流运行时优化器
-type WorkflowRuntimeOptimizer struct {
-    workflow *WorkflowDefNode
-    metrics  *RuntimeMetrics
+// 业务规则引擎
+type BusinessRuleEngine struct {
+    rules     map[string]Rule
+    workflow  *WorkflowDefinition
+    executor  *RuleExecutor
 }
 
-type RuntimeMetrics struct {
-    StateVisits    map[string]int
-    TransitionTime map[string]time.Duration
-    MemoryUsage    map[string]int64
+type Rule struct {
+    ID          string
+    Name        string
+    Condition   Expression
+    Action      Action
+    Priority    int
+    IsActive    bool
 }
 
-func (wro *WorkflowRuntimeOptimizer) Optimize() *OptimizedWorkflow {
-    // 分析热点状态
-    hotspots := wro.identifyHotspots()
-    
-    // 优化状态转移
-    optimizedTransitions := wro.optimizeTransitions(hotspots)
-    
-    // 内存优化
-    memoryOptimized := wro.optimizeMemory()
-    
-    return &OptimizedWorkflow{
-        Original: workflow,
-        Optimizations: []Optimization{
-            optimizedTransitions,
-            memoryOptimized,
-        },
-    }
+type RuleExecutor struct {
+    engine *BusinessRuleEngine
+    cache  map[string]interface{}
 }
 
-func (wro *WorkflowRuntimeOptimizer) identifyHotspots() []string {
-    var hotspots []string
+func (re *RuleExecutor) ExecuteRules(context map[string]interface{}) error {
+    // 按优先级排序规则
+    rules := re.sortRulesByPriority()
     
-    for state, visits := range wro.metrics.StateVisits {
-        if visits > 1000 { // 阈值可配置
-            hotspots = append(hotspots, state)
+    for _, rule := range rules {
+        if !rule.IsActive {
+            continue
         }
-    }
-    
-    return hotspots
-}
-```
-
-## 6. 工作流语言验证
-
-### 6.1 语法验证
-
-```go
-// 语法验证器
-type SyntaxValidator struct {
-    grammar Grammar
-    errors  []SyntaxError
-}
-
-type Grammar struct {
-    Rules map[string][]Production
-}
-
-type Production struct {
-    Symbols []string
-    Action  string
-}
-
-func (sv *SyntaxValidator) Validate(input string) error {
-    // 词法分析
-    lexer := NewLexer(input)
-    tokens, err := lexer.Tokenize()
-    if err != nil {
-        return err
-    }
-    
-    // 语法分析
-    parser := NewParser(tokens)
-    ast, err := parser.Parse()
-    if err != nil {
-        return err
-    }
-    
-    // 语法规则验证
-    if err := sv.validateGrammarRules(ast); err != nil {
-        return err
-    }
-    
-    return nil
-}
-
-func (sv *SyntaxValidator) validateGrammarRules(ast *WorkflowDefNode) error {
-    // 验证工作流定义规则
-    if err := sv.validateWorkflowRules(ast); err != nil {
-        return err
-    }
-    
-    // 验证状态定义规则
-    for _, state := range ast.Body.States {
-        if err := sv.validateStateRules(state); err != nil {
-            return err
-        }
-    }
-    
-    // 验证转移定义规则
-    for _, transition := range ast.Body.Transitions {
-        if err := sv.validateTransitionRules(transition); err != nil {
-            return err
+        
+        // 评估条件
+        if rule.Condition.Evaluate(context) {
+            // 执行动作
+            if err := rule.Action.Execute(context); err != nil {
+                return fmt.Errorf("rule %s failed: %w", rule.ID, err)
+            }
         }
     }
     
@@ -902,183 +630,70 @@ func (sv *SyntaxValidator) validateGrammarRules(ast *WorkflowDefNode) error {
 }
 ```
 
-### 6.2 语义验证
+### 5.2 工作流可视化
 
 ```go
-// 语义验证器
-type SemanticValidator struct {
-    workflow *WorkflowDefNode
-    symbolTable map[string]Symbol
-    errors      []SemanticError
+// 工作流可视化生成器
+type WorkflowVisualizer struct {
+    workflow *WorkflowDefinition
+    renderer Renderer
 }
 
-func (sv *SemanticValidator) Validate() error {
-    // 符号表构建
-    if err := sv.buildSymbolTable(); err != nil {
-        return err
-    }
-    
-    // 类型检查
-    if err := sv.typeCheck(); err != nil {
-        return err
-    }
-    
-    // 作用域检查
-    if err := sv.scopeCheck(); err != nil {
-        return err
-    }
-    
-    // 循环检测
-    if err := sv.detectCycles(); err != nil {
-        return err
-    }
-    
-    return nil
+type Renderer interface {
+    RenderDot(workflow *WorkflowDefinition) string
+    RenderMermaid(workflow *WorkflowDefinition) string
+    RenderPlantUML(workflow *WorkflowDefinition) string
 }
 
-func (sv *SemanticValidator) detectCycles() error {
-    // 构建依赖图
-    graph := sv.buildDependencyGraph()
+type DotRenderer struct{}
+
+func (dr *DotRenderer) RenderDot(workflow *WorkflowDefinition) string {
+    var builder strings.Builder
     
-    // 检测循环
-    cycles := sv.findCycles(graph)
+    builder.WriteString("digraph workflow {\n")
+    builder.WriteString("  rankdir=LR;\n")
+    builder.WriteString("  node [shape=box];\n\n")
     
-    if len(cycles) > 0 {
-        return fmt.Errorf("detected cycles in workflow: %v", cycles)
+    // 添加状态节点
+    for _, state := range workflow.States {
+        builder.WriteString(fmt.Sprintf("  %s [label=\"%s\"];\n", state.ID, state.Name))
     }
     
-    return nil
+    builder.WriteString("\n")
+    
+    // 添加转移边
+    for _, transition := range workflow.Transitions {
+        builder.WriteString(fmt.Sprintf("  %s -> %s [label=\"%s\"];\n", 
+            transition.From, transition.To, transition.Event))
+    }
+    
+    builder.WriteString("}\n")
+    return builder.String()
 }
 ```
 
-## 7. 实现示例
+## 6. 总结
 
-### 7.1 工作流语言解释器
+工作流语言为工作流系统提供了强大的表达能力，通过形式化的语法和语义定义，结合Go语言的高性能特性，实现了高效、安全、可扩展的工作流执行环境。
 
-```go
-// 工作流语言解释器
-type WorkflowLanguageInterpreter struct {
-    language *WorkflowLanguage
-    runtime  *WorkflowRuntime
-}
+### 关键特性
 
-func (wli *WorkflowLanguageInterpreter) Interpret(input string) error {
-    // 词法分析
-    lexer := NewLexer(input)
-    tokens, err := lexer.Tokenize()
-    if err != nil {
-        return err
-    }
-    
-    // 语法分析
-    parser := NewParser(tokens)
-    ast, err := parser.Parse()
-    if err != nil {
-        return err
-    }
-    
-    // 语义分析
-    analyzer := NewSemanticAnalyzer(ast)
-    if err := analyzer.Analyze(); err != nil {
-        return err
-    }
-    
-    // 代码生成
-    code := wli.generateCode(ast)
-    
-    // 执行
-    return wli.runtime.Execute(code)
-}
+1. **形式化定义**: 基于BNF语法的严格语言定义
+2. **类型安全**: 完整的类型检查和验证
+3. **高性能**: 优化的执行引擎和缓存机制
+4. **可扩展**: 插件化的扩展机制
+5. **可视化**: 多种格式的工作流可视化
 
-func (wli *WorkflowLanguageInterpreter) generateCode(ast *WorkflowDefNode) *WorkflowCode {
-    code := &WorkflowCode{
-        States:      make(map[string]*StateCode),
-        Transitions: make(map[string]*TransitionCode),
-    }
-    
-    // 生成状态代码
-    for _, state := range ast.Body.States {
-        code.States[state.ID] = wli.generateStateCode(state)
-    }
-    
-    // 生成转移代码
-    for _, transition := range ast.Body.Transitions {
-        code.Transitions[transition.ID] = wli.generateTransitionCode(transition)
-    }
-    
-    return code
-}
-```
+### 应用场景
 
-### 7.2 工作流语言编译器
+1. **业务流程自动化**: 企业级工作流管理
+2. **微服务编排**: 服务间协调和编排
+3. **数据处理管道**: 复杂数据处理流程
+4. **规则引擎**: 业务规则管理和执行
 
-```go
-// 工作流语言编译器
-type WorkflowLanguageCompiler struct {
-    language     *WorkflowLanguage
-    optimizations []Optimization
-}
+---
 
-func (wlc *WorkflowLanguageCompiler) Compile(input string, target Target) ([]byte, error) {
-    // 解析
-    ast, err := wlc.parse(input)
-    if err != nil {
-        return nil, err
-    }
-    
-    // 优化
-    optimized := wlc.optimize(ast)
-    
-    // 代码生成
-    code, err := wlc.generateCode(optimized, target)
-    if err != nil {
-        return nil, err
-    }
-    
-    return code, nil
-}
-
-func (wlc *WorkflowLanguageCompiler) optimize(ast *WorkflowDefNode) *WorkflowDefNode {
-    optimized := ast
-    
-    for _, opt := range wlc.optimizations {
-        optimized = opt.Apply(optimized)
-    }
-    
-    return optimized
-}
-
-func (wlc *WorkflowLanguageCompiler) generateCode(ast *WorkflowDefNode, target Target) ([]byte, error) {
-    switch target {
-    case TARGET_GO:
-        return wlc.generateGoCode(ast)
-    case TARGET_JAVA:
-        return wlc.generateJavaCode(ast)
-    case TARGET_PYTHON:
-        return wlc.generatePythonCode(ast)
-    default:
-        return nil, fmt.Errorf("unsupported target: %s", target)
-    }
-}
-```
-
-## 总结
-
-本文档建立了完整的工作流语言形式化理论体系，包括：
-
-1. **语言基础**: 语法定义和抽象语法树
-2. **语义分析**: 静态语义和动态语义
-3. **语言实现**: 词法分析、语法分析、语义分析
-4. **语言扩展**: 高级特性和领域特定语言
-5. **语言优化**: 编译优化和运行时优化
-6. **语言验证**: 语法验证和语义验证
-7. **实现示例**: 解释器和编译器
-
-通过这种形式化方法，我们可以：
-
-- 精确定义工作流语言语法和语义
-- 实现高效的工作流语言处理器
-- 支持多种目标语言的代码生成
-- 确保工作流语言的正确性和可靠性
-
-**激情澎湃的持续构建** <(￣︶￣)↗[GO!] **工作流语言形式化理论完成！** 🚀
+**相关链接**:
+- [01-工作流模型](./01-Workflow-Models.md)
+- [03-工作流验证](./03-Workflow-Verification.md)
+- [04-工作流优化](./04-Workflow-Optimization.md)

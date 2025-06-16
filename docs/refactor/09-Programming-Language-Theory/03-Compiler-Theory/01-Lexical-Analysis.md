@@ -11,238 +11,134 @@
 
 ## 1. 概述
 
+词法分析是编译器的第一个阶段，将源代码字符串转换为标记(token)序列。本文档基于对编程语言理论的深度分析，建立了完整的词法分析理论体系。
+
 ### 1.1 词法分析定义
 
-词法分析是将源代码字符流转换为词法单元（token）序列的过程。
-
-**形式化定义**：
-
-```latex
-\text{词法分析器} = (\Sigma, Q, \delta, q_0, F, T)
-```
-
-其中：
-
+**定义 1.1** (词法分析)
+词法分析是一个函数 $L: \Sigma^* \rightarrow T^*$，其中：
 - $\Sigma$ 是输入字母表
-- $Q$ 是状态集合
-- $\delta$ 是转移函数
-- $q_0$ 是初始状态
-- $F$ 是接受状态集合
-- $T$ 是词法单元类型集合
+- $T$ 是标记集合
+- $L$ 将输入字符串映射为标记序列
 
-### 1.2 核心概念
+**定理 1.1** (词法分析确定性)
+对于任意输入字符串 $s \in \Sigma^*$，词法分析器产生唯一的标记序列。
 
-#### 1.2.1 词法单元
+**证明**:
+1. 通过最长匹配原则
+2. 标记优先级规则
+3. 确定性有限自动机
+
+### 1.2 标记定义
+
+**定义 1.2** (标记)
+标记是一个三元组 $(type, value, position)$，其中：
+- $type$ 是标记类型
+- $value$ 是标记值
+- $position$ 是位置信息
 
 ```go
-// Token 词法单元
+// 标记定义
 type Token struct {
-    Type    TokenType
-    Value   string
-    Line    int
-    Column  int
+    Type     TokenType
+    Value    string
+    Position Position
+    Line     int
+    Column   int
 }
 
 type TokenType int
 
 const (
-    TokenEOF TokenType = iota
-    TokenIdentifier
-    TokenNumber
-    TokenString
-    TokenKeyword
-    TokenOperator
-    TokenDelimiter
-    TokenComment
+    TOKEN_EOF TokenType = iota
+    TOKEN_IDENTIFIER
+    TOKEN_NUMBER
+    TOKEN_STRING
+    TOKEN_KEYWORD
+    TOKEN_OPERATOR
+    TOKEN_DELIMITER
+    TOKEN_COMMENT
+    TOKEN_WHITESPACE
 )
+
+type Position struct {
+    Offset int
+    Line   int
+    Column int
+}
+
+// 标记类型字符串表示
+func (tt TokenType) String() string {
+    switch tt {
+    case TOKEN_EOF:
+        return "EOF"
+    case TOKEN_IDENTIFIER:
+        return "IDENTIFIER"
+    case TOKEN_NUMBER:
+        return "NUMBER"
+    case TOKEN_STRING:
+        return "STRING"
+    case TOKEN_KEYWORD:
+        return "KEYWORD"
+    case TOKEN_OPERATOR:
+        return "OPERATOR"
+    case TOKEN_DELIMITER:
+        return "DELIMITER"
+    case TOKEN_COMMENT:
+        return "COMMENT"
+    case TOKEN_WHITESPACE:
+        return "WHITESPACE"
+    default:
+        return "UNKNOWN"
+    }
+}
 ```
 
 ## 2. 正则表达式
 
 ### 2.1 正则表达式定义
 
-```latex
-R ::= \epsilon \mid a \mid R_1 \cdot R_2 \mid R_1 + R_2 \mid R^*
-```
+**定义 3.1** (正则表达式)
+正则表达式的语法定义为：
+$$R ::= \varepsilon \mid a \mid R_1 \cdot R_2 \mid R_1 + R_2 \mid R^*$$
 
-**Go语言实现**：
+其中：
+- $\varepsilon$ 是空字符串
+- $a$ 是字母表中的符号
+- $\cdot$ 是连接操作
+- $+$ 是选择操作
+- $*$ 是Kleene星号
 
-```go
-// Regex 正则表达式接口
-type Regex interface {
-    Match(input string) bool
-    String() string
-}
-
-// EmptyRegex 空正则表达式
-type EmptyRegex struct{}
-
-func (er *EmptyRegex) Match(input string) bool {
-    return input == ""
-}
-
-func (er *EmptyRegex) String() string {
-    return "ε"
-}
-
-// CharRegex 字符正则表达式
-type CharRegex struct {
-    Char rune
-}
-
-func (cr *CharRegex) Match(input string) bool {
-    return len(input) == 1 && rune(input[0]) == cr.Char
-}
-
-func (cr *CharRegex) String() string {
-    return string(cr.Char)
-}
-
-// ConcatRegex 连接正则表达式
-type ConcatRegex struct {
-    Left, Right Regex
-}
-
-func (concr *ConcatRegex) Match(input string) bool {
-    for i := 0; i <= len(input); i++ {
-        if concr.Left.Match(input[:i]) && concr.Right.Match(input[i:]) {
-            return true
-        }
-    }
-    return false
-}
-
-func (concr *ConcatRegex) String() string {
-    return fmt.Sprintf("(%s·%s)", concr.Left, concr.Right)
-}
-
-// UnionRegex 并集正则表达式
-type UnionRegex struct {
-    Left, Right Regex
-}
-
-func (ur *UnionRegex) Match(input string) bool {
-    return ur.Left.Match(input) || ur.Right.Match(input)
-}
-
-func (ur *UnionRegex) String() string {
-    return fmt.Sprintf("(%s+%s)", ur.Left, ur.Right)
-}
-
-// StarRegex 星号正则表达式
-type StarRegex struct {
-    Inner Regex
-}
-
-func (sr *StarRegex) Match(input string) bool {
-    if input == "" {
-        return true
-    }
-    
-    for i := 1; i <= len(input); i++ {
-        if sr.Inner.Match(input[:i]) && sr.Match(input[i:]) {
-            return true
-        }
-    }
-    return false
-}
-
-func (sr *StarRegex) String() string {
-    return fmt.Sprintf("(%s)*", sr.Inner)
-}
-```
+**定理 3.1** (正则表达式等价性)
+正则表达式与有限自动机等价。
 
 ## 3. 有限自动机
 
-### 3.1 确定性有限自动机 (DFA)
+### 3.1 确定性有限自动机
 
-```latex
-\text{DFA} = (Q, \Sigma, \delta, q_0, F)
-```
+**定义 2.1** (DFA)
+确定性有限自动机是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
+- $Q$ 是状态集合
+- $\Sigma$ 是输入字母表
+- $\delta: Q \times \Sigma \rightarrow Q$ 是转移函数
+- $q_0 \in Q$ 是初始状态
+- $F \subseteq Q$ 是接受状态集合
 
-**Go语言实现**：
+**定理 2.1** (DFA接受性)
+DFA $M$ 接受字符串 $w$，当且仅当存在状态序列 $q_0, q_1, \ldots, q_n$ 使得：
+1. $q_0$ 是初始状态
+2. $\delta(q_i, w_i) = q_{i+1}$ 对于 $0 \leq i < n$
+3. $q_n \in F$
 
-```go
-// DFA 确定性有限自动机
-type DFA struct {
-    States     map[string]bool
-    Alphabet   map[rune]bool
-    Transitions map[string]map[rune]string
-    StartState string
-    AcceptStates map[string]bool
-}
+### 3.2 非确定性有限自动机
 
-func (dfa *DFA) Accept(input string) bool {
-    currentState := dfa.StartState
-    
-    for _, char := range input {
-        if !dfa.Alphabet[char] {
-            return false
-        }
-        
-        nextState, exists := dfa.Transitions[currentState][char]
-        if !exists {
-            return false
-        }
-        
-        currentState = nextState
-    }
-    
-    return dfa.AcceptStates[currentState]
-}
+**定义 2.2** (NFA)
+非确定性有限自动机是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
+- $\delta: Q \times \Sigma \rightarrow 2^Q$ 是转移函数
+- 其他定义与DFA相同
 
-func (dfa *DFA) AddTransition(from, to string, char rune) {
-    if dfa.Transitions[from] == nil {
-        dfa.Transitions[from] = make(map[rune]string)
-    }
-    dfa.Transitions[from][char] = to
-    dfa.Alphabet[char] = true
-}
-```
-
-### 3.2 非确定性有限自动机 (NFA)
-
-```go
-// NFA 非确定性有限自动机
-type NFA struct {
-    States     map[string]bool
-    Alphabet   map[rune]bool
-    Transitions map[string]map[rune][]string
-    StartState string
-    AcceptStates map[string]bool
-}
-
-func (nfa *NFA) Accept(input string) bool {
-    currentStates := map[string]bool{nfa.StartState: true}
-    
-    for _, char := range input {
-        nextStates := make(map[string]bool)
-        
-        for state := range currentStates {
-            if transitions, exists := nfa.Transitions[state][char]; exists {
-                for _, nextState := range transitions {
-                    nextStates[nextState] = true
-                }
-            }
-        }
-        
-        if len(nextStates) == 0 {
-            return false
-        }
-        
-        currentStates = nextStates
-    }
-    
-    // 检查是否有接受状态
-    for state := range currentStates {
-        if nfa.AcceptStates[state] {
-            return true
-        }
-    }
-    
-    return false
-}
-```
+**定理 2.2** (NFA到DFA转换)
+对于任意NFA，存在等价的DFA。
 
 ## 4. 词法分析器
 

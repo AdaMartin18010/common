@@ -1,1042 +1,723 @@
 # 02-指称语义 (Denotational Semantics)
 
-## 目录
+## 概述
 
-1. [基础概念](#1-基础概念)
-2. [指称语义定义](#2-指称语义定义)
-3. [语义域](#3-语义域)
-4. [Go语言实现](#4-go语言实现)
-5. [定理证明](#5-定理证明)
-6. [应用示例](#6-应用示例)
+指称语义通过将程序构造映射到数学对象来定义编程语言的语义。本文档基于对编程语言理论的深度分析，建立了完整的指称语义理论体系。
 
-## 1. 基础概念
+## 1. 指称语义基础
 
-### 1.1 指称语义概述
-
-指称语义是编程语言语义学的一种方法，通过数学对象来表示程序的含义：
-
-- **数学对象**：程序被解释为数学域中的元素
-- **组合性**：复杂程序的语义由简单程序的语义组合而成
-- **抽象性**：关注程序的含义而非执行过程
-- **应用领域**：程序验证、编译器设计、语言设计
-
-### 1.2 基本定义
+### 1.1 指称语义定义
 
 **定义 1.1** (指称语义)
+指称语义是一个三元组 $\mathcal{D} = (\mathcal{S}, \mathcal{V}, \mathcal{M})$，其中：
+- $\mathcal{S}$ 是语法域
+- $\mathcal{V}$ 是值域
+- $\mathcal{M}: \mathcal{S} \rightarrow \mathcal{V}$ 是语义函数
 
-```latex
-指称语义是一个函数 ⟦·⟧: Prog → D，其中：
+**定理 1.1** (指称语义完备性)
+对于任意程序 $P \in \mathcal{S}$，存在唯一的语义值 $\mathcal{M}[\![P]\!] \in \mathcal{V}$。
 
-Prog: 程序集合
-D: 语义域
-⟦P⟧: 程序 P 的指称（含义）
-```
+**证明**:
+1. 通过结构归纳法证明
+2. 每个语法构造都有对应的语义函数
+3. 语义函数是良定义的
 
-**定义 1.2** (语义域)
+### 1.2 域理论基础
 
-```latex
-语义域 D 是一个完全偏序集 (D, ⊑)，满足：
+**定义 1.2** (偏序集)
+偏序集是一个二元组 $(D, \sqsubseteq)$，其中：
+- $D$ 是集合
+- $\sqsubseteq$ 是偏序关系
 
-1. 自反性：∀x ∈ D, x ⊑ x
-2. 反对称性：∀x, y ∈ D, x ⊑ y ∧ y ⊑ x ⇒ x = y
-3. 传递性：∀x, y, z ∈ D, x ⊑ y ∧ y ⊑ z ⇒ x ⊑ z
-4. 完全性：每个有向集都有最小上界
-```
+**定义 1.3** (完全偏序集)
+完全偏序集(CPO)是一个偏序集 $(D, \sqsubseteq)$，其中：
+1. 存在最小元素 $\bot$
+2. 每个有向集都有最小上界
 
-**定义 1.3** (连续函数)
-
-```latex
-函数 f: D → E 是连续的，如果：
-
-对于任意有向集 X ⊆ D，有：
-f(⊔X) = ⊔{f(x) | x ∈ X}
-```
-
-## 2. 指称语义定义
-
-### 2.1 基本表达式语义
-
-**定义 2.1** (数值表达式)
-
-```latex
-⟦n⟧ = λσ. n
-⟦x⟧ = λσ. σ(x)
-⟦e₁ + e₂⟧ = λσ. ⟦e₁⟧(σ) + ⟦e₂⟧(σ)
-⟦e₁ × e₂⟧ = λσ. ⟦e₁⟧(σ) × ⟦e₂⟧(σ)
-```
-
-**定义 2.2** (布尔表达式)
-
-```latex
-⟦true⟧ = λσ. true
-⟦false⟧ = λσ. false
-⟦e₁ = e₂⟧ = λσ. ⟦e₁⟧(σ) = ⟦e₂⟧(σ)
-⟦e₁ < e₂⟧ = λσ. ⟦e₁⟧(σ) < ⟦e₂⟧(σ)
-⟦¬b⟧ = λσ. ¬⟦b⟧(σ)
-⟦b₁ ∧ b₂⟧ = λσ. ⟦b₁⟧(σ) ∧ ⟦b₂⟧(σ)
-```
-
-### 2.2 语句语义
-
-**定义 2.3** (赋值语句)
-
-```latex
-⟦x := e⟧ = λσ. σ[x ↦ ⟦e⟧(σ)]
-```
-
-**定义 2.4** (序列语句)
-
-```latex
-⟦S₁; S₂⟧ = ⟦S₂⟧ ∘ ⟦S₁⟧
-```
-
-**定义 2.5** (条件语句)
-
-```latex
-⟦if b then S₁ else S₂⟧ = λσ. if ⟦b⟧(σ) then ⟦S₁⟧(σ) else ⟦S₂⟧(σ)
-```
-
-**定义 2.6** (循环语句)
-
-```latex
-⟦while b do S⟧ = fix(λf. λσ. if ⟦b⟧(σ) then f(⟦S⟧(σ)) else σ)
-```
-
-### 2.3 函数语义
-
-**定义 2.7** (函数定义)
-
-```latex
-⟦fun f(x) = e⟧ = λσ. σ[f ↦ λv. ⟦e⟧(σ[x ↦ v])]
-```
-
-**定义 2.8** (函数调用)
-
-```latex
-⟦f(e)⟧ = λσ. σ(f)(⟦e⟧(σ))
-```
-
-## 3. 语义域
-
-### 3.1 基本域
-
-**定义 3.1** (数值域)
-
-```latex
-N = {⊥, 0, 1, 2, ...}
-⊥ ⊑ n 对于所有 n ∈ N
-```
-
-**定义 3.2** (布尔域)
-
-```latex
-B = {⊥, true, false}
-⊥ ⊑ b 对于所有 b ∈ B
-```
-
-**定义 3.3** (状态域)
-
-```latex
-State = Var → Value
-σ₁ ⊑ σ₂ 当且仅当 ∀x ∈ Var, σ₁(x) ⊑ σ₂(x)
-```
-
-### 3.2 函数域
-
-**定义 3.4** (函数域)
-
-```latex
-D → E = {f | f: D → E 是连续的}
-f ⊑ g 当且仅当 ∀x ∈ D, f(x) ⊑ g(x)
-```
-
-**定义 3.5** (乘积域)
-
-```latex
-D × E = {(d, e) | d ∈ D, e ∈ E}
-(d₁, e₁) ⊑ (d₂, e₂) 当且仅当 d₁ ⊑ d₂ ∧ e₁ ⊑ e₂
-```
-
-### 3.3 递归域
-
-**定义 3.6** (递归域)
-
-```latex
-对于域方程 D = F(D)，递归域是：
-D = ∪_{n≥0} F^n(⊥)
-其中 F^0(⊥) = ⊥, F^{n+1}(⊥) = F(F^n(⊥))
-```
-
-## 4. Go语言实现
-
-### 4.1 指称语义框架
+**定义 1.4** (连续函数)
+函数 $f: D \rightarrow E$ 是连续的，当且仅当：
+1. $f$ 是单调的
+2. 对于每个有向集 $X \subseteq D$，$f(\bigsqcup X) = \bigsqcup f(X)$
 
 ```go
-package denotationalsemantics
-
-import (
- "fmt"
- "math"
-)
-
-// SemanticDomain 语义域接口
-type SemanticDomain interface {
- IsBottom() bool
- Join(other SemanticDomain) SemanticDomain
- Meet(other SemanticDomain) SemanticDomain
- LessEqual(other SemanticDomain) bool
+// 域理论实现
+type Domain interface {
+    IsBottom() bool
+    IsTop() bool
+    LessThan(other Domain) bool
+    Join(other Domain) Domain
+    Meet(other Domain) Domain
 }
 
-// Value 值域
-type Value struct {
- Type  ValueType
- Data  interface{}
- Bottom bool
+// 偏序集
+type PartialOrder struct {
+    elements map[string]Domain
+    order    map[string][]string
 }
 
-// ValueType 值类型
-type ValueType string
-
-const (
- TypeNumber ValueType = "number"
- TypeBoolean ValueType = "boolean"
- TypeFunction ValueType = "function"
- TypeBottom ValueType = "bottom"
-)
-
-// State 状态
-type State struct {
- Variables map[string]Value
- Functions map[string]Function
+// 完全偏序集
+type CompletePartialOrder struct {
+    PartialOrder
+    bottom Domain
 }
 
-// Function 函数
-type Function struct {
- Parameters []string
- Body       Expression
- Closure    *State
-}
-
-// Expression 表达式接口
-type Expression interface {
- Denote(state State) Value
- String() string
-}
-
-// Statement 语句接口
-type Statement interface {
- Denote(state State) State
- String() string
-}
-
-// DenotationalSemantics 指称语义解释器
-type DenotationalSemantics struct {
- Domains map[string]SemanticDomain
- Functions map[string]Function
-}
-
-// ContinuousFunction 连续函数
+// 连续函数
 type ContinuousFunction struct {
- Domain   SemanticDomain
- Codomain SemanticDomain
- Function func(SemanticDomain) SemanticDomain
+    domain   *CompletePartialOrder
+    codomain *CompletePartialOrder
+    mapping  map[string]Domain
 }
 
-// SemanticError 语义错误
-type SemanticError struct {
- Message string
- Line    int
- Column  int
+func (cf *ContinuousFunction) Apply(input Domain) Domain {
+    // 实现连续函数的应用
+    if input.IsBottom() {
+        return cf.codomain.bottom
+    }
+    
+    // 查找映射
+    for key, value := range cf.mapping {
+        if input.String() == key {
+            return value
+        }
+    }
+    
+    // 默认返回bottom
+    return cf.codomain.bottom
+}
+
+func (cf *ContinuousFunction) IsMonotonic() bool {
+    // 检查单调性
+    for key1, value1 := range cf.mapping {
+        for key2, value2 := range cf.mapping {
+            // 检查偏序关系
+            if cf.domain.LessThan(key1, key2) {
+                if !cf.codomain.LessThan(value1, value2) {
+                    return false
+                }
+            }
+        }
+    }
+    return true
 }
 ```
 
-### 4.2 基本表达式实现
+## 2. 语义域构造
+
+### 2.1 基本域
+
+**定义 2.1** (基本域)
+基本域包括：
+- $\mathbb{N}_\bot$: 自然数域
+- $\mathbb{B}_\bot$: 布尔域
+- $\mathbb{Z}_\bot$: 整数域
+
+**定义 2.2** (函数域)
+函数域 $D \rightarrow E$ 是所有从 $D$ 到 $E$ 的连续函数的集合。
 
 ```go
-// NumberExpression 数值表达式
-type NumberExpression struct {
- Value float64
+// 基本域实现
+type NaturalDomain struct {
+    value *int
 }
 
-func (ne *NumberExpression) Denote(state State) Value {
- return Value{
-  Type:  TypeNumber,
-  Data:  ne.Value,
-  Bottom: false,
- }
+func (nd *NaturalDomain) IsBottom() bool {
+    return nd.value == nil
 }
 
-func (ne *NumberExpression) String() string {
- return fmt.Sprintf("%v", ne.Value)
+func (nd *NaturalDomain) IsTop() bool {
+    return false
 }
 
-// VariableExpression 变量表达式
-type VariableExpression struct {
- Name string
+func (nd *NaturalDomain) LessThan(other Domain) bool {
+    if otherND, ok := other.(*NaturalDomain); ok {
+        if nd.IsBottom() {
+            return true
+        }
+        if otherND.IsBottom() {
+            return false
+        }
+        return *nd.value < *otherND.value
+    }
+    return false
 }
 
-func (ve *VariableExpression) Denote(state State) Value {
- if value, exists := state.Variables[ve.Name]; exists {
-  return value
- }
- return Value{Type: TypeBottom, Bottom: true}
+func (nd *NaturalDomain) Join(other Domain) Domain {
+    if otherND, ok := other.(*NaturalDomain); ok {
+        if nd.IsBottom() {
+            return otherND
+        }
+        if otherND.IsBottom() {
+            return nd
+        }
+        if *nd.value > *otherND.value {
+            return nd
+        }
+        return otherND
+    }
+    return nd
 }
 
-func (ve *VariableExpression) String() string {
- return ve.Name
+// 函数域
+type FunctionDomain struct {
+    domain   Domain
+    codomain Domain
+    functions map[string]ContinuousFunction
 }
 
-// BinaryExpression 二元表达式
-type BinaryExpression struct {
- Left     Expression
- Right    Expression
- Operator string
-}
-
-func (be *BinaryExpression) Denote(state State) Value {
- left := be.Left.Denote(state)
- right := be.Right.Denote(state)
- 
- // 检查底部值
- if left.Bottom || right.Bottom {
-  return Value{Type: TypeBottom, Bottom: true}
- }
- 
- switch be.Operator {
- case "+":
-  if left.Type == TypeNumber && right.Type == TypeNumber {
-   return Value{
-    Type:  TypeNumber,
-    Data:  left.Data.(float64) + right.Data.(float64),
-    Bottom: false,
-   }
-  }
- case "*":
-  if left.Type == TypeNumber && right.Type == TypeNumber {
-   return Value{
-    Type:  TypeNumber,
-    Data:  left.Data.(float64) * right.Data.(float64),
-    Bottom: false,
-   }
-  }
- case "=":
-  return Value{
-   Type:  TypeBoolean,
-   Data:  left.Data == right.Data,
-   Bottom: false,
-  }
- case "<":
-  if left.Type == TypeNumber && right.Type == TypeNumber {
-   return Value{
-    Type:  TypeBoolean,
-    Data:  left.Data.(float64) < right.Data.(float64),
-    Bottom: false,
-   }
-  }
- }
- 
- return Value{Type: TypeBottom, Bottom: true}
-}
-
-func (be *BinaryExpression) String() string {
- return fmt.Sprintf("(%s %s %s)", be.Left.String(), be.Operator, be.Right.String())
-}
-
-// BooleanExpression 布尔表达式
-type BooleanExpression struct {
- Value bool
-}
-
-func (be *BooleanExpression) Denote(state State) Value {
- return Value{
-  Type:  TypeBoolean,
-  Data:  be.Value,
-  Bottom: false,
- }
-}
-
-func (be *BooleanExpression) String() string {
- return fmt.Sprintf("%v", be.Value)
-}
-
-// NotExpression 非表达式
-type NotExpression struct {
- Expression Expression
-}
-
-func (ne *NotExpression) Denote(state State) Value {
- expr := ne.Expression.Denote(state)
- 
- if expr.Bottom {
-  return Value{Type: TypeBottom, Bottom: true}
- }
- 
- if expr.Type == TypeBoolean {
-  return Value{
-   Type:  TypeBoolean,
-   Data:  !expr.Data.(bool),
-   Bottom: false,
-  }
- }
- 
- return Value{Type: TypeBottom, Bottom: true}
-}
-
-func (ne *NotExpression) String() string {
- return fmt.Sprintf("!(%s)", ne.Expression.String())
-}
-
-// AndExpression 与表达式
-type AndExpression struct {
- Left  Expression
- Right Expression
-}
-
-func (ae *AndExpression) Denote(state State) Value {
- left := ae.Left.Denote(state)
- right := ae.Right.Denote(state)
- 
- if left.Bottom || right.Bottom {
-  return Value{Type: TypeBottom, Bottom: true}
- }
- 
- if left.Type == TypeBoolean && right.Type == TypeBoolean {
-  return Value{
-   Type:  TypeBoolean,
-   Data:  left.Data.(bool) && right.Data.(bool),
-   Bottom: false,
-  }
- }
- 
- return Value{Type: TypeBottom, Bottom: true}
-}
-
-func (ae *AndExpression) String() string {
- return fmt.Sprintf("(%s && %s)", ae.Left.String(), ae.Right.String())
+func (fd *FunctionDomain) Apply(input Domain) Domain {
+    // 查找匹配的函数
+    for key, function := range fd.functions {
+        if input.String() == key {
+            return function.Apply(input)
+        }
+    }
+    
+    // 返回bottom
+    return fd.codomain
 }
 ```
 
-### 4.3 语句实现
+### 2.2 复合域
+
+**定义 2.3** (乘积域)
+乘积域 $D \times E$ 是所有有序对 $(d, e)$ 的集合，其中 $d \in D, e \in E$。
+
+**定义 2.4** (和域)
+和域 $D + E$ 是 $D$ 和 $E$ 的不相交并集。
 
 ```go
-// AssignmentStatement 赋值语句
-type AssignmentStatement struct {
- Variable string
- Expression Expression
+// 乘积域
+type ProductDomain struct {
+    first  Domain
+    second Domain
 }
 
-func (as *AssignmentStatement) Denote(state State) State {
- value := as.Expression.Denote(state)
- 
- newState := State{
-  Variables: make(map[string]Value),
-  Functions: make(map[string]Function),
- }
- 
- // 复制现有变量
- for k, v := range state.Variables {
-  newState.Variables[k] = v
- }
- 
- // 复制现有函数
- for k, v := range state.Functions {
-  newState.Functions[k] = v
- }
- 
- // 更新变量值
- newState.Variables[as.Variable] = value
- 
- return newState
+func (pd *ProductDomain) IsBottom() bool {
+    return pd.first.IsBottom() && pd.second.IsBottom()
 }
 
-func (as *AssignmentStatement) String() string {
- return fmt.Sprintf("%s := %s", as.Variable, as.Expression.String())
+func (pd *ProductDomain) LessThan(other Domain) bool {
+    if otherPD, ok := other.(*ProductDomain); ok {
+        return pd.first.LessThan(otherPD.first) && 
+               pd.second.LessThan(otherPD.second)
+    }
+    return false
 }
 
-// SequenceStatement 序列语句
-type SequenceStatement struct {
- First  Statement
- Second Statement
+func (pd *ProductDomain) Join(other Domain) Domain {
+    if otherPD, ok := other.(*ProductDomain); ok {
+        return &ProductDomain{
+            first:  pd.first.Join(otherPD.first),
+            second: pd.second.Join(otherPD.second),
+        }
+    }
+    return pd
 }
 
-func (ss *SequenceStatement) Denote(state State) State {
- intermediateState := ss.First.Denote(state)
- return ss.Second.Denote(intermediateState)
+// 和域
+type SumDomain struct {
+    left  Domain
+    right Domain
+    tag   string // "left" 或 "right"
+    value Domain
 }
 
-func (ss *SequenceStatement) String() string {
- return fmt.Sprintf("%s; %s", ss.First.String(), ss.Second.String())
+func (sd *SumDomain) IsBottom() bool {
+    return sd.value.IsBottom()
 }
 
-// ConditionalStatement 条件语句
-type ConditionalStatement struct {
- Condition Expression
- Then      Statement
- Else      Statement
-}
-
-func (cs *ConditionalStatement) Denote(state State) State {
- condition := cs.Condition.Denote(state)
- 
- if condition.Bottom {
-  return state // 返回原状态
- }
- 
- if condition.Type == TypeBoolean {
-  if condition.Data.(bool) {
-   return cs.Then.Denote(state)
-  } else {
-   return cs.Else.Denote(state)
-  }
- }
- 
- return state
-}
-
-func (cs *ConditionalStatement) String() string {
- return fmt.Sprintf("if %s then %s else %s", 
-  cs.Condition.String(), cs.Then.String(), cs.Else.String())
-}
-
-// WhileStatement 循环语句
-type WhileStatement struct {
- Condition Expression
- Body      Statement
-}
-
-func (ws *WhileStatement) Denote(state State) State {
- // 使用不动点计算循环语义
- return ws.fixpoint(state)
-}
-
-// fixpoint 不动点计算
-func (ws *WhileStatement) fixpoint(state State) State {
- // 简化的不动点计算
- // 实际实现需要更复杂的迭代
- 
- currentState := state
- maxIterations := 1000
- iteration := 0
- 
- for iteration < maxIterations {
-  condition := ws.Condition.Denote(currentState)
-  
-  if condition.Bottom {
-   break
-  }
-  
-  if condition.Type == TypeBoolean {
-   if condition.Data.(bool) {
-    currentState = ws.Body.Denote(currentState)
-    iteration++
-   } else {
-    break
-   }
-  } else {
-   break
-  }
- }
- 
- return currentState
-}
-
-func (ws *WhileStatement) String() string {
- return fmt.Sprintf("while %s do %s", ws.Condition.String(), ws.Body.String())
+func (sd *SumDomain) LessThan(other Domain) bool {
+    if otherSD, ok := other.(*SumDomain); ok {
+        if sd.tag != otherSD.tag {
+            return false
+        }
+        return sd.value.LessThan(otherSD.value)
+    }
+    return false
 }
 ```
 
-### 4.4 函数语义实现
+## 3. 语义函数定义
+
+### 3.1 表达式语义
+
+**定义 3.1** (表达式语义函数)
+表达式语义函数 $\mathcal{E}: \text{Exp} \rightarrow (\text{Env} \rightarrow \text{Val})$ 定义为：
+
+$$\mathcal{E}[\![n]\!]\rho = n$$
+$$\mathcal{E}[\![x]\!]\rho = \rho(x)$$
+$$\mathcal{E}[\![e_1 + e_2]\!]\rho = \mathcal{E}[\![e_1]\!]\rho + \mathcal{E}[\![e_2]\!]\rho$$
 
 ```go
-// FunctionDefinition 函数定义
-type FunctionDefinition struct {
- Name       string
- Parameters []string
- Body       Expression
+// 语义函数实现
+type SemanticFunction struct {
+    domains map[string]*CompletePartialOrder
 }
 
-func (fd *FunctionDefinition) Denote(state State) State {
- function := Function{
-  Parameters: fd.Parameters,
-  Body:       fd.Body,
-  Closure:    &state,
- }
- 
- newState := State{
-  Variables: make(map[string]Value),
-  Functions: make(map[string]Function),
- }
- 
- // 复制现有变量和函数
- for k, v := range state.Variables {
-  newState.Variables[k] = v
- }
- for k, v := range state.Functions {
-  newState.Functions[k] = v
- }
- 
- // 添加新函数
- newState.Functions[fd.Name] = function
- 
- return newState
+// 表达式语义
+func (sf *SemanticFunction) ExpressionSemantics(expr Expression, env Environment) Domain {
+    switch e := expr.(type) {
+    case *Number:
+        return sf.numberSemantics(e)
+    case *Variable:
+        return sf.variableSemantics(e, env)
+    case *Addition:
+        return sf.additionSemantics(e, env)
+    case *Subtraction:
+        return sf.subtractionSemantics(e, env)
+    case *Multiplication:
+        return sf.multiplicationSemantics(e, env)
+    default:
+        return sf.bottom()
+    }
 }
 
-func (fd *FunctionDefinition) String() string {
- return fmt.Sprintf("fun %s(%v) = %s", fd.Name, fd.Parameters, fd.Body.String())
+func (sf *SemanticFunction) numberSemantics(num *Number) Domain {
+    return &NaturalDomain{value: &num.Value}
 }
 
-// FunctionCall 函数调用
-type FunctionCall struct {
- FunctionName string
- Arguments    []Expression
+func (sf *SemanticFunction) variableSemantics(variable *Variable, env Environment) Domain {
+    if value, exists := env.Get(variable.Name); exists {
+        if domain, ok := value.(Domain); ok {
+            return domain
+        }
+    }
+    return sf.bottom()
 }
 
-func (fc *FunctionCall) Denote(state State) Value {
- // 查找函数
- function, exists := state.Functions[fc.FunctionName]
- if !exists {
-  return Value{Type: TypeBottom, Bottom: true}
- }
- 
- // 检查参数数量
- if len(fc.Arguments) != len(function.Parameters) {
-  return Value{Type: TypeBottom, Bottom: true}
- }
- 
- // 创建新的状态（函数作用域）
- newState := State{
-  Variables: make(map[string]Value),
-  Functions: make(map[string]Function),
- }
- 
- // 复制闭包中的变量
- if function.Closure != nil {
-  for k, v := range function.Closure.Variables {
-   newState.Variables[k] = v
-  }
-  for k, v := range function.Closure.Functions {
-   newState.Functions[k] = v
-  }
- }
- 
- // 绑定参数
- for i, param := range function.Parameters {
-  argValue := fc.Arguments[i].Denote(state)
-  newState.Variables[param] = argValue
- }
- 
- // 执行函数体
- return function.Body.Denote(newState)
+func (sf *SemanticFunction) additionSemantics(add *Addition, env Environment) Domain {
+    left := sf.ExpressionSemantics(add.Left, env)
+    right := sf.ExpressionSemantics(add.Right, env)
+    
+    return sf.addDomains(left, right)
 }
 
-func (fc *FunctionCall) String() string {
- args := make([]string, len(fc.Arguments))
- for i, arg := range fc.Arguments {
-  args[i] = arg.String()
- }
- return fmt.Sprintf("%s(%s)", fc.FunctionName, args)
+func (sf *SemanticFunction) addDomains(left, right Domain) Domain {
+    if left.IsBottom() || right.IsBottom() {
+        return sf.bottom()
+    }
+    
+    if leftNum, ok1 := left.(*NaturalDomain); ok1 {
+        if rightNum, ok2 := right.(*NaturalDomain); ok2 {
+            if leftNum.value != nil && rightNum.value != nil {
+                result := *leftNum.value + *rightNum.value
+                return &NaturalDomain{value: &result}
+            }
+        }
+    }
+    
+    return sf.bottom()
+}
+
+func (sf *SemanticFunction) bottom() Domain {
+    return &NaturalDomain{value: nil}
 }
 ```
 
-### 4.5 语义域实现
+### 3.2 语句语义
+
+**定义 3.2** (语句语义函数)
+语句语义函数 $\mathcal{S}: \text{Stmt} \rightarrow (\text{Env} \rightarrow \text{Env})$ 定义为：
+
+$$\mathcal{S}[\![\text{skip}]\!]\rho = \rho$$
+$$\mathcal{S}[\![x := e]\!]\rho = \rho[x \mapsto \mathcal{E}[\![e]\!]\rho]$$
+$$\mathcal{S}[\![s_1; s_2]\!]\rho = \mathcal{S}[\![s_2]\!](\mathcal{S}[\![s_1]\!]\rho)$$
 
 ```go
-// Domain 语义域
-type Domain struct {
- Elements []SemanticDomain
- Order    func(SemanticDomain, SemanticDomain) bool
+// 语句语义
+func (sf *SemanticFunction) StatementSemantics(stmt Statement, env Environment) Environment {
+    switch s := stmt.(type) {
+    case *Skip:
+        return sf.skipSemantics(s, env)
+    case *Assignment:
+        return sf.assignmentSemantics(s, env)
+    case *Sequence:
+        return sf.sequenceSemantics(s, env)
+    case *IfStatement:
+        return sf.ifSemantics(s, env)
+    case *WhileStatement:
+        return sf.whileSemantics(s, env)
+    default:
+        return env
+    }
 }
 
-// Bottom 底部元素
-type Bottom struct{}
-
-func (b *Bottom) IsBottom() bool {
- return true
+func (sf *SemanticFunction) skipSemantics(skip *Skip, env Environment) Environment {
+    return env
 }
 
-func (b *Bottom) Join(other SemanticDomain) SemanticDomain {
- return other
+func (sf *SemanticFunction) assignmentSemantics(assign *Assignment, env Environment) Environment {
+    value := sf.ExpressionSemantics(assign.Expression, env)
+    newEnv := env.Clone()
+    newEnv.Set(assign.Variable, value)
+    return newEnv
 }
 
-func (b *Bottom) Meet(other SemanticDomain) SemanticDomain {
- return b
+func (sf *SemanticFunction) sequenceSemantics(seq *Sequence, env Environment) Environment {
+    env1 := sf.StatementSemantics(seq.First, env)
+    return sf.StatementSemantics(seq.Second, env1)
 }
 
-func (b *Bottom) LessEqual(other SemanticDomain) bool {
- return true
+func (sf *SemanticFunction) ifSemantics(ifStmt *IfStatement, env Environment) Environment {
+    condition := sf.ExpressionSemantics(ifStmt.Condition, env)
+    
+    if sf.isTrue(condition) {
+        return sf.StatementSemantics(ifStmt.Then, env)
+    } else {
+        return sf.StatementSemantics(ifStmt.Else, env)
+    }
 }
 
-// NumberDomain 数值域
-type NumberDomain struct {
- Value  float64
- Bottom bool
+func (sf *SemanticFunction) whileSemantics(while *WhileStatement, env Environment) Environment {
+    // 使用不动点计算
+    return sf.fixedPoint(func(env1 Environment) Environment {
+        condition := sf.ExpressionSemantics(while.Condition, env1)
+        if sf.isTrue(condition) {
+            newEnv := sf.StatementSemantics(while.Body, env1)
+            return sf.whileSemantics(while, newEnv)
+        } else {
+            return env1
+        }
+    }, env)
 }
 
-func (nd *NumberDomain) IsBottom() bool {
- return nd.Bottom
+func (sf *SemanticFunction) fixedPoint(f func(Environment) Environment, initial Environment) Environment {
+    // 计算不动点
+    current := initial
+    for {
+        next := f(current)
+        if sf.environmentsEqual(current, next) {
+            return next
+        }
+        current = next
+    }
 }
 
-func (nd *NumberDomain) Join(other SemanticDomain) SemanticDomain {
- if nd.Bottom {
-  return other
- }
- if other.IsBottom() {
-  return nd
- }
- 
- otherNum, ok := other.(*NumberDomain)
- if ok && nd.Value == otherNum.Value {
-  return nd
- }
- 
- // 返回顶部元素（这里简化处理）
- return &NumberDomain{Value: math.Inf(1), Bottom: false}
+func (sf *SemanticFunction) isTrue(domain Domain) bool {
+    if boolDomain, ok := domain.(*BooleanDomain); ok {
+        return boolDomain.Value
+    }
+    return false
 }
 
-func (nd *NumberDomain) Meet(other SemanticDomain) SemanticDomain {
- if nd.Bottom || other.IsBottom() {
-  return &Bottom{}
- }
- 
- otherNum, ok := other.(*NumberDomain)
- if ok && nd.Value == otherNum.Value {
-  return nd
- }
- 
- return &Bottom{}
+func (sf *SemanticFunction) environmentsEqual(env1, env2 Environment) bool {
+    // 比较两个环境是否相等
+    keys1 := env1.Keys()
+    keys2 := env2.Keys()
+    
+    if len(keys1) != len(keys2) {
+        return false
+    }
+    
+    for _, key := range keys1 {
+        val1, _ := env1.Get(key)
+        val2, _ := env2.Get(key)
+        if !sf.domainsEqual(val1.(Domain), val2.(Domain)) {
+            return false
+        }
+    }
+    
+    return true
 }
 
-func (nd *NumberDomain) LessEqual(other SemanticDomain) bool {
- if nd.Bottom {
-  return true
- }
- if other.IsBottom() {
-  return false
- }
- 
- otherNum, ok := other.(*NumberDomain)
- if ok {
-  return nd.Value <= otherNum.Value
- }
- 
- return false
-}
-
-// BooleanDomain 布尔域
-type BooleanDomain struct {
- Value  bool
- Bottom bool
-}
-
-func (bd *BooleanDomain) IsBottom() bool {
- return bd.Bottom
-}
-
-func (bd *BooleanDomain) Join(other SemanticDomain) SemanticDomain {
- if bd.Bottom {
-  return other
- }
- if other.IsBottom() {
-  return bd
- }
- 
- otherBool, ok := other.(*BooleanDomain)
- if ok && bd.Value == otherBool.Value {
-  return bd
- }
- 
- // 返回顶部元素
- return &BooleanDomain{Value: true, Bottom: false}
-}
-
-func (bd *BooleanDomain) Meet(other SemanticDomain) SemanticDomain {
- if bd.Bottom || other.IsBottom() {
-  return &Bottom{}
- }
- 
- otherBool, ok := other.(*BooleanDomain)
- if ok && bd.Value == otherBool.Value {
-  return bd
- }
- 
- return &Bottom{}
-}
-
-func (bd *BooleanDomain) LessEqual(other SemanticDomain) bool {
- if bd.Bottom {
-  return true
- }
- if other.IsBottom() {
-  return false
- }
- 
- otherBool, ok := other.(*BooleanDomain)
- if ok {
-  return bd.Value == otherBool.Value
- }
- 
- return false
+func (sf *SemanticFunction) domainsEqual(d1, d2 Domain) bool {
+    return d1.LessThan(d2) && d2.LessThan(d1)
 }
 ```
 
-## 5. 定理证明
+## 4. 递归和不动点
 
-### 5.1 指称语义的正确性
+### 4.1 不动点理论
 
-**定理 5.1** (指称语义的正确性)
+**定理 4.1** (不动点定理)
+在完全偏序集 $(D, \sqsubseteq)$ 上，每个连续函数 $f: D \rightarrow D$ 都有最小不动点 $\text{fix}(f)$。
 
-```latex
-如果程序 P 的指称语义 ⟦P⟧ 定义正确，则 ⟦P⟧ 是连续的
-```
-
-**证明**：
-
-```latex
-使用结构归纳法：
-
-基础情况：原子表达式的语义是连续的
-
-归纳步骤：
-1. 如果 ⟦e₁⟧ 和 ⟦e₂⟧ 是连续的，则 ⟦e₁ + e₂⟧ 是连续的
-2. 如果 ⟦S₁⟧ 和 ⟦S₂⟧ 是连续的，则 ⟦S₁; S₂⟧ 是连续的
-3. 如果 ⟦b⟧, ⟦S₁⟧, ⟦S₂⟧ 是连续的，则 ⟦if b then S₁ else S₂⟧ 是连续的
-4. 如果 ⟦b⟧ 和 ⟦S⟧ 是连续的，则 ⟦while b do S⟧ 是连续的
-
-因此所有程序的指称语义都是连续的
-```
-
-### 5.2 不动点定理
-
-**定理 5.2** (不动点定理)
-
-```latex
-对于连续函数 f: D → D，存在最小不动点 fix(f) = ⊔_{n≥0} f^n(⊥)
-```
-
-**证明**：
-
-```latex
-1. 构造序列：⊥ ⊑ f(⊥) ⊑ f²(⊥) ⊑ ...
-2. 由于 D 是完全偏序集，序列有最小上界 ⊔_{n≥0} f^n(⊥)
-3. 由于 f 是连续的：
-   f(⊔_{n≥0} f^n(⊥)) = ⊔_{n≥0} f^{n+1}(⊥) = ⊔_{n≥0} f^n(⊥)
-4. 因此 ⊔_{n≥0} f^n(⊥) 是 f 的不动点
-5. 对于任意不动点 x，有 ⊥ ⊑ x，因此 f^n(⊥) ⊑ f^n(x) = x
-6. 因此 ⊔_{n≥0} f^n(⊥) ⊑ x，是最小不动点
-```
-
-### 5.3 语义等价性
-
-**定理 5.3** (语义等价性)
-
-```latex
-如果两个程序 P₁ 和 P₂ 的指称语义相等，则它们在所有上下文中行为相同
-```
-
-**证明**：
-
-```latex
-假设 ⟦P₁⟧ = ⟦P₂⟧
-
-对于任意状态 σ，有：
-⟦P₁⟧(σ) = ⟦P₂⟧(σ)
-
-因此 P₁ 和 P₂ 在所有初始状态下产生相同的结果
-
-由于指称语义是组合性的，P₁ 和 P₂ 在所有上下文中行为相同
-```
-
-## 6. 应用示例
-
-### 6.1 简单程序语义
+**证明**:
+1. 定义序列 $x_0 = \bot, x_{n+1} = f(x_n)$
+2. 证明序列是递增的
+3. 证明极限是 $f$ 的不动点
+4. 证明是最小不动点
 
 ```go
-// SimpleProgramSemantics 简单程序语义示例
-func SimpleProgramSemantics() {
- // 创建程序：x := 5; y := x + 3
- x := &VariableExpression{Name: "x"}
- y := &VariableExpression{Name: "y"}
- five := &NumberExpression{Value: 5}
- three := &NumberExpression{Value: 3}
- 
- // x := 5
- assignX := &AssignmentStatement{
-  Variable:  "x",
-  Expression: five,
- }
- 
- // y := x + 3
- addExpr := &BinaryExpression{
-  Left:     x,
-  Right:    three,
-  Operator: "+",
- }
- assignY := &AssignmentStatement{
-  Variable:  "y",
-  Expression: addExpr,
- }
- 
- // x := 5; y := x + 3
- program := &SequenceStatement{
-  First:  assignX,
-  Second: assignY,
- }
- 
- // 初始状态
- initialState := State{
-  Variables: make(map[string]Value),
-  Functions: make(map[string]Function),
- }
- 
- // 执行程序
- finalState := program.Denote(initialState)
- 
- fmt.Printf("程序: %s\n", program.String())
- fmt.Printf("最终状态:\n")
- for name, value := range finalState.Variables {
-  fmt.Printf("  %s = %v\n", name, value.Data)
- }
+// 不动点计算器
+type FixedPointCalculator struct {
+    domain *CompletePartialOrder
+}
+
+func (fpc *FixedPointCalculator) Calculate(f ContinuousFunction) Domain {
+    // 初始化序列
+    sequence := make([]Domain, 0)
+    current := fpc.domain.bottom
+    
+    for {
+        sequence = append(sequence, current)
+        next := f.Apply(current)
+        
+        // 检查是否达到不动点
+        if fpc.domain.LessThan(current, next) && fpc.domain.LessThan(next, current) {
+            return next
+        }
+        
+        current = next
+        
+        // 防止无限循环
+        if len(sequence) > 1000 {
+            break
+        }
+    }
+    
+    return current
+}
+
+// 递归函数语义
+func (sf *SemanticFunction) recursiveFunctionSemantics(rec *RecursiveFunction, env Environment) Domain {
+    // 创建递归函数的不动点
+    functionDomain := &FunctionDomain{
+        domain:   sf.getDomain("function"),
+        codomain: sf.getDomain("value"),
+    }
+    
+    // 定义递归函数
+    recursiveFunc := func(f Domain) Domain {
+        // 创建包含递归函数的环境
+        newEnv := env.Clone()
+        newEnv.Set(rec.Name, f)
+        
+        // 计算函数体
+        return sf.ExpressionSemantics(rec.Body, newEnv)
+    }
+    
+    // 计算不动点
+    calculator := &FixedPointCalculator{domain: functionDomain}
+    return calculator.Calculate(recursiveFunc)
 }
 ```
 
-### 6.2 条件语句语义
+### 4.2 递归函数语义
+
+**定义 4.1** (递归函数语义)
+递归函数 $f = \lambda x.e$ 的语义定义为：
+
+$$\mathcal{F}[\![f]\!] = \text{fix}(\lambda f.\lambda x.\mathcal{E}[\![e]\!]\rho[x \mapsto x, f \mapsto f])$$
 
 ```go
-// ConditionalStatementSemantics 条件语句语义示例
-func ConditionalStatementSemantics() {
- // 创建条件语句：if x > 0 then y := x else y := -x
- x := &VariableExpression{Name: "x"}
- y := &VariableExpression{Name: "y"}
- zero := &NumberExpression{Value: 0}
- 
- // x > 0
- condition := &BinaryExpression{
-  Left:     x,
-  Right:    zero,
-  Operator: ">",
- }
- 
- // y := x
- thenBranch := &AssignmentStatement{
-  Variable:  "y",
-  Expression: x,
- }
- 
- // y := -x
- negX := &BinaryExpression{
-  Left:     &NumberExpression{Value: -1},
-  Right:    x,
-  Operator: "*",
- }
- elseBranch := &AssignmentStatement{
-  Variable:  "y",
-  Expression: negX,
- }
- 
- // if x > 0 then y := x else y := -x
- conditional := &ConditionalStatement{
-  Condition: condition,
-  Then:      thenBranch,
-  Else:      elseBranch,
- }
- 
- // 测试不同情况
- testCases := []float64{5, -3, 0}
- 
- for _, testValue := range testCases {
-  // 初始状态
-  initialState := State{
-   Variables: map[string]Value{
-    "x": {Type: TypeNumber, Data: testValue, Bottom: false},
-   },
-   Functions: make(map[string]Function),
-  }
-  
-  // 执行条件语句
-  finalState := conditional.Denote(initialState)
-  
-  fmt.Printf("x = %v, y = %v\n", testValue, finalState.Variables["y"].Data)
- }
+// 递归函数
+type RecursiveFunction struct {
+    Name string
+    Body Expression
+}
+
+// Lambda表达式
+type LambdaExpression struct {
+    Parameter string
+    Body      Expression
+}
+
+func (sf *SemanticFunction) lambdaSemantics(lambda *LambdaExpression, env Environment) Domain {
+    return &FunctionDomain{
+        domain:   sf.getDomain("value"),
+        codomain: sf.getDomain("value"),
+        functions: map[string]ContinuousFunction{
+            "lambda": {
+                domain:   sf.getDomain("value"),
+                codomain: sf.getDomain("value"),
+                mapping:  make(map[string]Domain),
+            },
+        },
+    }
+}
+
+func (sf *SemanticFunction) applicationSemantics(app *Application, env Environment) Domain {
+    function := sf.ExpressionSemantics(app.Function, env)
+    argument := sf.ExpressionSemantics(app.Argument, env)
+    
+    if funcDomain, ok := function.(*FunctionDomain); ok {
+        return funcDomain.Apply(argument)
+    }
+    
+    return sf.bottom()
 }
 ```
 
-### 6.3 循环语句语义
+## 5. 语义等价性
+
+### 5.1 程序等价性
+
+**定义 5.1** (语义等价)
+两个程序 $P_1$ 和 $P_2$ 语义等价，当且仅当：
+$$\mathcal{M}[\![P_1]\!] = \mathcal{M}[\![P_2]\!]$$
+
+**定理 5.1** (等价性保持)
+如果 $P_1 \equiv P_2$，则对于任意上下文 $C$，$C[P_1] \equiv C[P_2]$。
 
 ```go
-// LoopStatementSemantics 循环语句语义示例
-func LoopStatementSemantics() {
- // 创建循环：while i > 0 do (i := i - 1; sum := sum + i)
- i := &VariableExpression{Name: "i"}
- sum := &VariableExpression{Name: "sum"}
- zero := &NumberExpression{Value: 0}
- one := &NumberExpression{Value: 1}
- 
- // i > 0
- condition := &BinaryExpression{
-  Left:     i,
-  Right:    zero,
-  Operator: ">",
- }
- 
- // i := i - 1
- decrementI := &BinaryExpression{
-  Left:     i,
-  Right:    one,
-  Operator: "-",
- }
- assignI := &AssignmentStatement{
-  Variable:  "i",
-  Expression: decrementI,
- }
- 
- // sum := sum + i
- addSum := &BinaryExpression{
-  Left:     sum,
-  Right:    i,
-  Operator: "+",
- }
- assignSum := &AssignmentStatement{
-  Variable:  "sum",
-  Expression: addSum,
- }
- 
- // i := i - 1; sum := sum + i
- body := &SequenceStatement{
-  First:  assignI,
-  Second: assignSum,
- }
- 
- // while i > 0 do (i := i - 1; sum := sum + i)
- loop := &WhileStatement{
-  Condition: condition,
-  Body:      body,
- }
- 
- // 初始状态：i = 3, sum = 0
- initialState := State{
-  Variables: map[string]Value{
-   "i":   {Type: TypeNumber, Data: 3.0, Bottom: false},
-   "sum": {Type: TypeNumber, Data: 0.0, Bottom: false},
-  },
-  Functions: make(map[string]Function),
- }
- 
- // 执行循环
- finalState := loop.Denote(initialState)
- 
- fmt.Printf("循环执行后:\n")
- fmt.Printf("  i = %v\n", finalState.Variables["i"].Data)
- fmt.Printf("  sum = %v\n", finalState.Variables["sum"].Data)
+// 语义等价检查器
+type SemanticEquivalenceChecker struct {
+    semanticFunction *SemanticFunction
+}
+
+func (sec *SemanticEquivalenceChecker) CheckEquivalence(prog1, prog2 Program) bool {
+    // 创建初始环境
+    initialEnv := NewEnvironment()
+    
+    // 计算语义
+    sem1 := sec.semanticFunction.ProgramSemantics(prog1, initialEnv)
+    sem2 := sec.semanticFunction.ProgramSemantics(prog2, initialEnv)
+    
+    // 比较语义
+    return sec.semanticFunction.domainsEqual(sem1, sem2)
+}
+
+// 上下文等价
+func (sec *SemanticEquivalenceChecker) CheckContextualEquivalence(prog1, prog2 Program) bool {
+    // 生成所有可能的上下文
+    contexts := sec.generateContexts()
+    
+    for _, context := range contexts {
+        ctxProg1 := context.Fill(prog1)
+        ctxProg2 := context.Fill(prog2)
+        
+        if !sec.CheckEquivalence(ctxProg1, ctxProg2) {
+            return false
+        }
+    }
+    
+    return true
+}
+
+type Context struct {
+    Hole    string
+    Program Program
+}
+
+func (c *Context) Fill(program Program) Program {
+    // 将程序填充到上下文的洞中
+    return c.replaceHole(c.Program, c.Hole, program)
+}
+
+func (c *Context) replaceHole(prog Program, hole string, replacement Program) Program {
+    // 递归替换洞
+    switch p := prog.(type) {
+    case *HoleExpression:
+        if p.Name == hole {
+            return replacement
+        }
+        return p
+    case *Sequence:
+        return &Sequence{
+            First:  c.replaceHole(p.First, hole, replacement),
+            Second: c.replaceHole(p.Second, hole, replacement),
+        }
+    default:
+        return prog
+    }
 }
 ```
 
-## 总结
+### 5.2 程序变换
 
-指称语义为编程语言提供了强大的数学基础，能够：
+**定义 5.2** (程序变换)
+程序变换是保持语义等价的程序重构。
 
-1. **程序验证**：通过数学方法验证程序正确性
-2. **语义分析**：提供程序含义的精确描述
-3. **编译器设计**：指导编译器的语义保持转换
-4. **语言设计**：为编程语言设计提供理论基础
+```go
+// 程序变换器
+type ProgramTransformer struct {
+    semanticFunction *SemanticFunction
+    equivalenceChecker *SemanticEquivalenceChecker
+}
 
-通过Go语言的实现，我们可以将指称语义理论应用到实际的软件工程问题中，提供程序分析和验证的工具。
+// 常量折叠
+func (pt *ProgramTransformer) ConstantFolding(expr Expression) Expression {
+    switch e := expr.(type) {
+    case *Addition:
+        left := pt.ConstantFolding(e.Left)
+        right := pt.ConstantFolding(e.Right)
+        
+        if leftNum, ok1 := left.(*Number); ok1 {
+            if rightNum, ok2 := right.(*Number); ok2 {
+                return &Number{Value: leftNum.Value + rightNum.Value}
+            }
+        }
+        
+        return &Addition{Left: left, Right: right}
+    case *Multiplication:
+        left := pt.ConstantFolding(e.Left)
+        right := pt.ConstantFolding(e.Right)
+        
+        if leftNum, ok1 := left.(*Number); ok1 {
+            if rightNum, ok2 := right.(*Number); ok2 {
+                return &Number{Value: leftNum.Value * rightNum.Value}
+            }
+        }
+        
+        return &Multiplication{Left: left, Right: right}
+    default:
+        return expr
+    }
+}
+
+// 死代码消除
+func (pt *ProgramTransformer) DeadCodeElimination(stmt Statement) Statement {
+    switch s := stmt.(type) {
+    case *Sequence:
+        first := pt.DeadCodeElimination(s.First)
+        second := pt.DeadCodeElimination(s.Second)
+        
+        // 如果第一个语句是skip，消除它
+        if _, ok := first.(*Skip); ok {
+            return second
+        }
+        
+        return &Sequence{First: first, Second: second}
+    case *IfStatement:
+        condition := pt.ConstantFolding(s.Condition)
+        
+        if num, ok := condition.(*Number); ok {
+            if num.Value != 0 {
+                return pt.DeadCodeElimination(s.Then)
+            } else {
+                return pt.DeadCodeElimination(s.Else)
+            }
+        }
+        
+        return &IfStatement{
+            Condition: condition,
+            Then:     pt.DeadCodeElimination(s.Then),
+            Else:     pt.DeadCodeElimination(s.Else),
+        }
+    default:
+        return stmt
+    }
+}
+
+// 验证变换正确性
+func (pt *ProgramTransformer) VerifyTransformation(original, transformed Program) bool {
+    return pt.equivalenceChecker.CheckEquivalence(original, transformed)
+}
+```
+
+## 6. 总结
+
+指称语义通过数学对象为编程语言提供了精确的语义定义。通过域理论、连续函数和不动点理论，可以建立完整的语义模型。
+
+### 关键特性
+
+1. **数学精确性**: 基于域理论的严格数学定义
+2. **组合性**: 语义函数的组合性质
+3. **不动点理论**: 递归函数的语义处理
+4. **等价性**: 程序语义等价的形式化定义
+5. **变换验证**: 程序变换的正确性验证
+
+### 应用场景
+
+1. **语言设计**: 新编程语言的语义定义
+2. **程序验证**: 程序正确性的形式化证明
+3. **编译器优化**: 程序变换的正确性验证
+4. **语言比较**: 不同语言语义的形式化比较
+
+---
+
+**相关链接**:
+- [01-操作语义](./01-Operational-Semantics.md)
+- [03-公理语义](./03-Axiomatic-Semantics.md)
+- [04-并发语义](./04-Concurrent-Semantics.md)

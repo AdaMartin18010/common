@@ -242,7 +242,7 @@ func (wp *WeakestPrecondition) calculateSequence(seq *Sequence, Q string) string
 }
 
 func (wp *WeakestPrecondition) calculateConditional(cond *Conditional, Q string) string {
-    // wp(if B then C1 else C2, Q) = (B && wp(C1, Q)) || (!B && wp(C2, Q))
+    // wp(if B then C1 else C2, Q) = (B && wp(C1, Q)) || (!(B) && wp(C2, Q))
     wpThen := wp.Calculate(cond.ThenBranch, Q)
     wpElse := wp.Calculate(cond.ElseBranch, Q)
     return fmt.Sprintf("(%s && %s) || (!(%s) && %s)", 
