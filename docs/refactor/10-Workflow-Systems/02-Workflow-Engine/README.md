@@ -717,4 +717,4 @@ func (e *EventBus) Subscribe(topic string, handler EventHandler) error {
 
 ---
 
-**下一步**: 继续完善工作流模式模块，提供常用的工作流设计模式。 
+**下一步**: 继续完善工作流模式模块，提供常用的工作流设计模式。

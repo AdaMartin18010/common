@@ -1,537 +1,236 @@
-# 01. 工作流基础理论 (Workflow Foundation)
+# 01-工作流基础理论 (Workflow Foundation)
 
 ## 概述
 
-工作流基础理论为工作流系统提供形式化的数学基础和理论支撑。本模块基于集合论、图论、状态机和时态逻辑，建立完整的工作流理论体系。
+工作流基础理论是工作流系统的核心理论基础，包括工作流的定义、分类、形式化理论基础和基本术语。本模块基于数学和逻辑学基础，为工作流系统的设计和实现提供理论支撑。
 
-## 目录
+## 目录结构
 
-- [01-工作流形式化定义](./01-Formal-Definitions.md)
-- [02-工作流状态机理论](./02-State-Machine-Theory.md)
-- [03-工作流图论基础](./03-Graph-Theory-Basis.md)
-- [04-工作流时态逻辑](./04-Temporal-Logic.md)
+### [01-工作流定义与分类](01-Workflow-Definition-Classification/README.md)
 
-## 核心理论
+- **01-工作流基本概念** - 工作流定义、特征、作用、历史发展
+- **02-工作流分类体系** - 按业务流程、控制流、组织范围、技术实现分类
+- **03-工作流与相关概念** - 与业务流程管理、服务计算、人工智能的关系
+- **04-工作流发展趋势** - 智能化、自适应、云原生、边缘计算
 
-### 1. 工作流形式化定义
+### [02-形式化理论基础](02-Formal-Theory-Foundation/README.md)
 
-#### 1.1 基本概念
+- **01-Petri网模型** - Petri网定义、WF-net、性质分析、可达性
+- **02-过程代数** - 基本算子、通信机制、同步机制、行为等价
+- **03-π演算** - 名称传递、动态拓扑、移动性、并发通信
+- **04-时态逻辑** - LTL、CTL、μ演算、模型检查、性质验证
 
-工作流是一个五元组 $W = (S, A, T, I, F)$，其中：
+### [03-工作流基本术语](03-Workflow-Basic-Terms/README.md)
 
-- $S$ 是状态集合
-- $A$ 是活动集合
-- $T \subseteq S \times A \times S$ 是转换关系
-- $I \subseteq S$ 是初始状态集合
-- $F \subseteq S$ 是最终状态集合
+- **01-活动与任务** - 活动定义、任务分配、执行单元、生命周期
+- **02-角色与资源** - 角色定义、权限管理、资源分配、容量规划
+- **03-路由与控制** - 路由规则、控制流、条件分支、循环结构
+- **04-实例与状态** - 工作流实例、状态管理、状态转换、持久化
 
-#### 1.2 Go语言实现
+### [04-工作流分类体系](04-Workflow-Classification-System/README.md)
+
+- **01-业务流程分类** - 生产型、管理型、协同型、临时型工作流
+- **02-控制流分类** - 顺序、并行、选择、迭代工作流
+- **03-组织范围分类** - 部门内、跨部门、组织间、全球化工作流
+- **04-技术实现分类** - 基于消息、状态、规则、事件、混合型工作流
+
+## 核心概念
+
+### 1. 工作流定义
+
+工作流是对工作过程的系统化描述和自动化执行，涉及工作任务如何结构化、谁执行任务、任务的先后顺序、信息如何流转、以及如何跟踪任务完成情况的定义。
+
+**形式化定义**：
+工作流可以表示为五元组 $W = \{A, T, D, R, C\}$，其中：
+
+- $A$：活动集合 (Activities)
+- $T$：活动间转移关系 (Transitions)
+- $D$：数据对象集合 (Data Objects)
+- $R$：资源集合 (Resources)
+- $C$：约束条件集合 (Constraints)
+
+### 2. 工作流管理联盟 (WfMC) 定义
+
+> "工作流是一类能够完全或者部分自动执行的业务过程，文档、信息或任务在这些过程中按照一组过程规则从一个参与者传递到另一个参与者。"
+
+### 3. 工作流基本特征
+
+1. **结构化**：工作流具有明确的结构和规则
+2. **自动化**：能够自动执行或辅助执行
+3. **可追踪**：能够跟踪执行状态和进度
+4. **可优化**：能够根据执行情况进行优化
+5. **可重用**：工作流模型可以被重复使用
+
+## 技术栈
+
+### Go语言实现
 
 ```go
-package workflow
-
-import (
-    "fmt"
-    "sync"
-    "time"
-)
-
-// Workflow 工作流定义
+// 工作流基础结构
 type Workflow struct {
-    ID          string
-    Name        string
-    States      map[string]*State
-    Activities  map[string]*Activity
-    Transitions []*Transition
-    Initial     *State
-    Final       []*State
-    mutex       sync.RWMutex
+    ID          string                 `json:"id"`
+    Name        string                 `json:"name"`
+    Description string                 `json:"description"`
+    Activities  []Activity             `json:"activities"`
+    Transitions []Transition           `json:"transitions"`
+    DataObjects []DataObject           `json:"data_objects"`
+    Resources   []Resource             `json:"resources"`
+    Constraints []Constraint           `json:"constraints"`
+    CreatedAt   time.Time              `json:"created_at"`
+    UpdatedAt   time.Time              `json:"updated_at"`
 }
 
-// State 状态定义
-type State struct {
-    ID          string
-    Name        string
-    Type        StateType
-    Properties  map[string]interface{}
-    EntryAction func(context.Context) error
-    ExitAction  func(context.Context) error
-}
-
-// Activity 活动定义
+// 活动定义
 type Activity struct {
-    ID         string
-    Name       string
-    Handler    func(context.Context, map[string]interface{}) (map[string]interface{}, error)
-    Timeout    time.Duration
-    RetryCount int
+    ID          string                 `json:"id"`
+    Name        string                 `json:"name"`
+    Type        ActivityType           `json:"type"`
+    Handler     string                 `json:"handler"`
+    Parameters  map[string]interface{} `json:"parameters"`
+    Timeout     time.Duration          `json:"timeout"`
+    RetryPolicy *RetryPolicy           `json:"retry_policy"`
 }
 
-// Transition 转换定义
+// 转移关系
 type Transition struct {
-    ID       string
-    From     *State
-    To       *State
-    Activity *Activity
-    Guard    func(map[string]interface{}) bool
+    ID           string                 `json:"id"`
+    FromActivity string                 `json:"from_activity"`
+    ToActivity   string                 `json:"to_activity"`
+    Condition    string                 `json:"condition"`
+    Priority     int                    `json:"priority"`
+    Metadata     map[string]interface{} `json:"metadata"`
 }
 
-// StateType 状态类型
-type StateType int
+// 数据对象
+type DataObject struct {
+    ID       string                 `json:"id"`
+    Name     string                 `json:"name"`
+    Type     string                 `json:"type"`
+    Schema   map[string]interface{} `json:"schema"`
+    Required bool                   `json:"required"`
+    Default  interface{}            `json:"default"`
+}
 
-const (
-    StateTypeStart StateType = iota
-    StateTypeNormal
-    StateTypeEnd
-    StateTypeError
+// 资源定义
+type Resource struct {
+    ID       string                 `json:"id"`
+    Name     string                 `json:"name"`
+    Type     ResourceType           `json:"type"`
+    Capacity int                    `json:"capacity"`
+    Cost     float64                `json:"cost"`
+    Metadata map[string]interface{} `json:"metadata"`
+}
+
+// 约束条件
+type Constraint struct {
+    ID          string                 `json:"id"`
+    Name        string                 `json:"name"`
+    Type        ConstraintType         `json:"type"`
+    Expression  string                 `json:"expression"`
+    Description string                 `json:"description"`
+    Severity    ConstraintSeverity     `json:"severity"`
+}
+```
+
+### 核心库
+
+```go
+import (
+    "context"
+    "time"
+    "sync"
+    
+    "github.com/gin-gonic/gin"
+    "github.com/go-redis/redis/v8"
+    "gorm.io/gorm"
+    "github.com/streadway/amqp"
+    "github.com/prometheus/client_golang/prometheus"
 )
 ```
 
-### 2. 工作流状态机理论
+## 形式化规范
 
-#### 2.1 状态机形式化
+### 数学符号
 
-状态机是一个六元组 $M = (Q, \Sigma, \delta, q_0, F, \lambda)$，其中：
-
-- $Q$ 是有限状态集合
-- $\Sigma$ 是输入字母表
-- $\delta: Q \times \Sigma \rightarrow Q$ 是转换函数
-- $q_0 \in Q$ 是初始状态
-- $F \subseteq Q$ 是接受状态集合
-- $\lambda: Q \rightarrow \Lambda$ 是输出函数
-
-#### 2.2 实现
-
-```go
-// StateMachine 状态机实现
-type StateMachine struct {
-    states       map[string]*State
-    transitions  map[string]map[string]*Transition
-    currentState *State
-    initialState *State
-    finalStates  map[string]*State
-    mutex        sync.RWMutex
-}
-
-// NewStateMachine 创建新的状态机
-func NewStateMachine() *StateMachine {
-    return &StateMachine{
-        states:      make(map[string]*State),
-        transitions: make(map[string]map[string]*Transition),
-        finalStates: make(map[string]*State),
-    }
-}
-
-// AddState 添加状态
-func (sm *StateMachine) AddState(state *State) error {
-    sm.mutex.Lock()
-    defer sm.mutex.Unlock()
-    
-    if _, exists := sm.states[state.ID]; exists {
-        return fmt.Errorf("state %s already exists", state.ID)
-    }
-    
-    sm.states[state.ID] = state
-    sm.transitions[state.ID] = make(map[string]*Transition)
-    
-    return nil
-}
-
-// AddTransition 添加转换
-func (sm *StateMachine) AddTransition(transition *Transition) error {
-    sm.mutex.Lock()
-    defer sm.mutex.Unlock()
-    
-    if _, exists := sm.states[transition.From.ID]; !exists {
-        return fmt.Errorf("from state %s does not exist", transition.From.ID)
-    }
-    
-    if _, exists := sm.states[transition.To.ID]; !exists {
-        return fmt.Errorf("to state %s does not exist", transition.To.ID)
-    }
-    
-    sm.transitions[transition.From.ID][transition.ID] = transition
-    return nil
-}
-
-// Transition 执行状态转换
-func (sm *StateMachine) Transition(transitionID string, data map[string]interface{}) error {
-    sm.mutex.Lock()
-    defer sm.mutex.Unlock()
-    
-    if sm.currentState == nil {
-        return fmt.Errorf("no current state")
-    }
-    
-    transition, exists := sm.transitions[sm.currentState.ID][transitionID]
-    if !exists {
-        return fmt.Errorf("transition %s not found from state %s", transitionID, sm.currentState.ID)
-    }
-    
-    // 检查守卫条件
-    if transition.Guard != nil && !transition.Guard(data) {
-        return fmt.Errorf("guard condition failed for transition %s", transitionID)
-    }
-    
-    // 执行退出动作
-    if sm.currentState.ExitAction != nil {
-        if err := sm.currentState.ExitAction(context.Background()); err != nil {
-            return fmt.Errorf("exit action failed: %w", err)
-        }
-    }
-    
-    // 执行活动
-    if transition.Activity != nil {
-        if _, err := transition.Activity.Handler(context.Background(), data); err != nil {
-            return fmt.Errorf("activity execution failed: %w", err)
-        }
-    }
-    
-    // 执行进入动作
-    if transition.To.EntryAction != nil {
-        if err := transition.To.EntryAction(context.Background()); err != nil {
-            return fmt.Errorf("entry action failed: %w", err)
-        }
-    }
-    
-    sm.currentState = transition.To
-    return nil
-}
-```
-
-### 3. 工作流图论基础
-
-#### 3.1 有向图表示
-
-工作流可以表示为有向图 $G = (V, E)$，其中：
-
-- $V$ 是顶点集合，表示工作流中的状态
-- $E$ 是边集合，表示状态之间的转换
-
-#### 3.2 图论算法实现
-
-```go
-// Graph 图结构
-type Graph struct {
-    vertices map[string]*Vertex
-    edges    map[string][]*Edge
-}
-
-// Vertex 顶点
-type Vertex struct {
-    ID       string
-    Data     interface{}
-    InDegree int
-    OutDegree int
-}
-
-// Edge 边
-type Edge struct {
-    ID     string
-    From   string
-    To     string
-    Weight float64
-}
-
-// NewGraph 创建新图
-func NewGraph() *Graph {
-    return &Graph{
-        vertices: make(map[string]*Vertex),
-        edges:    make(map[string][]*Edge),
-    }
-}
-
-// AddVertex 添加顶点
-func (g *Graph) AddVertex(id string, data interface{}) {
-    g.vertices[id] = &Vertex{
-        ID:   id,
-        Data: data,
-    }
-}
-
-// AddEdge 添加边
-func (g *Graph) AddEdge(from, to string, weight float64) {
-    edge := &Edge{
-        ID:     fmt.Sprintf("%s->%s", from, to),
-        From:   from,
-        To:     to,
-        Weight: weight,
-    }
-    
-    g.edges[from] = append(g.edges[from], edge)
-    
-    // 更新度数
-    if fromVertex, exists := g.vertices[from]; exists {
-        fromVertex.OutDegree++
-    }
-    if toVertex, exists := g.vertices[to]; exists {
-        toVertex.InDegree++
-    }
-}
-
-// TopologicalSort 拓扑排序
-func (g *Graph) TopologicalSort() ([]string, error) {
-    var result []string
-    inDegree := make(map[string]int)
-    queue := make([]string, 0)
-    
-    // 初始化入度
-    for id, vertex := range g.vertices {
-        inDegree[id] = vertex.InDegree
-        if vertex.InDegree == 0 {
-            queue = append(queue, id)
-        }
-    }
-    
-    // 执行拓扑排序
-    for len(queue) > 0 {
-        current := queue[0]
-        queue = queue[1:]
-        result = append(result, current)
-        
-        // 更新相邻顶点的入度
-        for _, edge := range g.edges[current] {
-            inDegree[edge.To]--
-            if inDegree[edge.To] == 0 {
-                queue = append(queue, edge.To)
-            }
-        }
-    }
-    
-    // 检查是否有环
-    if len(result) != len(g.vertices) {
-        return nil, fmt.Errorf("graph contains cycles")
-    }
-    
-    return result, nil
-}
-
-// DetectCycles 检测环
-func (g *Graph) DetectCycles() bool {
-    visited := make(map[string]bool)
-    recStack := make(map[string]bool)
-    
-    for id := range g.vertices {
-        if !visited[id] {
-            if g.hasCycleDFS(id, visited, recStack) {
-                return true
-            }
-        }
-    }
-    
-    return false
-}
-
-func (g *Graph) hasCycleDFS(vertex string, visited, recStack map[string]bool) bool {
-    visited[vertex] = true
-    recStack[vertex] = true
-    
-    for _, edge := range g.edges[vertex] {
-        if !visited[edge.To] {
-            if g.hasCycleDFS(edge.To, visited, recStack) {
-                return true
-            }
-        } else if recStack[edge.To] {
-            return true
-        }
-    }
-    
-    recStack[vertex] = false
-    return false
-}
-```
-
-### 4. 工作流时态逻辑
-
-#### 4.1 线性时态逻辑 (LTL)
-
-使用LTL公式描述工作流属性：
+使用LaTeX格式的数学公式：
 
 ```latex
-\text{Safety: } \Box \neg \text{deadlock}
-\text{Liveness: } \Box \Diamond \text{completion}
-\text{Fairness: } \Box \Diamond \text{progress}
-\text{Response: } \Box(\text{request} \rightarrow \Diamond \text{response})
+\text{工作流定义}: W = \{A, T, D, R, C\}
+
+\text{活动集合}: A = \{a_1, a_2, ..., a_n\}
+
+\text{转移关系}: T \subseteq A \times A
+
+\text{可达性}: \forall a_i, a_j \in A: a_i \rightarrow^* a_j
+
+\text{活性}: \forall a \in A: \Box \Diamond \text{enabled}(a)
+
+\text{安全性}: \Box \neg \text{deadlock}
 ```
 
-#### 4.2 LTL实现
+### 算法分析
 
 ```go
-// LTLFormula LTL公式
-type LTLFormula interface {
-    Evaluate(trace []string) bool
+// 工作流可达性分析
+func (w *Workflow) AnalyzeReachability() map[string][]string {
+    reachability := make(map[string][]string)
+    
+    // 使用深度优先搜索分析可达性
+    for _, activity := range w.Activities {
+        reachable := w.dfs(activity.ID, make(map[string]bool))
+        reachability[activity.ID] = reachable
+    }
+    
+    return reachability
 }
 
-// Atomic 原子命题
-type Atomic struct {
-    Proposition string
-}
-
-func (a *Atomic) Evaluate(trace []string) bool {
-    for _, state := range trace {
-        if state == a.Proposition {
-            return true
+// 时间复杂度: O(|A| + |T|)
+// 空间复杂度: O(|A|)
+func (w *Workflow) dfs(start string, visited map[string]bool) []string {
+    if visited[start] {
+        return nil
+    }
+    
+    visited[start] = true
+    reachable := []string{start}
+    
+    for _, transition := range w.Transitions {
+        if transition.FromActivity == start {
+            next := w.dfs(transition.ToActivity, visited)
+            reachable = append(reachable, next...)
         }
     }
-    return false
-}
-
-// Not 否定
-type Not struct {
-    Formula LTLFormula
-}
-
-func (n *Not) Evaluate(trace []string) bool {
-    return !n.Formula.Evaluate(trace)
-}
-
-// And 合取
-type And struct {
-    Left  LTLFormula
-    Right LTLFormula
-}
-
-func (a *And) Evaluate(trace []string) bool {
-    return a.Left.Evaluate(trace) && a.Right.Evaluate(trace)
-}
-
-// Or 析取
-type Or struct {
-    Left  LTLFormula
-    Right LTLFormula
-}
-
-func (o *Or) Evaluate(trace []string) bool {
-    return o.Left.Evaluate(trace) || o.Right.Evaluate(trace)
-}
-
-// Always 总是
-type Always struct {
-    Formula LTLFormula
-}
-
-func (al *Always) Evaluate(trace []string) bool {
-    for i := 0; i < len(trace); i++ {
-        if !al.Formula.Evaluate(trace[i:]) {
-            return false
-        }
-    }
-    return true
-}
-
-// Eventually 最终
-type Eventually struct {
-    Formula LTLFormula
-}
-
-func (ev *Eventually) Evaluate(trace []string) bool {
-    for i := 0; i < len(trace); i++ {
-        if ev.Formula.Evaluate(trace[i:]) {
-            return true
-        }
-    }
-    return false
-}
-
-// Until 直到
-type Until struct {
-    Left  LTLFormula
-    Right LTLFormula
-}
-
-func (u *Until) Evaluate(trace []string) bool {
-    for i := 0; i < len(trace); i++ {
-        if u.Right.Evaluate(trace[i:]) {
-            return true
-        }
-        if !u.Left.Evaluate(trace[i:]) {
-            return false
-        }
-    }
-    return false
+    
+    return reachable
 }
 ```
 
-### 5. 工作流验证
+## 质量保证
 
-#### 5.1 模型检查
+### 内容质量
 
-```go
-// ModelChecker 模型检查器
-type ModelChecker struct {
-    workflow *Workflow
-    formulas []LTLFormula
-}
+- 不重复、分类严谨
+- 与当前最新最成熟的哲科工程想法一致
+- 符合学术要求
+- 内容一致性、证明一致性、相关性一致性
 
-// NewModelChecker 创建模型检查器
-func NewModelChecker(workflow *Workflow) *ModelChecker {
-    return &ModelChecker{
-        workflow: workflow,
-        formulas: make([]LTLFormula, 0),
-    }
-}
+### 结构质量
 
-// AddFormula 添加验证公式
-func (mc *ModelChecker) AddFormula(formula LTLFormula) {
-    mc.formulas = append(mc.formulas, formula)
-}
+- 语义一致性
+- 不交不空不漏的层次化分类
+- 由理念到理性到形式化论证证明
+- 有概念、定义的详细解释论证
 
-// Check 执行模型检查
-func (mc *ModelChecker) Check() []CheckResult {
-    var results []CheckResult
-    
-    // 生成所有可能的执行路径
-    traces := mc.generateTraces()
-    
-    // 对每个公式进行检查
-    for i, formula := range mc.formulas {
-        result := CheckResult{
-            FormulaIndex: i,
-            Satisfied:    true,
-            Violations:   make([]string, 0),
-        }
-        
-        for j, trace := range traces {
-            if !formula.Evaluate(trace) {
-                result.Satisfied = false
-                result.Violations = append(result.Violations, fmt.Sprintf("Trace %d: %v", j, trace))
-            }
-        }
-        
-        results = append(results, result)
-    }
-    
-    return results
-}
+## 本地跳转链接
 
-// CheckResult 检查结果
-type CheckResult struct {
-    FormulaIndex int
-    Satisfied    bool
-    Violations   []string
-}
-
-func (mc *ModelChecker) generateTraces() [][]string {
-    // 实现路径生成算法
-    // 这里简化实现，实际应该使用更复杂的算法
-    return [][]string{
-        {"start", "process", "end"},
-        {"start", "process", "error", "retry", "end"},
-    }
-}
-```
-
-## 总结
-
-工作流基础理论为工作流系统提供了坚实的数学基础。通过形式化定义、状态机理论、图论基础和时态逻辑，我们可以：
-
-1. **精确建模**: 使用数学语言精确描述工作流行为
-2. **形式化验证**: 通过模型检查验证工作流属性
-3. **算法实现**: 基于理论设计高效的算法
-4. **错误检测**: 自动检测死锁、活锁等问题
-
-这些理论基础为后续的工作流引擎设计和实现提供了重要支撑。
+- [返回工作流系统主目录](../README.md)
+- [返回主目录](../../../README.md)
+- [01-基础理论层](../../01-Foundation-Theory/README.md)
+- [02-软件架构层](../../02-Software-Architecture/README.md)
+- [08-软件工程形式化](../../08-Software-Engineering-Formalization/README.md)
 
 ---
 
-**下一步**: 继续完善工作流引擎设计模块，将理论应用到实际系统实现中。 
+**最后更新**: 2024年12月19日
+**当前状态**: 🔄 第15轮重构进行中
+**激情澎湃的持续构建** <(￣︶￣)↗[GO!] 🚀

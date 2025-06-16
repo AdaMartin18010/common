@@ -5,16 +5,57 @@
 - [01-数学基础 (Mathematical Foundation)](#01-数学基础-mathematical-foundation)
   - [目录](#目录)
   - [概述](#概述)
+    - [核心目标](#核心目标)
+    - [与软件工程的关系](#与软件工程的关系)
   - [1. 集合论 (Set Theory)](#1-集合论-set-theory)
+    - [1.1 基本概念](#11-基本概念)
+    - [1.2 集合运算](#12-集合运算)
+    - [1.3 关系与函数](#13-关系与函数)
+    - [1.4 Go语言实现](#14-go语言实现)
   - [2. 逻辑学 (Logic)](#2-逻辑学-logic)
+    - [2.1 命题逻辑](#21-命题逻辑)
+    - [2.2 谓词逻辑](#22-谓词逻辑)
+    - [2.3 逻辑推理规则](#23-逻辑推理规则)
+    - [2.4 Go语言实现](#24-go语言实现)
   - [3. 图论 (Graph Theory)](#3-图论-graph-theory)
+    - [3.1 基本概念](#31-基本概念)
+    - [3.2 图的表示](#32-图的表示)
+    - [3.3 图算法](#33-图算法)
+    - [3.4 Go语言实现](#34-go语言实现)
   - [4. 概率论 (Probability Theory)](#4-概率论-probability-theory)
+    - [4.1 基本概念](#41-基本概念)
+    - [4.2 条件概率](#42-条件概率)
+    - [4.3 随机变量](#43-随机变量)
+    - [4.4 Go语言实现](#44-go语言实现)
   - [5. 代数结构 (Algebraic Structures)](#5-代数结构-algebraic-structures)
+    - [5.1 群论](#51-群论)
+    - [5.2 环论](#52-环论)
+    - [5.3 Go语言实现](#53-go语言实现)
   - [6. 拓扑学基础 (Topology Foundation)](#6-拓扑学基础-topology-foundation)
+    - [6.1 拓扑空间](#61-拓扑空间)
+    - [6.2 连续映射](#62-连续映射)
+    - [6.3 连通性](#63-连通性)
+    - [6.4 Go语言实现](#64-go语言实现)
   - [7. 范畴论基础 (Category Theory Foundation)](#7-范畴论基础-category-theory-foundation)
+    - [7.1 范畴定义](#71-范畴定义)
+    - [7.2 函子](#72-函子)
+    - [7.3 自然变换](#73-自然变换)
+    - [7.4 Go语言实现](#74-go语言实现)
   - [8. 同伦论基础 (Homotopy Theory Foundation)](#8-同伦论基础-homotopy-theory-foundation)
+    - [8.1 同伦定义](#81-同伦定义)
+    - [8.2 基本群](#82-基本群)
+    - [8.3 同伦等价](#83-同伦等价)
+    - [8.4 Go语言实现](#84-go语言实现)
   - [9. 形式化方法 (Formal Methods)](#9-形式化方法-formal-methods)
+    - [9.1 模型检查](#91-模型检查)
+    - [9.2 定理证明](#92-定理证明)
+    - [9.3 类型系统](#93-类型系统)
+    - [9.4 Go语言实现](#94-go语言实现)
   - [10. 计算数学 (Computational Mathematics)](#10-计算数学-computational-mathematics)
+    - [10.1 数值分析](#101-数值分析)
+    - [10.2 优化理论](#102-优化理论)
+    - [10.3 线性代数](#103-线性代数)
+    - [10.4 Go语言实现](#104-go语言实现)
   - [参考文献](#参考文献)
 
 ## 概述
@@ -50,6 +91,7 @@ graph TD
 **定义 1.1** (集合): 集合是不同对象的无序聚集，这些对象称为集合的元素。
 
 **形式化表示**:
+
 ```latex
 A = \{x \mid P(x)\}
 ```
@@ -70,6 +112,7 @@ A = \{x \mid P(x)\}
 **定义 1.3** (关系): 集合 $A$ 到集合 $B$ 的关系是 $A \times B$ 的子集。
 
 **定义 1.4** (函数): 函数 $f: A \rightarrow B$ 是满足以下条件的关系：
+
 - $\forall a \in A, \exists b \in B: (a,b) \in f$
 - $\forall a \in A, \forall b_1, b_2 \in B: (a,b_1) \in f \land (a,b_2) \in f \Rightarrow b_1 = b_2$
 
@@ -162,6 +205,7 @@ func ExampleSetOperations() {
 **定义 2.1** (命题): 命题是具有真值的陈述句。
 
 **基本逻辑运算符**:
+
 - **否定**: $\neg p$ (非p)
 - **合取**: $p \land q$ (p且q)
 - **析取**: $p \lor q$ (p或q)
@@ -173,6 +217,7 @@ func ExampleSetOperations() {
 **定义 2.2** (谓词): 谓词是包含变量的命题函数。
 
 **量词**:
+
 - **全称量词**: $\forall x P(x)$ (对所有x，P(x)成立)
 - **存在量词**: $\exists x P(x)$ (存在x，使得P(x)成立)
 
@@ -265,6 +310,7 @@ func ExampleLogic() {
 ### 3.2 图的表示
 
 **邻接矩阵**: 对于图 $G = (V, E)$，邻接矩阵 $A$ 定义为：
+
 ```latex
 A_{ij} = \begin{cases}
 1 & \text{if } (i,j) \in E \\
@@ -384,12 +430,14 @@ func ExampleGraph() {
 **定义 4.2** (事件): 事件是样本空间的子集。
 
 **定义 4.3** (概率): 概率函数 $P: 2^\Omega \rightarrow [0,1]$ 满足：
+
 - $P(\Omega) = 1$
 - 对于互斥事件 $A_1, A_2, \ldots$，$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
 
 ### 4.2 条件概率
 
 **定义 4.4** (条件概率): 给定事件 $B$ 发生的条件下，事件 $A$ 发生的概率为：
+
 ```latex
 P(A|B) = \frac{P(A \cap B)}{P(B)}
 ```
@@ -471,6 +519,7 @@ func ExampleProbability() {
 ### 5.1 群论
 
 **定义 5.1** (群): 群 $(G, \cdot)$ 是一个集合 $G$ 和二元运算 $\cdot$，满足：
+
 - **封闭性**: $\forall a, b \in G: a \cdot b \in G$
 - **结合律**: $\forall a, b, c \in G: (a \cdot b) \cdot c = a \cdot (b \cdot c)$
 - **单位元**: $\exists e \in G: \forall a \in G: e \cdot a = a \cdot e = a$
@@ -479,6 +528,7 @@ func ExampleProbability() {
 ### 5.2 环论
 
 **定义 5.2** (环): 环 $(R, +, \cdot)$ 是一个集合 $R$ 和两个二元运算 $+$ 和 $\cdot$，满足：
+
 - $(R, +)$ 是阿贝尔群
 - $(R, \cdot)$ 是半群
 - 分配律: $a \cdot (b + c) = a \cdot b + a \cdot c$
@@ -552,6 +602,7 @@ func ExampleGroup() {
 ### 6.1 拓扑空间
 
 **定义 6.1** (拓扑空间): 拓扑空间 $(X, \tau)$ 是一个集合 $X$ 和开集族 $\tau$，满足：
+
 - $\emptyset, X \in \tau$
 - 任意开集的并集是开集
 - 有限开集的交集是开集
@@ -644,6 +695,7 @@ func ExampleTopology() {
 ### 7.1 范畴定义
 
 **定义 7.1** (范畴): 范畴 $\mathcal{C}$ 包含：
+
 - 对象类 $\text{Ob}(\mathcal{C})$
 - 态射类 $\text{Mor}(\mathcal{C})$
 - 复合运算 $\circ$

@@ -1,8 +1,10 @@
-# 01-自动机理论 (Automata Theory)
+# 01-自动机理论
+
+ (Automata Theory)
 
 ## 目录
 
-- [01-自动机理论 (Automata Theory)](#01-自动机理论-automata-theory)
+- [01-自动机理论](#01-自动机理论)
 	- [目录](#目录)
 	- [1. 自动机基础](#1-自动机基础)
 		- [1.1 有限状态自动机](#11-有限状态自动机)
@@ -75,10 +77,12 @@
 
 **定义 2.1**: DFA的扩展转移函数 $\hat{\delta}: Q \times \Sigma^* \rightarrow Q$ 定义为：
 
-$$\begin{align}
+$$
+\begin{align}
 \hat{\delta}(q, \epsilon) &= q \\
 \hat{\delta}(q, wa) &= \delta(\hat{\delta}(q, w), a)
-\end{align}$$
+\end{align}
+$$
 
 其中 $w \in \Sigma^*$, $a \in \Sigma$。
 
@@ -87,18 +91,22 @@ $$\begin{align}
 ### 2.2 NFA定义
 
 **定义 2.3**: 非确定性有限自动机 (NFA) 是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
+
 - $\delta: Q \times (\Sigma \cup \{\epsilon\}) \rightarrow 2^Q$ 是转移函数
 
 **定义 2.4**: NFA的扩展转移函数 $\hat{\delta}: 2^Q \times \Sigma^* \rightarrow 2^Q$ 定义为：
 
-$$\begin{align}
+$$
+\begin{align}
 \hat{\delta}(S, \epsilon) &= S \\
 \hat{\delta}(S, wa) &= \bigcup_{q \in \hat{\delta}(S, w)} \delta(q, a)
-\end{align}$$
+\end{align}
+$$
 
 ### 2.3 PDA定义
 
 **定义 2.5**: PDA的配置是一个三元组 $(q, w, \gamma)$，其中：
+
 - $q \in Q$ 是当前状态
 - $w \in \Sigma^*$ 是剩余输入
 - $\gamma \in \Gamma^*$ 是栈内容

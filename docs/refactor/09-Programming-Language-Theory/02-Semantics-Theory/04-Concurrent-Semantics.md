@@ -1365,6 +1365,7 @@ func (dps *DiningPhilosophersSystem) putDownForks(philosopher *Philosopher) {
 ---
 
 **相关链接**:
+
 - [01-操作语义](./01-Operational-Semantics.md)
 - [02-指称语义](./02-Denotational-Semantics.md)
 - [03-公理语义](./03-Axiomatic-Semantics.md)

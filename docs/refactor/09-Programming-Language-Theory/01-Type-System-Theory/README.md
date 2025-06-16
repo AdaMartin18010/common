@@ -5,10 +5,12 @@
 - [01-类型系统理论 (Type System Theory)](#01-类型系统理论-type-system-theory)
   - [目录](#目录)
   - [概述](#概述)
+    - [核心概念](#核心概念)
   - [1. 类型基础 (Type Foundations)](#1-类型基础-type-foundations)
     - [1.1 类型定义](#11-类型定义)
     - [1.2 基本类型](#12-基本类型)
     - [1.3 类型关系](#13-类型关系)
+    - [1.4 类型环境](#14-类型环境)
   - [2. 类型推导 (Type Inference)](#2-类型推导-type-inference)
     - [2.1 类型推导规则](#21-类型推导规则)
     - [2.2 统一算法](#22-统一算法)
@@ -53,11 +55,13 @@
 ### 1.1 类型定义
 
 **定义 1.1** (类型): 类型 $T$ 是值的集合 $V_T$ 和操作集合 $O_T$ 的二元组：
+
 ```latex
 T = (V_T, O_T)
 ```
 
 其中：
+
 - $V_T$ 是类型 $T$ 的值域
 - $O_T$ 是类型 $T$ 支持的操作集合
 
@@ -73,11 +77,13 @@ T = (V_T, O_T)
 ### 1.3 类型关系
 
 **定义 1.3** (子类型关系): 类型 $S$ 是类型 $T$ 的子类型，记作 $S \leq T$，如果：
+
 ```latex
 V_S \subseteq V_T \land O_S \supseteq O_T
 ```
 
 **定义 1.4** (类型等价): 类型 $S$ 和 $T$ 等价，记作 $S \equiv T$，如果：
+
 ```latex
 S \leq T \land T \leq S
 ```
@@ -85,11 +91,13 @@ S \leq T \land T \leq S
 ### 1.4 类型环境
 
 **定义 1.5** (类型环境): 类型环境 $\Gamma$ 是从变量到类型的映射：
+
 ```latex
 \Gamma: \text{Var} \rightarrow \text{Type}
 ```
 
 **定义 1.6** (类型判断): 类型判断的形式为：
+
 ```latex
 \Gamma \vdash e: T
 ```
@@ -101,16 +109,19 @@ S \leq T \land T \leq S
 ### 2.1 类型推导规则
 
 **规则 2.1** (变量规则):
+
 ```latex
 \frac{x: T \in \Gamma}{\Gamma \vdash x: T}
 ```
 
 **规则 2.2** (函数应用规则):
+
 ```latex
 \frac{\Gamma \vdash e_1: T_1 \rightarrow T_2 \quad \Gamma \vdash e_2: T_1}{\Gamma \vdash e_1(e_2): T_2}
 ```
 
 **规则 2.3** (函数抽象规则):
+
 ```latex
 \frac{\Gamma, x: T_1 \vdash e: T_2}{\Gamma \vdash \lambda x: T_1.e: T_1 \rightarrow T_2}
 ```
@@ -597,6 +608,7 @@ func Sum[T NumberType](values []T) T {
 ### 5.1 Go类型系统特征
 
 **特征 5.1** (Go类型系统):
+
 - 静态类型系统
 - 结构类型系统
 - 接口类型系统
@@ -862,6 +874,7 @@ func (tsp *TypeSafetyProver) provePreservation(expr Expr) error {
 **定理 7.1**: 简单类型检查的时间复杂度为 $O(n)$，其中 $n$ 是表达式的大小。
 
 **证明**:
+
 1. 每个节点最多被访问一次
 2. 每个节点的类型检查操作是常数时间
 3. 总体时间复杂度为 $O(n)$
@@ -871,6 +884,7 @@ func (tsp *TypeSafetyProver) provePreservation(expr Expr) error {
 **定理 7.2**: Hindley-Milner类型推导的时间复杂度为 $O(n^3)$。
 
 **证明**:
+
 1. 统一算法的时间复杂度为 $O(n^2)$
 2. 每个节点可能需要统一操作
 3. 总体时间复杂度为 $O(n^3)$

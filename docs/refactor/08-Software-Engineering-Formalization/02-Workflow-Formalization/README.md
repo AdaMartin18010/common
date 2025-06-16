@@ -5,12 +5,29 @@
 - [02-工作流形式化 (Workflow Formalization)](#02-工作流形式化-workflow-formalization)
   - [目录](#目录)
   - [概述](#概述)
+    - [核心目标](#核心目标)
   - [1. 工作流模型 (Workflow Models)](#1-工作流模型-workflow-models)
+    - [1.1 基本定义](#11-基本定义)
+    - [1.2 Petri网模型](#12-petri网模型)
+    - [1.3 状态机模型](#13-状态机模型)
   - [2. 工作流语言 (Workflow Languages)](#2-工作流语言-workflow-languages)
+    - [2.1 工作流代数](#21-工作流代数)
+    - [2.2 形式化语法](#22-形式化语法)
+    - [2.3 语义定义](#23-语义定义)
   - [3. 工作流验证 (Workflow Verification)](#3-工作流验证-workflow-verification)
+    - [3.1 时态逻辑](#31-时态逻辑)
+    - [3.2 安全性验证](#32-安全性验证)
+    - [3.3 活性验证](#33-活性验证)
   - [4. 工作流优化 (Workflow Optimization)](#4-工作流优化-workflow-optimization)
+    - [4.1 性能指标](#41-性能指标)
+    - [4.2 优化目标](#42-优化目标)
   - [5. 同伦论视角](#5-同伦论视角)
+    - [5.1 工作流路径空间](#51-工作流路径空间)
+    - [5.2 同伦等价](#52-同伦等价)
   - [6. Go语言实现](#6-go语言实现)
+    - [6.1 工作流引擎](#61-工作流引擎)
+    - [6.2 状态机实现](#62-状态机实现)
+    - [6.3 工作流验证](#63-工作流验证)
   - [参考文献](#参考文献)
 
 ## 概述
@@ -29,6 +46,7 @@
 ### 1.1 基本定义
 
 **定义 1.1** (工作流): 工作流 $W = (S, T, F, M_0)$ 是一个四元组，其中：
+
 - $S$ 是状态集合
 - $T$ 是任务集合
 - $F \subseteq (S \times T) \cup (T \times S)$ 是流关系
@@ -37,6 +55,7 @@
 ### 1.2 Petri网模型
 
 **定义 1.2** (Petri网): Petri网 $N = (P, T, F, W, M_0)$ 包含：
+
 - $P$: 库所集合
 - $T$: 变迁集合
 - $F \subseteq (P \times T) \cup (T \times P)$: 流关系
@@ -46,6 +65,7 @@
 ### 1.3 状态机模型
 
 **定义 1.3** (状态机): 状态机 $M = (Q, \Sigma, \delta, q_0, F)$ 包含：
+
 - $Q$: 状态集合
 - $\Sigma$: 输入字母表
 - $\delta: Q \times \Sigma \rightarrow Q$: 转移函数
@@ -57,6 +77,7 @@
 ### 2.1 工作流代数
 
 **定义 2.1** (工作流代数): 工作流代数 $(W, \circ, \parallel, +)$ 包含：
+
 - $\circ$: 顺序组合
 - $\parallel$: 并行组合
 - $+$: 选择组合
@@ -88,6 +109,7 @@ w ::= \text{skip} \mid \text{task}(a) \mid w_1 \circ w_2 \mid w_1 \parallel w_2 
 ### 3.1 时态逻辑
 
 **定义 3.1** (LTL公式): 线性时态逻辑公式定义为：
+
 ```latex
 \phi ::= p \mid \neg \phi \mid \phi_1 \land \phi_2 \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi_1 \mathbf{U} \phi_2
 ```
@@ -111,6 +133,7 @@ w ::= \text{skip} \mid \text{task}(a) \mid w_1 \circ w_2 \mid w_1 \parallel w_2 
 ### 4.2 优化目标
 
 **目标函数**:
+
 ```latex
 \min_{W} \alpha \cdot T(W) + \beta \cdot (1 - U(W))
 ```
