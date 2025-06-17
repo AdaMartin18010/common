@@ -1,71 +1,63 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-快速修正数学表达式格式的Python脚本
+快速修复markdown文件中的数学表达式
 """
 
 import os
 import re
 import glob
 
-def fix_math_format(content):
-    """快速修正数学表达式格式"""
-    modified = False
-    
-    # 修正不在数学环境中的 \text{} 命令
-    def fix_text_command(match):
-        nonlocal modified
-        modified = True
-        text_content = match.group(1)
-        return f'$\\text{{{text_content}}}$'
-    
-    # 查找并修正不在数学环境中的 \text{}
-    pattern = r'(?<!\$)\\text\{([^}]*)\}(?!\$)'
-    if re.search(pattern, content):
-        content = re.sub(pattern, fix_text_command, content)
-    
-    # 修正表格中的数学表达式
-    def fix_table_math(match):
-        nonlocal modified
-        cell_content = match.group(1).strip()
-        if '\\' in cell_content and not re.search(r'\$.*\$', cell_content):
-            modified = True
-            return f'& ${cell_content}$ &'
-        return match.group(0)
-    
-    # 修正表格中的数学表达式
-    table_pattern = r'& ([^&]*\\[a-zA-Z]+\{[^}]*\}[^&]*) &'
-    if re.search(table_pattern, content):
-        content = re.sub(table_pattern, fix_table_math, content)
-    
-    return content, modified
+def fix_math_in_file(file_path):
+    """修复单个文件中的数学表达式"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        original = content
+        
+        # 修复行内数学表达式
+        content = re.sub(
+            r'(?<!```latex\n)\$([^$]+)\$(?!\n```)',
+            r'```latex\n$\1$\n```',
+            content
+        )
+        
+        # 修复块级数学表达式
+        content = re.sub(
+            r'(?<!```latex\n)\$\$([^$]+)\$\$(?!\n```)',
+            r'```latex\n$$\1$$\n```',
+            content
+        )
+        
+        if content != original:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            print(f"Fixed: {file_path}")
+            return True
+        return False
+        
+    except Exception as e:
+        print(f"Error: {file_path} - {e}")
+        return False
 
-def process_files():
-    """处理所有markdown文件"""
-    md_files = glob.glob('**/*.md', recursive=True)
+def main():
+    """主函数"""
+    # 获取所有markdown文件
+    md_files = []
+    for root, dirs, files in os.walk('.'):
+        for file in files:
+            if file.endswith('.md'):
+                md_files.append(os.path.join(root, file))
     
     print(f"Found {len(md_files)} markdown files")
     
-    fixed_count = 0
-    for filepath in md_files:
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            original_content = content
-            content, modified = fix_math_format(content)
-            
-            if modified:
-                with open(filepath, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                print(f"Fixed: {filepath}")
-                fixed_count += 1
-                
-        except Exception as e:
-            print(f"Error processing {filepath}: {e}")
+    fixed = 0
+    for file_path in md_files:
+        if fix_math_in_file(file_path):
+            fixed += 1
     
-    print(f"\nFixed {fixed_count} files out of {len(md_files)} total files")
-    return fixed_count
+    print(f"Fixed {fixed}/{len(md_files)} files")
 
-if __name__ == '__main__':
-    process_files() 
+if __name__ == "__main__":
+    main() 

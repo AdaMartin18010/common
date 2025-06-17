@@ -1,37 +1,35 @@
-# 批量修正数学表达式格式的PowerShell脚本
+# 修复markdown文件中的数学表达式
+# 添加缺失的LaTeX标签
 
-# 获取所有markdown文件
-$files = Get-ChildItem -Recurse -Filter "*.md"
+$refactorDir = "."
+$markdownFiles = Get-ChildItem -Path $refactorDir -Filter "*.md" -Recurse
 
-foreach ($file in $files) {
-    $content = Get-Content $file.FullName -Raw -Encoding UTF8
-    
-    # 修正数学表达式格式
-    $modified = $false
-    
-    # 修正 \text{} 格式
-    if ($content -match "\\text\{") {
-        $content = $content -replace '\\text\{([^}]*)\}', '\\text{$1}'
-        $modified = $true
+Write-Host "🔍 找到 $($markdownFiles.Count) 个markdown文件"
+
+$fixedCount = 0
+
+foreach ($file in $markdownFiles) {
+    try {
+        $content = Get-Content -Path $file.FullName -Raw -Encoding UTF8
+        $originalContent = $content
+        
+        # 修复行内数学表达式 $...$ 格式
+        $content = $content -replace '(?<!```latex\s*\n)\$([^$]+)\$(?!\s*\n```)', "```latex`n`$1`$`n```"
+        
+        # 修复块级数学表达式 $$...$$ 格式
+        $content = $content -replace '(?<!```latex\s*\n)\$\$([^$]+)\$\$(?!\s*\n```)', "```latex`n````1````n```"
+        
+        if ($content -ne $originalContent) {
+            Set-Content -Path $file.FullName -Value $content -Encoding UTF8
+            Write-Host "✅ 修复: $($file.FullName)"
+            $fixedCount++
+        } else {
+            Write-Host "⏭️  跳过: $($file.FullName)"
+        }
     }
-    
-    # 修正未正确包围的数学表达式
-    if ($content -match '(?<!\$)[^$]*\\[a-zA-Z]+\{[^}]*\}[^$]*(?!\$)') {
-        # 这里需要更复杂的正则表达式处理
-        $modified = $true
-    }
-    
-    # 修正表格中的数学表达式
-    if ($content -match '&.*\\text\{') {
-        $content = $content -replace '& ([^&]*\\text\{[^}]*\}[^&]*) &', '& $\1$ &'
-        $modified = $true
-    }
-    
-    # 如果内容被修改，写回文件
-    if ($modified) {
-        Set-Content $file.FullName $content -Encoding UTF8
-        Write-Host "Fixed: $($file.FullName)"
+    catch {
+        Write-Host "❌ 错误: $($file.FullName) - $_"
     }
 }
 
-Write-Host "Math expression format fixing completed!" 
+Write-Host "`n📊 修复完成: $fixedCount/$($markdownFiles.Count) 个文件" 
