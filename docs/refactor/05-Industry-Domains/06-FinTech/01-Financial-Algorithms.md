@@ -587,4 +587,4 @@ func (rm *RiskManager) calculateZScore(confidenceLevel float64) float64 {
 3. **期权定价**: Black-Scholes模型、希腊字母等期权分析
 4. **风险管理**: VaR、期望损失等风险度量
 
-这个设计提供了一个完整的金融算法框架，支持各种金融产品的定价和风险管理。 
+这个设计提供了一个完整的金融算法框架，支持各种金融产品的定价和风险管理。

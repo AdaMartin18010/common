@@ -18,6 +18,7 @@
 ```
 
 其中：
+
 - $\text{DataPlane} = \text{Proxy} \times \text{Service}$
 - $\text{ControlPlane} = \text{Discovery} \times \text{Configuration} \times \text{Policy}$
 
@@ -1083,4 +1084,4 @@ func (tc *TraceCollector) AddSpan(traceID string, span Span) error {
 4. **控制平面**: 配置管理和策略控制
 5. **监控追踪**: 指标收集和分布式追踪
 
-这个设计提供了一个完整的服务网格框架，支持微服务架构中的服务间通信、负载均衡、故障恢复等核心功能。 
+这个设计提供了一个完整的服务网格框架，支持微服务架构中的服务间通信、负载均衡、故障恢复等核心功能。

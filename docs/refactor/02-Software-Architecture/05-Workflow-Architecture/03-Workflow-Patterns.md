@@ -1243,4 +1243,4 @@ func (pts *PatternTestSuite) runTest(ctx context.Context, test PatternTest) Test
 4. **复合模式**: 模式组合和复杂业务模式
 5. **验证测试**: 模式验证和测试框架
 
-这些模式提供了构建复杂工作流的基础构件，支持灵活的业务流程建模和实现。 
+这些模式提供了构建复杂工作流的基础构件，支持灵活的业务流程建模和实现。

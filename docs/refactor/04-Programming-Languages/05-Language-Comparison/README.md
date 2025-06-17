@@ -35,6 +35,7 @@
 
 **定义 1** (语言比较维度)
 编程语言比较包含以下维度：
+
 - 语法维度：$S = \{s_1, s_2, \ldots, s_n\}$
 - 语义维度：$M = \{m_1, m_2, \ldots, m_n\}$
 - 性能维度：$P = \{p_1, p_2, \ldots, p_n\}$
@@ -50,6 +51,7 @@ $$C_{ij} = \text{compare}(L_1^i, L_2^j)$$
 
 **定义 3** (评估标准)
 评估标准 $A$ 包含以下指标：
+
 - 可读性：$R = \sum_{i=1}^n w_i \cdot r_i$
 - 可维护性：$M = \sum_{i=1}^n w_i \cdot m_i$
 - 性能：$P = \sum_{i=1}^n w_i \cdot p_i$
@@ -74,6 +76,7 @@ $$Q(f) = \frac{\sum_{i=1}^n s_i \cdot w_i}{\sum_{i=1}^n w_i}$$
 $$T = \alpha \cdot S + \beta \cdot C + \gamma \cdot P$$
 
 其中：
+
 - $S$: 静态类型检查强度
 - $C$: 编译时检查强度
 - $P$: 类型安全保证强度
@@ -86,6 +89,7 @@ $$T = \alpha \cdot S + \beta \cdot C + \gamma \cdot P$$
 
 **定义 6** (内存管理模型)
 内存管理模型 $M$ 包含以下组件：
+
 - 分配策略：$A: \mathbb{N} \to \text{Address}$
 - 回收策略：$G: \text{Address} \to \{\text{Keep}, \text{Free}\}$
 - 安全策略：$S: \text{Address} \to \{\text{Safe}, \text{Unsafe}\}$
@@ -103,6 +107,7 @@ $$\forall a \in \text{Address}: S(a) = \text{Safe} \implies G(a) = \text{Keep}$$
 $$C = (P, \Sigma, \delta, p_0)$$
 
 其中：
+
 - $P$: 进程集合
 - $\Sigma$: 同步事件集合
 - $\delta: P \times \Sigma \to P$: 状态转换函数
@@ -118,6 +123,7 @@ $$\forall p_1, p_2 \in P: \text{race}(p_1, p_2) = \text{false}$$
 
 **定义 8** (错误处理模型)
 错误处理模型 $E$ 包含：
+
 - 错误类型：$T_E = \{t_1, t_2, \ldots, t_n\}$
 - 处理策略：$H: T_E \to \text{Strategy}$
 - 传播机制：$P: \text{Error} \to \text{Handler}$
@@ -539,4 +545,4 @@ func (lct *LanguageComparisonToolchain) outputCSV(report string) error {
 
 **模块状态**: 🔄 创建中  
 **最后更新**: 2024年12月19日  
-**下一步**: 创建Go语言分析子模块 
+**下一步**: 创建Go语言分析子模块
