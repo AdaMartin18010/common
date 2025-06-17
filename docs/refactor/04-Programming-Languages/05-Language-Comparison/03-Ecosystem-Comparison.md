@@ -837,7 +837,8 @@ Go语言的生态系统已经相当成熟，特别适合构建现代化的云原
 ---
 
 **相关链接**:
+
 - [01-Go-vs-Other-Languages](../01-Go-vs-Other-Languages.md)
 - [02-Performance-Comparison](../02-Performance-Comparison.md)
 - [04-Use-Case-Comparison](../04-Use-Case-Comparison.md)
-- [../README.md](../README.md) 
+- [../README.md](../README.md)

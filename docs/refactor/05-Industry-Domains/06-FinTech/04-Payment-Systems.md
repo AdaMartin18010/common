@@ -896,7 +896,8 @@ Go语言凭借其优秀的性能和并发特性，是构建现代支付系统的
 ---
 
 **相关链接**:
+
 - [01-Financial-Algorithms](../01-Financial-Algorithms.md)
 - [02-Trading-Systems](../02-Trading-Systems.md)
 - [03-Risk-Management](../03-Risk-Management.md)
-- [../README.md](../README.md) 
+- [../README.md](../README.md)

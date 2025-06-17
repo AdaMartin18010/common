@@ -695,7 +695,8 @@ Go语言在以下场景中表现优异：
 ---
 
 **相关链接**:
+
 - [01-Go-vs-Other-Languages](../01-Go-vs-Other-Languages.md)
 - [03-Ecosystem-Comparison](../03-Ecosystem-Comparison.md)
 - [04-Use-Case-Comparison](../04-Use-Case-Comparison.md)
-- [../README.md](../README.md) 
+- [../README.md](../README.md)
