@@ -1308,10 +1308,11 @@ func (so *StorageOptimizer) enableDeduplication(params map[string]interface{}) e
 ---
 
 **相关链接**：
+
 - [01-数据摄入](../01-Data-Ingestion.md)
 - [02-数据处理](../02-Data-Processing.md)
 - [03-数据分析](../03-Data-Analytics.md)
 - [05-数据可视化](../05-Data-Visualization.md)
 - [06-机器学习](../06-Machine-Learning.md)
 - [07-实时计算](../07-Real-Time-Computing.md)
-- [08-数据治理](../08-Data-Governance.md) 
+- [08-数据治理](../08-Data-Governance.md)

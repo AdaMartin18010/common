@@ -58,19 +58,19 @@ func (bp *BaseProcessor) Process(data []byte) ([]byte, error) {
     if !bp.Validate(data) {
         return nil, errors.New("invalid data")
     }
-    
+
     // 清洗数据
     cleaned, err := bp.Clean(data)
     if err != nil {
         return nil, err
     }
-    
+
     // 转换数据
     transformed, err := bp.Transform(cleaned)
     if err != nil {
         return nil, err
     }
-    
+
     return transformed, nil
 }
 ```
@@ -110,7 +110,7 @@ func (hd *HashDeduplicator) Deduplicate(data [][]byte) [][]byte {
     for _, item := range data {
         hash := sha256.Sum256(item)
         hashStr := hex.EncodeToString(hash[:])
-        
+
         if !hd.seen[hashStr] {
             hd.seen[hashStr] = true
             result = append(result, item)
@@ -141,22 +141,22 @@ const (
 ```go
 func CleanData(data []Record) []Record {
     cleaned := make([]Record, 0)
-    
+
     for _, record := range data {
         // 1. 验证记录
         if !ValidateRecord(record) {
             continue
         }
-        
+
         // 2. 清洗记录
         cleanedRecord := CleanRecord(record)
-        
+
         // 3. 标准化记录
         normalizedRecord := NormalizeRecord(cleanedRecord)
-        
+
         cleaned = append(cleaned, normalizedRecord)
     }
-    
+
     return cleaned
 }
 
@@ -165,27 +165,27 @@ func ValidateRecord(record Record) bool {
     if record.ID == "" || record.Timestamp.IsZero() {
         return false
     }
-    
+
     // 检查数据类型
     if !IsValidDataType(record.Data) {
         return false
     }
-    
+
     return true
 }
 
 func CleanRecord(record Record) Record {
     // 去除空白字符
     record.Data = strings.TrimSpace(record.Data)
-    
+
     // 修正格式
     record.Data = CorrectFormat(record.Data)
-    
+
     // 填充缺失值
     if record.Data == "" {
         record.Data = DefaultValue
     }
-    
+
     return record
 }
 ```
@@ -237,13 +237,13 @@ func (jc *JSONConverter) JSONToXML(data []byte) ([]byte, error) {
     if err := json.Unmarshal(data, &jsonData); err != nil {
         return nil, err
     }
-    
+
     // 转换为XML
     xmlData, err := xml.MarshalIndent(jsonData, "", "  ")
     if err != nil {
         return nil, err
     }
-    
+
     return xmlData, nil
 }
 ```
@@ -264,7 +264,7 @@ type TransformStage interface {
 // 管道执行
 func (tp *TransformPipeline) Execute(data []byte) ([]byte, error) {
     result := data
-    
+
     for _, stage := range tp.stages {
         transformed, err := stage.Transform(result)
         if err != nil {
@@ -272,7 +272,7 @@ func (tp *TransformPipeline) Execute(data []byte) ([]byte, error) {
         }
         result = transformed
     }
-    
+
     return result, nil
 }
 
@@ -284,7 +284,7 @@ func (jfs *JSONFlattenStage) Transform(data []byte) ([]byte, error) {
     if err := json.Unmarshal(data, &jsonData); err != nil {
         return nil, err
     }
-    
+
     flattened := FlattenJSON(jsonData)
     return json.Marshal(flattened)
 }
@@ -295,7 +295,7 @@ func (jfs *JSONFlattenStage) Name() string {
 
 func FlattenJSON(data map[string]interface{}) map[string]interface{} {
     result := make(map[string]interface{})
-    
+
     for key, value := range data {
         switch v := value.(type) {
         case map[string]interface{}:
@@ -307,7 +307,7 @@ func FlattenJSON(data map[string]interface{}) map[string]interface{} {
             result[key] = v
         }
     }
-    
+
     return result
 }
 ```
@@ -393,13 +393,13 @@ type GroupAggregator struct {
 
 func (ga *GroupAggregator) GroupAggregate(data []interface{}) (map[string]interface{}, error) {
     groups := make(map[string][]interface{})
-    
+
     // 分组
     for _, item := range data {
         key := ga.keyFunc(item)
         groups[key] = append(groups[key], item)
     }
-    
+
     // 聚合
     result := make(map[string]interface{})
     for key, groupData := range groups {
@@ -409,7 +409,7 @@ func (ga *GroupAggregator) GroupAggregate(data []interface{}) (map[string]interf
         }
         result[key] = aggregated
     }
-    
+
     return result, nil
 }
 
@@ -421,23 +421,23 @@ func ExampleGroupAggregation() {
         {Name: "Alice", Age: 28, Salary: 55000},
         {Name: "Bob", Age: 32, Salary: 65000},
     }
-    
+
     // 按姓名分组，计算平均年龄
     keyFunc := func(item interface{}) string {
         return item.(User).Name
     }
-    
+
     ageAggregator := &StatisticalAggregator{aggType: "avg"}
     groupAggregator := &GroupAggregator{
         keyFunc: keyFunc,
         aggregator: ageAggregator,
     }
-    
+
     result, err := groupAggregator.GroupAggregate(interface{}(data))
     if err != nil {
         log.Fatal(err)
     }
-    
+
     fmt.Printf("Average age by name: %+v\n", result)
 }
 ```
@@ -475,10 +475,10 @@ func (swp *SlidingWindowProcessor) Process(data []byte, state map[string]interfa
     if err := json.Unmarshal(data, &point); err != nil {
         return nil, err
     }
-    
+
     // 添加新数据点
     swp.buffer = append(swp.buffer, point)
-    
+
     // 移除过期数据
     cutoff := time.Now().Add(-swp.windowSize)
     validBuffer := make([]DataPoint, 0)
@@ -488,10 +488,10 @@ func (swp *SlidingWindowProcessor) Process(data []byte, state map[string]interfa
         }
     }
     swp.buffer = validBuffer
-    
+
     // 计算窗口统计
     stats := swp.calculateStats(swp.buffer)
-    
+
     return json.Marshal(stats)
 }
 
@@ -499,11 +499,11 @@ func (swp *SlidingWindowProcessor) calculateStats(data []DataPoint) WindowStats 
     if len(data) == 0 {
         return WindowStats{}
     }
-    
+
     sum := 0.0
     min := data[0].Value
     max := data[0].Value
-    
+
     for _, point := range data {
         sum += point.Value
         if point.Value < min {
@@ -513,7 +513,7 @@ func (swp *SlidingWindowProcessor) calculateStats(data []DataPoint) WindowStats 
             max = point.Value
         }
     }
-    
+
     return WindowStats{
         Count: len(data),
         Sum:   sum,
@@ -542,7 +542,7 @@ func (sp *StreamPipeline) Start() {
     go func() {
         for data := range sp.input {
             result := data
-            
+
             for _, stage := range sp.stages {
                 processed, err := stage.Process(result, make(map[string]interface{}))
                 if err != nil {
@@ -551,7 +551,7 @@ func (sp *StreamPipeline) Start() {
                 }
                 result = processed
             }
-            
+
             sp.output <- result
         }
     }()
@@ -569,20 +569,20 @@ func ExampleStreamProcessing() {
         input:  make(chan []byte, 100),
         output: make(chan []byte, 100),
     }
-    
+
     pipeline.Start()
-    
+
     // 发送数据
     go func() {
         for i := 0; i < 100; i++ {
-            data := fmt.Sprintf(`{"timestamp":"%s","value":%d}`, 
+            data := fmt.Sprintf(`{"timestamp":"%s","value":%d}`,
                 time.Now().Format(time.RFC3339), i)
             pipeline.input <- []byte(data)
             time.Sleep(100 * time.Millisecond)
         }
         close(pipeline.input)
     }()
-    
+
     // 接收结果
     for result := range pipeline.output {
         fmt.Printf("Processed: %s\n", string(result))
@@ -612,17 +612,17 @@ type BatchProcessor struct {
 func (bp *BatchProcessor) ProcessBatch(data [][]byte) ([][]byte, error) {
     // 分片数据
     chunks := bp.chunkData(data, bp.batchSize)
-    
+
     // 并行处理
     results := make([][][]byte, len(chunks))
     var wg sync.WaitGroup
     errChan := make(chan error, len(chunks))
-    
+
     for i, chunk := range chunks {
         wg.Add(1)
         go func(index int, chunkData [][]byte) {
             defer wg.Done()
-            
+
             processed, err := bp.processChunk(chunkData)
             if err != nil {
                 errChan <- err
@@ -631,17 +631,17 @@ func (bp *BatchProcessor) ProcessBatch(data [][]byte) ([][]byte, error) {
             results[index] = processed
         }(i, chunk)
     }
-    
+
     wg.Wait()
     close(errChan)
-    
+
     // 检查错误
     for err := range errChan {
         if err != nil {
             return nil, err
         }
     }
-    
+
     // 合并结果
     return bp.mergeResults(results), nil
 }
@@ -660,7 +660,7 @@ func (bp *BatchProcessor) chunkData(data [][]byte, size int) [][][]byte {
 
 func (bp *BatchProcessor) processChunk(chunk [][]byte) ([][]byte, error) {
     results := make([][]byte, 0)
-    
+
     for _, item := range chunk {
         processed, err := bp.processor.Process(item)
         if err != nil {
@@ -668,7 +668,7 @@ func (bp *BatchProcessor) processChunk(chunk [][]byte) ([][]byte, error) {
         }
         results = append(results, processed)
     }
-    
+
     return results, nil
 }
 
@@ -707,21 +707,21 @@ type KeyValue struct {
 func (mrp *MapReduceProcessor) Execute(data map[string][]byte) (map[string][]byte, error) {
     // Map阶段
     mapped := make(map[string][][]byte)
-    
+
     for key, value := range data {
         keyValues, err := mrp.mapper.Map(key, value)
         if err != nil {
             return nil, err
         }
-        
+
         for _, kv := range keyValues {
             mapped[kv.Key] = append(mapped[kv.Key], kv.Value)
         }
     }
-    
+
     // Reduce阶段
     result := make(map[string][]byte)
-    
+
     for key, values := range mapped {
         reduced, err := mrp.reducer.Reduce(key, values)
         if err != nil {
@@ -729,7 +729,7 @@ func (mrp *MapReduceProcessor) Execute(data map[string][]byte) (map[string][]byt
         }
         result[key] = reduced
     }
-    
+
     return result, nil
 }
 
@@ -739,7 +739,7 @@ type WordCountMapper struct{}
 func (wcm *WordCountMapper) Map(key string, value []byte) ([]KeyValue, error) {
     words := strings.Fields(string(value))
     result := make([]KeyValue, 0)
-    
+
     for _, word := range words {
         word = strings.ToLower(strings.Trim(word, ".,!?"))
         if word != "" {
@@ -749,7 +749,7 @@ func (wcm *WordCountMapper) Map(key string, value []byte) ([]KeyValue, error) {
             })
         }
     }
-    
+
     return result, nil
 }
 
@@ -762,7 +762,7 @@ func (wcr *WordCountReducer) Reduce(key string, values [][]byte) ([]byte, error)
             count += val
         }
     }
-    
+
     return []byte(strconv.Itoa(count)), nil
 }
 ```
@@ -794,35 +794,35 @@ type Metrics struct {
 
 func (rtp *RealTimeProcessor) Process(data []byte) ([]byte, error) {
     start := time.Now()
-    
+
     // 处理数据
     result, err := rtp.processor.Process(data)
-    
+
     // 记录指标
     latency := time.Since(start)
     rtp.recordMetrics(err, latency)
-    
+
     // 检查延迟约束
     if latency > rtp.maxLatency {
         return nil, fmt.Errorf("latency %v exceeds limit %v", latency, rtp.maxLatency)
     }
-    
+
     return result, err
 }
 
 func (rtp *RealTimeProcessor) recordMetrics(err error, latency time.Duration) {
     rtp.metrics.mu.Lock()
     defer rtp.metrics.mu.Unlock()
-    
+
     rtp.metrics.processedCount++
     if err != nil {
         rtp.metrics.errorCount++
     }
-    
+
     // 更新平均延迟
     totalLatency := rtp.metrics.avgLatency * time.Duration(rtp.metrics.processedCount-1)
     rtp.metrics.avgLatency = (totalLatency + latency) / time.Duration(rtp.metrics.processedCount)
-    
+
     // 更新最大延迟
     if latency > rtp.metrics.maxLatency {
         rtp.metrics.maxLatency = latency
@@ -865,12 +865,12 @@ type RingBuffer struct {
 func (rb *RingBuffer) Push(event DataEvent) bool {
     rb.mu.Lock()
     defer rb.mu.Unlock()
-    
+
     next := (rb.tail + 1) % rb.size
     if next == rb.head {
         return false // 缓冲区满
     }
-    
+
     rb.buffer[rb.tail] = event
     rb.tail = next
     return true
@@ -879,11 +879,11 @@ func (rb *RingBuffer) Push(event DataEvent) bool {
 func (rb *RingBuffer) Pop() (DataEvent, bool) {
     rb.mu.Lock()
     defer rb.mu.Unlock()
-    
+
     if rb.head == rb.tail {
         return DataEvent{}, false // 缓冲区空
     }
-    
+
     event := rb.buffer[rb.head]
     rb.head = (rb.head + 1) % rb.size
     return event, true
@@ -894,14 +894,14 @@ func (rtsp *RealTimeStreamProcessor) Start() {
         for event := range rtsp.input {
             // 尝试处理
             result, err := rtsp.processor.Process(event.Data)
-            
+
             processed := ProcessedEvent{
                 EventID:   event.ID,
                 Result:    result,
                 Latency:   time.Since(event.Timestamp),
                 Timestamp: time.Now(),
             }
-            
+
             if err != nil {
                 // 处理失败，放入缓冲区
                 if !rtsp.buffer.Push(event) {
@@ -912,7 +912,7 @@ func (rtsp *RealTimeStreamProcessor) Start() {
             }
         }
     }()
-    
+
     // 后台处理缓冲区
     go rtsp.processBuffer()
 }
@@ -920,27 +920,27 @@ func (rtsp *RealTimeStreamProcessor) Start() {
 func (rtsp *RealTimeStreamProcessor) processBuffer() {
     ticker := time.NewTicker(100 * time.Millisecond)
     defer ticker.Stop()
-    
+
     for range ticker.C {
         for {
             event, ok := rtsp.buffer.Pop()
             if !ok {
                 break
             }
-            
+
             result, err := rtsp.processor.Process(event.Data)
             if err != nil {
                 log.Printf("Failed to process buffered event %s: %v", event.ID, err)
                 continue
             }
-            
+
             processed := ProcessedEvent{
                 EventID:   event.ID,
                 Result:    result,
                 Latency:   time.Since(event.Timestamp),
                 Timestamp: time.Now(),
             }
-            
+
             rtsp.output <- processed
         }
     }
@@ -986,12 +986,12 @@ func (pp *ParallelProcessor) ProcessParallel(data [][]byte) ([][]byte, error) {
             Data: item,
         }
     }
-    
+
     // 提交作业
     for _, job := range jobs {
         pp.pool.jobQueue <- job
     }
-    
+
     // 收集结果
     results := make([][]byte, len(jobs))
     for i := 0; i < len(jobs); i++ {
@@ -1001,7 +1001,7 @@ func (pp *ParallelProcessor) ProcessParallel(data [][]byte) ([][]byte, error) {
         }
         results[i] = result.Data
     }
-    
+
     return results, nil
 }
 
@@ -1014,16 +1014,16 @@ func (wp *WorkerPool) Start() {
 
 func (wp *WorkerPool) worker(id int) {
     defer wp.wg.Done()
-    
+
     for job := range wp.jobQueue {
         // 处理作业
         result := Result{
             JobID: job.ID,
         }
-        
+
         // 这里应该调用实际的处理器
         // result.Data, result.Error = processor.Process(job.Data)
-        
+
         wp.resultChan <- result
     }
 }
@@ -1042,16 +1042,16 @@ func (mop *MemoryOptimizedProcessor) Process(data []byte) ([]byte, error) {
     // 从对象池获取缓冲区
     buffer := mop.pool.Get().([]byte)
     defer mop.pool.Put(buffer)
-    
+
     // 确保缓冲区足够大
     if cap(buffer) < len(data) {
         buffer = make([]byte, len(data))
     }
     buffer = buffer[:len(data)]
-    
+
     // 复制数据
     copy(buffer, data)
-    
+
     // 处理数据
     return mop.processor.Process(buffer)
 }
@@ -1091,7 +1091,7 @@ type MemoryCache struct {
 func (mc *MemoryCache) Get(key string) ([]byte, bool) {
     mc.mu.RLock()
     defer mc.mu.RUnlock()
-    
+
     value, exists := mc.data[key]
     return value, exists
 }
@@ -1099,7 +1099,7 @@ func (mc *MemoryCache) Get(key string) ([]byte, bool) {
 func (mc *MemoryCache) Set(key string, value []byte) error {
     mc.mu.Lock()
     defer mc.mu.Unlock()
-    
+
     mc.data[key] = value
     return nil
 }
@@ -1107,21 +1107,21 @@ func (mc *MemoryCache) Set(key string, value []byte) error {
 func (cp *CachedProcessor) Process(data []byte) ([]byte, error) {
     // 生成缓存键
     key := generateCacheKey(data)
-    
+
     // 检查缓存
     if cached, exists := cp.cache.Get(key); exists {
         return cached, nil
     }
-    
+
     // 处理数据
     result, err := cp.processor.Process(data)
     if err != nil {
         return nil, err
     }
-    
+
     // 缓存结果
     cp.cache.Set(key, result)
-    
+
     return result, nil
 }
 
@@ -1155,4 +1155,4 @@ func generateCacheKey(data []byte) string {
 - [05-数据可视化](../05-Data-Visualization.md)
 - [06-机器学习](../06-Machine-Learning.md)
 - [07-实时计算](../07-Real-Time-Computing.md)
-- [08-数据治理](../08-Data-Governance.md) 
+- [08-数据治理](../08-Data-Governance.md)
