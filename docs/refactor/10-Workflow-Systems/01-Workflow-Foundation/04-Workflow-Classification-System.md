@@ -2,7 +2,7 @@
 
 ## 目录
 
-- [04-工作流分类体系](#04-工作流分类体系)
+- [04-工作流分类体系 (Workflow Classification System)](#04-工作流分类体系-workflow-classification-system)
   - [目录](#目录)
   - [1. 分类理论基础](#1-分类理论基础)
     - [1.1 分类原则](#11-分类原则)
@@ -55,6 +55,7 @@
 **定义 1.1** (分类维度): 分类维度是工作流的一个特征属性，用于区分不同类型的工作流。
 
 主要分类维度包括：
+
 - 控制流维度：描述工作流的执行控制方式
 - 数据流维度：描述工作流的数据传递方式
 - 执行模式维度：描述工作流的执行时序特性
@@ -66,7 +67,8 @@
 **定义 1.2** (分类层次): 分类层次是分类体系的层级结构，从抽象到具体。
 
 **层次结构**:
-```
+
+```text
 工作流分类体系
 ├── 控制流分类
 │   ├── 顺序工作流
@@ -101,11 +103,13 @@ $$SequentialWorkflow = \{W \mid \forall a_i, a_j \in W: i < j \Rightarrow a_i \p
 其中 $\prec$ 表示"先于"关系。
 
 **性质 2.1** (顺序工作流性质):
+
 - 线性性：活动按线性顺序排列
 - 确定性：执行路径唯一
 - 可预测性：执行时间可预测
 
 **Go语言实现**:
+
 ```go
 // SequentialWorkflow 顺序工作流
 type SequentialWorkflow struct {
@@ -145,11 +149,13 @@ $$ParallelWorkflow = \{W \mid \exists a_i, a_j \in W: a_i \parallel a_j\}$$
 其中 $\parallel$ 表示"并行"关系。
 
 **性质 2.2** (并行工作流性质):
+
 - 并发性：多个活动同时执行
 - 独立性：并行活动之间相互独立
 - 同步性：需要等待所有并行活动完成
 
 **Go语言实现**:
+
 ```go
 // ParallelWorkflow 并行工作流
 type ParallelWorkflow struct {
@@ -205,11 +211,13 @@ $$ConditionalWorkflow = \{W \mid \exists c, a_1, a_2: W = cond(c, a_1, a_2)\}$$
 其中 $cond(c, a_1, a_2)$ 表示条件选择。
 
 **性质 2.3** (条件工作流性质):
+
 - 分支性：根据条件选择不同路径
 - 互斥性：不同分支互不重叠
 - 确定性：条件确定时路径唯一
 
 **Go语言实现**:
+
 ```go
 // ConditionalWorkflow 条件工作流
 type ConditionalWorkflow struct {
@@ -242,11 +250,13 @@ $$LoopWorkflow = \{W \mid \exists c, a: W = while(c, a)\}$$
 其中 $while(c, a)$ 表示循环结构。
 
 **性质 2.4** (循环工作流性质):
+
 - 重复性：某些活动重复执行
 - 终止性：循环条件最终为假
 - 有界性：循环次数有上界
 
 **Go语言实现**:
+
 ```go
 // LoopWorkflow 循环工作流
 type LoopWorkflow struct {
@@ -298,6 +308,7 @@ $$DataDrivenWorkflow = \{W \mid \forall t \in T: condition(t) = f(data(t))\}$$
 其中 $f$ 是数据状态函数。
 
 **性质 3.1** (数据驱动工作流性质):
+
 - 数据敏感性：执行路径依赖数据状态
 - 动态性：路径在运行时确定
 - 适应性：能够适应数据变化
@@ -310,6 +321,7 @@ $$EventDrivenWorkflow = \{W \mid \exists E: trigger(W) = f(E)\}$$
 其中 $E$ 是事件集合，$f$ 是事件处理函数。
 
 **性质 3.2** (事件驱动工作流性质):
+
 - 响应性：对外部事件快速响应
 - 异步性：事件处理通常是异步的
 - 松耦合：事件源与处理逻辑松耦合
@@ -322,6 +334,7 @@ $$MessageDrivenWorkflow = \{W \mid \exists M: coordination(W) = g(M)\}$$
 其中 $M$ 是消息集合，$g$ 是消息处理函数。
 
 **性质 3.3** (消息驱动工作流性质):
+
 - 分布式：支持分布式执行
 - 可靠性：消息传递保证可靠性
 - 可扩展性：易于扩展新的参与者
@@ -334,6 +347,7 @@ $$MessageDrivenWorkflow = \{W \mid \exists M: coordination(W) = g(M)\}$$
 $$SynchronousExecution = \{W \mid \forall a \in W: caller(a) \text{ waits for } a\}$$
 
 **性质 4.1** (同步执行性质):
+
 - 阻塞性：调用者被阻塞直到完成
 - 简单性：执行逻辑简单直观
 - 确定性：执行顺序确定
@@ -344,6 +358,7 @@ $$SynchronousExecution = \{W \mid \forall a \in W: caller(a) \text{ waits for } 
 $$AsynchronousExecution = \{W \mid \exists a \in W: caller(a) \text{ does not wait for } a\}$$
 
 **性质 4.2** (异步执行性质):
+
 - 非阻塞性：调用者不被阻塞
 - 并发性：支持并发执行
 - 复杂性：需要处理回调或通知
@@ -354,6 +369,7 @@ $$AsynchronousExecution = \{W \mid \exists a \in W: caller(a) \text{ does not wa
 $$HybridExecution = \{W \mid \exists a_1, a_2 \in W: a_1 \text{ is sync } \land a_2 \text{ is async}\}$$
 
 **性质 4.3** (混合执行性质):
+
 - 灵活性：根据需求选择执行模式
 - 优化性：能够优化性能
 - 复杂性：需要协调不同执行模式
@@ -368,6 +384,7 @@ $$BusinessProcess = \{W \mid domain(W) \in BusinessDomains\}$$
 其中 $BusinessDomains$ 是业务领域集合。
 
 **特点**:
+
 - 业务导向：直接支持业务目标
 - 人工参与：包含人工活动
 - 合规性：需要满足业务规则
@@ -380,6 +397,7 @@ $$ScientificWorkflow = \{W \mid domain(W) \in ScientificDomains\}$$
 其中 $ScientificDomains$ 是科学领域集合。
 
 **特点**:
+
 - 计算密集：包含大量计算活动
 - 数据密集：处理大量数据
 - 可重现性：需要保证结果可重现
@@ -392,6 +410,7 @@ $$DataProcessingWorkflow = \{W \mid domain(W) \in DataDomains\}$$
 其中 $DataDomains$ 是数据领域集合。
 
 **特点**:
+
 - 数据导向：以数据处理为核心
 - 管道化：采用管道处理模式
 - 可扩展性：易于扩展新的处理步骤
@@ -406,6 +425,7 @@ $$SimpleWorkflow = \{W \mid complexity(W) \leq threshold_{simple}\}$$
 其中 $complexity(W)$ 是工作流复杂度函数。
 
 **特征**:
+
 - 活动数量少（≤ 10个）
 - 控制流简单（主要是顺序）
 - 数据流简单（线性传递）
@@ -416,6 +436,7 @@ $$SimpleWorkflow = \{W \mid complexity(W) \leq threshold_{simple}\}$$
 $$ComplexWorkflow = \{W \mid threshold_{simple} < complexity(W) \leq threshold_{complex}\}$$
 
 **特征**:
+
 - 活动数量中等（10-100个）
 - 控制流复杂（包含并行、条件、循环）
 - 数据流复杂（多路径传递）
@@ -426,6 +447,7 @@ $$ComplexWorkflow = \{W \mid threshold_{simple} < complexity(W) \leq threshold_{
 $$SuperComplexWorkflow = \{W \mid complexity(W) > threshold_{complex}\}$$
 
 **特征**:
+
 - 活动数量多（> 100个）
 - 控制流极其复杂（多层嵌套）
 - 数据流极其复杂（网状传递）
@@ -683,11 +705,13 @@ func (ca *ClassificationAnalyzer) AnalyzeClassifications(result *ClassificationR
 ### 8.1 分类函数
 
 **定义 8.1** (分类函数): 分类函数 $C: W \rightarrow 2^K$ 将工作流映射到分类集合，其中：
+
 - $W$ 是工作流集合
 - $K$ 是分类集合
 - $2^K$ 是分类集合的幂集
 
 **定义 8.2** (分类准确率): 分类准确率 $accuracy(C) = \frac{|correct(C)|}{|total|}$，其中：
+
 - $correct(C)$ 是正确分类的工作流集合
 - $total$ 是总工作流集合
 
@@ -704,6 +728,7 @@ func (ca *ClassificationAnalyzer) AnalyzeClassifications(result *ClassificationR
 **定理 8.1** (分类唯一性): 如果工作流 $w$ 满足特定条件，则存在唯一的分类 $C$ 使得 $w \in C$。
 
 **证明**:
+
 1. 设工作流 $w$ 满足条件 $\phi$
 2. 根据分类规则，满足 $\phi$ 的工作流属于分类 $C$
 3. 由于 $\phi$ 是确定性的，$C$ 是唯一的
@@ -712,6 +737,7 @@ func (ca *ClassificationAnalyzer) AnalyzeClassifications(result *ClassificationR
 **定理 8.2** (分类层次性): 分类体系形成层次结构，即存在偏序关系 $\preceq$ 使得 $C_1 \preceq C_2$ 表示 $C_1$ 是 $C_2$ 的子分类。
 
 **证明**:
+
 1. 定义偏序关系 $\preceq$ 为包含关系
 2. 对于任意分类 $C_1, C_2$，如果 $C_1 \subseteq C_2$，则 $C_1 \preceq C_2$
 3. 这个关系满足自反性、反对称性和传递性
@@ -720,7 +746,8 @@ func (ca *ClassificationAnalyzer) AnalyzeClassifications(result *ClassificationR
 ---
 
 **参考文献**:
+
 1. van der Aalst, W. M. P., & ter Hofstede, A. H. (2005). YAWL: Yet Another Workflow Language. Information Systems, 30(4), 245-275.
 2. Russell, N., ter Hofstede, A. H., van der Aalst, W. M. P., & Mulyar, N. (2006). Workflow Control-Flow Patterns: A Revised View. BPM Center Report BPM-06-22.
 3. Deelman, E., et al. (2009). Pegasus: A Framework for Mapping Complex Scientific Workflows onto Distributed Systems. Scientific Programming, 13(3), 219-237.
-4. Ludäscher, B., et al. (2006). Scientific Workflow Management and the Kepler System. Concurrency and Computation: Practice and Experience, 18(10), 1039-1065. 
+4. Ludäscher, B., et al. (2006). Scientific Workflow Management and the Kepler System. Concurrency and Computation: Practice and Experience, 18(10), 1039-1065.

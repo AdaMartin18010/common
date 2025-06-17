@@ -1,4 +1,6 @@
-# 01-Petri网模型 (Petri Net Model)
+# 01-Petri网模型
+
+(Petri Net Model)
 
 ## 目录
 
@@ -90,28 +92,35 @@ $$M_0[t_1\rangle M_1[t_2\rangle \cdots [t_n\rangle M_n$$
 ### 2.2 控制流建模
 
 **定义 2.3** (顺序结构): 活动 $a_1$ 和 $a_2$ 的顺序结构建模为：
+
 $$P = \{p_1, p_2, p_3\}, T = \{t_1, t_2\}, F = \{(p_1, t_1), (t_1, p_2), (p_2, t_2), (t_2, p_3)\}$$
 
 **定义 2.4** (并行结构): 活动 $a_1$ 和 $a_2$ 的并行结构建模为：
+
 $$P = \{p_1, p_2, p_3, p_4, p_5\}, T = \{t_1, t_2, t_3, t_4\}$$
 $$F = \{(p_1, t_1), (t_1, p_2), (p_1, t_2), (t_2, p_3), (p_2, t_3), (p_3, t_3), (t_3, p_4), (p_4, t_4), (t_4, p_5)\}$$
 
 **定义 2.5** (选择结构): 活动 $a_1$ 和 $a_2$ 的选择结构建模为：
+
 $$P = \{p_1, p_2, p_3, p_4\}, T = \{t_1, t_2, t_3\}$$
 $$F = \{(p_1, t_1), (p_1, t_2), (t_1, p_2), (t_2, p_3), (p_2, t_3), (p_3, t_3), (t_3, p_4)\}$$
 
 ### 2.3 数据流建模
 
 **定义 2.6** (数据Petri网): 数据Petri网 $DPN = (N, D, \delta)$，其中：
+
 - $N = (P, T, F, M_0)$ 是Petri网
 - $D$ 是数据集合
 - $\delta: T \rightarrow (D \rightarrow D)$ 是变迁到数据转换函数的映射
 
 **定义 2.7** (数据流): 数据流是数据在活动之间的传递关系，建模为：
-$$\delta(t)(d) = \begin{cases}
+
+$$
+\delta(t)(d) = \begin{cases}
 d' & \text{if } t \text{ transforms } d \text{ to } d' \\
 d & \text{otherwise}
-\end{cases}$$
+\end{cases}
+$$
 
 ## 3. 形式化分析
 
@@ -120,6 +129,7 @@ d & \text{otherwise}
 **定义 3.1** (可达性): 标记 $M$ 从 $M_0$ 可达，记作 $M_0 \rightarrow^* M$，如果存在发生序列 $\sigma$ 使得 $M_0[\sigma\rangle M$。
 
 **定义 3.2** (可达图): 可达图 $RG(N) = (R(N), E)$，其中：
+
 - $R(N)$ 是从 $M_0$ 可达的所有标记集合
 - $E = \{(M, t, M') \mid M[t\rangle M'\}$
 

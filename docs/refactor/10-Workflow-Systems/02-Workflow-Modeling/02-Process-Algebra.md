@@ -2,7 +2,7 @@
 
 ## 目录
 
-- [02-过程代数](#02-过程代数)
+- [02-过程代数 (Process Algebra)](#02-过程代数-process-algebra)
   - [目录](#目录)
   - [1. 过程代数基础](#1-过程代数基础)
     - [1.1 基本概念](#11-基本概念)
@@ -40,11 +40,13 @@
 **定义 1.1** (过程): 过程是描述系统行为的数学对象，可以执行动作并与其他过程交互。
 
 **定义 1.2** (动作): 动作是过程可以执行的基本操作，包括：
+
 - 内部动作：$\tau$（不可观察）
 - 外部动作：$a, b, c, \ldots$（可观察）
 - 通信动作：$\overline{a}, \overline{b}, \overline{c}, \ldots$（输出）
 
 **定义 1.3** (过程项): 过程项是描述过程的表达式，包括：
+
 - 空过程：$\mathbf{0}$
 - 前缀：$a.P$
 - 选择：$P + Q$
@@ -59,6 +61,7 @@
 $$P ::= \mathbf{0} \mid a.P \mid P + P \mid P \mid P \mid P \backslash L \mid P[f] \mid X \mid \mu X.P$$
 
 其中：
+
 - $a \in Act$ 是动作集合
 - $L \subseteq Act$ 是限制集合
 - $f: Act \rightarrow Act$ 是重命名函数
@@ -80,12 +83,14 @@ $$\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{\overline{a}} Q'}{P \mid Q \xr
 ### 1.3 等价关系
 
 **定义 1.6** (强双模拟): 关系 $R$ 是强双模拟，如果对于任意 $(P, Q) \in R$：
+
 1. 如果 $P \xrightarrow{a} P'$，则存在 $Q'$ 使得 $Q \xrightarrow{a} Q'$ 且 $(P', Q') \in R$
 2. 如果 $Q \xrightarrow{a} Q'$，则存在 $P'$ 使得 $P \xrightarrow{a} P'$ 且 $(P', Q') \in R$
 
 **定义 1.7** (强等价): 过程 $P$ 和 $Q$ 强等价，记作 $P \sim Q$，如果存在包含 $(P, Q)$ 的强双模拟。
 
 **定义 1.8** (弱双模拟): 关系 $R$ 是弱双模拟，如果对于任意 $(P, Q) \in R$：
+
 1. 如果 $P \xrightarrow{a} P'$，则存在 $Q'$ 使得 $Q \xrightarrow{\tau^*} \xrightarrow{a} \xrightarrow{\tau^*} Q'$ 且 $(P', Q') \in R$
 2. 如果 $Q \xrightarrow{a} Q'$，则存在 $P'$ 使得 $P \xrightarrow{\tau^*} \xrightarrow{a} \xrightarrow{\tau^*} P'$ 且 $(P', Q') \in R$
 
@@ -97,12 +102,14 @@ $$\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{\overline{a}} Q'}{P \mid Q \xr
 $$P ::= \mathbf{0} \mid a.P \mid P + P \mid P \mid P \mid P \backslash L \mid P[f] \mid X \mid \mu X.P$$
 
 其中：
+
 - $a \in Act = \mathcal{L} \cup \overline{\mathcal{L}} \cup \{\tau\}$
 - $\mathcal{L}$ 是输入动作集合
 - $\overline{\mathcal{L}}$ 是输出动作集合
 - $\tau$ 是内部动作
 
 **定义 2.2** (CCS过程): CCS过程是满足以下条件的表达式：
+
 1. 所有变量都在递归算子的作用域内
 2. 递归定义是卫式的（guarded）
 
@@ -143,6 +150,7 @@ $$\frac{P[\mu X.P/X] \xrightarrow{a} P'}{\mu X.P \xrightarrow{a} P'}$$
 **定理 2.1**: 强等价是等价关系（自反、对称、传递）。
 
 **证明**:
+
 1. 自反性：恒等关系是强双模拟
 2. 对称性：如果 $R$ 是强双模拟，则 $R^{-1}$ 也是强双模拟
 3. 传递性：如果 $R_1$ 和 $R_2$ 是强双模拟，则 $R_1 \circ R_2$ 也是强双模拟
@@ -156,6 +164,7 @@ $$\frac{P[\mu X.P/X] \xrightarrow{a} P'}{\mu X.P \xrightarrow{a} P'}$$
 $$P ::= \mathbf{STOP} \mid a \rightarrow P \mid P \sqcap P \mid P \parallel P \mid P \setminus L \mid P[f] \mid X \mid \mu X.P$$
 
 其中：
+
 - $\mathbf{STOP}$ 是停止过程
 - $a \rightarrow P$ 是前缀
 - $P \sqcap Q$ 是内部选择
@@ -195,6 +204,7 @@ $$\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{a} Q'}{P \parallel Q \xrightar
 $$P ::= \mathbf{0} \mid \pi.P \mid P + P \mid P \mid P \mid (\nu x)P \mid !P \mid X \mid \mu X.P$$
 
 其中：
+
 - $\pi ::= \overline{x}(y) \mid x(y) \mid \tau$
 - $\overline{x}(y)$ 是输出前缀
 - $x(y)$ 是输入前缀
@@ -216,6 +226,7 @@ $$\frac{P \xrightarrow{x(z)} P' \quad Q \xrightarrow{\overline{x}(z)} Q'}{P \mid
 **定义 4.3** (移动性): π演算的名称可以动态传递，实现进程的移动性。
 
 **定义 4.4** (结构同余): 结构同余关系 $\equiv$ 满足：
+
 - $P \mid Q \equiv Q \mid P$ (交换律)
 - $(P \mid Q) \mid R \equiv P \mid (Q \mid R)$ (结合律)
 - $P \mid \mathbf{0} \equiv P$ (单位元)
@@ -230,6 +241,7 @@ $$\frac{P \xrightarrow{x(z)} P' \quad Q \xrightarrow{\overline{x}(z)} Q'}{P \mid
 $$W ::= \mathbf{SKIP} \mid a.W \mid W; W \mid W \parallel W \mid W + W \mid W^* \mid W \setminus L \mid X \mid \mu X.W$$
 
 其中：
+
 - $\mathbf{SKIP}$ 是空工作流
 - $a.W$ 是活动前缀
 - $W_1; W_2$ 是顺序组合
@@ -266,6 +278,7 @@ $$\frac{W \xrightarrow{a} W'}{W^* \xrightarrow{a} W'; W^*} \quad \frac{}{W^* \xr
 ### 5.3 工作流等价
 
 **定义 5.3** (工作流双模拟): 关系 $R$ 是工作流双模拟，如果对于任意 $(W_1, W_2) \in R$：
+
 1. 如果 $W_1 \xrightarrow{a} W_1'$，则存在 $W_2'$ 使得 $W_2 \xrightarrow{a} W_2'$ 且 $(W_1', W_2') \in R$
 2. 如果 $W_2 \xrightarrow{a} W_2'$，则存在 $W_1'$ 使得 $W_1 \xrightarrow{a} W_1'$ 且 $(W_1', W_2') \in R$
 
@@ -696,6 +709,7 @@ func (ec *EquivalenceChecker) parseProcess(key string) ProcessExpression {
 **定理 7.1** (强等价性质): 强等价 $\sim$ 是等价关系，并且是最大的强双模拟。
 
 **证明**:
+
 1. 自反性：恒等关系是强双模拟
 2. 对称性：如果 $R$ 是强双模拟，则 $R^{-1}$ 也是强双模拟
 3. 传递性：如果 $R_1$ 和 $R_2$ 是强双模拟，则 $R_1 \circ R_2$ 也是强双模拟
@@ -705,11 +719,13 @@ func (ec *EquivalenceChecker) parseProcess(key string) ProcessExpression {
 ### 7.2 组合性定理
 
 **定理 7.2** (组合性): 如果 $P_1 \sim Q_1$ 且 $P_2 \sim Q_2$，则：
+
 - $P_1 + P_2 \sim Q_1 + Q_2$
 - $P_1 \mid P_2 \sim Q_1 \mid Q_2$
 - $P_1 \backslash L \sim Q_1 \backslash L$
 
 **证明**:
+
 1. 选择组合：构造关系 $R = \{(P_1 + P_2, Q_1 + Q_2) \mid P_1 \sim Q_1, P_2 \sim Q_2\}$
 2. 并行组合：构造关系 $R = \{(P_1 \mid P_2, Q_1 \mid Q_2) \mid P_1 \sim Q_1, P_2 \sim Q_2\}$
 3. 限制组合：构造关系 $R = \{(P_1 \backslash L, Q_1 \backslash L) \mid P_1 \sim Q_1\}$
@@ -722,6 +738,7 @@ func (ec *EquivalenceChecker) parseProcess(key string) ProcessExpression {
 $$\mu X.P \sim P[\mu X.P/X]$$
 
 **证明**:
+
 1. 构造关系 $R = \{(\mu X.P, P[\mu X.P/X])\}$
 2. 验证 $R$ 是强双模拟
 3. 因此不动点定理成立。$\square$
@@ -729,7 +746,8 @@ $$\mu X.P \sim P[\mu X.P/X]$$
 ---
 
 **参考文献**:
+
 1. Milner, R. (1989). Communication and Concurrency. Prentice Hall.
 2. Hoare, C. A. R. (1985). Communicating Sequential Processes. Prentice Hall.
 3. Sangiorgi, D., & Walker, D. (2001). The Pi-Calculus: A Theory of Mobile Processes. Cambridge University Press.
-4. van Glabbeek, R. J. (2001). The Linear Time - Branching Time Spectrum I: The Semantics of Concrete, Sequential Processes. Handbook of Process Algebra, 3-99. 
+4. van Glabbeek, R. J. (2001). The Linear Time - Branching Time Spectrum I: The Semantics of Concrete, Sequential Processes. Handbook of Process Algebra, 3-99.

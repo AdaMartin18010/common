@@ -2,7 +2,7 @@
 
 ## 目录
 
-- [03-时态逻辑](#03-时态逻辑)
+- [03-时态逻辑 (Temporal Logic)](#03-时态逻辑-temporal-logic)
   - [目录](#目录)
   - [1. 时态逻辑基础](#1-时态逻辑基础)
     - [1.1 基本概念](#11-基本概念)
@@ -16,10 +16,10 @@
     - [3.1 CTL语法](#31-ctl语法)
     - [3.2 CTL语义](#32-ctl语义)
     - [3.3 CTL性质](#33-ctl性质)
-  - [4. CTL*逻辑](#4-ctl逻辑)
-    - [4.1 CTL*语法](#41-ctl语法)
-    - [4.2 CTL*语义](#42-ctl语义)
-    - [4.3 CTL*性质](#43-ctl性质)
+  - [4. CTL\*逻辑](#4-ctl逻辑)
+    - [4.1 CTL\*语法](#41-ctl语法)
+    - [4.2 CTL\*语义](#42-ctl语义)
+    - [4.3 CTL\*性质](#43-ctl性质)
   - [5. 工作流时态逻辑](#5-工作流时态逻辑)
     - [5.1 工作流性质](#51-工作流性质)
     - [5.2 验证方法](#52-验证方法)
@@ -48,16 +48,19 @@
 ### 1.2 时间结构
 
 **定义 1.5** (时间结构): 时间结构是三元组 $\mathcal{T} = (T, <, \sim)$，其中：
+
 - $T$ 是时间点集合
 - $<$ 是时间顺序关系
 - $\sim$ 是时间等价关系
 
 **定义 1.6** (线性时间): 线性时间结构满足：
+
 - 全序性：$\forall t_1, t_2 \in T: t_1 < t_2 \lor t_2 < t_1 \lor t_1 = t_2$
 - 传递性：$\forall t_1, t_2, t_3 \in T: t_1 < t_2 \land t_2 < t_3 \Rightarrow t_1 < t_3$
 - 反自反性：$\forall t \in T: \neg(t < t)$
 
 **定义 1.7** (分支时间): 分支时间结构满足：
+
 - 偏序性：$\forall t_1, t_2, t_3 \in T: t_1 < t_2 \land t_2 < t_3 \Rightarrow t_1 < t_3$
 - 反自反性：$\forall t \in T: \neg(t < t)$
 - 树结构：任意两个时间点都有共同的前缀
@@ -67,11 +70,13 @@
 **定义 1.8** (解释函数): 解释函数 $I: AP \times T \rightarrow \{true, false\}$ 将原子命题映射到时间点上的真值。
 
 **定义 1.9** (模型): 时态逻辑模型是三元组 $\mathcal{M} = (\mathcal{T}, I, s_0)$，其中：
+
 - $\mathcal{T}$ 是时间结构
 - $I$ 是解释函数
 - $s_0$ 是初始状态
 
 **定义 1.10** (满足关系): 满足关系 $\models$ 定义公式在模型中的真值：
+
 - $\mathcal{M}, t \models p$ 当且仅当 $I(p, t) = true$
 - $\mathcal{M}, t \models \neg \phi$ 当且仅当 $\mathcal{M}, t \not\models \phi$
 - $\mathcal{M}, t \models \phi \land \psi$ 当且仅当 $\mathcal{M}, t \models \phi$ 且 $\mathcal{M}, t \models \psi$
@@ -84,6 +89,7 @@
 $$\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \phi \mid \phi \mathbf{R} \phi$$
 
 其中：
+
 - $p \in AP$ 是原子命题
 - $\mathbf{X} \phi$ 表示"下一个状态满足 $\phi$"
 - $\mathbf{F} \phi$ 表示"将来某个状态满足 $\phi$"
@@ -120,11 +126,13 @@ $$\pi, i \models \phi \mathbf{R} \psi \Leftrightarrow \forall j \geq i: \pi, j \
 **定义 2.5** (公平性): 公平性性质表示"如果条件持续满足，则结果最终发生"，形式为 $\mathbf{G} \mathbf{F} condition \rightarrow \mathbf{G} \mathbf{F} result$。
 
 **定理 2.1** (LTL等价性): 以下等价关系成立：
+
 - $\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$
 - $\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi$
 - $\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)$
 
 **证明**:
+
 1. $\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$：
    - $\mathbf{F} \phi$ 表示存在将来状态满足 $\phi$
    - $\mathbf{G} \neg \phi$ 表示所有将来状态都不满足 $\phi$
@@ -150,6 +158,7 @@ $\square$
 $$\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid \mathbf{AX} \phi \mid \mathbf{EX} \phi \mid \mathbf{AF} \phi \mid \mathbf{EF} \phi \mid \mathbf{AG} \phi \mid \mathbf{EG} \phi \mid \mathbf{A}[\phi \mathbf{U} \psi] \mid \mathbf{E}[\phi \mathbf{U} \psi]$$
 
 其中：
+
 - $\mathbf{A}$ 表示"对所有路径"
 - $\mathbf{E}$ 表示"存在路径"
 - $\mathbf{X}, \mathbf{F}, \mathbf{G}, \mathbf{U}$ 是路径量词
@@ -183,6 +192,7 @@ $$s \models \mathbf{E}[\phi \mathbf{U} \psi] \Leftrightarrow \exists \pi: \exist
 ### 3.3 CTL性质
 
 **定义 3.3** (CTL等价性): 以下等价关系成立：
+
 - $\mathbf{AF} \phi \equiv \mathbf{A}[\top \mathbf{U} \phi]$
 - $\mathbf{EF} \phi \equiv \mathbf{E}[\top \mathbf{U} \phi]$
 - $\mathbf{AG} \phi \equiv \neg \mathbf{EF} \neg \phi$
@@ -191,6 +201,7 @@ $$s \models \mathbf{E}[\phi \mathbf{U} \psi] \Leftrightarrow \exists \pi: \exist
 **定理 3.1** (CTL表达能力): CTL可以表达所有状态性质，但不能表达所有路径性质。
 
 **证明**:
+
 1. CTL可以表达状态性质：通过状态量词 $\mathbf{A}$ 和 $\mathbf{E}$
 2. CTL不能表达路径性质：例如 $\mathbf{F} \mathbf{G} p$ 在CTL中没有对应表达
 3. 因此CTL表达能力有限。$\square$
@@ -209,7 +220,7 @@ $$\psi ::= \phi \mid \neg \psi \mid \psi \land \psi \mid \mathbf{X} \psi \mid \m
 
 ### 4.2 CTL*语义
 
-**定义 4.2** (CTL*语义): 
+**定义 4.2** (CTL*语义):
 
 状态公式语义：
 $$s \models \mathbf{A} \psi \Leftrightarrow \forall \pi: \pi[0] = s \Rightarrow \pi \models \psi$$
@@ -234,6 +245,7 @@ $$\pi \models \psi_1 \mathbf{U} \psi_2 \Leftrightarrow \exists i: \pi[i:] \model
 **定理 4.1** (CTL*等价性): 对于CTL*公式 $\phi$，存在等价的LTL公式当且仅当 $\phi$ 不包含状态量词。
 
 **证明**:
+
 1. 如果 $\phi$ 不包含状态量词，则它是纯路径公式，等价于LTL公式
 2. 如果 $\phi$ 包含状态量词，则它不能表示为LTL公式
 3. 因此等价性成立。$\square$
@@ -259,6 +271,7 @@ $$\mathbf{G}(request \rightarrow \mathbf{F} response)$$
 **定义 5.5** (模型检验): 模型检验是检查系统模型是否满足时态逻辑公式的过程。
 
 **算法 5.1** (CTL模型检验):
+
 ```go
 func ModelCheckCTL(model KripkeModel, formula CTLFormula) map[string]bool {
     result := make(map[string]bool)
@@ -366,12 +379,14 @@ func computeEU(model KripkeModel, leftResult, rightResult map[string]bool) map[s
 ### 5.3 模型检验
 
 **定义 5.6** (Kripke模型): Kripke模型是四元组 $\mathcal{M} = (S, S_0, R, L)$，其中：
+
 - $S$ 是状态集合
 - $S_0 \subseteq S$ 是初始状态集合
 - $R \subseteq S \times S$ 是转移关系
 - $L: S \rightarrow 2^{AP}$ 是标记函数
 
 **算法 5.2** (LTL模型检验):
+
 ```go
 func ModelCheckLTL(model KripkeModel, formula LTLFormula) bool {
     // 构建Büchi自动机
@@ -812,6 +827,7 @@ type FairnessResult struct {
 **定理 7.1** (LTL可满足性): LTL公式 $\phi$ 可满足当且仅当存在无限路径 $\pi$ 使得 $\pi \models \phi$。
 
 **证明**:
+
 1. 必要性：如果 $\phi$ 可满足，则存在模型 $\mathcal{M}$ 和路径 $\pi$ 使得 $\mathcal{M}, \pi \models \phi$
 2. 充分性：如果存在路径 $\pi$ 使得 $\pi \models \phi$，则构造模型 $\mathcal{M}$ 使得 $\mathcal{M}, \pi \models \phi$
 3. 因此可满足性定理成立。$\square$
@@ -821,6 +837,7 @@ type FairnessResult struct {
 **定理 7.2** (CTL有效性): CTL公式 $\phi$ 有效当且仅当对于所有模型 $\mathcal{M}$ 和所有状态 $s$，有 $\mathcal{M}, s \models \phi$。
 
 **证明**:
+
 1. 必要性：如果 $\phi$ 有效，则对于任意模型和状态都满足
 2. 充分性：如果对于所有模型和状态都满足，则 $\phi$ 有效
 3. 因此有效性定理成立。$\square$
@@ -828,11 +845,13 @@ type FairnessResult struct {
 ### 7.3 等价性定理
 
 **定理 7.3** (时态逻辑等价性): 以下等价关系成立：
+
 - $\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$
 - $\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi$
 - $\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)$
 
 **证明**:
+
 1. $\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$：
    - $\mathbf{F} \phi$ 表示存在将来状态满足 $\phi$
    - $\mathbf{G} \neg \phi$ 表示所有将来状态都不满足 $\phi$
@@ -853,7 +872,8 @@ $\square$
 ---
 
 **参考文献**:
+
 1. Baier, C., & Katoen, J. P. (2008). Principles of Model Checking. MIT Press.
 2. Clarke, E. M., Grumberg, O., & Peled, D. A. (1999). Model Checking. MIT Press.
 3. Emerson, E. A. (1990). Temporal and Modal Logic. Handbook of Theoretical Computer Science, 995-1072.
-4. Vardi, M. Y., & Wolper, P. (1986). An Automata-Theoretic Approach to Automatic Program Verification. LICS, 332-344. 
+4. Vardi, M. Y., & Wolper, P. (1986). An Automata-Theoretic Approach to Automatic Program Verification. LICS, 332-344.

@@ -1,4 +1,6 @@
-# 03-工作流基本术语 (Workflow Basic Terms)
+# 03-工作流基本术语
+
+(Workflow Basic Terms)
 
 ## 目录
 
@@ -39,15 +41,18 @@
 ### 1.1 工作流定义
 
 **定义 1.1** (工作流): 工作流是一个有向图 $G = (V, E)$，其中：
+
 - $V$ 是节点集合，表示工作流中的活动
 - $E$ 是边集合，表示活动之间的依赖关系
 
 **定义 1.2** (工作流实例): 工作流实例是工作流的一个具体执行，包含：
+
 - 当前状态 $s \in S$
 - 执行历史 $h = (s_0, s_1, \ldots, s_n)$
 - 数据上下文 $d \in D$
 
 **定义 1.3** (工作流引擎): 工作流引擎是负责执行工作流的系统组件，提供：
+
 - 状态管理
 - 转换控制
 - 数据传递
@@ -56,11 +61,13 @@
 ### 1.2 状态和转换
 
 **定义 1.4** (状态): 状态是工作流执行过程中的一个稳定点，包含：
+
 - 状态标识符 $id \in \Sigma$
 - 状态属性 $props: \Sigma \rightarrow \mathcal{P}(V)$
 - 状态数据 $data: \Sigma \rightarrow D$
 
 **定义 1.5** (转换): 转换是状态之间的迁移，定义为：
+
 - 源状态 $source \in \Sigma$
 - 目标状态 $target \in \Sigma$
 - 转换条件 $condition: D \rightarrow \mathbb{B}$
@@ -222,10 +229,10 @@ $$schedule(a_1, a_2, \ldots, a_n, strategy) = strategy(a_1, a_2, \ldots, a_n)$$
 type WorkflowTerm interface {
     // GetType 获取术语类型
     GetType() string
-    
+
     // GetID 获取术语ID
     GetID() string
-    
+
     // Validate 验证术语有效性
     Validate() error
 }
@@ -324,7 +331,7 @@ func (a *Activity) Validate() error {
 type ControlFlow interface {
     // Execute 执行控制流
     Execute(ctx context.Context, data interface{}) (interface{}, error)
-    
+
     // GetType 获取控制流类型
     GetType() string
 }
@@ -338,7 +345,7 @@ func (sf *SequentialFlow) GetType() string { return "sequential" }
 
 func (sf *SequentialFlow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
     currentData := data
-    
+
     for _, activity := range sf.Activities {
         select {
         case <-ctx.Done():
@@ -351,7 +358,7 @@ func (sf *SequentialFlow) Execute(ctx context.Context, data interface{}) (interf
             currentData = result
         }
     }
-    
+
     return currentData, nil
 }
 
@@ -366,7 +373,7 @@ func (pf *ParallelFlow) Execute(ctx context.Context, data interface{}) (interfac
     var wg sync.WaitGroup
     results := make([]interface{}, len(pf.Activities))
     errors := make([]error, len(pf.Activities))
-    
+
     for i, activity := range pf.Activities {
         wg.Add(1)
         go func(index int, act Activity) {
@@ -376,16 +383,16 @@ func (pf *ParallelFlow) Execute(ctx context.Context, data interface{}) (interfac
             errors[index] = err
         }(i, activity)
     }
-    
+
     wg.Wait()
-    
+
     // 检查是否有错误
     for _, err := range errors {
         if err != nil {
             return nil, fmt.Errorf("parallel activity failed: %w", err)
         }
     }
-    
+
     return results, nil
 }
 
@@ -403,7 +410,7 @@ func (cf *ConditionalFlow) Execute(ctx context.Context, data interface{}) (inter
     if err != nil {
         return nil, fmt.Errorf("condition evaluation failed: %w", err)
     }
-    
+
     if condition {
         return cf.TrueFlow.Execute(ctx, data)
     } else {
@@ -423,30 +430,30 @@ func (lf *LoopFlow) GetType() string { return "loop" }
 func (lf *LoopFlow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
     currentData := data
     iteration := 0
-    
+
     for {
         if lf.MaxIterations > 0 && iteration >= lf.MaxIterations {
             break
         }
-        
+
         condition, err := lf.Condition.Evaluate(ctx, currentData)
         if err != nil {
             return nil, fmt.Errorf("loop condition evaluation failed: %w", err)
         }
-        
+
         if !condition {
             break
         }
-        
+
         result, err := lf.Body.Execute(ctx, currentData)
         if err != nil {
             return nil, fmt.Errorf("loop body execution failed: %w", err)
         }
-        
+
         currentData = result
         iteration++
     }
-    
+
     return currentData, nil
 }
 ```
@@ -458,7 +465,7 @@ func (lf *LoopFlow) Execute(ctx context.Context, data interface{}) (interface{},
 type DataFlow interface {
     // Process 处理数据流
     Process(ctx context.Context, data interface{}) (interface{}, error)
-    
+
     // GetType 获取数据流类型
     GetType() string
 }
@@ -477,7 +484,7 @@ func (dt *DataTransfer) Process(ctx context.Context, data interface{}) (interfac
     if dt.Mapping == nil {
         return data, nil
     }
-    
+
     // 这里简化实现，实际应该根据映射规则转换数据
     return data, nil
 }
@@ -493,7 +500,7 @@ func (dt *DataTransform) Process(ctx context.Context, data interface{}) (interfa
     if dt.Transformer == nil {
         return data, nil
     }
-    
+
     return dt.Transformer(data)
 }
 
@@ -508,12 +515,12 @@ func (da *DataAggregate) Process(ctx context.Context, data interface{}) (interfa
     if da.Aggregator == nil {
         return data, nil
     }
-    
+
     // 假设输入是切片
     if slice, ok := data.([]interface{}); ok {
         return da.Aggregator(slice)
     }
-    
+
     return data, nil
 }
 ```
@@ -563,4 +570,4 @@ func (da *DataAggregate) Process(ctx context.Context, data interface{}) (interfa
 1. van der Aalst, W. M. P. (2016). Process Mining: Data Science in Action. Springer.
 2. Dumas, M., La Rosa, M., Mendling, J., & Reijers, H. A. (2018). Fundamentals of Business Process Management. Springer.
 3. Russell, N., ter Hofstede, A. H., van der Aalst, W. M. P., & Mulyar, N. (2006). Workflow Control-Flow Patterns: A Revised View. BPM Center Report BPM-06-22.
-4. Weske, M. (2012). Business Process Management: Concepts, Languages, Architectures. Springer. 
+4. Weske, M. (2012). Business Process Management: Concepts, Languages, Architectures. Springer.
