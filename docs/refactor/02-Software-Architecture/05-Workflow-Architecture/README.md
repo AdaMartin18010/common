@@ -38,6 +38,7 @@
 
 **定义 2** (同伦等价)
 两个工作流执行 $\gamma_1, \gamma_2: [0,1] \to W$ 称为同伦等价，如果存在连续映射 $H: [0,1] \times [0,1] \to W$ 使得：
+
 - $H(t,0) = \gamma_1(t)$
 - $H(t,1) = \gamma_2(t)$
 - $H(0,s) = \gamma_1(0) = \gamma_2(0)$
@@ -50,6 +51,7 @@
 
 **定义 3** (工作流范畴)
 工作流范畴 $\mathcal{W}$ 定义为：
+
 - 对象：工作流状态
 - 态射：工作流转换
 - 组合：工作流顺序执行
@@ -61,6 +63,7 @@
 
 **定义 4** (工作流时态逻辑)
 工作流时态逻辑 $\mathcal{L}$ 包含以下算子：
+
 - $\Box \phi$: 总是 $\phi$
 - $\Diamond \phi$: 最终 $\phi$
 - $\phi \mathcal{U} \psi$: $\phi$ 直到 $\psi$
@@ -71,6 +74,7 @@
 
 **定义 5** (工作流状态机)
 工作流状态机是一个五元组 $(S, \Sigma, \delta, s_0, F)$：
+
 - $S$: 状态集合
 - $\Sigma$: 事件集合
 - $\delta: S \times \Sigma \to S$: 状态转换函数
@@ -320,4 +324,4 @@ func (sm *StateMachineWorkflow) Execute(ctx context.Context, input interface{}) 
 
 **模块状态**: 🔄 创建中  
 **最后更新**: 2024年12月19日  
-**下一步**: 创建工作流基础理论子模块 
+**下一步**: 创建工作流基础理论子模块
