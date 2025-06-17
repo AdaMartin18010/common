@@ -1,573 +1,514 @@
-# 03-工作流基本术语
-
-(Workflow Basic Terms)
+# 03-工作流基本术语 (Workflow Basic Terms)
 
 ## 目录
 
-- [03-工作流基本术语](#03-工作流基本术语)
+- [03-工作流基本术语 (Workflow Basic Terms)](#03-工作流基本术语-workflow-basic-terms)
   - [目录](#目录)
-  - [1. 核心概念](#1-核心概念)
-    - [1.1 工作流定义](#11-工作流定义)
-    - [1.2 状态和转换](#12-状态和转换)
-    - [1.3 活动和任务](#13-活动和任务)
+  - [1. 核心概念定义](#1-核心概念定义)
+    - [1.1 工作流](#11-工作流)
+    - [1.2 活动](#12-活动)
+    - [1.3 转换](#13-转换)
+    - [1.4 状态](#14-状态)
   - [2. 控制流概念](#2-控制流概念)
     - [2.1 顺序执行](#21-顺序执行)
     - [2.2 并行执行](#22-并行执行)
     - [2.3 条件分支](#23-条件分支)
-    - [2.4 循环结构](#24-循环结构)
+    - [2.4 循环](#24-循环)
   - [3. 数据流概念](#3-数据流概念)
     - [3.1 数据传递](#31-数据传递)
     - [3.2 数据转换](#32-数据转换)
     - [3.3 数据聚合](#33-数据聚合)
   - [4. 异常处理概念](#4-异常处理概念)
-    - [4.1 错误类型](#41-错误类型)
-    - [4.2 恢复策略](#42-恢复策略)
-    - [4.3 补偿机制](#43-补偿机制)
-  - [5. 时间概念](#5-时间概念)
-    - [5.1 时间约束](#51-时间约束)
-    - [5.2 超时处理](#52-超时处理)
-    - [5.3 调度策略](#53-调度策略)
-  - [6. Go语言实现](#6-go语言实现)
-    - [6.1 基础类型定义](#61-基础类型定义)
-    - [6.2 控制流实现](#62-控制流实现)
-    - [6.3 数据流实现](#63-数据流实现)
-  - [7. 形式化定义](#7-形式化定义)
-    - [7.1 数学符号](#71-数学符号)
-    - [7.2 公理系统](#72-公理系统)
-    - [7.3 定理证明](#73-定理证明)
+    - [4.1 错误处理](#41-错误处理)
+    - [4.2 补偿机制](#42-补偿机制)
+    - [4.3 重试策略](#43-重试策略)
+  - [5. 形式化定义](#5-形式化定义)
+    - [5.1 数学符号](#51-数学符号)
+    - [5.2 公理系统](#52-公理系统)
+    - [5.3 推理规则](#53-推理规则)
+  - [6. Go语言映射](#6-go语言映射)
+    - [6.1 接口定义](#61-接口定义)
+    - [6.2 类型系统](#62-类型系统)
+    - [6.3 实现示例](#63-实现示例)
+  - [总结](#总结)
 
-## 1. 核心概念
+---
 
-### 1.1 工作流定义
+## 1. 核心概念定义
 
-**定义 1.1** (工作流): 工作流是一个有向图 $G = (V, E)$，其中：
+### 1.1 工作流
 
-- $V$ 是节点集合，表示工作流中的活动
-- $E$ 是边集合，表示活动之间的依赖关系
+**定义 1.1** (工作流): 工作流是一个有向图 $W = (N, E, \lambda)$，其中：
 
-**定义 1.2** (工作流实例): 工作流实例是工作流的一个具体执行，包含：
+- $N$ 是节点集合，表示活动
+- $E \subseteq N \times N$ 是边集合，表示控制流
+- $\lambda: N \rightarrow \Sigma$ 是标签函数，将节点映射到活动类型
 
-- 当前状态 $s \in S$
-- 执行历史 $h = (s_0, s_1, \ldots, s_n)$
-- 数据上下文 $d \in D$
+**定义 1.2** (工作流实例): 工作流实例是工作流的一个执行，表示为 $I = (W, s, \tau)$，其中：
 
-**定义 1.3** (工作流引擎): 工作流引擎是负责执行工作流的系统组件，提供：
+- $W$ 是工作流定义
+- $s: N \rightarrow \{active, completed, failed\}$ 是状态函数
+- $\tau: N \rightarrow \mathbb{R}^+$ 是时间戳函数
 
-- 状态管理
-- 转换控制
-- 数据传递
-- 异常处理
+### 1.2 活动
 
-### 1.2 状态和转换
+**定义 1.3** (活动): 活动是工作流中的基本执行单元，表示为 $A = (id, type, input, output, behavior)$，其中：
 
-**定义 1.4** (状态): 状态是工作流执行过程中的一个稳定点，包含：
+- $id$ 是唯一标识符
+- $type \in \{task, subprocess, gateway\}$ 是活动类型
+- $input$ 是输入数据模式
+- $output$ 是输出数据模式
+- $behavior$ 是执行行为描述
 
-- 状态标识符 $id \in \Sigma$
-- 状态属性 $props: \Sigma \rightarrow \mathcal{P}(V)$
-- 状态数据 $data: \Sigma \rightarrow D$
+**活动类型分类**:
 
-**定义 1.5** (转换): 转换是状态之间的迁移，定义为：
+1. **任务活动 (Task)**: 原子执行单元
+2. **子流程活动 (Subprocess)**: 包含其他工作流
+3. **网关活动 (Gateway)**: 控制流决策点
 
-- 源状态 $source \in \Sigma$
-- 目标状态 $target \in \Sigma$
-- 转换条件 $condition: D \rightarrow \mathbb{B}$
-- 转换动作 $action: D \rightarrow D$
+### 1.3 转换
 
-**定义 1.6** (转换函数): 转换函数 $\delta: \Sigma \times D \rightarrow \Sigma$ 定义为：
-$$\delta(s, d) = \begin{cases}
-target & \text{if } \exists t \in T: source(t) = s \land condition(t)(d) \\
-s & \text{otherwise}
-\end{cases}$$
+**定义 1.4** (转换): 转换是活动之间的连接，表示为 $T = (from, to, condition, action)$，其中：
 
-### 1.3 活动和任务
+- $from$ 是源活动
+- $to$ 是目标活动
+- $condition$ 是转换条件
+- $action$ 是转换动作
 
-**定义 1.7** (活动): 活动是工作流中的基本执行单元，包含：
-- 活动类型 $type \in \{manual, automatic, subprocess\}$
-- 活动处理器 $handler: D \rightarrow D \times \mathbb{B}$
-- 活动超时 $timeout \in \mathbb{R}^+$
+**转换类型**:
 
-**定义 1.8** (任务): 任务是活动的具体实例，包含：
-- 任务标识符 $taskId \in \mathbb{N}$
-- 任务状态 $status \in \{pending, running, completed, failed\}$
-- 任务数据 $taskData \in D$
-- 任务结果 $result \in D \cup \{\bot\}$
+1. **无条件转换**: 总是执行
+2. **条件转换**: 基于条件执行
+3. **默认转换**: 当其他条件都不满足时执行
+
+### 1.4 状态
+
+**定义 1.5** (活动状态): 活动状态是活动在某个时刻的执行状态，定义为：
+
+$$\text{State} = \{ready, active, completed, failed, suspended, cancelled\}$$
+
+**定义 1.6** (工作流状态): 工作流状态是所有活动状态的组合：
+
+$$S_W = \prod_{A \in N} \text{State}_A$$
 
 ## 2. 控制流概念
 
 ### 2.1 顺序执行
 
-**定义 2.1** (顺序执行): 顺序执行是活动按线性顺序执行的模式，定义为：
-$$seq(a_1, a_2, \ldots, a_n) = a_1 \circ a_2 \circ \cdots \circ a_n$$
+**定义 2.1** (顺序执行): 活动 $A_1, A_2, \ldots, A_n$ 的顺序执行定义为：
 
-**性质 2.1** (顺序执行性质):
-- 结合性: $(a \circ b) \circ c = a \circ (b \circ c)$
-- 单位元素: $\exists \epsilon: a \circ \epsilon = \epsilon \circ a = a$
+$$\text{Sequence}(A_1, A_2, \ldots, A_n) = A_1 \circ A_2 \circ \cdots \circ A_n$$
+
+**公理 2.1** (结合律): $(A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)$
 
 ### 2.2 并行执行
 
-**定义 2.2** (并行执行): 并行执行是多个活动同时执行的模式，定义为：
-$$par(a_1, a_2, \ldots, a_n) = a_1 \parallel a_2 \parallel \cdots \parallel a_n$$
+**定义 2.2** (并行执行): 活动 $A_1, A_2, \ldots, A_n$ 的并行执行定义为：
 
-**性质 2.2** (并行执行性质):
-- 交换性: $a \parallel b = b \parallel a$
-- 结合性: $(a \parallel b) \parallel c = a \parallel (b \parallel c)$
-- 分配性: $a \circ (b \parallel c) = (a \circ b) \parallel (a \circ c)$
+$$\text{Parallel}(A_1, A_2, \ldots, A_n) = A_1 \parallel A_2 \parallel \cdots \parallel A_n$$
+
+**公理 2.2** (交换律): $A_1 \parallel A_2 = A_2 \parallel A_1$
+
+**公理 2.3** (结合律): $(A_1 \parallel A_2) \parallel A_3 = A_1 \parallel (A_2 \parallel A_3)$
 
 ### 2.3 条件分支
 
-**定义 2.3** (条件分支): 条件分支是根据条件选择执行路径的模式，定义为：
-$$cond(c, a, b) = \begin{cases}
-a & \text{if } c \\
-b & \text{otherwise}
-\end{cases}$$
+**定义 2.3** (条件分支): 基于条件 $c$ 在活动 $A_1$ 和 $A_2$ 之间选择：
 
-**定义 2.4** (多路分支): 多路分支是根据条件选择多个路径的模式，定义为：
-$$switch(c_1: a_1, c_2: a_2, \ldots, c_n: a_n, default: a_d)$$
+$$\text{Choice}(c, A_1, A_2) = \text{if } c \text{ then } A_1 \text{ else } A_2$$
 
-### 2.4 循环结构
+**公理 2.4** (选择幂等): $\text{Choice}(c, A, A) = A$
 
-**定义 2.5** (while循环): while循环是条件为真时重复执行的模式，定义为：
-$$while(c, a) = \begin{cases}
-a \circ while(c, a) & \text{if } c \\
-\epsilon & \text{otherwise}
-\end{cases}$$
+### 2.4 循环
 
-**定义 2.6** (for循环): for循环是固定次数重复执行的模式，定义为：
-$$for(n, a) = \underbrace{a \circ a \circ \cdots \circ a}_{n \text{ times}}$$
+**定义 2.4** (循环): 活动 $A$ 在条件 $c$ 下重复执行：
+
+$$\text{Loop}(c, A) = \text{while } c \text{ do } A$$
+
+**定理 2.1**: 循环可以表示为递归：
+
+$$\text{Loop}(c, A) = \text{Choice}(c, A \circ \text{Loop}(c, A), \text{skip})$$
 
 ## 3. 数据流概念
 
 ### 3.1 数据传递
 
-**定义 3.1** (数据传递): 数据传递是活动之间数据交换的机制，定义为：
-$$transfer(a_1, a_2, d) = (a_1(d), a_2(a_1(d)))$$
+**定义 3.1** (数据传递): 从活动 $A_1$ 到活动 $A_2$ 的数据传递定义为：
 
-**定义 3.2** (数据映射): 数据映射是数据格式转换的函数，定义为：
-$$map(f, d) = f(d)$$
+$$\text{DataFlow}(A_1, A_2, \sigma) = \{(d_1, d_2) \mid d_2 = \sigma(d_1)\}$$
+
+其中 $\sigma$ 是数据转换函数。
 
 ### 3.2 数据转换
 
-**定义 3.3** (数据转换): 数据转换是数据结构和格式的变换，定义为：
-$$transform(a, d) = \begin{cases}
-(d', true) & \text{if transformation successful} \\
-(d, false) & \text{otherwise}
-\end{cases}$$
+**定义 3.2** (数据转换): 数据转换函数 $\sigma: D_1 \rightarrow D_2$ 满足：
+
+$$\forall d_1 \in D_1, \exists d_2 \in D_2: \sigma(d_1) = d_2$$
 
 ### 3.3 数据聚合
 
-**定义 3.4** (数据聚合): 数据聚合是多个数据源的合并操作，定义为：
-$$aggregate(f, d_1, d_2, \ldots, d_n) = f(d_1, d_2, \ldots, d_n)$$
+**定义 3.3** (数据聚合): 多个数据源的聚合定义为：
+
+$$\text{Aggregate}(\{d_1, d_2, \ldots, d_n\}, \oplus) = d_1 \oplus d_2 \oplus \cdots \oplus d_n$$
+
+其中 $\oplus$ 是聚合操作符。
 
 ## 4. 异常处理概念
 
-### 4.1 错误类型
+### 4.1 错误处理
 
-**定义 4.1** (系统错误): 系统错误是工作流引擎内部产生的错误，定义为：
-$$SystemError = \{timeout, resource\_unavailable, internal\_error\}$$
+**定义 4.1** (错误处理): 活动 $A$ 的错误处理定义为：
 
-**定义 4.2** (业务错误): 业务错误是业务逻辑产生的错误，定义为：
-$$BusinessError = \{validation\_failed, business\_rule\_violation, data\_inconsistency\}$$
+$$\text{ErrorHandler}(A, E) = A \oplus E$$
 
-**定义 4.3** (外部错误): 外部错误是外部系统产生的错误，定义为：
-$$ExternalError = \{network\_error, service\_unavailable, authentication\_failed\}$$
+其中 $E$ 是错误处理活动，$\oplus$ 表示错误处理组合。
 
-### 4.2 恢复策略
+### 4.2 补偿机制
 
-**定义 4.4** (重试策略): 重试策略是错误后的重试机制，定义为：
-$$retry(a, max\_attempts) = \begin{cases}
-a & \text{if successful} \\
-retry(a, max\_attempts - 1) & \text{if failed and attempts > 0} \\
-error & \text{otherwise}
-\end{cases}$$
+**定义 4.2** (补偿): 活动 $A$ 的补偿活动 $\bar{A}$ 满足：
 
-**定义 4.5** (回滚策略): 回滚策略是错误后的状态恢复机制，定义为：
-$$rollback(a, checkpoint) = checkpoint$$
+$$A \circ \bar{A} \sim \text{skip}$$
 
-### 4.3 补偿机制
+其中 $\sim$ 表示语义等价。
 
-**定义 4.6** (补偿操作): 补偿操作是撤销已执行操作的机制，定义为：
-$$compensate(a) = \bar{a}$$
+### 4.3 重试策略
 
-**定义 4.7** (补偿链): 补偿链是多个补偿操作的顺序执行，定义为：
-$$compensate\_chain(a_1, a_2, \ldots, a_n) = \bar{a_n} \circ \bar{a_{n-1}} \circ \cdots \circ \bar{a_1}$$
+**定义 4.3** (重试): 活动 $A$ 的重试策略定义为：
 
-## 5. 时间概念
+$$\text{Retry}(A, n, \delta) = \text{repeat } A \text{ up to } n \text{ times with delay } \delta$$
 
-### 5.1 时间约束
+## 5. 形式化定义
 
-**定义 5.1** (时间约束): 时间约束是活动执行的时间限制，定义为：
-$$time\_constraint(a, deadline) = \begin{cases}
-success & \text{if } t_{execution} \leq deadline \\
-timeout & \text{otherwise}
-\end{cases}$$
+### 5.1 数学符号
 
-**定义 5.2** (时间窗口): 时间窗口是活动可执行的时间范围，定义为：
-$$time\_window(a, start, end) = \begin{cases}
-executable & \text{if } start \leq t_{current} \leq end \\
-waiting & \text{otherwise}
-\end{cases}$$
+| 符号 | 含义 | 定义 |
+|------|------|------|
+| $W$ | 工作流 | 有向图 $(N, E, \lambda)$ |
+| $A$ | 活动 | 执行单元 |
+| $T$ | 转换 | 活动间连接 |
+| $S$ | 状态 | 执行状态 |
+| $\circ$ | 顺序组合 | 活动顺序执行 |
+| $\parallel$ | 并行组合 | 活动并行执行 |
+| $\oplus$ | 错误处理组合 | 错误处理 |
+| $\sim$ | 语义等价 | 行为等价 |
 
-### 5.2 超时处理
+### 5.2 公理系统
 
-**定义 5.3** (超时处理): 超时处理是时间限制到达时的处理机制，定义为：
-$$timeout\_handler(a, timeout\_action) = \begin{cases}
-a & \text{if } t_{execution} \leq timeout \\
-timeout\_action & \text{otherwise}
-\end{cases}$$
+**公理系统 $\mathcal{A}$**:
 
-### 5.3 调度策略
+1. **结合律**: $(A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)$
+2. **交换律**: $A_1 \parallel A_2 = A_2 \parallel A_1$
+3. **分配律**: $A_1 \circ (A_2 \parallel A_3) = (A_1 \circ A_2) \parallel (A_1 \circ A_3)$
+4. **单位元**: $A \circ \text{skip} = \text{skip} \circ A = A$
+5. **幂等律**: $A \parallel A = A$
 
-**定义 5.4** (调度策略): 调度策略是活动执行顺序的决策机制，定义为：
-$$schedule(a_1, a_2, \ldots, a_n, strategy) = strategy(a_1, a_2, \ldots, a_n)$$
+### 5.3 推理规则
 
-## 6. Go语言实现
+**推理规则 $\mathcal{R}$**:
 
-### 6.1 基础类型定义
+1. **替换规则**: 如果 $A_1 = A_2$，则 $C[A_1] = C[A_2]$
+2. **上下文规则**: 如果 $A_1 \sim A_2$，则 $C[A_1] \sim C[A_2]$
+3. **组合规则**: 如果 $A_1 \sim A_2$ 且 $B_1 \sim B_2$，则 $A_1 \circ B_1 \sim A_2 \circ B_2$
+
+## 6. Go语言映射
+
+### 6.1 接口定义
 
 ```go
-// WorkflowTerm 工作流术语接口
-type WorkflowTerm interface {
-    // GetType 获取术语类型
-    GetType() string
+// Workflow 工作流接口
+type Workflow interface {
+    Execute(ctx context.Context, input interface{}) (interface{}, error)
+    GetState() WorkflowState
+    GetActivities() []Activity
+    GetTransitions() []Transition
+}
 
-    // GetID 获取术语ID
+// Activity 活动接口
+type Activity interface {
+    Execute(ctx context.Context, input interface{}) (interface{}, error)
     GetID() string
-
-    // Validate 验证术语有效性
-    Validate() error
+    GetType() ActivityType
+    GetState() ActivityState
 }
 
-// State 状态实现
-type State struct {
-    ID       string                 `json:"id"`
-    Name     string                 `json:"name"`
-    Type     string                 `json:"type"`
-    Props    map[string]interface{} `json:"properties"`
-    Data     interface{}            `json:"data"`
-    Metadata map[string]interface{} `json:"metadata"`
+// Transition 转换接口
+type Transition interface {
+    GetFrom() string
+    GetTo() string
+    GetCondition() func(interface{}) bool
+    GetAction() func(interface{}) interface{}
 }
 
-func (s *State) GetType() string { return "state" }
-func (s *State) GetID() string   { return s.ID }
-
-func (s *State) Validate() error {
-    if s.ID == "" {
-        return fmt.Errorf("state ID cannot be empty")
-    }
-    if s.Name == "" {
-        return fmt.Errorf("state name cannot be empty")
-    }
-    return nil
+// WorkflowState 工作流状态
+type WorkflowState struct {
+    ID        string
+    Status    WorkflowStatus
+    Activities map[string]ActivityState
+    Data      map[string]interface{}
+    Timestamp time.Time
 }
 
-// Transition 转换实现
-type Transition struct {
-    ID       string                 `json:"id"`
-    Source   string                 `json:"source"`
-    Target   string                 `json:"target"`
-    Condition Condition              `json:"condition"`
-    Action    Action                `json:"action"`
-    Metadata  map[string]interface{} `json:"metadata"`
+// ActivityState 活动状态
+type ActivityState struct {
+    ID        string
+    Status    ActivityStatus
+    Input     interface{}
+    Output    interface{}
+    Error     error
+    StartTime time.Time
+    EndTime   time.Time
 }
 
-func (t *Transition) GetType() string { return "transition" }
-func (t *Transition) GetID() string   { return t.ID }
-
-func (t *Transition) Validate() error {
-    if t.ID == "" {
-        return fmt.Errorf("transition ID cannot be empty")
-    }
-    if t.Source == "" {
-        return fmt.Errorf("transition source cannot be empty")
-    }
-    if t.Target == "" {
-        return fmt.Errorf("transition target cannot be empty")
-    }
-    return nil
-}
-
-// Activity 活动实现
-type Activity struct {
-    ID       string                 `json:"id"`
-    Name     string                 `json:"name"`
-    Type     ActivityType           `json:"type"`
-    Handler  ActivityHandler        `json:"handler"`
-    Timeout  time.Duration          `json:"timeout"`
-    Retry    RetryPolicy            `json:"retry"`
-    Metadata map[string]interface{} `json:"metadata"`
-}
-
-type ActivityType string
+// 枚举类型
+type WorkflowStatus int
+type ActivityStatus int
+type ActivityType int
 
 const (
-    ActivityTypeManual     ActivityType = "manual"
-    ActivityTypeAutomatic  ActivityType = "automatic"
-    ActivityTypeSubprocess ActivityType = "subprocess"
+    WorkflowReady WorkflowStatus = iota
+    WorkflowRunning
+    WorkflowCompleted
+    WorkflowFailed
+    WorkflowSuspended
+    WorkflowCancelled
 )
 
-type ActivityHandler func(ctx context.Context, data interface{}) (interface{}, error)
+const (
+    ActivityReady ActivityStatus = iota
+    ActivityRunning
+    ActivityCompleted
+    ActivityFailed
+    ActivitySuspended
+    ActivityCancelled
+)
 
-func (a *Activity) GetType() string { return "activity" }
-func (a *Activity) GetID() string   { return a.ID }
+const (
+    ActivityTask ActivityType = iota
+    ActivitySubprocess
+    ActivityGateway
+)
+```
 
-func (a *Activity) Validate() error {
-    if a.ID == "" {
-        return fmt.Errorf("activity ID cannot be empty")
+### 6.2 类型系统
+
+```go
+// WorkflowBuilder 工作流构建器
+type WorkflowBuilder struct {
+    activities  map[string]Activity
+    transitions []Transition
+    startNode   string
+    endNodes    []string
+}
+
+// NewWorkflowBuilder 创建新的工作流构建器
+func NewWorkflowBuilder() *WorkflowBuilder {
+    return &WorkflowBuilder{
+        activities:  make(map[string]Activity),
+        transitions: make([]Transition, 0),
+        endNodes:    make([]string, 0),
     }
-    if a.Name == "" {
-        return fmt.Errorf("activity name cannot be empty")
+}
+
+// AddActivity 添加活动
+func (wb *WorkflowBuilder) AddActivity(activity Activity) *WorkflowBuilder {
+    wb.activities[activity.GetID()] = activity
+    return wb
+}
+
+// AddTransition 添加转换
+func (wb *WorkflowBuilder) AddTransition(from, to string, condition func(interface{}) bool) *WorkflowBuilder {
+    transition := &transition{
+        from:     from,
+        to:       to,
+        condition: condition,
     }
-    if a.Handler == nil {
-        return fmt.Errorf("activity handler cannot be nil")
+    wb.transitions = append(wb.transitions, transition)
+    return wb
+}
+
+// SetStartNode 设置开始节点
+func (wb *WorkflowBuilder) SetStartNode(nodeID string) *WorkflowBuilder {
+    wb.startNode = nodeID
+    return wb
+}
+
+// AddEndNode 添加结束节点
+func (wb *WorkflowBuilder) AddEndNode(nodeID string) *WorkflowBuilder {
+    wb.endNodes = append(wb.endNodes, nodeID)
+    return wb
+}
+
+// Build 构建工作流
+func (wb *WorkflowBuilder) Build() (Workflow, error) {
+    if wb.startNode == "" {
+        return nil, fmt.Errorf("start node not set")
     }
-    return nil
+    
+    if len(wb.endNodes) == 0 {
+        return nil, fmt.Errorf("no end nodes defined")
+    }
+    
+    return &workflow{
+        activities:  wb.activities,
+        transitions: wb.transitions,
+        startNode:   wb.startNode,
+        endNodes:    wb.endNodes,
+        state:       WorkflowState{Status: WorkflowReady},
+    }, nil
 }
 ```
 
-### 6.2 控制流实现
+### 6.3 实现示例
 
 ```go
-// ControlFlow 控制流接口
-type ControlFlow interface {
-    // Execute 执行控制流
-    Execute(ctx context.Context, data interface{}) (interface{}, error)
-
-    // GetType 获取控制流类型
-    GetType() string
+// workflow 工作流实现
+type workflow struct {
+    activities  map[string]Activity
+    transitions []Transition
+    startNode   string
+    endNodes    []string
+    state       WorkflowState
+    mu          sync.RWMutex
 }
 
-// SequentialFlow 顺序执行
-type SequentialFlow struct {
-    Activities []Activity
-}
-
-func (sf *SequentialFlow) GetType() string { return "sequential" }
-
-func (sf *SequentialFlow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
-    currentData := data
-
-    for _, activity := range sf.Activities {
-        select {
-        case <-ctx.Done():
-            return nil, ctx.Err()
-        default:
-            result, err := activity.Handler(ctx, currentData)
-            if err != nil {
-                return nil, fmt.Errorf("activity %s failed: %w", activity.ID, err)
-            }
-            currentData = result
+// Execute 执行工作流
+func (w *workflow) Execute(ctx context.Context, input interface{}) (interface{}, error) {
+    w.mu.Lock()
+    w.state.Status = WorkflowRunning
+    w.state.Data = make(map[string]interface{})
+    w.state.Data["input"] = input
+    w.mu.Unlock()
+    
+    defer func() {
+        w.mu.Lock()
+        if w.state.Status == WorkflowRunning {
+            w.state.Status = WorkflowCompleted
+        }
+        w.mu.Unlock()
+    }()
+    
+    // 初始化活动状态
+    for id, activity := range w.activities {
+        w.state.Activities[id] = ActivityState{
+            ID:     id,
+            Status: ActivityReady,
         }
     }
-
-    return currentData, nil
+    
+    // 执行工作流
+    return w.executeNode(ctx, w.startNode, input)
 }
 
-// ParallelFlow 并行执行
-type ParallelFlow struct {
-    Activities []Activity
-}
-
-func (pf *ParallelFlow) GetType() string { return "parallel" }
-
-func (pf *ParallelFlow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
-    var wg sync.WaitGroup
-    results := make([]interface{}, len(pf.Activities))
-    errors := make([]error, len(pf.Activities))
-
-    for i, activity := range pf.Activities {
-        wg.Add(1)
-        go func(index int, act Activity) {
-            defer wg.Done()
-            result, err := act.Handler(ctx, data)
-            results[index] = result
-            errors[index] = err
-        }(i, activity)
+// executeNode 执行节点
+func (w *workflow) executeNode(ctx context.Context, nodeID string, input interface{}) (interface{}, error) {
+    activity, exists := w.activities[nodeID]
+    if !exists {
+        return nil, fmt.Errorf("activity not found: %s", nodeID)
     }
-
-    wg.Wait()
-
-    // 检查是否有错误
-    for _, err := range errors {
-        if err != nil {
-            return nil, fmt.Errorf("parallel activity failed: %w", err)
-        }
-    }
-
-    return results, nil
-}
-
-// ConditionalFlow 条件分支
-type ConditionalFlow struct {
-    Condition  Condition
-    TrueFlow   ControlFlow
-    FalseFlow  ControlFlow
-}
-
-func (cf *ConditionalFlow) GetType() string { return "conditional" }
-
-func (cf *ConditionalFlow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
-    condition, err := cf.Condition.Evaluate(ctx, data)
+    
+    // 更新活动状态
+    w.mu.Lock()
+    state := w.state.Activities[nodeID]
+    state.Status = ActivityRunning
+    state.Input = input
+    state.StartTime = time.Now()
+    w.state.Activities[nodeID] = state
+    w.mu.Unlock()
+    
+    // 执行活动
+    output, err := activity.Execute(ctx, input)
+    
+    // 更新活动状态
+    w.mu.Lock()
+    state = w.state.Activities[nodeID]
+    state.Output = output
+    state.EndTime = time.Now()
     if err != nil {
-        return nil, fmt.Errorf("condition evaluation failed: %w", err)
-    }
-
-    if condition {
-        return cf.TrueFlow.Execute(ctx, data)
+        state.Status = ActivityFailed
+        state.Error = err
+        w.state.Status = WorkflowFailed
     } else {
-        return cf.FalseFlow.Execute(ctx, data)
+        state.Status = ActivityCompleted
     }
-}
-
-// LoopFlow 循环执行
-type LoopFlow struct {
-    Condition  Condition
-    Body       ControlFlow
-    MaxIterations int
-}
-
-func (lf *LoopFlow) GetType() string { return "loop" }
-
-func (lf *LoopFlow) Execute(ctx context.Context, data interface{}) (interface{}, error) {
-    currentData := data
-    iteration := 0
-
-    for {
-        if lf.MaxIterations > 0 && iteration >= lf.MaxIterations {
-            break
-        }
-
-        condition, err := lf.Condition.Evaluate(ctx, currentData)
-        if err != nil {
-            return nil, fmt.Errorf("loop condition evaluation failed: %w", err)
-        }
-
-        if !condition {
-            break
-        }
-
-        result, err := lf.Body.Execute(ctx, currentData)
-        if err != nil {
-            return nil, fmt.Errorf("loop body execution failed: %w", err)
-        }
-
-        currentData = result
-        iteration++
+    w.state.Activities[nodeID] = state
+    w.mu.Unlock()
+    
+    if err != nil {
+        return nil, err
     }
-
-    return currentData, nil
+    
+    // 检查是否为结束节点
+    for _, endNode := range w.endNodes {
+        if nodeID == endNode {
+            return output, nil
+        }
+    }
+    
+    // 查找下一个节点
+    nextNode, err := w.findNextNode(nodeID, output)
+    if err != nil {
+        return nil, err
+    }
+    
+    return w.executeNode(ctx, nextNode, output)
 }
+
+// findNextNode 查找下一个节点
+func (w *workflow) findNextNode(currentNode string, data interface{}) (string, error) {
+    for _, transition := range w.transitions {
+        if transition.GetFrom() == currentNode {
+            if transition.GetCondition() == nil || transition.GetCondition()(data) {
+                return transition.GetTo(), nil
+            }
+        }
+    }
+    return "", fmt.Errorf("no valid transition from node: %s", currentNode)
+}
+
+// GetState 获取工作流状态
+func (w *workflow) GetState() WorkflowState {
+    w.mu.RLock()
+    defer w.mu.RUnlock()
+    return w.state
+}
+
+// GetActivities 获取活动列表
+func (w *workflow) GetActivities() []Activity {
+    activities := make([]Activity, 0, len(w.activities))
+    for _, activity := range w.activities {
+        activities = append(activities, activity)
+    }
+    return activities
+}
+
+// GetTransitions 获取转换列表
+func (w *workflow) GetTransitions() []Transition {
+    return w.transitions
+}
+
+// transition 转换实现
+type transition struct {
+    from     string
+    to       string
+    condition func(interface{}) bool
+    action    func(interface{}) interface{}
+}
+
+func (t *transition) GetFrom() string { return t.from }
+func (t *transition) GetTo() string { return t.to }
+func (t *transition) GetCondition() func(interface{}) bool { return t.condition }
+func (t *transition) GetAction() func(interface{}) interface{} { return t.action }
 ```
 
-### 6.3 数据流实现
+## 总结
 
-```go
-// DataFlow 数据流接口
-type DataFlow interface {
-    // Process 处理数据流
-    Process(ctx context.Context, data interface{}) (interface{}, error)
+本文档定义了工作流系统的基本术语和概念，包括：
 
-    // GetType 获取数据流类型
-    GetType() string
-}
+1. **核心概念**: 工作流、活动、转换、状态
+2. **控制流概念**: 顺序、并行、条件分支、循环
+3. **数据流概念**: 数据传递、转换、聚合
+4. **异常处理**: 错误处理、补偿、重试
+5. **形式化定义**: 数学符号、公理系统、推理规则
+6. **Go语言映射**: 接口定义、类型系统、实现示例
 
-// DataTransfer 数据传递
-type DataTransfer struct {
-    Source      string
-    Target      string
-    Mapping     map[string]string
-}
-
-func (dt *DataTransfer) GetType() string { return "transfer" }
-
-func (dt *DataTransfer) Process(ctx context.Context, data interface{}) (interface{}, error) {
-    // 实现数据映射逻辑
-    if dt.Mapping == nil {
-        return data, nil
-    }
-
-    // 这里简化实现，实际应该根据映射规则转换数据
-    return data, nil
-}
-
-// DataTransform 数据转换
-type DataTransform struct {
-    Transformer func(interface{}) (interface{}, error)
-}
-
-func (dt *DataTransform) GetType() string { return "transform" }
-
-func (dt *DataTransform) Process(ctx context.Context, data interface{}) (interface{}, error) {
-    if dt.Transformer == nil {
-        return data, nil
-    }
-
-    return dt.Transformer(data)
-}
-
-// DataAggregate 数据聚合
-type DataAggregate struct {
-    Aggregator func([]interface{}) (interface{}, error)
-}
-
-func (da *DataAggregate) GetType() string { return "aggregate" }
-
-func (da *DataAggregate) Process(ctx context.Context, data interface{}) (interface{}, error) {
-    if da.Aggregator == nil {
-        return data, nil
-    }
-
-    // 假设输入是切片
-    if slice, ok := data.([]interface{}); ok {
-        return da.Aggregator(slice)
-    }
-
-    return data, nil
-}
-```
-
-## 7. 形式化定义
-
-### 7.1 数学符号
-
-**符号表**:
-- $\Sigma$: 状态集合
-- $T$: 转换集合
-- $D$: 数据集合
-- $\mathbb{B}$: 布尔值集合
-- $\mathbb{R}^+$: 正实数集合
-- $\mathbb{N}$: 自然数集合
-- $\mathcal{P}(V)$: 集合 $V$ 的幂集
-
-### 7.2 公理系统
-
-**公理 7.1** (状态唯一性): 对于任意状态 $s_1, s_2 \in \Sigma$，如果 $s_1.id = s_2.id$，则 $s_1 = s_2$。
-
-**公理 7.2** (转换确定性): 对于任意状态 $s \in \Sigma$ 和数据 $d \in D$，最多存在一个转换 $t \in T$ 使得 $source(t) = s$ 且 $condition(t)(d) = true$。
-
-**公理 7.3** (活动原子性): 活动执行是原子的，要么完全成功，要么完全失败。
-
-### 7.3 定理证明
-
-**定理 7.1** (状态可达性): 对于任意状态 $s \in \Sigma$，存在执行序列使得从初始状态可达 $s$。
-
-**证明**:
-1. 设初始状态为 $s_0$
-2. 对于任意状态 $s$，如果存在转换 $t$ 使得 $source(t) = s_0$ 且 $target(t) = s$，则 $s$ 可达
-3. 否则，通过归纳法可以构造执行序列到达 $s$
-4. 因此状态可达性成立。$\square$
-
-**定理 7.2** (终止性): 如果工作流是有限的，则执行必然终止。
-
-**证明**:
-1. 设工作流有 $n$ 个状态
-2. 每次转换都改变状态
-3. 由于状态有限，最多执行 $n$ 次转换
-4. 因此执行必然终止。$\square$
-
----
-
-**参考文献**:
-1. van der Aalst, W. M. P. (2016). Process Mining: Data Science in Action. Springer.
-2. Dumas, M., La Rosa, M., Mendling, J., & Reijers, H. A. (2018). Fundamentals of Business Process Management. Springer.
-3. Russell, N., ter Hofstede, A. H., van der Aalst, W. M. P., & Mulyar, N. (2006). Workflow Control-Flow Patterns: A Revised View. BPM Center Report BPM-06-22.
-4. Weske, M. (2012). Business Process Management: Concepts, Languages, Architectures. Springer.
+这些术语为工作流系统的设计和实现提供了统一的概念基础。
