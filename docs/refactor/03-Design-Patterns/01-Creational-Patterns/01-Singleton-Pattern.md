@@ -1,164 +1,276 @@
-# 01-单例模式 (Singleton Pattern)
+# 01. 单例模式 (Singleton Pattern)
 
 ## 目录
 
-- [01-单例模式 (Singleton Pattern)](#01-单例模式-singleton-pattern)
+- [01. 单例模式 (Singleton Pattern)](#01-单例模式-singleton-pattern)
   - [目录](#目录)
-  - [概述](#概述)
-    - [核心特征](#核心特征)
-  - [1. 形式化定义](#1-形式化定义)
-    - [1.1 基本定义](#11-基本定义)
-    - [1.2 形式化约束](#12-形式化约束)
-    - [1.3 状态机模型](#13-状态机模型)
-  - [2. 数学证明](#2-数学证明)
-    - [2.1 唯一性证明](#21-唯一性证明)
-    - [2.2 线程安全性证明](#22-线程安全性证明)
-    - [2.3 延迟初始化证明](#23-延迟初始化证明)
+  - [1. 模式概述](#1-模式概述)
+    - [1.1 定义与目的](#11-定义与目的)
+    - [1.2 应用场景](#12-应用场景)
+    - [1.3 优缺点分析](#13-优缺点分析)
+  - [2. 形式化定义](#2-形式化定义)
+    - [2.1 数学定义](#21-数学定义)
+    - [2.2 类型系统](#22-类型系统)
+    - [2.3 行为规范](#23-行为规范)
   - [3. 实现方式](#3-实现方式)
     - [3.1 饿汉式单例](#31-饿汉式单例)
     - [3.2 懒汉式单例](#32-懒汉式单例)
     - [3.3 双重检查锁定](#33-双重检查锁定)
+    - [3.4 静态内部类](#34-静态内部类)
+    - [3.5 枚举单例](#35-枚举单例)
   - [4. Go语言实现](#4-go语言实现)
-    - [4.1 基础单例实现](#41-基础单例实现)
-    - [4.2 泛型单例实现](#42-泛型单例实现)
-    - [4.3 函数式单例实现](#43-函数式单例实现)
-    - [4.4 带配置的单例](#44-带配置的单例)
-  - [5. 性能分析](#5-性能分析)
-    - [5.1 时间复杂度](#51-时间复杂度)
-    - [5.2 空间复杂度](#52-空间复杂度)
-    - [5.3 并发性能](#53-并发性能)
-  - [6. 应用场景](#6-应用场景)
-    - [6.1 配置管理](#61-配置管理)
-    - [6.2 日志管理器](#62-日志管理器)
-    - [6.3 数据库连接池](#63-数据库连接池)
-  - [7. 优缺点分析](#7-优缺点分析)
-    - [7.1 优点](#71-优点)
-    - [7.2 缺点](#72-缺点)
-    - [7.3 改进方案](#73-改进方案)
-  - [8. 相关模式](#8-相关模式)
-    - [8.1 与工厂模式的关系](#81-与工厂模式的关系)
-    - [8.2 与抽象工厂模式的关系](#82-与抽象工厂模式的关系)
-    - [8.3 与建造者模式的关系](#83-与建造者模式的关系)
-  - [参考文献](#参考文献)
+    - [4.1 基础实现](#41-基础实现)
+    - [4.2 线程安全实现](#42-线程安全实现)
+    - [4.3 泛型实现](#43-泛型实现)
+    - [4.4 函数式实现](#44-函数式实现)
+  - [5. 并发安全](#5-并发安全)
+    - [5.1 内存模型](#51-内存模型)
+    - [5.2 同步机制](#52-同步机制)
+    - [5.3 性能优化](#53-性能优化)
+  - [6. 测试与验证](#6-测试与验证)
+    - [6.1 单元测试](#61-单元测试)
+    - [6.2 并发测试](#62-并发测试)
+    - [6.3 性能测试](#63-性能测试)
+  - [7. 应用实例](#7-应用实例)
+    - [7.1 配置管理器](#71-配置管理器)
+    - [7.2 日志记录器](#72-日志记录器)
+    - [7.3 数据库连接池](#73-数据库连接池)
+  - [8. 定理与证明](#8-定理与证明)
+    - [8.1 唯一性定理](#81-唯一性定理)
+    - [8.2 线程安全定理](#82-线程安全定理)
+    - [8.3 性能定理](#83-性能定理)
 
-## 概述
+---
 
-单例模式是一种创建型设计模式，确保一个类只有一个实例，并提供一个全局访问点。在Go语言中，单例模式通过包级别的变量和sync.Once来实现线程安全的单例。
+## 1. 模式概述
 
-### 核心特征
+### 1.1 定义与目的
 
-- **唯一性**: 确保类只有一个实例
-- **全局访问**: 提供全局访问点
-- **延迟初始化**: 实例在首次使用时创建
-- **线程安全**: 在多线程环境下安全使用
+**定义 1.1.1** (单例模式)
+单例模式是一种创建型设计模式，确保一个类只有一个实例，并提供一个全局访问点。
 
-## 1. 形式化定义
+**形式化定义**：
+设 $C$ 是一个类，单例模式确保：
+$$\forall x, y \in C: x = y$$
 
-### 1.1 基本定义
+**目的**：
 
-**定义 1.1** (单例模式): 单例模式是一个三元组 $(C, \text{getInstance}, \text{instance})$，其中：
+1. **唯一性保证**：确保系统中某个类只有一个实例
+2. **全局访问**：提供全局访问点
+3. **延迟初始化**：支持延迟创建实例
+4. **线程安全**：在多线程环境下保证实例的唯一性
 
-- $C$ 是单例类
-- $\text{getInstance}$ 是获取实例的方法
-- $\text{instance}$ 是唯一的实例
+### 1.2 应用场景
 
-### 1.2 形式化约束
+**场景 1.2.1** (配置管理)
+系统配置信息需要全局访问，且配置在运行时不应被修改。
 
-**约束 1.1** (唯一性): $\forall x, y \in C: \text{getInstance}() = x \land \text{getInstance}() = y \Rightarrow x = y$
+**场景 1.2.2** (日志记录)
+日志记录器需要全局访问，避免多个日志文件冲突。
 
-**约束 1.2** (存在性): $\exists x \in C: \text{getInstance}() = x$
+**场景 1.2.3** (数据库连接池)
+数据库连接池需要全局管理，避免资源浪费。
 
-**约束 1.3** (全局访问): $\forall \text{context}: \text{getInstance}() \text{ is accessible}$
+**场景 1.2.4** (缓存管理)
+缓存管理器需要全局访问，确保缓存一致性。
 
-### 1.3 状态机模型
+### 1.3 优缺点分析
 
-**定义 1.2** (单例状态机): 单例模式的状态机 $M = (Q, \Sigma, \delta, q_0, F)$ 定义为：
+**优点**：
 
-- $Q = \{\text{Uninitialized}, \text{Initialized}\}$
-- $\Sigma = \{\text{getInstance}\}$
-- $\delta(\text{Uninitialized}, \text{getInstance}) = \text{Initialized}$
-- $\delta(\text{Initialized}, \text{getInstance}) = \text{Initialized}$
-- $q_0 = \text{Uninitialized}$
-- $F = \{\text{Initialized}\}$
+1. **内存效率**：只创建一个实例，节省内存
+2. **全局访问**：提供统一的访问点
+3. **延迟初始化**：支持按需创建
+4. **线程安全**：保证多线程环境下的正确性
 
-## 2. 数学证明
+**缺点**：
 
-### 2.1 唯一性证明
+1. **全局状态**：引入全局状态，增加复杂性
+2. **测试困难**：全局状态使单元测试复杂化
+3. **违反单一职责**：同时负责创建和管理实例
+4. **并发开销**：线程安全实现可能带来性能开销
 
-**定理 2.1** (唯一性): 单例模式确保实例的唯一性。
+## 2. 形式化定义
 
-**证明**:
+### 2.1 数学定义
 
-1. 假设存在两个不同的实例 $x$ 和 $y$
-2. 根据约束1.1，$\text{getInstance}() = x$ 且 $\text{getInstance}() = y$
-3. 因此 $x = y$，与假设矛盾
-4. 所以实例是唯一的
+**定义 2.1.1** (单例类)
+单例类 $S$ 是一个满足以下条件的类：
 
-### 2.2 线程安全性证明
+1. **唯一性**：$\forall x, y \in S: x = y$
+2. **存在性**：$\exists x \in S$
+3. **可访问性**：$\forall x \in S: \text{accessible}(x)$
 
-**定理 2.2** (线程安全): 使用sync.Once的单例模式是线程安全的。
+**定义 2.1.2** (单例函数)
+单例函数 $f: \emptyset \to S$ 满足：
+$$f() = \text{the unique instance of } S$$
 
-**证明**:
+**定义 2.1.3** (线程安全单例)
+线程安全单例 $S$ 满足：
+$$\forall t_1, t_2 \in \text{Threads}: f_{t_1}() = f_{t_2}()$$
 
-1. sync.Once保证Do方法只执行一次
-2. 实例创建在Do方法中执行
-3. 因此实例只创建一次
-4. 所有线程访问同一个实例
+### 2.2 类型系统
 
-### 2.3 延迟初始化证明
+**定义 2.2.1** (单例类型)
+在类型系统中，单例类型 $T$ 满足：
+$$\text{Card}(T) = 1$$
 
-**定理 2.3** (延迟初始化): 单例模式支持延迟初始化。
+其中 $\text{Card}(T)$ 表示类型 $T$ 的基数。
 
-**证明**:
+**定义 2.2.2** (单例接口)
+单例接口 $I$ 定义：
 
-1. 实例在首次调用getInstance时创建
-2. 在此之前，实例为nil
-3. 满足延迟初始化的定义
+```typescript
+interface Singleton<T> {
+    getInstance(): T;
+    reset(): void;
+}
+```
+
+**定义 2.2.3** (单例约束)
+单例约束 $C$ 确保：
+$$\forall x, y: \text{instanceOf}(x, T) \land \text{instanceOf}(y, T) \Rightarrow x = y$$
+
+### 2.3 行为规范
+
+**规范 2.3.1** (创建行为)
+
+1. 第一次调用时创建实例
+2. 后续调用返回相同实例
+3. 创建过程是原子的
+
+**规范 2.3.2** (访问行为)
+
+1. 提供统一的访问方法
+2. 访问方法是线程安全的
+3. 访问方法返回相同的实例
+
+**规范 2.3.3** (生命周期行为)
+
+1. 实例在程序运行期间存在
+2. 支持显式重置（可选）
+3. 支持优雅关闭
 
 ## 3. 实现方式
 
 ### 3.1 饿汉式单例
 
+**定义 3.1.1** (饿汉式单例)
+在类加载时就完成初始化的单例模式。
+
+**特点**：
+
+- 线程安全（类加载时初始化）
+- 不支持延迟初始化
+- 可能造成不必要的内存占用
+
+**Go实现**：
+
 ```go
-// 饿汉式单例 - 在包初始化时创建实例
+package singleton
+
+import (
+    "sync"
+    "time"
+)
+
+// EagerSingleton 饿汉式单例
 type EagerSingleton struct {
-    data string
+    id        string
+    createdAt time.Time
 }
 
-var eagerInstance = &EagerSingleton{data: "Eager Singleton"}
+// 在包级别初始化实例
+var eagerInstance = &EagerSingleton{
+    id:        "eager-singleton",
+    createdAt: time.Now(),
+}
 
+// GetEagerInstance 获取饿汉式单例实例
 func GetEagerInstance() *EagerSingleton {
     return eagerInstance
+}
+
+// GetID 获取实例ID
+func (s *EagerSingleton) GetID() string {
+    return s.id
+}
+
+// GetCreatedAt 获取创建时间
+func (s *EagerSingleton) GetCreatedAt() time.Time {
+    return s.createdAt
 }
 ```
 
 ### 3.2 懒汉式单例
 
+**定义 3.2.1** (懒汉式单例)
+在第一次使用时才创建实例的单例模式。
+
+**特点**：
+
+- 支持延迟初始化
+- 需要处理线程安全问题
+- 可能影响性能
+
+**Go实现**：
+
 ```go
-// 懒汉式单例 - 延迟初始化
+// LazySingleton 懒汉式单例
 type LazySingleton struct {
-    data string
+    id        string
+    createdAt time.Time
 }
 
 var (
     lazyInstance *LazySingleton
-    lazyOnce     sync.Once
+    lazyMutex    sync.Mutex
 )
 
+// GetLazyInstance 获取懒汉式单例实例
 func GetLazyInstance() *LazySingleton {
-    lazyOnce.Do(func() {
-        lazyInstance = &LazySingleton{data: "Lazy Singleton"}
-    })
+    lazyMutex.Lock()
+    defer lazyMutex.Unlock()
+    
+    if lazyInstance == nil {
+        lazyInstance = &LazySingleton{
+            id:        "lazy-singleton",
+            createdAt: time.Now(),
+        }
+    }
+    
     return lazyInstance
+}
+
+// GetID 获取实例ID
+func (s *LazySingleton) GetID() string {
+    return s.id
+}
+
+// GetCreatedAt 获取创建时间
+func (s *LazySingleton) GetCreatedAt() time.Time {
+    return s.createdAt
 }
 ```
 
 ### 3.3 双重检查锁定
 
+**定义 3.3.1** (双重检查锁定)
+使用双重检查来减少锁的开销的线程安全单例模式。
+
+**特点**：
+
+- 线程安全
+- 性能优化
+- 支持延迟初始化
+
+**Go实现**：
+
 ```go
-// 双重检查锁定单例
+// DoubleCheckSingleton 双重检查锁定单例
 type DoubleCheckSingleton struct {
-    data string
+    id        string
+    createdAt time.Time
 }
 
 var (
@@ -166,252 +278,787 @@ var (
     doubleCheckMutex    sync.RWMutex
 )
 
+// GetDoubleCheckInstance 获取双重检查锁定单例实例
 func GetDoubleCheckInstance() *DoubleCheckSingleton {
+    // 第一次检查（无锁）
     if doubleCheckInstance == nil {
+        // 获取写锁
         doubleCheckMutex.Lock()
         defer doubleCheckMutex.Unlock()
         
+        // 第二次检查（有锁）
         if doubleCheckInstance == nil {
-            doubleCheckInstance = &DoubleCheckSingleton{data: "Double Check Singleton"}
+            doubleCheckInstance = &DoubleCheckSingleton{
+                id:        "double-check-singleton",
+                createdAt: time.Now(),
+            }
         }
     }
+    
     return doubleCheckInstance
+}
+
+// GetID 获取实例ID
+func (s *DoubleCheckSingleton) GetID() string {
+    return s.id
+}
+
+// GetCreatedAt 获取创建时间
+func (s *DoubleCheckSingleton) GetCreatedAt() time.Time {
+    return s.createdAt
+}
+```
+
+### 3.4 静态内部类
+
+**定义 3.4.1** (静态内部类单例)
+使用静态内部类实现延迟初始化的单例模式。
+
+**特点**：
+
+- 线程安全（类加载时初始化）
+- 支持延迟初始化
+- 实现简单
+
+**Go实现**（使用包级变量模拟）：
+
+```go
+// StaticInnerSingleton 静态内部类单例
+type StaticInnerSingleton struct {
+    id        string
+    createdAt time.Time
+}
+
+// 使用sync.Once确保线程安全
+var (
+    staticInnerInstance *StaticInnerSingleton
+    staticInnerOnce     sync.Once
+)
+
+// GetStaticInnerInstance 获取静态内部类单例实例
+func GetStaticInnerInstance() *StaticInnerSingleton {
+    staticInnerOnce.Do(func() {
+        staticInnerInstance = &StaticInnerSingleton{
+            id:        "static-inner-singleton",
+            createdAt: time.Now(),
+        }
+    })
+    
+    return staticInnerInstance
+}
+
+// GetID 获取实例ID
+func (s *StaticInnerSingleton) GetID() string {
+    return s.id
+}
+
+// GetCreatedAt 获取创建时间
+func (s *StaticInnerSingleton) GetCreatedAt() time.Time {
+    return s.createdAt
+}
+```
+
+### 3.5 枚举单例
+
+**定义 3.5.1** (枚举单例)
+使用枚举实现单例模式（Go中通过常量模拟）。
+
+**特点**：
+
+- 线程安全
+- 自动序列化支持
+- 防止反射攻击
+
+**Go实现**：
+
+```go
+// EnumSingleton 枚举单例
+type EnumSingleton struct {
+    id        string
+    createdAt time.Time
+}
+
+// 使用常量定义单例实例
+const (
+    EnumInstanceID = "enum-singleton"
+)
+
+var enumInstance = &EnumSingleton{
+    id:        EnumInstanceID,
+    createdAt: time.Now(),
+}
+
+// GetEnumInstance 获取枚举单例实例
+func GetEnumInstance() *EnumSingleton {
+    return enumInstance
+}
+
+// GetID 获取实例ID
+func (s *EnumSingleton) GetID() string {
+    return s.id
+}
+
+// GetCreatedAt 获取创建时间
+func (s *EnumSingleton) GetCreatedAt() time.Time {
+    return s.createdAt
 }
 ```
 
 ## 4. Go语言实现
 
-### 4.1 基础单例实现
+### 4.1 基础实现
 
 ```go
-// 基础单例接口
-type Singleton interface {
-    GetData() string
-    SetData(data string)
-}
+package singleton
 
-// 基础单例实现
-type BaseSingleton struct {
-    data string
-    mu   sync.RWMutex
-}
-
-var (
-    baseInstance *BaseSingleton
-    baseOnce     sync.Once
+import (
+    "fmt"
+    "sync"
+    "time"
 )
 
-func GetBaseInstance() Singleton {
-    baseOnce.Do(func() {
-        baseInstance = &BaseSingleton{
-            data: "Default Data",
+// Singleton 单例接口
+type Singleton interface {
+    GetID() string
+    GetCreatedAt() time.Time
+    DoSomething() string
+}
+
+// BaseSingleton 基础单例实现
+type BaseSingleton struct {
+    id        string
+    createdAt time.Time
+    counter   int
+    mutex     sync.RWMutex
+}
+
+// 全局实例
+var (
+    instance *BaseSingleton
+    once     sync.Once
+)
+
+// GetInstance 获取单例实例
+func GetInstance() Singleton {
+    once.Do(func() {
+        instance = &BaseSingleton{
+            id:        "base-singleton",
+            createdAt: time.Now(),
+            counter:   0,
         }
     })
-    return baseInstance
+    return instance
 }
 
-func (s *BaseSingleton) GetData() string {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    return s.data
+// GetID 获取实例ID
+func (s *BaseSingleton) GetID() string {
+    return s.id
 }
 
-func (s *BaseSingleton) SetData(data string) {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    s.data = data
+// GetCreatedAt 获取创建时间
+func (s *BaseSingleton) GetCreatedAt() time.Time {
+    return s.createdAt
+}
+
+// DoSomething 执行操作
+func (s *BaseSingleton) DoSomething() string {
+    s.mutex.Lock()
+    defer s.mutex.Unlock()
+    
+    s.counter++
+    return fmt.Sprintf("Operation %d executed at %v", s.counter, time.Now())
+}
+
+// GetCounter 获取计数器值
+func (s *BaseSingleton) GetCounter() int {
+    s.mutex.RLock()
+    defer s.mutex.RUnlock()
+    
+    return s.counter
+}
+
+// Reset 重置单例（用于测试）
+func Reset() {
+    instance = nil
+    once = sync.Once{}
 }
 ```
 
-### 4.2 泛型单例实现
+### 4.2 线程安全实现
 
 ```go
-// 泛型单例管理器
-type SingletonManager[T any] struct {
+// ThreadSafeSingleton 线程安全单例
+type ThreadSafeSingleton struct {
+    id        string
+    createdAt time.Time
+    data      map[string]interface{}
+    mutex     sync.RWMutex
+}
+
+var (
+    threadSafeInstance *ThreadSafeSingleton
+    threadSafeOnce     sync.Once
+)
+
+// GetThreadSafeInstance 获取线程安全单例实例
+func GetThreadSafeInstance() *ThreadSafeSingleton {
+    threadSafeOnce.Do(func() {
+        threadSafeInstance = &ThreadSafeSingleton{
+            id:        "thread-safe-singleton",
+            createdAt: time.Now(),
+            data:      make(map[string]interface{}),
+        }
+    })
+    return threadSafeInstance
+}
+
+// SetData 设置数据
+func (s *ThreadSafeSingleton) SetData(key string, value interface{}) {
+    s.mutex.Lock()
+    defer s.mutex.Unlock()
+    
+    s.data[key] = value
+}
+
+// GetData 获取数据
+func (s *ThreadSafeSingleton) GetData(key string) (interface{}, bool) {
+    s.mutex.RLock()
+    defer s.mutex.RUnlock()
+    
+    value, exists := s.data[key]
+    return value, exists
+}
+
+// GetAllData 获取所有数据
+func (s *ThreadSafeSingleton) GetAllData() map[string]interface{} {
+    s.mutex.RLock()
+    defer s.mutex.RUnlock()
+    
+    result := make(map[string]interface{})
+    for k, v := range s.data {
+        result[k] = v
+    }
+    return result
+}
+
+// ClearData 清空数据
+func (s *ThreadSafeSingleton) ClearData() {
+    s.mutex.Lock()
+    defer s.mutex.Unlock()
+    
+    s.data = make(map[string]interface{})
+}
+
+// GetID 获取实例ID
+func (s *ThreadSafeSingleton) GetID() string {
+    return s.id
+}
+
+// GetCreatedAt 获取创建时间
+func (s *ThreadSafeSingleton) GetCreatedAt() time.Time {
+    return s.createdAt
+}
+```
+
+### 4.3 泛型实现
+
+```go
+// GenericSingleton 泛型单例
+type GenericSingleton[T any] struct {
     instance T
     once     sync.Once
     factory  func() T
 }
 
-func NewSingletonManager[T any](factory func() T) *SingletonManager[T] {
-    return &SingletonManager[T]{
+// NewGenericSingleton 创建泛型单例
+func NewGenericSingleton[T any](factory func() T) *GenericSingleton[T] {
+    return &GenericSingleton[T]{
         factory: factory,
     }
 }
 
-func (sm *SingletonManager[T]) GetInstance() T {
-    sm.once.Do(func() {
-        sm.instance = sm.factory()
+// GetInstance 获取泛型单例实例
+func (s *GenericSingleton[T]) GetInstance() T {
+    s.once.Do(func() {
+        s.instance = s.factory()
     })
-    return sm.instance
+    return s.instance
+}
+
+// Reset 重置泛型单例（用于测试）
+func (s *GenericSingleton[T]) Reset() {
+    s.once = sync.Once{}
 }
 
 // 使用示例
 type Config struct {
     DatabaseURL string
     Port        int
+    Debug       bool
 }
 
+// NewConfig 创建配置实例
 func NewConfig() Config {
     return Config{
         DatabaseURL: "localhost:5432",
         Port:        8080,
+        Debug:       true,
     }
 }
 
-var configManager = NewSingletonManager(NewConfig)
+// 全局配置单例
+var ConfigSingleton = NewGenericSingleton(NewConfig)
 
+// GetConfig 获取配置实例
 func GetConfig() Config {
-    return configManager.GetInstance()
+    return ConfigSingleton.GetInstance()
 }
 ```
 
-### 4.3 函数式单例实现
+### 4.4 函数式实现
 
 ```go
-// 函数式单例
+// FunctionalSingleton 函数式单例
 type FunctionalSingleton struct {
-    data string
+    id        string
+    createdAt time.Time
+    operations []func() string
 }
 
-var (
-    functionalInstance *FunctionalSingleton
-    functionalOnce     sync.Once
-)
+// SingletonFactory 单例工厂函数
+type SingletonFactory func() *FunctionalSingleton
 
-// 使用闭包实现
-func NewFunctionalSingleton() func() *FunctionalSingleton {
+// CreateSingleton 创建单例的工厂函数
+func CreateSingleton(id string) SingletonFactory {
+    var instance *FunctionalSingleton
+    var once sync.Once
+    
     return func() *FunctionalSingleton {
-        functionalOnce.Do(func() {
-            functionalInstance = &FunctionalSingleton{
-                data: "Functional Singleton",
+        once.Do(func() {
+            instance = &FunctionalSingleton{
+                id:        id,
+                createdAt: time.Now(),
+                operations: make([]func() string, 0),
             }
         })
-        return functionalInstance
+        return instance
     }
 }
 
-// 全局函数
-var GetFunctionalInstance = NewFunctionalSingleton()
-```
+// AddOperation 添加操作
+func (s *FunctionalSingleton) AddOperation(operation func() string) {
+    s.operations = append(s.operations, operation)
+}
 
-### 4.4 带配置的单例
-
-```go
-// 配置选项
-type SingletonOption func(*ConfigurableSingleton)
-
-func WithData(data string) SingletonOption {
-    return func(s *ConfigurableSingleton) {
-        s.data = data
+// ExecuteOperations 执行所有操作
+func (s *FunctionalSingleton) ExecuteOperations() []string {
+    results := make([]string, len(s.operations))
+    for i, operation := range s.operations {
+        results[i] = operation()
     }
+    return results
 }
 
-func WithTimeout(timeout time.Duration) SingletonOption {
-    return func(s *ConfigurableSingleton) {
-        s.timeout = timeout
-    }
+// GetID 获取实例ID
+func (s *FunctionalSingleton) GetID() string {
+    return s.id
 }
 
-// 可配置单例
-type ConfigurableSingleton struct {
-    data    string
-    timeout time.Duration
-    mu      sync.RWMutex
+// GetCreatedAt 获取创建时间
+func (s *FunctionalSingleton) GetCreatedAt() time.Time {
+    return s.createdAt
 }
 
+// 使用示例
 var (
-    configurableInstance *ConfigurableSingleton
-    configurableOnce     sync.Once
+    LoggerFactory = CreateSingleton("logger")
+    CacheFactory  = CreateSingleton("cache")
 )
 
-func GetConfigurableInstance(options ...SingletonOption) *ConfigurableSingleton {
-    configurableOnce.Do(func() {
-        configurableInstance = &ConfigurableSingleton{
-            data:    "Default Data",
-            timeout: 30 * time.Second,
-        }
-        
-        // 应用配置选项
-        for _, option := range options {
-            option(configurableInstance)
-        }
-    })
-    return configurableInstance
+// GetLogger 获取日志单例
+func GetLogger() *FunctionalSingleton {
+    return LoggerFactory()
 }
 
-func (s *ConfigurableSingleton) GetData() string {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    return s.data
-}
-
-func (s *ConfigurableSingleton) GetTimeout() time.Duration {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    return s.timeout
+// GetCache 获取缓存单例
+func GetCache() *FunctionalSingleton {
+    return CacheFactory()
 }
 ```
 
-## 5. 性能分析
+## 5. 并发安全
 
-### 5.1 时间复杂度
+### 5.1 内存模型
 
-**定理 5.1**: 单例模式的getInstance操作时间复杂度为 $O(1)$。
+**定义 5.1.1** (内存可见性)
+在多线程环境中，单例实例的创建和访问需要保证内存可见性。
 
-**证明**:
-
-1. 首次调用需要创建实例，时间复杂度 $O(1)$
-2. 后续调用直接返回实例，时间复杂度 $O(1)$
-3. 总体时间复杂度为 $O(1)$
-
-### 5.2 空间复杂度
-
-**定理 5.2**: 单例模式的空间复杂度为 $O(1)$。
-
-**证明**:
-
-1. 只存储一个实例
-2. 实例大小固定
-3. 空间复杂度为 $O(1)$
-
-### 5.3 并发性能
+**Go内存模型**：
 
 ```go
-// 性能测试
-func BenchmarkSingleton(b *testing.B) {
-    b.Run("BaseSingleton", func(b *testing.B) {
-        b.ResetTimer()
-        for i := 0; i < b.N; i++ {
-            _ = GetBaseInstance()
-        }
+// 使用sync.Once保证内存可见性
+var (
+    instance *Singleton
+    once     sync.Once
+)
+
+func GetInstance() *Singleton {
+    once.Do(func() {
+        instance = &Singleton{}
     })
-    
-    b.Run("LazySingleton", func(b *testing.B) {
-        b.ResetTimer()
-        for i := 0; i < b.N; i++ {
-            _ = GetLazyInstance()
-        }
-    })
-    
-    b.Run("DoubleCheckSingleton", func(b *testing.B) {
-        b.ResetTimer()
-        for i := 0; i < b.N; i++ {
-            _ = GetDoubleCheckInstance()
-        }
-    })
+    return instance
 }
 ```
 
-## 6. 应用场景
+**定义 5.1.2** (原子性)
+单例实例的创建过程必须是原子的，不能被中断。
 
-### 6.1 配置管理
+**实现方式**：
+
+1. 使用 `sync.Once`
+2. 使用互斥锁
+3. 使用原子操作
+
+### 5.2 同步机制
+
+**机制 5.2.1** (互斥锁)
+使用互斥锁保证线程安全：
 
 ```go
-// 配置管理器单例
+type MutexSingleton struct {
+    instance *Singleton
+    mutex    sync.Mutex
+}
+
+func (s *MutexSingleton) GetInstance() *Singleton {
+    s.mutex.Lock()
+    defer s.mutex.Unlock()
+    
+    if s.instance == nil {
+        s.instance = &Singleton{}
+    }
+    return s.instance
+}
+```
+
+**机制 5.2.2** (读写锁)
+使用读写锁优化性能：
+
+```go
+type RWMutexSingleton struct {
+    instance *Singleton
+    mutex    sync.RWMutex
+}
+
+func (s *RWMutexSingleton) GetInstance() *Singleton {
+    // 读锁检查
+    s.mutex.RLock()
+    if s.instance != nil {
+        s.mutex.RUnlock()
+        return s.instance
+    }
+    s.mutex.RUnlock()
+    
+    // 写锁创建
+    s.mutex.Lock()
+    defer s.mutex.Unlock()
+    
+    if s.instance == nil {
+        s.instance = &Singleton{}
+    }
+    return s.instance
+}
+```
+
+**机制 5.2.3** (原子操作)
+使用原子操作保证线程安全：
+
+```go
+type AtomicSingleton struct {
+    instance atomic.Value
+}
+
+func (s *AtomicSingleton) GetInstance() *Singleton {
+    if instance := s.instance.Load(); instance != nil {
+        return instance.(*Singleton)
+    }
+    
+    newInstance := &Singleton{}
+    if s.instance.CompareAndSwap(nil, newInstance) {
+        return newInstance
+    }
+    
+    return s.instance.Load().(*Singleton)
+}
+```
+
+### 5.3 性能优化
+
+**优化 5.3.1** (延迟初始化)
+只在需要时创建实例：
+
+```go
+type LazySingleton struct {
+    instance *Singleton
+    once     sync.Once
+}
+
+func (s *LazySingleton) GetInstance() *Singleton {
+    s.once.Do(func() {
+        s.instance = &Singleton{}
+    })
+    return s.instance
+}
+```
+
+**优化 5.3.2** (缓存优化)
+使用缓存减少锁竞争：
+
+```go
+type CachedSingleton struct {
+    cache map[string]*Singleton
+    mutex sync.RWMutex
+}
+
+func (s *CachedSingleton) GetInstance(key string) *Singleton {
+    // 先检查缓存
+    s.mutex.RLock()
+    if instance, exists := s.cache[key]; exists {
+        s.mutex.RUnlock()
+        return instance
+    }
+    s.mutex.RUnlock()
+    
+    // 创建新实例
+    s.mutex.Lock()
+    defer s.mutex.Unlock()
+    
+    if instance, exists := s.cache[key]; exists {
+        return instance
+    }
+    
+    newInstance := &Singleton{ID: key}
+    s.cache[key] = newInstance
+    return newInstance
+}
+```
+
+## 6. 测试与验证
+
+### 6.1 单元测试
+
+```go
+package singleton
+
+import (
+    "testing"
+    "time"
+)
+
+func TestGetInstance(t *testing.T) {
+    // 重置单例
+    Reset()
+    
+    // 获取第一个实例
+    instance1 := GetInstance()
+    if instance1 == nil {
+        t.Error("Expected non-nil instance")
+    }
+    
+    // 获取第二个实例
+    instance2 := GetInstance()
+    if instance2 == nil {
+        t.Error("Expected non-nil instance")
+    }
+    
+    // 验证是同一个实例
+    if instance1 != instance2 {
+        t.Error("Expected same instance")
+    }
+    
+    // 验证ID相同
+    if instance1.GetID() != instance2.GetID() {
+        t.Error("Expected same ID")
+    }
+    
+    // 验证创建时间相同
+    if !instance1.GetCreatedAt().Equal(instance2.GetCreatedAt()) {
+        t.Error("Expected same creation time")
+    }
+}
+
+func TestSingletonOperations(t *testing.T) {
+    Reset()
+    
+    instance := GetInstance()
+    
+    // 测试操作
+    result1 := instance.DoSomething()
+    result2 := instance.DoSomething()
+    
+    if result1 == result2 {
+        t.Error("Expected different operation results")
+    }
+    
+    // 验证计数器
+    counter := instance.(*BaseSingleton).GetCounter()
+    if counter != 2 {
+        t.Errorf("Expected counter to be 2, got %d", counter)
+    }
+}
+```
+
+### 6.2 并发测试
+
+```go
+func TestConcurrentAccess(t *testing.T) {
+    Reset()
+    
+    const numGoroutines = 100
+    const numOperations = 1000
+    
+    // 启动多个goroutine并发访问
+    done := make(chan bool, numGoroutines)
+    
+    for i := 0; i < numGoroutines; i++ {
+        go func(id int) {
+            instance := GetInstance()
+            
+            // 执行多次操作
+            for j := 0; j < numOperations; j++ {
+                instance.DoSomething()
+            }
+            
+            done <- true
+        }(i)
+    }
+    
+    // 等待所有goroutine完成
+    for i := 0; i < numGoroutines; i++ {
+        <-done
+    }
+    
+    // 验证最终计数器值
+    instance := GetInstance()
+    expectedCounter := numGoroutines * numOperations
+    actualCounter := instance.(*BaseSingleton).GetCounter()
+    
+    if actualCounter != expectedCounter {
+        t.Errorf("Expected counter to be %d, got %d", expectedCounter, actualCounter)
+    }
+}
+
+func TestRaceCondition(t *testing.T) {
+    Reset()
+    
+    const numGoroutines = 1000
+    
+    // 使用竞态检测器
+    instances := make([]Singleton, numGoroutines)
+    
+    var wg sync.WaitGroup
+    wg.Add(numGoroutines)
+    
+    for i := 0; i < numGoroutines; i++ {
+        go func(id int) {
+            defer wg.Done()
+            instances[id] = GetInstance()
+        }(i)
+    }
+    
+    wg.Wait()
+    
+    // 验证所有实例都是同一个
+    firstInstance := instances[0]
+    for i := 1; i < numGoroutines; i++ {
+        if instances[i] != firstInstance {
+            t.Errorf("Expected same instance at index %d", i)
+        }
+    }
+}
+```
+
+### 6.3 性能测试
+
+```go
+func BenchmarkGetInstance(b *testing.B) {
+    Reset()
+    
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        GetInstance()
+    }
+}
+
+func BenchmarkConcurrentGetInstance(b *testing.B) {
+    Reset()
+    
+    b.ResetTimer()
+    b.RunParallel(func(pb *testing.PB) {
+        for pb.Next() {
+            GetInstance()
+        }
+    })
+}
+
+func BenchmarkSingletonOperations(b *testing.B) {
+    Reset()
+    instance := GetInstance()
+    
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        instance.DoSomething()
+    }
+}
+```
+
+## 7. 应用实例
+
+### 7.1 配置管理器
+
+```go
+package config
+
+import (
+    "encoding/json"
+    "os"
+    "sync"
+    "time"
+)
+
+// Config 配置结构
+type Config struct {
+    Database DatabaseConfig `json:"database"`
+    Server   ServerConfig   `json:"server"`
+    Logging  LoggingConfig  `json:"logging"`
+}
+
+type DatabaseConfig struct {
+    Host     string `json:"host"`
+    Port     int    `json:"port"`
+    Username string `json:"username"`
+    Password string `json:"password"`
+    Database string `json:"database"`
+}
+
+type ServerConfig struct {
+    Port    int    `json:"port"`
+    Host    string `json:"host"`
+    Timeout int    `json:"timeout"`
+}
+
+type LoggingConfig struct {
+    Level   string `json:"level"`
+    File    string `json:"file"`
+    Console bool   `json:"console"`
+}
+
+// ConfigManager 配置管理器单例
 type ConfigManager struct {
-    config map[string]interface{}
-    mu     sync.RWMutex
+    config     *Config
+    configFile string
+    lastLoad   time.Time
+    mutex      sync.RWMutex
 }
 
 var (
@@ -419,163 +1066,483 @@ var (
     configOnce     sync.Once
 )
 
+// GetConfigManager 获取配置管理器实例
 func GetConfigManager() *ConfigManager {
     configOnce.Do(func() {
         configInstance = &ConfigManager{
-            config: make(map[string]interface{}),
+            configFile: "config.json",
         }
     })
     return configInstance
 }
 
-func (cm *ConfigManager) Get(key string) interface{} {
-    cm.mu.RLock()
-    defer cm.mu.RUnlock()
-    return cm.config[key]
+// LoadConfig 加载配置
+func (cm *ConfigManager) LoadConfig() error {
+    cm.mutex.Lock()
+    defer cm.mutex.Unlock()
+    
+    file, err := os.Open(cm.configFile)
+    if err != nil {
+        return err
+    }
+    defer file.Close()
+    
+    var config Config
+    decoder := json.NewDecoder(file)
+    if err := decoder.Decode(&config); err != nil {
+        return err
+    }
+    
+    cm.config = &config
+    cm.lastLoad = time.Now()
+    
+    return nil
 }
 
-func (cm *ConfigManager) Set(key string, value interface{}) {
-    cm.mu.Lock()
-    defer cm.mu.Unlock()
-    cm.config[key] = value
+// GetConfig 获取配置
+func (cm *ConfigManager) GetConfig() *Config {
+    cm.mutex.RLock()
+    defer cm.mutex.RUnlock()
+    
+    return cm.config
+}
+
+// GetDatabaseConfig 获取数据库配置
+func (cm *ConfigManager) GetDatabaseConfig() DatabaseConfig {
+    cm.mutex.RLock()
+    defer cm.mutex.RUnlock()
+    
+    if cm.config != nil {
+        return cm.config.Database
+    }
+    return DatabaseConfig{}
+}
+
+// GetServerConfig 获取服务器配置
+func (cm *ConfigManager) GetServerConfig() ServerConfig {
+    cm.mutex.RLock()
+    defer cm.mutex.RUnlock()
+    
+    if cm.config != nil {
+        return cm.config.Server
+    }
+    return ServerConfig{}
+}
+
+// GetLoggingConfig 获取日志配置
+func (cm *ConfigManager) GetLoggingConfig() LoggingConfig {
+    cm.mutex.RLock()
+    defer cm.mutex.RUnlock()
+    
+    if cm.config != nil {
+        return cm.config.Logging
+    }
+    return LoggingConfig{}
+}
+
+// ReloadConfig 重新加载配置
+func (cm *ConfigManager) ReloadConfig() error {
+    return cm.LoadConfig()
+}
+
+// GetLastLoadTime 获取最后加载时间
+func (cm *ConfigManager) GetLastLoadTime() time.Time {
+    cm.mutex.RLock()
+    defer cm.mutex.RUnlock()
+    
+    return cm.lastLoad
 }
 ```
 
-### 6.2 日志管理器
+### 7.2 日志记录器
 
 ```go
-// 日志管理器单例
-type LogManager struct {
-    logger *log.Logger
-    mu     sync.Mutex
+package logger
+
+import (
+    "fmt"
+    "log"
+    "os"
+    "sync"
+    "time"
+)
+
+// LogLevel 日志级别
+type LogLevel int
+
+const (
+    DEBUG LogLevel = iota
+    INFO
+    WARN
+    ERROR
+    FATAL
+)
+
+// Logger 日志记录器单例
+type Logger struct {
+    level    LogLevel
+    file     *os.File
+    logger   *log.Logger
+    mutex    sync.RWMutex
+    rotation bool
 }
 
 var (
-    logInstance *LogManager
-    logOnce     sync.Once
+    loggerInstance *Logger
+    loggerOnce     sync.Once
 )
 
-func GetLogManager() *LogManager {
-    logOnce.Do(func() {
-        logInstance = &LogManager{
-            logger: log.New(os.Stdout, "[APP] ", log.LstdFlags),
+// GetLogger 获取日志记录器实例
+func GetLogger() *Logger {
+    loggerOnce.Do(func() {
+        loggerInstance = &Logger{
+            level: INFO,
         }
+        loggerInstance.init()
     })
-    return logInstance
+    return loggerInstance
 }
 
-func (lm *LogManager) Log(message string) {
-    lm.mu.Lock()
-    defer lm.mu.Unlock()
-    lm.logger.Println(message)
+// init 初始化日志记录器
+func (l *Logger) init() {
+    l.mutex.Lock()
+    defer l.mutex.Unlock()
+    
+    // 创建日志文件
+    file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+    if err != nil {
+        panic(fmt.Sprintf("Failed to open log file: %v", err))
+    }
+    
+    l.file = file
+    l.logger = log.New(file, "", log.LstdFlags)
+}
+
+// SetLevel 设置日志级别
+func (l *Logger) SetLevel(level LogLevel) {
+    l.mutex.Lock()
+    defer l.mutex.Unlock()
+    
+    l.level = level
+}
+
+// Debug 记录调试日志
+func (l *Logger) Debug(format string, args ...interface{}) {
+    l.log(DEBUG, "DEBUG", format, args...)
+}
+
+// Info 记录信息日志
+func (l *Logger) Info(format string, args ...interface{}) {
+    l.log(INFO, "INFO", format, args...)
+}
+
+// Warn 记录警告日志
+func (l *Logger) Warn(format string, args ...interface{}) {
+    l.log(WARN, "WARN", format, args...)
+}
+
+// Error 记录错误日志
+func (l *Logger) Error(format string, args ...interface{}) {
+    l.log(ERROR, "ERROR", format, args...)
+}
+
+// Fatal 记录致命错误日志
+func (l *Logger) Fatal(format string, args ...interface{}) {
+    l.log(FATAL, "FATAL", format, args...)
+    os.Exit(1)
+}
+
+// log 内部日志记录方法
+func (l *Logger) log(level LogLevel, levelStr, format string, args ...interface{}) {
+    if level < l.level {
+        return
+    }
+    
+    l.mutex.RLock()
+    defer l.mutex.RUnlock()
+    
+    message := fmt.Sprintf(format, args...)
+    timestamp := time.Now().Format("2006-01-02 15:04:05")
+    logMessage := fmt.Sprintf("[%s] %s: %s", timestamp, levelStr, message)
+    
+    l.logger.Println(logMessage)
+}
+
+// Close 关闭日志记录器
+func (l *Logger) Close() error {
+    l.mutex.Lock()
+    defer l.mutex.Unlock()
+    
+    if l.file != nil {
+        return l.file.Close()
+    }
+    return nil
+}
+
+// Rotate 轮转日志文件
+func (l *Logger) Rotate() error {
+    l.mutex.Lock()
+    defer l.mutex.Unlock()
+    
+    if l.file != nil {
+        l.file.Close()
+    }
+    
+    // 重命名当前日志文件
+    timestamp := time.Now().Format("20060102_150405")
+    newName := fmt.Sprintf("app_%s.log", timestamp)
+    os.Rename("app.log", newName)
+    
+    // 创建新的日志文件
+    file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+    if err != nil {
+        return err
+    }
+    
+    l.file = file
+    l.logger = log.New(file, "", log.LstdFlags)
+    
+    return nil
 }
 ```
 
-### 6.3 数据库连接池
+### 7.3 数据库连接池
 
 ```go
-// 数据库连接池单例
-type DBConnectionPool struct {
-    connections chan *sql.DB
-    mu          sync.Mutex
+package database
+
+import (
+    "database/sql"
+    "fmt"
+    "sync"
+    "time"
+    
+    _ "github.com/lib/pq"
+)
+
+// ConnectionPool 数据库连接池单例
+type ConnectionPool struct {
+    db       *sql.DB
+    config   DBConfig
+    mutex    sync.RWMutex
+    metrics  PoolMetrics
+}
+
+type DBConfig struct {
+    Host     string
+    Port     int
+    Username string
+    Password string
+    Database string
+    MaxOpen  int
+    MaxIdle  int
+    Timeout  time.Duration
+}
+
+type PoolMetrics struct {
+    TotalConnections int
+    ActiveConnections int
+    IdleConnections  int
+    WaitCount        int64
+    WaitDuration     time.Duration
+    MaxIdleClosed    int64
+    MaxLifetimeClosed int64
 }
 
 var (
-    dbInstance *DBConnectionPool
-    dbOnce     sync.Once
+    poolInstance *ConnectionPool
+    poolOnce     sync.Once
 )
 
-func GetDBConnectionPool() *DBConnectionPool {
-    dbOnce.Do(func() {
-        dbInstance = &DBConnectionPool{
-            connections: make(chan *sql.DB, 10),
+// GetConnectionPool 获取连接池实例
+func GetConnectionPool() *ConnectionPool {
+    poolOnce.Do(func() {
+        poolInstance = &ConnectionPool{
+            config: DBConfig{
+                Host:     "localhost",
+                Port:     5432,
+                Username: "postgres",
+                Password: "password",
+                Database: "testdb",
+                MaxOpen:  10,
+                MaxIdle:  5,
+                Timeout:  30 * time.Second,
+            },
         }
+        poolInstance.init()
     })
-    return dbInstance
+    return poolInstance
 }
 
-func (db *DBConnectionPool) GetConnection() *sql.DB {
-    select {
-    case conn := <-db.connections:
-        return conn
-    default:
-        // 创建新连接
-        return nil
+// init 初始化连接池
+func (p *ConnectionPool) init() {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+        p.config.Host, p.config.Port, p.config.Username, p.config.Password, p.config.Database)
+    
+    db, err := sql.Open("postgres", dsn)
+    if err != nil {
+        panic(fmt.Sprintf("Failed to open database: %v", err))
+    }
+    
+    // 配置连接池
+    db.SetMaxOpenConns(p.config.MaxOpen)
+    db.SetMaxIdleConns(p.config.MaxIdle)
+    db.SetConnMaxLifetime(p.config.Timeout)
+    
+    // 测试连接
+    if err := db.Ping(); err != nil {
+        panic(fmt.Sprintf("Failed to ping database: %v", err))
+    }
+    
+    p.db = db
+}
+
+// GetDB 获取数据库连接
+func (p *ConnectionPool) GetDB() *sql.DB {
+    p.mutex.RLock()
+    defer p.mutex.RUnlock()
+    
+    return p.db
+}
+
+// ExecuteQuery 执行查询
+func (p *ConnectionPool) ExecuteQuery(query string, args ...interface{}) (*sql.Rows, error) {
+    p.mutex.RLock()
+    defer p.mutex.RUnlock()
+    
+    start := time.Now()
+    rows, err := p.db.Query(query, args...)
+    p.updateMetrics(start)
+    
+    return rows, err
+}
+
+// ExecuteCommand 执行命令
+func (p *ConnectionPool) ExecuteCommand(query string, args ...interface{}) (sql.Result, error) {
+    p.mutex.RLock()
+    defer p.mutex.RUnlock()
+    
+    start := time.Now()
+    result, err := p.db.Exec(query, args...)
+    p.updateMetrics(start)
+    
+    return result, err
+}
+
+// BeginTransaction 开始事务
+func (p *ConnectionPool) BeginTransaction() (*sql.Tx, error) {
+    p.mutex.RLock()
+    defer p.mutex.RUnlock()
+    
+    return p.db.Begin()
+}
+
+// Close 关闭连接池
+func (p *ConnectionPool) Close() error {
+    p.mutex.Lock()
+    defer p.mutex.Unlock()
+    
+    if p.db != nil {
+        return p.db.Close()
+    }
+    return nil
+}
+
+// GetMetrics 获取连接池指标
+func (p *ConnectionPool) GetMetrics() PoolMetrics {
+    p.mutex.RLock()
+    defer p.mutex.RUnlock()
+    
+    if p.db != nil {
+        p.metrics.TotalConnections = p.db.Stats().MaxOpenConnections
+        p.metrics.ActiveConnections = p.db.Stats().OpenConnections
+        p.metrics.IdleConnections = p.db.Stats().Idle
+        p.metrics.WaitCount = p.db.Stats().WaitCount
+        p.metrics.WaitDuration = p.db.Stats().WaitDuration
+        p.metrics.MaxIdleClosed = p.db.Stats().MaxIdleClosed
+        p.metrics.MaxLifetimeClosed = p.db.Stats().MaxLifetimeClosed
+    }
+    
+    return p.metrics
+}
+
+// updateMetrics 更新指标
+func (p *ConnectionPool) updateMetrics(start time.Time) {
+    duration := time.Since(start)
+    if duration > p.metrics.WaitDuration {
+        p.metrics.WaitDuration = duration
     }
 }
 ```
 
-## 7. 优缺点分析
+## 8. 定理与证明
 
-### 7.1 优点
+### 8.1 唯一性定理
 
-1. **内存效率**: 只创建一个实例，节省内存
-2. **全局访问**: 提供全局访问点
-3. **延迟初始化**: 按需创建实例
-4. **线程安全**: 支持并发访问
+**定理 8.1.1** (单例唯一性)
+使用 `sync.Once` 实现的单例模式保证实例的唯一性。
 
-### 7.2 缺点
+**证明**：
 
-1. **全局状态**: 引入全局状态，可能影响测试
-2. **违反单一职责**: 类既要管理实例又要提供业务功能
-3. **难以扩展**: 难以支持多个实例
-4. **生命周期管理**: 实例生命周期难以控制
+1. `sync.Once` 保证 `Do` 方法只执行一次
+2. 实例创建在 `Do` 方法内部
+3. 因此实例只被创建一次
+4. 所有调用都返回同一个实例
 
-### 7.3 改进方案
+**形式化证明**：
+设 $f$ 是获取实例的函数，$o$ 是 `sync.Once` 实例，$c$ 是创建实例的函数。
 
-```go
-// 改进的单例 - 支持重置
-type ImprovedSingleton struct {
-    data string
-    mu   sync.RWMutex
-}
+$$\forall x, y: f() = o.Do(c) \land f() = o.Do(c) \Rightarrow x = y$$
 
-var (
-    improvedInstance *ImprovedSingleton
-    improvedOnce     sync.Once
-    resetMutex       sync.Mutex
-)
+由于 `sync.Once` 保证 $o.Do(c)$ 只执行一次，所以 $x = y$。
 
-func GetImprovedInstance() *ImprovedSingleton {
-    improvedOnce.Do(func() {
-        improvedInstance = &ImprovedSingleton{
-            data: "Improved Singleton",
-        }
-    })
-    return improvedInstance
-}
+$\square$
 
-// 支持重置（用于测试）
-func ResetImprovedInstance() {
-    resetMutex.Lock()
-    defer resetMutex.Unlock()
-    
-    // 重置sync.Once
-    improvedOnce = sync.Once{}
-    improvedInstance = nil
-}
-```
+### 8.2 线程安全定理
 
-## 8. 相关模式
+**定理 8.2.1** (线程安全性)
+使用 `sync.Once` 实现的单例模式是线程安全的。
 
-### 8.1 与工厂模式的关系
+**证明**：
 
-单例模式可以用于实现工厂模式，确保工厂实例的唯一性。
+1. `sync.Once` 内部使用原子操作和内存屏障
+2. 保证在多个goroutine中只有一个执行 `Do` 方法
+3. 其他goroutine会等待第一个goroutine完成
+4. 因此所有goroutine都获得相同的实例
 
-### 8.2 与抽象工厂模式的关系
+**形式化证明**：
+设 $T$ 是线程集合，$f_t$ 是线程 $t$ 的获取实例函数。
 
-抽象工厂可以使用单例模式管理工厂实例。
+$$\forall t_1, t_2 \in T: f_{t_1}() = f_{t_2}()$$
 
-### 8.3 与建造者模式的关系
+由于 `sync.Once` 的线程安全保证，所有线程都获得相同的实例。
 
-建造者模式可以使用单例模式管理构建过程。
+$\square$
 
-## 参考文献
+### 8.3 性能定理
 
-1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley.
-2. Freeman, E., Robson, E., Sierra, K., & Bates, B. (2004). *Head First Design Patterns*. O'Reilly Media.
-3. Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., & Lea, D. (2006). *Java Concurrency in Practice*. Addison-Wesley.
+**定理 8.3.1** (性能最优性)
+使用 `sync.Once` 的单例模式在Go中具有最优性能。
+
+**证明**：
+
+1. 第一次调用需要创建实例，开销为 $O(1)$
+2. 后续调用只需要内存访问，开销为 $O(1)$
+3. 没有锁竞争，避免了互斥锁的开销
+4. 内存屏障开销最小
+
+**复杂度分析**：
+
+- 时间复杂度：$O(1)$
+- 空间复杂度：$O(1)$
+- 并发开销：$O(1)$
+
+$\square$
 
 ---
 
-**激情澎湃的持续构建** <(￣︶￣)↗[GO!] **单例模式完成！** 🚀
+**总结**：
+单例模式是软件工程中重要的设计模式，通过严格的数学定义和Go语言的实现，我们可以确保实例的唯一性和线程安全性。在实际应用中，需要根据具体场景选择合适的实现方式，并注意性能优化和测试验证。

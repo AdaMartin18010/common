@@ -105,12 +105,15 @@ $$M^{-1} = \frac{1}{\det(M)} \cdot \text{adj}(M)$$
 
 **定义 3.2.1** (透视投影)
 透视投影矩阵 $P$ 定义为：
-$$P = \begin{bmatrix}
+
+$$
+P = \begin{bmatrix}
 \frac{2n}{r-l} & 0 & \frac{r+l}{r-l} & 0 \\
 0 & \frac{2n}{t-b} & \frac{t+b}{t-b} & 0 \\
 0 & 0 & -\frac{f+n}{f-n} & -\frac{2fn}{f-n} \\
 0 & 0 & -1 & 0
-\end{bmatrix}$$
+\end{bmatrix}
+$$
 
 其中 $n, f$ 是近远平面，$l, r, t, b$ 是视锥体边界。
 
@@ -799,6 +802,7 @@ func (ss *ShadowSystem) renderShadowObject(obj *GameObject) {
 对于视锥体 $F$ 和包围盒 $B$，如果 $B \cap F = \emptyset$，则 $B$ 中的对象不需要渲染。
 
 **实现**:
+
 ```go
 // 视锥体
 type Frustum struct {
@@ -957,12 +961,14 @@ func (ir *InstancedRenderer) Render() {
 ---
 
 **参考文献**:
+
 1. Real-Time Rendering, Tomas Akenine-Möller
 2. OpenGL Programming Guide, Dave Shreiner
 3. Physically Based Rendering, Matt Pharr
 4. Game Engine Architecture, Jason Gregory
 
 **相关链接**:
+
 - [01-游戏引擎架构](./01-Game-Engine-Architecture.md)
 - [02-网络游戏服务器](./02-Network-Game-Server.md)
 - [04-物理引擎](./04-Physics-Engine.md)
