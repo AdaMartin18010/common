@@ -9,7 +9,7 @@
 **形式化定义**：
 设 $D$ 为数据集，$U$ 为用户集合，$A$ 为操作集合。
 数据安全函数 $S: D \times U \times A \rightarrow \{0,1\}$ 定义为：
-$$S(d,u,a) = \begin{cases} 
+$$S(d,u,a) = \begin{cases}
 1 & \text{if user } u \text{ is authorized to perform action } a \text{ on data } d \\
 0 & \text{otherwise}
 \end{cases}$$
@@ -689,4 +689,4 @@ func (d *DataGovernance) GetAuditLog(userID string, startTime, endTime time.Time
 **下一步**：
 - [5. 密码学基础](../05-Cryptography.md)
 - [6. 安全运营](../06-Security-Operations.md)
-- [7. 威胁情报](../07-Threat-Intelligence.md) 
+- [7. 威胁情报](../07-Threat-Intelligence.md)

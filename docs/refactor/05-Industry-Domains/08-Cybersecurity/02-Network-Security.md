@@ -9,7 +9,7 @@
 **形式化定义**：
 设 $N = (V, E)$ 为网络图，其中 $V$ 为节点集合，$E$ 为边集合。
 网络安全函数 $S: N \times T \rightarrow \{0,1\}$ 定义为：
-$$S(N,t) = \begin{cases} 
+$$S(N,t) = \begin{cases}
 1 & \text{if } N \text{ is secure at time } t \\
 0 & \text{otherwise}
 \end{cases}$$
@@ -418,7 +418,7 @@ func (e *IDSEngine) AnalyzePacket(sourceIP, destination string, payload []byte) 
 func (e *IDSEngine) StartAlertHandler() {
     go func() {
         for alert := range e.alerts {
-            log.Printf("[%s] IDS Alert: %s from %s to %s", 
+            log.Printf("[%s] IDS Alert: %s from %s to %s",
                 alert.Severity, alert.RuleID, alert.SourceIP, alert.Destination)
         }
     }()
@@ -445,7 +445,7 @@ func (nm *NetworkMonitor) Monitor() {
     scanner := bufio.NewScanner(nm.conn)
     for scanner.Scan() {
         line := scanner.Text()
-        
+
         // 解析网络包信息
         parts := strings.Split(line, "|")
         if len(parts) >= 3 {
@@ -535,4 +535,4 @@ $$Risk = Threat \times Vulnerability \times Impact$$
 **下一步**：
 - [3. 应用安全](../03-Application-Security.md)
 - [4. 数据安全](../04-Data-Security.md)
-- [5. 密码学基础](../05-Cryptography.md) 
+- [5. 密码学基础](../05-Cryptography.md)

@@ -14,6 +14,7 @@ $$E(m,k) = c$$
 $$D(c,k) = m$$
 
 **密码学分类**：
+
 1. **对称密码学**：加密和解密使用相同密钥
 2. **非对称密码学**：加密和解密使用不同密钥
 3. **哈希函数**：单向函数，不可逆
@@ -22,12 +23,14 @@ $$D(c,k) = m$$
 ### 5.1.2 密码学安全模型
 
 **安全目标**：
+
 1. **机密性**：确保信息不被未授权访问
 2. **完整性**：确保信息不被篡改
 3. **认证性**：确保信息发送者身份
 4. **不可否认性**：确保发送者不能否认发送
 
 **攻击模型**：
+
 - **唯密文攻击**：攻击者只能获得密文
 - **已知明文攻击**：攻击者知道部分明文和对应密文
 - **选择明文攻击**：攻击者可以选择明文获得密文
@@ -38,6 +41,7 @@ $$D(c,k) = m$$
 ### 5.2.1 对称加密算法
 
 **常见算法**：
+
 1. **AES (Advanced Encryption Standard)**：高级加密标准
 2. **DES (Data Encryption Standard)**：数据加密标准
 3. **3DES (Triple DES)**：三重DES
@@ -183,6 +187,7 @@ func (s *StreamCipher) Decrypt(ciphertext []byte) ([]byte, error) {
 ### 5.2.2 对称加密模式
 
 **加密模式**：
+
 1. **ECB (Electronic Codebook)**：电子密码本模式
 2. **CBC (Cipher Block Chaining)**：密码块链接模式
 3. **CFB (Cipher Feedback)**：密码反馈模式
@@ -316,6 +321,7 @@ func (e *EncryptionModes) unpad(data []byte) []byte {
 ### 5.3.1 非对称加密算法
 
 **常见算法**：
+
 1. **RSA**：基于大整数分解问题
 2. **ECC (Elliptic Curve Cryptography)**：基于椭圆曲线
 3. **DSA (Digital Signature Algorithm)**：数字签名算法
@@ -455,6 +461,7 @@ func (a *AsymmetricCrypto) ImportPublicKey(publicKeyPEM string) (*rsa.PublicKey,
 ### 5.3.2 椭圆曲线密码学
 
 **椭圆曲线优势**：
+
 1. **密钥长度短**：相同安全级别下密钥更短
 2. **计算效率高**：运算速度更快
 3. **内存占用少**：存储空间更小
@@ -552,12 +559,14 @@ func (e *ECCrypto) ExportECPublicKey(publicKey *ecdsa.PublicKey) (string, error)
 ### 5.4.1 哈希函数特性
 
 **哈希函数要求**：
+
 1. **确定性**：相同输入总是产生相同输出
 2. **快速计算**：计算速度要快
 3. **抗碰撞性**：难以找到两个不同输入产生相同输出
 4. **雪崩效应**：输入微小变化导致输出巨大变化
 
 **常见哈希函数**：
+
 1. **MD5**：128位哈希（已不安全）
 2. **SHA-1**：160位哈希（已不安全）
 3. **SHA-256**：256位哈希
@@ -646,6 +655,7 @@ func (h *HashFunctions) Argon2(password, salt []byte) string {
 ### 5.4.2 密码哈希
 
 **密码哈希要求**：
+
 1. **抗彩虹表攻击**：使用盐值
 2. **抗暴力破解**：使用足够多的迭代次数
 3. **抗硬件攻击**：使用内存密集型算法
@@ -719,11 +729,13 @@ func (p *PasswordHashing) ScryptVerify(password, salt []byte, hash string) bool 
 ### 5.5.1 数字签名原理
 
 **数字签名特性**：
+
 1. **认证性**：证明签名者身份
 2. **完整性**：确保数据未被篡改
 3. **不可否认性**：签名者不能否认签名
 
 **数字签名过程**：
+
 1. **签名**：使用私钥对消息哈希进行签名
 2. **验证**：使用公钥验证签名
 
@@ -819,6 +831,7 @@ func (d *DigitalSignature) ECDSAVerify(data, signature []byte, publicKey *ecdsa.
 ### 5.6.1 密钥生命周期
 
 **密钥生命周期**：
+
 1. **生成**：安全生成密钥
 2. **分发**：安全分发密钥
 3. **存储**：安全存储密钥
@@ -829,6 +842,7 @@ func (d *DigitalSignature) ECDSAVerify(data, signature []byte, publicKey *ecdsa.
 ### 5.6.2 密钥派生
 
 **密钥派生函数**：
+
 1. **PBKDF2**：基于密码的密钥派生函数
 2. **Scrypt**：内存密集型密钥派生函数
 3. **Argon2**：新一代密钥派生函数
@@ -838,6 +852,7 @@ func (d *DigitalSignature) ECDSAVerify(data, signature []byte, publicKey *ecdsa.
 ### 5.7.1 安全通信
 
 **安全通信协议**：
+
 1. **TLS/SSL**：传输层安全协议
 2. **SSH**：安全外壳协议
 3. **IPsec**：IP安全协议
@@ -845,6 +860,7 @@ func (d *DigitalSignature) ECDSAVerify(data, signature []byte, publicKey *ecdsa.
 ### 5.7.2 数字证书
 
 **数字证书内容**：
+
 1. **公钥**：证书持有者的公钥
 2. **身份信息**：证书持有者的身份信息
 3. **有效期**：证书的有效期
@@ -853,11 +869,13 @@ func (d *DigitalSignature) ECDSAVerify(data, signature []byte, publicKey *ecdsa.
 ---
 
 **相关链接**：
+
 - [1.1 安全基础理论](../01-Security-Foundations.md#1.1-安全基础理论)
 - [2.1 网络安全基础理论](../02-Network-Security.md#2.1-网络安全基础理论)
 - [3.1 应用安全基础](../03-Application-Security.md#3.1-应用安全基础)
 
 **下一步**：
+
 - [6. 安全运营](../06-Security-Operations.md)
 - [7. 威胁情报](../07-Threat-Intelligence.md)
-- [8. 安全合规](../08-Security-Compliance.md) 
+- [8. 安全合规](../08-Security-Compliance.md)

@@ -24,11 +24,13 @@
 **定义 1.1** (数据处理函数)
 设 $D$ 为数据集，$F$ 为处理函数集合，数据处理函数 $f: D \rightarrow D'$ 满足：
 
-$$f(d) = \begin{cases}
+$$
+f(d) = \begin{cases}
 \text{transform}(d) & \text{if } \text{valid}(d) \\
 \text{clean}(d) & \text{if } \text{dirty}(d) \\
 \text{drop}(d) & \text{if } \text{invalid}(d)
-\end{cases}$$
+\end{cases}
+$$
 
 **定理 1.1** (数据处理幂等性)
 对于数据处理函数 $f$，如果 $f$ 是幂等的，则：
@@ -138,6 +140,7 @@ const (
 ### 2.2 清洗算法
 
 **算法 2.1** (数据清洗算法)
+
 ```go
 func CleanData(data []Record) []Record {
     cleaned := make([]Record, 0)
@@ -1149,6 +1152,7 @@ func generateCacheKey(data []byte) string {
 ---
 
 **相关链接**：
+
 - [01-数据摄入](../01-Data-Ingestion.md)
 - [03-数据分析](../03-Data-Analytics.md)
 - [04-数据存储](../04-Data-Storage.md)

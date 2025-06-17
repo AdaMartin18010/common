@@ -9,7 +9,7 @@
 **形式化定义**：
 设 $A$ 为应用程序集合，$T$ 为威胁集合，$V$ 为漏洞集合。
 应用安全函数 $S: A \times T \times V \rightarrow \{0,1\}$ 定义为：
-$$S(a,t,v) = \begin{cases} 
+$$S(a,t,v) = \begin{cases}
 1 & \text{if application } a \text{ is secure against threat } t \text{ and vulnerability } v \\
 0 & \text{otherwise}
 \end{cases}$$
@@ -161,7 +161,7 @@ func (s *SecureUserService) CreateUser(username, email, password string) error {
 func (s *SecureUserService) hashPassword(password string) (string, error) {
     // 使用bcrypt进行密码哈希
     import "golang.org/x/crypto/bcrypt"
-    
+
     hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
     if err != nil {
         return "", err
@@ -234,14 +234,14 @@ func NewXSSProtection() *XSSProtection {
 func (x *XSSProtection) SanitizeHTML(input string) string {
     // HTML实体编码
     sanitized := html.EscapeString(input)
-    
+
     // 移除危险标签
     dangerousTags := []string{"script", "iframe", "object", "embed", "form"}
     for _, tag := range dangerousTags {
         pattern := regexp.MustCompile(fmt.Sprintf(`(?i)<%s[^>]*>.*?</%s>`, tag, tag))
         sanitized = pattern.ReplaceAllString(sanitized, "")
     }
-    
+
     return sanitized
 }
 
@@ -257,14 +257,14 @@ func (x *XSSProtection) ValidateInput(input string) bool {
         `onclick=`,
         `onmouseover=`,
     }
-    
+
     for _, pattern := range xssPatterns {
         matched, _ := regexp.MatchString(pattern, strings.ToLower(input))
         if matched {
             return false
         }
     }
-    
+
     return true
 }
 
@@ -273,23 +273,23 @@ func (x *XSSProtection) SecureResponse(w http.ResponseWriter, r *http.Request) {
     // 设置安全头
     w.Header().Set("X-XSS-Protection", "1; mode=block")
     w.Header().Set("Content-Security-Policy", "default-src 'self'")
-    
+
     // 获取用户输入
     userInput := r.URL.Query().Get("input")
     if userInput == "" {
         http.Error(w, "Input is required", http.StatusBadRequest)
         return
     }
-    
+
     // 输入验证
     if !x.ValidateInput(userInput) {
         http.Error(w, "Invalid input", http.StatusBadRequest)
         return
     }
-    
+
     // HTML净化
     sanitizedInput := x.SanitizeHTML(userInput)
-    
+
     // 安全输出
     fmt.Fprintf(w, "<h1>Safe Output</h1><p>%s</p>", sanitizedInput)
 }
@@ -362,37 +362,37 @@ func (m *MobileAppSecurity) SecureHTTPClient() *http.Client {
             tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
         },
     }
-    
+
     // 创建HTTP客户端
     client := &http.Client{
         Transport: &http.Transport{
             TLSClientConfig: tlsConfig,
         },
     }
-    
+
     return client
 }
 
 // SecureAPIRequest 安全API请求
 func (m *MobileAppSecurity) SecureAPIRequest(url string) (*http.Response, error) {
     client := m.SecureHTTPClient()
-    
+
     // 创建请求
     req, err := http.NewRequest("GET", url, nil)
     if err != nil {
         return nil, fmt.Errorf("failed to create request: %v", err)
     }
-    
+
     // 设置安全头
     req.Header.Set("User-Agent", "SecureMobileApp/1.0")
     req.Header.Set("Accept", "application/json")
-    
+
     // 发送请求
     resp, err := client.Do(req)
     if err != nil {
         return nil, fmt.Errorf("failed to send request: %v", err)
     }
-    
+
     return resp, nil
 }
 ```
@@ -456,7 +456,7 @@ func (a *APISecurity) GenerateJWT(userID string, permissions []string) (string, 
         "exp":        time.Now().Add(time.Hour * 24).Unix(),
         "iat":        time.Now().Unix(),
     }
-    
+
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
     return token.SignedString(a.jwtSecret)
 }
@@ -469,15 +469,15 @@ func (a *APISecurity) ValidateJWT(tokenString string) (jwt.MapClaims, error) {
         }
         return a.jwtSecret, nil
     })
-    
+
     if err != nil {
         return nil, fmt.Errorf("failed to parse token: %v", err)
     }
-    
+
     if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
         return claims, nil
     }
-    
+
     return nil, fmt.Errorf("invalid token")
 }
 
@@ -501,7 +501,7 @@ func (a *APISecurity) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
             http.Error(w, "Authorization header required", http.StatusUnauthorized)
             return
         }
-        
+
         // 验证JWT令牌
         tokenString := strings.TrimPrefix(authHeader, "Bearer ")
         claims, err := a.ValidateJWT(tokenString)
@@ -509,7 +509,7 @@ func (a *APISecurity) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
             http.Error(w, "Invalid token", http.StatusUnauthorized)
             return
         }
-        
+
         // 将用户信息添加到请求上下文
         ctx := context.WithValue(r.Context(), "user", claims)
         next.ServeHTTP(w, r.WithContext(ctx))
@@ -521,7 +521,7 @@ func (a *APISecurity) SecureAPIHandler(w http.ResponseWriter, r *http.Request) {
     // 获取用户信息
     user := r.Context().Value("user").(jwt.MapClaims)
     userID := user["user_id"].(string)
-    
+
     // 检查权限
     permissions := user["permissions"].([]interface{})
     hasPermission := false
@@ -531,12 +531,12 @@ func (a *APISecurity) SecureAPIHandler(w http.ResponseWriter, r *http.Request) {
             break
         }
     }
-    
+
     if !hasPermission {
         http.Error(w, "Insufficient permissions", http.StatusForbidden)
         return
     }
-    
+
     // 返回安全数据
     fmt.Fprintf(w, `{"message": "Secure API response", "user_id": "%s"}`, userID)
 }
@@ -601,4 +601,4 @@ func (a *APISecurity) SecureAPIHandler(w http.ResponseWriter, r *http.Request) {
 **下一步**：
 - [4. 数据安全](../04-Data-Security.md)
 - [5. 密码学基础](../05-Cryptography.md)
-- [6. 安全运营](../06-Security-Operations.md) 
+- [6. 安全运营](../06-Security-Operations.md)
