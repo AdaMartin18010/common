@@ -212,12 +212,12 @@ func (s Set[T]) IsEmpty() bool {
 
 // Clear 清空集合
 func (s Set[T]) Clear() {
-    for key := range s {
-        delete(s, key)
+    for k := range s {
+        delete(s, k)
     }
 }
 
-// ToSlice 将集合转换为切片
+// ToSlice 转换为切片
 func (s Set[T]) ToSlice() []T {
     result := make([]T, 0, len(s))
     for item := range s {
@@ -230,55 +230,46 @@ func (s Set[T]) ToSlice() []T {
 ### 4.2 集合运算实现
 
 ```go
-// Union 计算两个集合的并集
+// Union 并集运算
 func (s Set[T]) Union(other Set[T]) Set[T] {
     result := NewSet[T]()
-    
-    // 添加当前集合的所有元素
     for item := range s {
         result.Add(item)
     }
-    
-    // 添加另一个集合的所有元素
     for item := range other {
         result.Add(item)
     }
-    
     return result
 }
 
-// Intersection 计算两个集合的交集
+// Intersection 交集运算
 func (s Set[T]) Intersection(other Set[T]) Set[T] {
     result := NewSet[T]()
-    
     for item := range s {
         if other.Contains(item) {
             result.Add(item)
         }
     }
-    
     return result
 }
 
-// Difference 计算两个集合的差集
+// Difference 差集运算
 func (s Set[T]) Difference(other Set[T]) Set[T] {
     result := NewSet[T]()
-    
     for item := range s {
         if !other.Contains(item) {
             result.Add(item)
         }
     }
-    
     return result
 }
 
-// SymmetricDifference 计算两个集合的对称差
+// SymmetricDifference 对称差集运算
 func (s Set[T]) SymmetricDifference(other Set[T]) Set[T] {
     return s.Difference(other).Union(other.Difference(s))
 }
 
-// IsSubset 检查当前集合是否是另一个集合的子集
+// IsSubset 检查是否为子集
 func (s Set[T]) IsSubset(other Set[T]) bool {
     for item := range s {
         if !other.Contains(item) {
@@ -288,37 +279,27 @@ func (s Set[T]) IsSubset(other Set[T]) bool {
     return true
 }
 
-// IsSuperset 检查当前集合是否是另一个集合的超集
+// IsSuperset 检查是否为超集
 func (s Set[T]) IsSuperset(other Set[T]) bool {
     return other.IsSubset(s)
 }
 
-// Equals 检查两个集合是否相等
+// Equals 检查集合是否相等
 func (s Set[T]) Equals(other Set[T]) bool {
     if s.Size() != other.Size() {
         return false
     }
     return s.IsSubset(other)
 }
-
-// IsDisjoint 检查两个集合是否不相交
-func (s Set[T]) IsDisjoint(other Set[T]) bool {
-    for item := range s {
-        if other.Contains(item) {
-            return false
-        }
-    }
-    return true
-}
 ```
 
 ### 4.3 泛型集合
 
 ```go
-// PowerSet 计算集合的幂集
+// PowerSet 计算幂集
 func (s Set[T]) PowerSet() Set[Set[T]] {
     result := NewSet[Set[T]]()
-    result.Add(NewSet[T]()) // 添加空集
+    result.Add(NewSet[T]()) // 空集
     
     items := s.ToSlice()
     n := len(items)
@@ -337,16 +318,14 @@ func (s Set[T]) PowerSet() Set[Set[T]] {
     return result
 }
 
-// CartesianProduct 计算两个集合的笛卡尔积
+// CartesianProduct 笛卡尔积
 func (s Set[T]) CartesianProduct(other Set[T]) Set[Pair[T, T]] {
     result := NewSet[Pair[T, T]]()
-    
     for a := range s {
         for b := range other {
             result.Add(Pair[T, T]{First: a, Second: b})
         }
     }
-    
     return result
 }
 
@@ -360,62 +339,52 @@ type Pair[A, B any] struct {
 ### 4.4 并发安全集合
 
 ```go
-// ConcurrentSet 提供并发安全的集合实现
+// ConcurrentSet 并发安全的集合
 type ConcurrentSet[T comparable] struct {
-    mu   sync.RWMutex
-    data Set[T]
+    set  Set[T]
+    lock sync.RWMutex
 }
 
-// NewConcurrentSet 创建新的并发安全集合
+// NewConcurrentSet 创建并发安全集合
 func NewConcurrentSet[T comparable]() *ConcurrentSet[T] {
     return &ConcurrentSet[T]{
-        data: NewSet[T](),
+        set: NewSet[T](),
     }
 }
 
-// Add 线程安全地添加元素
+// Add 线程安全添加元素
 func (cs *ConcurrentSet[T]) Add(item T) {
-    cs.mu.Lock()
-    defer cs.mu.Unlock()
-    cs.data.Add(item)
+    cs.lock.Lock()
+    defer cs.lock.Unlock()
+    cs.set.Add(item)
 }
 
-// Remove 线程安全地移除元素
+// Remove 线程安全移除元素
 func (cs *ConcurrentSet[T]) Remove(item T) {
-    cs.mu.Lock()
-    defer cs.mu.Unlock()
-    cs.data.Remove(item)
+    cs.lock.Lock()
+    defer cs.lock.Unlock()
+    cs.set.Remove(item)
 }
 
-// Contains 线程安全地检查元素是否存在
+// Contains 线程安全检查元素
 func (cs *ConcurrentSet[T]) Contains(item T) bool {
-    cs.mu.RLock()
-    defer cs.mu.RUnlock()
-    return cs.data.Contains(item)
+    cs.lock.RLock()
+    defer cs.lock.RUnlock()
+    return cs.set.Contains(item)
 }
 
-// Size 线程安全地获取集合大小
+// Size 线程安全获取大小
 func (cs *ConcurrentSet[T]) Size() int {
-    cs.mu.RLock()
-    defer cs.mu.RUnlock()
-    return cs.data.Size()
+    cs.lock.RLock()
+    defer cs.lock.RUnlock()
+    return cs.set.Size()
 }
 
-// Union 线程安全地计算并集
-func (cs *ConcurrentSet[T]) Union(other *ConcurrentSet[T]) *ConcurrentSet[T] {
-    cs.mu.RLock()
-    other.mu.RLock()
-    defer cs.mu.RUnlock()
-    defer other.mu.RUnlock()
-    
-    result := NewConcurrentSet[T]()
-    for item := range cs.data {
-        result.data.Add(item)
-    }
-    for item := range other.data {
-        result.data.Add(item)
-    }
-    return result
+// ToSlice 线程安全转换为切片
+func (cs *ConcurrentSet[T]) ToSlice() []T {
+    cs.lock.RLock()
+    defer cs.lock.RUnlock()
+    return cs.set.ToSlice()
 }
 ```
 
@@ -424,70 +393,68 @@ func (cs *ConcurrentSet[T]) Union(other *ConcurrentSet[T]) *ConcurrentSet[T] {
 ### 5.1 数据库查询优化
 
 ```go
-// QueryOptimizer 使用集合论优化数据库查询
+// QueryOptimizer 查询优化器
 type QueryOptimizer struct {
     tables    Set[string]
-    columns   Set[string]
     indexes   Set[string]
+    predicates Set[string]
 }
 
-// OptimizeQuery 优化SQL查询
+// OptimizeQuery 优化查询
 func (qo *QueryOptimizer) OptimizeQuery(query string) string {
-    // 使用集合运算分析查询
-    requiredColumns := qo.extractColumns(query)
-    availableIndexes := qo.getAvailableIndexes(requiredColumns)
-    
-    if !availableIndexes.IsEmpty() {
-        return qo.addIndexHint(query, availableIndexes)
+    // 使用集合运算优化查询
+    relevantIndexes := qo.indexes.Intersection(qo.getRelevantIndexes(query))
+    if !relevantIndexes.IsEmpty() {
+        return qo.applyIndexes(query, relevantIndexes)
     }
-    
     return query
 }
 
-// extractColumns 提取查询中的列
-func (qo *QueryOptimizer) extractColumns(query string) Set[string] {
-    // 实现列提取逻辑
+// getRelevantIndexes 获取相关索引
+func (qo *QueryOptimizer) getRelevantIndexes(query string) Set[string] {
+    // 实现查询分析逻辑
     return NewSet[string]()
 }
 
-// getAvailableIndexes 获取可用的索引
-func (qo *QueryOptimizer) getAvailableIndexes(columns Set[string]) Set[string] {
-    return qo.indexes.Intersection(columns)
+// applyIndexes 应用索引
+func (qo *QueryOptimizer) applyIndexes(query string, indexes Set[string]) string {
+    // 实现索引应用逻辑
+    return query
 }
 ```
 
 ### 5.2 图论算法
 
 ```go
-// Graph 使用集合表示图
-type Graph[T comparable] struct {
-    vertices Set[T]
-    edges    Set[Pair[T, T]]
+// Graph 图结构
+type Graph struct {
+    vertices Set[int]
+    edges    Set[Pair[int, int]]
 }
 
 // NewGraph 创建新图
-func NewGraph[T comparable]() *Graph[T] {
-    return &Graph[T]{
-        vertices: NewSet[T](),
-        edges:    NewSet[Pair[T, T]](),
+func NewGraph() *Graph {
+    return &Graph{
+        vertices: NewSet[int](),
+        edges:    NewSet[Pair[int, int]](),
     }
 }
 
 // AddVertex 添加顶点
-func (g *Graph[T]) AddVertex(v T) {
+func (g *Graph) AddVertex(v int) {
     g.vertices.Add(v)
 }
 
 // AddEdge 添加边
-func (g *Graph[T]) AddEdge(u, v T) {
+func (g *Graph) AddEdge(u, v int) {
     g.vertices.Add(u)
     g.vertices.Add(v)
-    g.edges.Add(Pair[T, T]{First: u, Second: v})
+    g.edges.Add(Pair[int, int]{First: u, Second: v})
 }
 
-// GetNeighbors 获取顶点的邻居
-func (g *Graph[T]) GetNeighbors(v T) Set[T] {
-    neighbors := NewSet[T]()
+// GetNeighbors 获取邻居
+func (g *Graph) GetNeighbors(v int) Set[int] {
+    neighbors := NewSet[int]()
     for edge := range g.edges {
         if edge.First == v {
             neighbors.Add(edge.Second)
@@ -498,13 +465,13 @@ func (g *Graph[T]) GetNeighbors(v T) Set[T] {
     return neighbors
 }
 
-// IsConnected 检查图是否连通
-func (g *Graph[T]) IsConnected() bool {
+// IsConnected 检查连通性
+func (g *Graph) IsConnected() bool {
     if g.vertices.IsEmpty() {
         return true
     }
     
-    visited := NewSet[T]()
+    visited := NewSet[int]()
     start := g.vertices.ToSlice()[0]
     g.dfs(start, visited)
     
@@ -512,7 +479,7 @@ func (g *Graph[T]) IsConnected() bool {
 }
 
 // dfs 深度优先搜索
-func (g *Graph[T]) dfs(v T, visited Set[T]) {
+func (g *Graph) dfs(v int, visited Set[int]) {
     visited.Add(v)
     neighbors := g.GetNeighbors(v)
     for neighbor := range neighbors {
@@ -526,43 +493,38 @@ func (g *Graph[T]) dfs(v T, visited Set[T]) {
 ### 5.3 编译器优化
 
 ```go
-// CompilerOptimizer 使用集合论进行编译器优化
+// CompilerOptimizer 编译器优化器
 type CompilerOptimizer struct {
-    liveVariables Set[string]
-    deadCode      Set[string]
-    constants     Set[string]
+    variables    Set[string]
+    constants    Set[string]
+    expressions  Set[string]
 }
 
-// Optimize 优化代码
-func (co *CompilerOptimizer) Optimize(code string) string {
-    // 分析活跃变量
-    co.analyzeLiveVariables(code)
+// OptimizeExpression 优化表达式
+func (co *CompilerOptimizer) OptimizeExpression(expr string) string {
+    // 使用集合运算进行常量折叠
+    if co.constants.Contains(expr) {
+        return co.getConstantValue(expr)
+    }
     
-    // 移除死代码
-    code = co.removeDeadCode(code)
+    // 使用集合运算进行死代码消除
+    if !co.isUsed(expr) {
+        return ""
+    }
     
-    // 常量折叠
-    code = co.constantFolding(code)
-    
-    return code
+    return expr
 }
 
-// analyzeLiveVariables 分析活跃变量
-func (co *CompilerOptimizer) analyzeLiveVariables(code string) {
-    // 实现活跃变量分析
-    co.liveVariables = NewSet[string]()
+// isUsed 检查表达式是否被使用
+func (co *CompilerOptimizer) isUsed(expr string) bool {
+    // 实现使用分析逻辑
+    return true
 }
 
-// removeDeadCode 移除死代码
-func (co *CompilerOptimizer) removeDeadCode(code string) string {
-    // 实现死代码消除
-    return code
-}
-
-// constantFolding 常量折叠
-func (co *CompilerOptimizer) constantFolding(code string) string {
-    // 实现常量折叠
-    return code
+// getConstantValue 获取常量值
+func (co *CompilerOptimizer) getConstantValue(expr string) string {
+    // 实现常量查找逻辑
+    return expr
 }
 ```
 
@@ -570,28 +532,23 @@ func (co *CompilerOptimizer) constantFolding(code string) string {
 
 ### 6.1 时间复杂度
 
-| 操作 | 时间复杂度 | 说明 |
-|------|------------|------|
-| Add | O(1) | 平均情况 |
-| Remove | O(1) | 平均情况 |
-| Contains | O(1) | 平均情况 |
-| Union | O(n + m) | n, m 为集合大小 |
-| Intersection | O(min(n, m)) | 遍历较小的集合 |
-| Difference | O(n) | n 为当前集合大小 |
+| 操作 | 时间复杂度 | 空间复杂度 |
+|------|------------|------------|
+| 添加元素 | O(1) | O(1) |
+| 删除元素 | O(1) | O(1) |
+| 查找元素 | O(1) | O(1) |
+| 并集运算 | O(n+m) | O(n+m) |
+| 交集运算 | O(min(n,m)) | O(min(n,m)) |
+| 差集运算 | O(n) | O(n) |
+| 幂集计算 | O(2^n) | O(2^n) |
 
 ### 6.2 空间复杂度
 
-| 操作 | 空间复杂度 | 说明 |
-|------|------------|------|
-| 基础集合 | O(n) | n 为元素个数 |
-| 并集 | O(n + m) | 需要新集合存储结果 |
-| 交集 | O(min(n, m)) | 结果集大小不超过较小集合 |
-| 幂集 | O(2^n) | 指数级增长 |
+集合的基本空间复杂度为 O(n)，其中 n 是集合中元素的数量。
 
 ### 6.3 基准测试
 
 ```go
-// BenchmarkSetOperations 基准测试集合操作
 func BenchmarkSetOperations(b *testing.B) {
     set1 := NewSet[int]()
     set2 := NewSet[int]()
@@ -618,9 +575,9 @@ func BenchmarkSetOperations(b *testing.B) {
         }
     })
     
-    b.Run("Contains", func(b *testing.B) {
+    b.Run("Difference", func(b *testing.B) {
         for i := 0; i < b.N; i++ {
-            set1.Contains(i % 1000)
+            set1.Difference(set2)
         }
     })
 }
@@ -628,11 +585,10 @@ func BenchmarkSetOperations(b *testing.B) {
 
 ## 7. 参考文献
 
-1. Halmos, P. R. (1960). *Naive Set Theory*. Van Nostrand.
-2. Enderton, H. B. (1977). *Elements of Set Theory*. Academic Press.
-3. Jech, T. (2003). *Set Theory*. Springer.
-4. Kunen, K. (2011). *Set Theory*. College Publications.
-5. Go语言官方文档. (2024). *The Go Programming Language Specification*.
+1. Halmos, P. R. (1960). Naive Set Theory. Van Nostrand.
+2. Enderton, H. B. (1977). Elements of Set Theory. Academic Press.
+3. Jech, T. (2003). Set Theory. Springer.
+4. Kunen, K. (1980). Set Theory: An Introduction to Independence Proofs. North-Holland.
 
 ---
 
@@ -641,3 +597,4 @@ func BenchmarkSetOperations(b *testing.B) {
 - [02-逻辑学 (Logic)](../02-Logic/README.md)
 - [03-图论 (Graph Theory)](../03-Graph-Theory/README.md)
 - [04-概率论 (Probability Theory)](../04-Probability-Theory/README.md)
+- [返回上级目录](../../README.md)

@@ -63,12 +63,12 @@
 
 对于图 $G = (V, E)$，邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵，其中：
 
-```latex
-$$A[i][j] = \begin{cases}
+$$
+A[i][j] = \begin{cases}
 1 & \text{if } (i,j) \in E \\
 0 & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}
+$$
 
 **邻接表表示**：
 每个顶点维护一个包含其邻居顶点的列表。
