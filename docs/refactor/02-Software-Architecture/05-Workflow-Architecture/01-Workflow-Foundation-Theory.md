@@ -1,678 +1,691 @@
 # 01-工作流基础理论 (Workflow Foundation Theory)
 
-## 概述
-
-工作流基础理论是软件工程中处理业务流程自动化的核心理论体系。本文档基于形式化方法，建立了工作流系统的理论基础，并使用Go语言提供实现示例。
-
 ## 目录
 
-- [01-工作流基础理论](#01-工作流基础理论)
-  - [概述](#概述)
-  - [1. 工作流基本概念](#1-工作流基本概念)
-  - [2. 形式化定义](#2-形式化定义)
-  - [3. 工作流分类体系](#3-工作流分类体系)
-  - [4. 理论基础](#4-理论基础)
-  - [5. Go语言实现](#5-go语言实现)
-  - [6. 应用场景](#6-应用场景)
-  - [7. 总结](#7-总结)
+1. [理论基础](#1-理论基础)
+2. [形式化定义](#2-形式化定义)
+3. [工作流模型](#3-工作流模型)
+4. [Go语言实现](#4-go语言实现)
+5. [性能分析](#5-性能分析)
+6. [实际应用](#6-实际应用)
 
-## 1. 工作流基本概念
+## 1. 理论基础
 
 ### 1.1 工作流定义
 
-**工作流（Workflow）** 是一系列相互关联的任务或活动的集合，这些任务按照预定义的规则和顺序执行，以实现特定的业务目标。
+工作流（Workflow）是对工作过程的系统化描述和自动化执行，涉及工作任务如何结构化、谁执行任务、任务的先后顺序、信息如何流转、以及如何跟踪任务完成情况的定义。
 
-### 1.2 核心要素
+**工作流管理联盟（WfMC）的正式定义**：
+> "工作流是一类能够完全或者部分自动执行的业务过程，文档、信息或任务在这些过程中按照一组过程规则从一个参与者传递到另一个参与者。"
 
-```go
-// 工作流核心要素定义
-type WorkflowElement struct {
-    // 任务（Task）：工作流中的基本执行单元
-    Tasks []Task
-    
-    // 活动（Activity）：任务的执行过程
-    Activities []Activity
-    
-    // 网关（Gateway）：控制流程分支和合并的决策点
-    Gateways []Gateway
-    
-    // 事件（Event）：触发或响应工作流状态变化
-    Events []Event
-    
-    // 连接（Connection）：连接各个元素的路径
-    Connections []Connection
-}
-```
+### 1.2 工作流历史发展
 
-### 1.3 工作流生命周期
+工作流概念的演化经历了以下阶段：
 
-```mermaid
-graph TD
-    A[工作流定义] --> B[工作流实例化]
-    B --> C[任务分配]
-    C --> D[任务执行]
-    D --> E[状态检查]
-    E --> F{是否完成?}
-    F -->|否| D
-    F -->|是| G[工作流完成]
-```
+1. **手工流程管理阶段**（1970年代以前）：纸质文件传递，人工管理进度
+2. **早期工作流系统**（1980年代）：文件路由系统，邮件系统
+3. **工作流管理系统**（1990年代）：专门的WFMS出现，WfMC成立（1993年）
+4. **业务流程管理阶段**（2000年代）：BPM整合了工作流技术
+5. **服务导向工作流阶段**（2000年代中期至今）：SOA、微服务架构下的工作流
+6. **智能化工作流阶段**（现代）：结合AI、大数据的自适应工作流系统
+
+### 1.3 工作流基本术语
+
+- **活动（Activity）**：工作流中的基本执行单元
+- **任务（Task）**：分配给特定执行者的工作单元
+- **角色（Role）**：执行任务的参与者类型
+- **路由（Routing）**：任务间的转移规则
+- **实例（Instance）**：工作流模型的具体执行
+- **触发器（Trigger）**：启动特定活动的条件
+- **工作项（Work Item）**：等待执行的任务
+- **业务规则（Business Rule）**：控制工作流执行的逻辑条件
 
 ## 2. 形式化定义
 
-### 2.1 工作流系统形式化模型
+### 2.1 工作流基本模型
 
-**定义 2.1.1** 工作流系统是一个五元组 $W = (S, T, R, I, F)$，其中：
+从形式化角度定义，工作流可以表示为：
 
-- $S$ 是状态集合
-- $T$ 是任务集合
-- $R$ 是规则集合
-- $I$ 是初始状态
-- $F$ 是最终状态集合
-
-**定义 2.1.2** 工作流状态转换函数：
-
-$$\delta: S \times T \rightarrow S$$
-
-**定义 2.1.3** 工作流执行路径：
-
-$$P = s_0 \xrightarrow{t_1} s_1 \xrightarrow{t_2} s_2 \xrightarrow{t_3} \cdots \xrightarrow{t_n} s_n$$
-
-其中 $s_0 \in I$ 且 $s_n \in F$。
-
-### 2.2 工作流代数
-
-**公理 2.2.1** 顺序组合（Sequential Composition）：
-
-$$(W_1 \cdot W_2)(s) = W_2(W_1(s))$$
-
-**公理 2.2.2** 并行组合（Parallel Composition）：
-
-$$(W_1 \parallel W_2)(s) = W_1(s) \cap W_2(s)$$
-
-**公理 2.2.3** 选择组合（Choice Composition）：
-
-$$(W_1 + W_2)(s) = W_1(s) \cup W_2(s)$$
-
-## 3. 工作流分类体系
-
-### 3.1 按执行模式分类
-
-```go
-// 工作流执行模式枚举
-type ExecutionMode int
-
-const (
-    SequentialMode ExecutionMode = iota  // 顺序执行
-    ParallelMode                         // 并行执行
-    ConditionalMode                      // 条件执行
-    IterativeMode                        // 迭代执行
-    EventDrivenMode                      // 事件驱动
-)
-```
-
-### 3.2 按业务领域分类
-
-```go
-// 业务领域分类
-type BusinessDomain int
-
-const (
-    BusinessProcessDomain BusinessDomain = iota  // 业务流程
-    SystemIntegrationDomain                      // 系统集成
-    DataProcessingDomain                         // 数据处理
-    DecisionSupportDomain                        // 决策支持
-    CollaborationDomain                          // 协作流程
-)
-```
-
-### 3.3 按复杂度分类
-
-```go
-// 复杂度分类
-type ComplexityLevel int
-
-const (
-    SimpleLevel ComplexityLevel = iota    // 简单工作流
-    MediumLevel                           // 中等复杂度
-    ComplexLevel                          // 复杂工作流
-    VeryComplexLevel                      // 非常复杂
-)
-```
-
-## 4. 理论基础
-
-### 4.1 状态机理论
-
-工作流可以建模为有限状态机（FSM）：
-
-**定义 4.1.1** 工作流状态机：
-
-$$M = (Q, \Sigma, \delta, q_0, F)$$
+$$W = \{A, T, D, R, C\}$$
 
 其中：
 
-- $Q$ 是状态集合
-- $\Sigma$ 是输入字母表（任务集合）
-- $\delta$ 是状态转换函数
-- $q_0$ 是初始状态
-- $F$ 是接受状态集合
+- $A$：活动集合，$A = \{a_1, a_2, ..., a_n\}$
+- $T$：活动间转移关系，$T \subseteq A \times A$
+- $D$：数据对象集合，$D = \{d_1, d_2, ..., d_m\}$
+- $R$：资源集合，$R = \{r_1, r_2, ..., r_k\}$
+- $C$：约束条件集合，$C = \{c_1, c_2, ..., c_l\}$
 
-### 4.2 Petri网理论
+### 2.2 工作流状态模型
 
-**定义 4.2.1** 工作流Petri网：
+工作流状态可以定义为：
 
-$$N = (P, T, F, M_0)$$
-
-其中：
-
-- $P$ 是库所集合（状态）
-- $T$ 是变迁集合（任务）
-- $F$ 是流关系
-- $M_0$ 是初始标识
-
-### 4.3 时态逻辑
-
-**定义 4.3.1** 工作流时态逻辑公式：
-
-$$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{X}\phi \mid \mathbf{F}\phi \mid \mathbf{G}\phi \mid \phi \mathbf{U}\psi$$
+$$S = (M, V, E)$$
 
 其中：
 
-- $\mathbf{X}\phi$：下一个状态满足 $\phi$
-- $\mathbf{F}\phi$：将来某个状态满足 $\phi$
-- $\mathbf{G}\phi$：所有将来状态都满足 $\phi$
-- $\phi \mathbf{U}\psi$：$\phi$ 一直为真直到 $\psi$ 为真
+- $M$：活动状态映射，$M: A \rightarrow \{Ready, Running, Completed, Failed\}$
+- $V$：变量状态，$V: D \rightarrow Value$
+- $E$：执行历史，$E = \{e_1, e_2, ..., e_p\}$
 
-## 5. Go语言实现
+### 2.3 工作流执行语义
 
-### 5.1 工作流引擎核心接口
+工作流执行可以形式化为状态转换系统：
 
-```go
-package workflow
+$$(S_0, \Sigma, \delta, F)$$
 
-import (
-    "context"
-    "time"
-)
+其中：
 
-// WorkflowEngine 工作流引擎接口
-type WorkflowEngine interface {
-    // 启动工作流
-    Start(ctx context.Context, workflowID string, input map[string]interface{}) error
-    
-    // 暂停工作流
-    Pause(ctx context.Context, workflowID string) error
-    
-    // 恢复工作流
-    Resume(ctx context.Context, workflowID string) error
-    
-    // 取消工作流
-    Cancel(ctx context.Context, workflowID string) error
-    
-    // 获取工作流状态
-    GetStatus(ctx context.Context, workflowID string) (*WorkflowStatus, error)
-}
+- $S_0$：初始状态
+- $\Sigma$：事件集合
+- $\delta$：状态转换函数，$\delta: S \times \Sigma \rightarrow S$
+- $F$：终止状态集合
 
-// WorkflowStatus 工作流状态
-type WorkflowStatus struct {
-    WorkflowID   string                 `json:"workflow_id"`
-    Status       WorkflowState          `json:"status"`
-    CurrentTask  string                 `json:"current_task"`
-    Progress     float64                `json:"progress"`
-    StartTime    time.Time              `json:"start_time"`
-    EndTime      *time.Time             `json:"end_time,omitempty"`
-    Variables    map[string]interface{} `json:"variables"`
-    Error        *string                `json:"error,omitempty"`
-}
+## 3. 工作流模型
 
-// WorkflowState 工作流状态枚举
-type WorkflowState int
+### 3.1 Petri网模型
 
-const (
-    Created WorkflowState = iota
-    Running
-    Paused
-    Completed
-    Failed
-    Cancelled
-)
-```
+Petri网是描述并发系统的经典形式化工具，适用于工作流建模：
 
-### 5.2 工作流定义结构
+**基本定义**：Petri网是一个五元组 $(P, T, F, W, M_0)$
 
-```go
-// WorkflowDefinition 工作流定义
-type WorkflowDefinition struct {
-    ID          string                 `json:"id"`
-    Name        string                 `json:"name"`
-    Version     string                 `json:"version"`
-    Description string                 `json:"description"`
-    Tasks       []TaskDefinition       `json:"tasks"`
-    Gateways    []GatewayDefinition    `json:"gateways"`
-    Events      []EventDefinition      `json:"events"`
-    Connections []ConnectionDefinition `json:"connections"`
-    Variables   []VariableDefinition   `json:"variables"`
-}
+- $P$：库所集（表示状态或条件）
+- $T$：变迁集（表示活动或事件）
+- $F \subseteq (P \times T) \cup (T \times P)$：流关系
+- $W: F \rightarrow \mathbb{N}^+$：权重函数
+- $M_0: P \rightarrow \mathbb{N}$：初始标识
 
-// TaskDefinition 任务定义
-type TaskDefinition struct {
-    ID          string                 `json:"id"`
-    Name        string                 `json:"name"`
-    Type        TaskType               `json:"type"`
-    Handler     string                 `json:"handler"`
-    Input       map[string]interface{} `json:"input"`
-    Output      map[string]interface{} `json:"output"`
-    Timeout     time.Duration          `json:"timeout"`
-    RetryPolicy *RetryPolicy           `json:"retry_policy,omitempty"`
-}
+**工作流Petri网（WF-net）特性**：
 
-// TaskType 任务类型
-type TaskType string
+1. 存在唯一的源库所$i$：$\bullet i = \emptyset$
+2. 存在唯一的汇库所$o$：$o \bullet = \emptyset$
+3. 网络中每个节点都在从$i$到$o$的路径上
 
-const (
-    UserTask     TaskType = "user_task"
-    ServiceTask  TaskType = "service_task"
-    ScriptTask   TaskType = "script_task"
-    SubProcess   TaskType = "sub_process"
-    ParallelTask TaskType = "parallel_task"
-)
+**形式化性质**：
 
-// RetryPolicy 重试策略
-type RetryPolicy struct {
-    MaxAttempts int           `json:"max_attempts"`
-    Delay       time.Duration `json:"delay"`
-    Backoff     float64       `json:"backoff"`
-}
-```
+- **可达性（Reachability）**：判断流程是否可达终态
+- **活性（Liveness）**：避免死锁
+- **有界性（Boundedness）**：资源使用有限制
+- **健全性（Soundness）**：流程能正确完成且不存在死任务
 
-### 5.3 工作流执行器实现
+### 3.2 过程代数
+
+过程代数提供了一种代数方法描述并发系统的行为：
+
+**基本算子**：
+
+- 顺序组合：$P \cdot Q$
+- 选择组合：$P + Q$
+- 并行组合：$P \parallel Q$
+- 通信组合：$P | Q$
+- 同步组合：$P \times Q$
+
+**等价关系**：
+
+- 跟踪等价（Trace Equivalence）
+- 双模拟等价（Bisimulation Equivalence）
+
+### 3.3 时态逻辑
+
+时态逻辑用于描述和验证工作流时间属性：
+
+**基本时态算子**：
+
+- 下一状态（Next）：$X\phi$
+- 直到（Until）：$\phi U \psi$
+- 始终（Always）：$G\phi$
+- 最终（Eventually）：$F\phi$
+
+**工作流属性表达**：
+
+- 活性（Liveness）：$F\phi$（某事件最终会发生）
+- 安全性（Safety）：$G\phi$（不期望的事件不会发生）
+- 公平性（Fairness）：$GF\phi$（事件无限次发生）
+
+## 4. Go语言实现
+
+### 4.1 工作流基础接口
 
 ```go
-// WorkflowExecutor 工作流执行器
-type WorkflowExecutor struct {
-    engine    WorkflowEngine
-    registry  TaskRegistry
-    storage   WorkflowStorage
-    notifier  EventNotifier
+// Workflow 工作流接口
+type Workflow interface {
+    // GetID 获取工作流ID
+    GetID() string
+    // GetName 获取工作流名称
+    GetName() string
+    // GetActivities 获取活动列表
+    GetActivities() []Activity
+    // GetTransitions 获取转移关系
+    GetTransitions() []Transition
+    // Execute 执行工作流
+    Execute(ctx context.Context, input map[string]interface{}) (*ExecutionResult, error)
+    // Validate 验证工作流
+    Validate() error
 }
 
-// NewWorkflowExecutor 创建工作流执行器
-func NewWorkflowExecutor(engine WorkflowEngine, registry TaskRegistry, storage WorkflowStorage, notifier EventNotifier) *WorkflowExecutor {
-    return &WorkflowExecutor{
-        engine:    engine,
-        registry:  registry,
-        storage:   storage,
-        notifier:  notifier,
-    }
-}
-
-// Execute 执行工作流
-func (e *WorkflowExecutor) Execute(ctx context.Context, definition *WorkflowDefinition, input map[string]interface{}) error {
-    // 1. 创建工作流实例
-    instance := &WorkflowInstance{
-        ID:           generateWorkflowID(),
-        DefinitionID: definition.ID,
-        Status:       Created,
-        Variables:    input,
-        StartTime:    time.Now(),
-    }
-    
-    // 2. 保存实例
-    if err := e.storage.SaveInstance(ctx, instance); err != nil {
-        return fmt.Errorf("failed to save workflow instance: %w", err)
-    }
-    
-    // 3. 通知工作流开始
-    e.notifier.NotifyWorkflowStarted(ctx, instance)
-    
-    // 4. 开始执行
-    return e.executeWorkflow(ctx, instance, definition)
-}
-
-// executeWorkflow 执行工作流逻辑
-func (e *WorkflowExecutor) executeWorkflow(ctx context.Context, instance *WorkflowInstance, definition *WorkflowDefinition) error {
-    // 更新状态为运行中
-    instance.Status = Running
-    e.storage.UpdateInstance(ctx, instance)
-    
-    // 获取起始任务
-    startTasks := e.findStartTasks(definition)
-    
-    // 并行执行起始任务
-    for _, task := range startTasks {
-        go e.executeTask(ctx, instance, task)
-    }
-    
-    return nil
-}
-
-// executeTask 执行单个任务
-func (e *WorkflowExecutor) executeTask(ctx context.Context, instance *WorkflowInstance, task *TaskDefinition) error {
-    // 1. 获取任务处理器
-    handler, err := e.registry.GetHandler(task.Handler)
-    if err != nil {
-        return fmt.Errorf("failed to get task handler: %w", err)
-    }
-    
-    // 2. 准备任务输入
-    input := e.prepareTaskInput(instance, task)
-    
-    // 3. 执行任务
-    result, err := handler.Execute(ctx, input)
-    if err != nil {
-        // 处理重试逻辑
-        return e.handleTaskError(ctx, instance, task, err)
-    }
-    
-    // 4. 更新工作流变量
-    e.updateWorkflowVariables(instance, task, result)
-    
-    // 5. 查找下一个任务
-    nextTasks := e.findNextTasks(instance, task)
-    
-    // 6. 执行下一个任务
-    for _, nextTask := range nextTasks {
-        go e.executeTask(ctx, instance, nextTask)
-    }
-    
-    return nil
-}
-```
-
-### 5.4 任务注册表
-
-```go
-// TaskRegistry 任务注册表
-type TaskRegistry interface {
-    // 注册任务处理器
-    Register(handlerName string, handler TaskHandler) error
-    
-    // 获取任务处理器
-    GetHandler(handlerName string) (TaskHandler, error)
-    
-    // 列出所有处理器
-    ListHandlers() []string
-}
-
-// TaskHandler 任务处理器接口
-type TaskHandler interface {
-    // 执行任务
+// Activity 活动接口
+type Activity interface {
+    // GetID 获取活动ID
+    GetID() string
+    // GetName 获取活动名称
+    GetName() string
+    // GetType 获取活动类型
+    GetType() ActivityType
+    // Execute 执行活动
     Execute(ctx context.Context, input map[string]interface{}) (map[string]interface{}, error)
-    
-    // 获取处理器信息
-    GetInfo() TaskHandlerInfo
+    // GetPreconditions 获取前置条件
+    GetPreconditions() []Condition
+    // GetPostconditions 获取后置条件
+    GetPostconditions() []Condition
 }
 
-// TaskHandlerInfo 任务处理器信息
-type TaskHandlerInfo struct {
-    Name        string                 `json:"name"`
-    Description string                 `json:"description"`
-    Version     string                 `json:"version"`
-    InputSchema map[string]interface{} `json:"input_schema"`
-    OutputSchema map[string]interface{} `json:"output_schema"`
+// ActivityType 活动类型
+type ActivityType int
+
+const (
+    ActivityTypeTask ActivityType = iota
+    ActivityTypeGateway
+    ActivityTypeEvent
+    ActivityTypeSubprocess
+)
+
+// Transition 转移关系
+type Transition struct {
+    ID          string
+    SourceID    string
+    TargetID    string
+    Condition   Condition
+    Priority    int
 }
 
-// DefaultTaskRegistry 默认任务注册表实现
-type DefaultTaskRegistry struct {
-    handlers map[string]TaskHandler
-    mu       sync.RWMutex
+// Condition 条件接口
+type Condition interface {
+    Evaluate(ctx context.Context, data map[string]interface{}) (bool, error)
+}
+```
+
+### 4.2 工作流引擎实现
+
+```go
+// WorkflowEngine 工作流引擎
+type WorkflowEngine struct {
+    workflows map[string]Workflow
+    executor  ActivityExecutor
+    storage   ExecutionStorage
+    logger    Logger
 }
 
-// NewDefaultTaskRegistry 创建默认任务注册表
-func NewDefaultTaskRegistry() *DefaultTaskRegistry {
-    return &DefaultTaskRegistry{
-        handlers: make(map[string]TaskHandler),
+// NewWorkflowEngine 创建工作流引擎
+func NewWorkflowEngine(executor ActivityExecutor, storage ExecutionStorage, logger Logger) *WorkflowEngine {
+    return &WorkflowEngine{
+        workflows: make(map[string]Workflow),
+        executor:  executor,
+        storage:   storage,
+        logger:    logger,
     }
 }
 
-// Register 注册任务处理器
-func (r *DefaultTaskRegistry) Register(handlerName string, handler TaskHandler) error {
-    r.mu.Lock()
-    defer r.mu.Unlock()
-    
-    if _, exists := r.handlers[handlerName]; exists {
-        return fmt.Errorf("handler %s already registered", handlerName)
+// RegisterWorkflow 注册工作流
+func (e *WorkflowEngine) RegisterWorkflow(workflow Workflow) error {
+    if err := workflow.Validate(); err != nil {
+        return fmt.Errorf("invalid workflow: %w", err)
     }
-    
-    r.handlers[handlerName] = handler
+    e.workflows[workflow.GetID()] = workflow
     return nil
 }
 
-// GetHandler 获取任务处理器
-func (r *DefaultTaskRegistry) GetHandler(handlerName string) (TaskHandler, error) {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
-    
-    handler, exists := r.handlers[handlerName]
+// StartExecution 开始执行
+func (e *WorkflowEngine) StartExecution(ctx context.Context, workflowID string, input map[string]interface{}) (*ExecutionInstance, error) {
+    workflow, exists := e.workflows[workflowID]
     if !exists {
-        return nil, fmt.Errorf("handler %s not found", handlerName)
+        return nil, fmt.Errorf("workflow %s not found", workflowID)
     }
-    
-    return handler, nil
+
+    instance := &ExecutionInstance{
+        ID:         generateID(),
+        WorkflowID: workflowID,
+        Status:     ExecutionStatusRunning,
+        StartTime:  time.Now(),
+        Input:      input,
+        State:      make(map[string]interface{}),
+    }
+
+    // 保存执行实例
+    if err := e.storage.SaveInstance(instance); err != nil {
+        return nil, fmt.Errorf("failed to save instance: %w", err)
+    }
+
+    // 异步执行
+    go e.executeWorkflow(ctx, instance, workflow)
+
+    return instance, nil
 }
 
-// ListHandlers 列出所有处理器
-func (r *DefaultTaskRegistry) ListHandlers() []string {
-    r.mu.RLock()
-    defer r.mu.RUnlock()
-    
-    handlers := make([]string, 0, len(r.handlers))
-    for name := range r.handlers {
-        handlers = append(handlers, name)
+// executeWorkflow 执行工作流
+func (e *WorkflowEngine) executeWorkflow(ctx context.Context, instance *ExecutionInstance, workflow Workflow) {
+    defer func() {
+        if r := recover(); r != nil {
+            e.logger.Error("workflow execution panic", "instance", instance.ID, "error", r)
+            instance.Status = ExecutionStatusFailed
+            instance.EndTime = time.Now()
+            e.storage.UpdateInstance(instance)
+        }
+    }()
+
+    activities := workflow.GetActivities()
+    transitions := workflow.GetTransitions()
+
+    // 构建活动图
+    activityGraph := e.buildActivityGraph(activities, transitions)
+
+    // 执行工作流
+    if err := e.executeActivities(ctx, instance, activityGraph); err != nil {
+        instance.Status = ExecutionStatusFailed
+        instance.Error = err.Error()
+    } else {
+        instance.Status = ExecutionStatusCompleted
     }
-    
-    return handlers
+
+    instance.EndTime = time.Now()
+    e.storage.UpdateInstance(instance)
+}
+
+// buildActivityGraph 构建活动图
+func (e *WorkflowEngine) buildActivityGraph(activities []Activity, transitions []Transition) *ActivityGraph {
+    graph := NewActivityGraph()
+
+    // 添加节点
+    for _, activity := range activities {
+        graph.AddNode(activity.GetID(), activity)
+    }
+
+    // 添加边
+    for _, transition := range transitions {
+        graph.AddEdge(transition.SourceID, transition.TargetID, transition)
+    }
+
+    return graph
+}
+
+// executeActivities 执行活动
+func (e *WorkflowEngine) executeActivities(ctx context.Context, instance *ExecutionInstance, graph *ActivityGraph) error {
+    // 获取可执行的活动
+    executable := graph.GetExecutableActivities(instance.State)
+
+    for len(executable) > 0 {
+        // 选择下一个活动
+        activity := e.selectNextActivity(executable)
+        if activity == nil {
+            return fmt.Errorf("no executable activity found")
+        }
+
+        // 执行活动
+        output, err := e.executor.ExecuteActivity(ctx, activity, instance.State)
+        if err != nil {
+            return fmt.Errorf("activity execution failed: %w", err)
+        }
+
+        // 更新状态
+        instance.State[activity.GetID()] = output
+        instance.CompletedActivities = append(instance.CompletedActivities, activity.GetID())
+
+        // 更新执行实例
+        e.storage.UpdateInstance(instance)
+
+        // 获取新的可执行活动
+        executable = graph.GetExecutableActivities(instance.State)
+    }
+
+    return nil
 }
 ```
 
-## 6. 应用场景
-
-### 6.1 业务流程自动化
+### 4.3 活动执行器
 
 ```go
-// 订单处理工作流示例
-func createOrderProcessingWorkflow() *WorkflowDefinition {
-    return &WorkflowDefinition{
-        ID:          "order_processing",
-        Name:        "订单处理工作流",
-        Version:     "1.0.0",
-        Description: "处理客户订单的完整业务流程",
-        Tasks: []TaskDefinition{
-            {
-                ID:      "validate_order",
-                Name:    "验证订单",
-                Type:    ServiceTask,
-                Handler: "order_validation_service",
-                Input: map[string]interface{}{
-                    "order_id": "${order.id}",
-                },
-            },
-            {
-                ID:      "check_inventory",
-                Name:    "检查库存",
-                Type:    ServiceTask,
-                Handler: "inventory_service",
-                Input: map[string]interface{}{
-                    "product_id": "${order.product_id}",
-                    "quantity":   "${order.quantity}",
-                },
-            },
-            {
-                ID:      "process_payment",
-                Name:    "处理支付",
-                Type:    ServiceTask,
-                Handler: "payment_service",
-                Input: map[string]interface{}{
-                    "order_id": "${order.id}",
-                    "amount":   "${order.total_amount}",
-                },
-                RetryPolicy: &RetryPolicy{
-                    MaxAttempts: 3,
-                    Delay:       5 * time.Second,
-                    Backoff:     2.0,
-                },
-            },
-            {
-                ID:      "ship_order",
-                Name:    "发货",
-                Type:    ServiceTask,
-                Handler: "shipping_service",
-                Input: map[string]interface{}{
-                    "order_id": "${order.id}",
-                    "address":  "${order.shipping_address}",
-                },
-            },
-        },
-        Gateways: []GatewayDefinition{
-            {
-                ID:   "inventory_check_gateway",
-                Type: ExclusiveGateway,
-                Conditions: map[string]string{
-                    "in_stock":    "${inventory.available} >= ${order.quantity}",
-                    "out_of_stock": "${inventory.available} < ${order.quantity}",
-                },
-            },
-        },
-        Connections: []ConnectionDefinition{
-            {
-                From: "validate_order",
-                To:   "check_inventory",
-            },
-            {
-                From: "check_inventory",
-                To:   "inventory_check_gateway",
-            },
-            {
-                From:      "inventory_check_gateway",
-                To:        "process_payment",
-                Condition: "in_stock",
-            },
-            {
-                From:      "inventory_check_gateway",
-                To:        "notify_out_of_stock",
-                Condition: "out_of_stock",
-            },
-            {
-                From: "process_payment",
-                To:   "ship_order",
-            },
-        },
+// ActivityExecutor 活动执行器
+type ActivityExecutor interface {
+    ExecuteActivity(ctx context.Context, activity Activity, state map[string]interface{}) (map[string]interface{}, error)
+}
+
+// DefaultActivityExecutor 默认活动执行器
+type DefaultActivityExecutor struct {
+    logger Logger
+}
+
+// ExecuteActivity 执行活动
+func (e *DefaultActivityExecutor) ExecuteActivity(ctx context.Context, activity Activity, state map[string]interface{}) (map[string]interface{}, error) {
+    e.logger.Info("executing activity", "activity", activity.GetID())
+
+    // 检查前置条件
+    for _, condition := range activity.GetPreconditions() {
+        if ok, err := condition.Evaluate(ctx, state); err != nil {
+            return nil, fmt.Errorf("precondition evaluation failed: %w", err)
+        } else if !ok {
+            return nil, fmt.Errorf("precondition not satisfied")
+        }
     }
+
+    // 执行活动
+    output, err := activity.Execute(ctx, state)
+    if err != nil {
+        return nil, fmt.Errorf("activity execution failed: %w", err)
+    }
+
+    // 检查后置条件
+    for _, condition := range activity.GetPostconditions() {
+        if ok, err := condition.Evaluate(ctx, output); err != nil {
+            return nil, fmt.Errorf("postcondition evaluation failed: %w", err)
+        } else if !ok {
+            return nil, fmt.Errorf("postcondition not satisfied")
+        }
+    }
+
+    e.logger.Info("activity completed", "activity", activity.GetID())
+    return output, nil
 }
 ```
 
-### 6.2 数据处理管道
+### 4.4 存储接口
 
 ```go
-// 数据处理工作流示例
-func createDataProcessingWorkflow() *WorkflowDefinition {
-    return &WorkflowDefinition{
-        ID:          "data_processing",
-        Name:        "数据处理管道",
-        Version:     "1.0.0",
-        Description: "大数据处理和分析管道",
-        Tasks: []TaskDefinition{
-            {
-                ID:      "data_ingestion",
-                Name:    "数据摄入",
-                Type:    ServiceTask,
-                Handler: "kafka_consumer_service",
-                Input: map[string]interface{}{
-                    "topic":    "raw_data",
-                    "batch_size": 1000,
-                },
-            },
-            {
-                ID:      "data_cleaning",
-                Name:    "数据清洗",
-                Type:    ServiceTask,
-                Handler: "data_cleaning_service",
-                Input: map[string]interface{}{
-                    "rules": []string{
-                        "remove_duplicates",
-                        "fill_missing_values",
-                        "validate_format",
-                    },
-                },
-            },
-            {
-                ID:      "data_transformation",
-                Name:    "数据转换",
-                Type:    ServiceTask,
-                Handler: "data_transformation_service",
-                Input: map[string]interface{}{
-                    "transformations": []map[string]interface{}{
-                        {"type": "normalize", "columns": []string{"price", "quantity"}},
-                        {"type": "encode", "columns": []string{"category", "region"}},
-                    },
-                },
-            },
-            {
-                ID:      "data_analysis",
-                Name:    "数据分析",
-                Type:    ParallelTask,
-                Handler: "analytics_service",
-                Input: map[string]interface{}{
-                    "analyses": []string{
-                        "trend_analysis",
-                        "correlation_analysis",
-                        "anomaly_detection",
-                    },
-                },
-            },
-            {
-                ID:      "generate_report",
-                Name:    "生成报告",
-                Type:    ServiceTask,
-                Handler: "report_generation_service",
-                Input: map[string]interface{}{
-                    "format": "pdf",
-                    "template": "standard_report",
-                },
-            },
-        },
-        Connections: []ConnectionDefinition{
-            {From: "data_ingestion", To: "data_cleaning"},
-            {From: "data_cleaning", To: "data_transformation"},
-            {From: "data_transformation", To: "data_analysis"},
-            {From: "data_analysis", To: "generate_report"},
-        },
+// ExecutionStorage 执行存储接口
+type ExecutionStorage interface {
+    SaveInstance(instance *ExecutionInstance) error
+    UpdateInstance(instance *ExecutionInstance) error
+    GetInstance(instanceID string) (*ExecutionInstance, error)
+    ListInstances(workflowID string) ([]*ExecutionInstance, error)
+}
+
+// ExecutionInstance 执行实例
+type ExecutionInstance struct {
+    ID                  string                 `json:"id"`
+    WorkflowID          string                 `json:"workflow_id"`
+    Status              ExecutionStatus        `json:"status"`
+    StartTime           time.Time              `json:"start_time"`
+    EndTime             time.Time              `json:"end_time,omitempty"`
+    Input               map[string]interface{} `json:"input"`
+    Output              map[string]interface{} `json:"output,omitempty"`
+    State               map[string]interface{} `json:"state"`
+    CompletedActivities []string               `json:"completed_activities"`
+    Error               string                 `json:"error,omitempty"`
+}
+
+// ExecutionStatus 执行状态
+type ExecutionStatus int
+
+const (
+    ExecutionStatusRunning ExecutionStatus = iota
+    ExecutionStatusCompleted
+    ExecutionStatusFailed
+    ExecutionStatusSuspended
+)
+```
+
+## 5. 性能分析
+
+### 5.1 时间复杂度分析
+
+**工作流执行复杂度**：
+
+- **最坏情况**：$O(|A|^2 \cdot |T|)$，其中$|A|$是活动数量，$|T|$是转移数量
+- **平均情况**：$O(|A| \cdot \log|A|)$，使用优化的图算法
+- **最佳情况**：$O(|A|)$，线性工作流
+
+**空间复杂度**：
+
+- **状态存储**：$O(|A| + |D|)$，活动状态和数据对象
+- **执行历史**：$O(|E|)$，其中$|E|$是执行事件数量
+
+### 5.2 并发性能
+
+**并发执行模型**：
+
+```go
+// ConcurrentWorkflowEngine 并发工作流引擎
+type ConcurrentWorkflowEngine struct {
+    *WorkflowEngine
+    workerPool *WorkerPool
+    semaphore  chan struct{}
+}
+
+// WorkerPool 工作池
+type WorkerPool struct {
+    workers    int
+    taskQueue  chan Task
+    resultChan chan TaskResult
+}
+
+// Task 任务
+type Task struct {
+    Activity   Activity
+    Input      map[string]interface{}
+    InstanceID string
+}
+
+// TaskResult 任务结果
+type TaskResult struct {
+    Task   Task
+    Output map[string]interface{}
+    Error  error
+}
+
+// ExecuteConcurrent 并发执行
+func (e *ConcurrentWorkflowEngine) ExecuteConcurrent(ctx context.Context, instance *ExecutionInstance, workflow Workflow) error {
+    activities := workflow.GetActivities()
+    transitions := workflow.GetTransitions()
+
+    // 构建依赖图
+    dependencyGraph := e.buildDependencyGraph(activities, transitions)
+
+    // 并发执行独立活动
+    return e.executeConcurrentActivities(ctx, instance, dependencyGraph)
+}
+
+// executeConcurrentActivities 并发执行活动
+func (e *ConcurrentWorkflowEngine) executeConcurrentActivities(ctx context.Context, instance *ExecutionInstance, graph *DependencyGraph) error {
+    for {
+        // 获取可执行的活动
+        executable := graph.GetIndependentActivities(instance.State)
+        if len(executable) == 0 {
+            break
+        }
+
+        // 创建任务
+        tasks := make([]Task, 0, len(executable))
+        for _, activity := range executable {
+            tasks = append(tasks, Task{
+                Activity:   activity,
+                Input:      instance.State,
+                InstanceID: instance.ID,
+            })
+        }
+
+        // 并发执行
+        results := e.executeTasksConcurrently(ctx, tasks)
+
+        // 处理结果
+        for _, result := range results {
+            if result.Error != nil {
+                return fmt.Errorf("task execution failed: %w", result.Error)
+            }
+
+            // 更新状态
+            instance.State[result.Task.Activity.GetID()] = result.Output
+            instance.CompletedActivities = append(instance.CompletedActivities, result.Task.Activity.GetID())
+        }
+
+        // 更新执行实例
+        e.storage.UpdateInstance(instance)
     }
+
+    return nil
 }
 ```
 
-## 7. 总结
+### 5.3 性能优化策略
 
-工作流基础理论为业务流程自动化提供了坚实的理论基础：
+1. **缓存优化**：
+   - 活动结果缓存
+   - 条件评估缓存
+   - 状态快照缓存
 
-### 7.1 理论贡献
+2. **并行优化**：
+   - 独立活动并行执行
+   - 批量任务处理
+   - 异步状态更新
 
-1. **形式化建模**：通过状态机、Petri网、时态逻辑等形式化方法建模工作流
-2. **分类体系**：建立了完整的工作流分类体系，便于理解和应用
-3. **代数理论**：提供了工作流组合和分解的代数基础
-4. **验证方法**：支持工作流正确性和性能的形式化验证
+3. **存储优化**：
+   - 增量状态保存
+   - 压缩历史数据
+   - 分布式存储
 
-### 7.2 实践价值
+## 6. 实际应用
 
-1. **标准化**：为工作流系统开发提供标准化指导
-2. **可扩展性**：支持复杂业务流程的建模和执行
-3. **可靠性**：通过形式化方法保证工作流的正确性
-4. **性能优化**：提供性能分析和优化的理论基础
+### 6.1 企业应用
 
-### 7.3 技术特色
+**订单处理工作流**：
 
-1. **Go语言实现**：充分利用Go语言的并发和性能优势
-2. **模块化设计**：清晰的分层架构和接口设计
-3. **事件驱动**：支持事件驱动的工作流执行
-4. **可观测性**：完整的状态监控和日志记录
+```go
+// OrderProcessingWorkflow 订单处理工作流
+type OrderProcessingWorkflow struct {
+    *BaseWorkflow
+}
 
-通过工作流基础理论，可以构建高性能、高可靠、高可扩展的工作流系统，满足各种复杂的业务需求。
+// NewOrderProcessingWorkflow 创建订单处理工作流
+func NewOrderProcessingWorkflow() *OrderProcessingWorkflow {
+    workflow := &OrderProcessingWorkflow{
+        BaseWorkflow: NewBaseWorkflow("order-processing"),
+    }
+
+    // 定义活动
+    activities := []Activity{
+        NewValidateOrderActivity(),
+        NewCheckInventoryActivity(),
+        NewProcessPaymentActivity(),
+        NewShipOrderActivity(),
+        NewSendNotificationActivity(),
+    }
+
+    // 定义转移
+    transitions := []Transition{
+        {SourceID: "validate-order", TargetID: "check-inventory"},
+        {SourceID: "check-inventory", TargetID: "process-payment"},
+        {SourceID: "process-payment", TargetID: "ship-order"},
+        {SourceID: "ship-order", TargetID: "send-notification"},
+    }
+
+    workflow.SetActivities(activities)
+    workflow.SetTransitions(transitions)
+
+    return workflow
+}
+
+// ValidateOrderActivity 验证订单活动
+type ValidateOrderActivity struct {
+    *BaseActivity
+}
+
+// Execute 执行验证订单
+func (a *ValidateOrderActivity) Execute(ctx context.Context, input map[string]interface{}) (map[string]interface{}, error) {
+    order := input["order"].(Order)
+    
+    // 验证订单
+    if err := order.Validate(); err != nil {
+        return nil, fmt.Errorf("order validation failed: %w", err)
+    }
+
+    return map[string]interface{}{
+        "validated_order": order,
+        "validation_time": time.Now(),
+    }, nil
+}
+```
+
+### 6.2 科学计算工作流
+
+**数据处理管道**：
+
+```go
+// DataProcessingWorkflow 数据处理工作流
+type DataProcessingWorkflow struct {
+    *BaseWorkflow
+}
+
+// NewDataProcessingWorkflow 创建数据处理工作流
+func NewDataProcessingWorkflow() *DataProcessingWorkflow {
+    workflow := &DataProcessingWorkflow{
+        BaseWorkflow: NewBaseWorkflow("data-processing"),
+    }
+
+    // 定义活动
+    activities := []Activity{
+        NewDataIngestionActivity(),
+        NewDataCleaningActivity(),
+        NewFeatureExtractionActivity(),
+        NewModelTrainingActivity(),
+        NewModelEvaluationActivity(),
+    }
+
+    // 定义转移
+    transitions := []Transition{
+        {SourceID: "data-ingestion", TargetID: "data-cleaning"},
+        {SourceID: "data-cleaning", TargetID: "feature-extraction"},
+        {SourceID: "feature-extraction", TargetID: "model-training"},
+        {SourceID: "model-training", TargetID: "model-evaluation"},
+    }
+
+    workflow.SetActivities(activities)
+    workflow.SetTransitions(transitions)
+
+    return workflow
+}
+```
+
+### 6.3 云计算工作流
+
+**容器部署工作流**：
+
+```go
+// ContainerDeploymentWorkflow 容器部署工作流
+type ContainerDeploymentWorkflow struct {
+    *BaseWorkflow
+}
+
+// NewContainerDeploymentWorkflow 创建容器部署工作流
+func NewContainerDeploymentWorkflow() *ContainerDeploymentWorkflow {
+    workflow := &ContainerDeploymentWorkflow{
+        BaseWorkflow: NewBaseWorkflow("container-deployment"),
+    }
+
+    // 定义活动
+    activities := []Activity{
+        NewBuildImageActivity(),
+        NewPushImageActivity(),
+        NewDeployServiceActivity(),
+        NewHealthCheckActivity(),
+        NewRollbackActivity(),
+    }
+
+    // 定义转移
+    transitions := []Transition{
+        {SourceID: "build-image", TargetID: "push-image"},
+        {SourceID: "push-image", TargetID: "deploy-service"},
+        {SourceID: "deploy-service", TargetID: "health-check"},
+        {SourceID: "health-check", TargetID: "rollback", Condition: NewHealthCheckFailedCondition()},
+    }
+
+    workflow.SetActivities(activities)
+    workflow.SetTransitions(transitions)
+
+    return workflow
+}
+```
 
 ---
 
-**相关链接**：
+**文档完成时间**: 2024年12月19日
+**文档状态**: ✅ 完成
+**下一步**: 创建工作流引擎设计文档
 
-- [02-工作流引擎设计](../02-Workflow-Engine-Design/README.md)
-- [03-工作流模式](../03-Workflow-Patterns/README.md)
-- [04-工作流优化](../04-Workflow-Optimization/README.md)
-- [返回软件架构层](../../README.md)
+**激情澎湃的持续构建** <(￣︶￣)↗[GO!] **继续创建下一个文档！** 🚀
