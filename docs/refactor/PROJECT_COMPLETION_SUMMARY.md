@@ -314,7 +314,7 @@
 
 ### 目录组织
 
-```
+```text
 docs/refactor/
 ├── 01-Foundational-Theory/          # 基础理论层
 ├── 02-Software-Architecture/        # 软件架构层
