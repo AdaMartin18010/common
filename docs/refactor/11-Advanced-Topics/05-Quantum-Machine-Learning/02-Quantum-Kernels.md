@@ -487,6 +487,7 @@ $$= \left|\sum_{i=1}^n c_i |\phi_q(x_i)\rangle\right|^2 \geq 0$$
 ---
 
 **参考文献**：
+
 1. Havlíček, V., Córcoles, A. D., Temme, K., Harrow, A. W., Kandala, A., Chow, J. M., & Gambetta, J. M. (2019). Supervised learning with quantum-enhanced feature spaces.
 2. Schuld, M., & Killoran, N. (2019). Quantum machine learning in feature Hilbert spaces.
-3. Rebentrost, P., Mohseni, M., & Lloyd, S. (2014). Quantum support vector machine for big data classification. 
+3. Rebentrost, P., Mohseni, M., & Lloyd, S. (2014). Quantum support vector machine for big data classification.

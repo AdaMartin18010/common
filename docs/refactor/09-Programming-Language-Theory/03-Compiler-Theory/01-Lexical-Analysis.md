@@ -101,6 +101,7 @@ $$R ::= \varepsilon \mid a \mid R_1 \cdot R_2 \mid R_1 + R_2 \mid R^*$$
 ```
 
 其中：
+
 - $\varepsilon$ 是空字符串
 - $a$ 是字母表中的符号
 - $\cdot$ 是连接操作

@@ -15,6 +15,7 @@ $$\min_w F(w) = \sum_{i=1}^N p_i F_i(w)$$
 ```
 
 其中：
+
 - $F_i(w)$: 客户端 $i$ 的本地目标函数
 - $p_i = \frac{|D_i|}{|D|}$: 客户端 $i$ 的数据权重
 - $N$: 客户端数量
@@ -723,6 +724,7 @@ TopK压缩在保持模型性能的同时显著减少通信成本。
 ---
 
 **参考文献**：
+
 1. Li, T., Sahu, A. K., Zaheer, M., Sanjabi, M., Talwalkar, A., & Smith, V. (2020). Federated optimization in heterogeneous networks.
 2. Reddi, S. J., Charles, Z., Zaheer, M., Garrett, Z., Rush, K., Konečný, J., ... & McMahan, H. B. (2021). Adaptive federated optimization.
-3. Konečný, J., McMahan, H. B., Yu, F. X., Richtárik, P., Suresh, A. T., & Bacon, D. (2016). Federated learning: Strategies for improving communication efficiency. 
+3. Konečný, J., McMahan, H. B., Yu, F. X., Richtárik, P., Suresh, A. T., & Bacon, D. (2016). Federated learning: Strategies for improving communication efficiency.

@@ -15,6 +15,7 @@ $$QNN = (Q, U, M, L, O)$$
 ```
 
 其中：
+
 - $Q$: 量子比特集合
 - $U$: 量子门集合
 - $M$: 测量操作
@@ -30,6 +31,7 @@ $$QN = (|\psi\rangle, U_\theta, M)$$
 ```
 
 其中：
+
 - $|\psi\rangle$: 输入量子态
 - $U_\theta$: 参数化量子门
 - $M$: 测量操作
@@ -519,6 +521,7 @@ func (qc *QuantumClassifier) TrainClassifier(inputs [][]float64, labels []int, e
 ---
 
 **参考文献**：
+
 1. Biamonte, J., Wittek, P., Pancotti, N., Rebentrost, P., Wiebe, N., & Lloyd, S. (2017). Quantum machine learning.
 2. Schuld, M., & Petruccione, F. (2018). Supervised learning with quantum computers.
-3. Havlíček, V., Córcoles, A. D., Temme, K., Harrow, A. W., Kandala, A., Chow, J. M., & Gambetta, J. M. (2019). Supervised learning with quantum-enhanced feature spaces. 
+3. Havlíček, V., Córcoles, A. D., Temme, K., Harrow, A. W., Kandala, A., Chow, J. M., & Gambetta, J. M. (2019). Supervised learning with quantum-enhanced feature spaces.

@@ -15,6 +15,7 @@ $$FL = (C, S, A, P)$$
 ```
 
 其中：
+
 - $C$: 客户端集合
 - $S$: 服务器
 - $A$: 聚合算法
@@ -29,6 +30,7 @@ $$\min_w \sum_{i=1}^N \frac{|D_i|}{|D|} L_i(w)$$
 ```
 
 其中：
+
 - $w$: 全局模型参数
 - $D_i$: 客户端 $i$ 的数据集
 - $L_i(w)$: 客户端 $i$ 的损失函数
@@ -105,6 +107,7 @@ $$C_{comm} = T \times N \times d \times b$$
 ```
 
 其中：
+
 - $T$: 通信轮数
 - $N$: 客户端数量
 - $d$: 模型参数维度
@@ -612,6 +615,7 @@ func FederatedLearningExample() {
 ---
 
 **参考文献**：
+
 1. McMahan, B., Moore, E., Ramage, D., Hampson, S., & y Arcas, B. A. (2017). Communication-efficient learning of deep networks from decentralized data.
 2. Li, T., Sahu, A. K., Zaheer, M., Sanjabi, M., Talwalkar, A., & Smith, V. (2020). Federated optimization in heterogeneous networks.
-3. Dwork, C. (2006). Differential privacy. 
+3. Dwork, C. (2006). Differential privacy.

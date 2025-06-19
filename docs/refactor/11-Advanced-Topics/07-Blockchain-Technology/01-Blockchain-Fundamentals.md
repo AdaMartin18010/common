@@ -15,6 +15,7 @@ $$Block_i = (Header_i, Transactions_i, Hash_i)$$
 ```
 
 其中：
+
 - $Header_i$: 区块头
 - $Transactions_i$: 交易列表
 - $Hash_i$: 区块哈希
@@ -28,6 +29,7 @@ $$Header = (Version, PrevHash, MerkleRoot, Timestamp, Difficulty, Nonce)$$
 ```
 
 其中：
+
 - $Version$: 版本号
 - $PrevHash$: 前一个区块的哈希
 - $MerkleRoot$: 默克尔根
@@ -46,6 +48,7 @@ $$H: \{0,1\}^* \rightarrow \{0,1\}^n$$
 ```
 
 性质：
+
 - 确定性：$H(x) = H(x)$
 - 快速计算：$H(x)$ 计算高效
 - 单向性：从 $H(x)$ 难以计算 $x$
@@ -62,6 +65,7 @@ $$b = \text{Verify}(pk, m, σ)$$
 ```
 
 其中：
+
 - $sk$: 私钥
 - $pk$: 公钥
 - $σ$: 签名
@@ -638,6 +642,7 @@ PoW和PoS共识机制在适当的条件下都能保证区块链的一致性。
 ---
 
 **参考文献**：
+
 1. Nakamoto, S. (2008). Bitcoin: A peer-to-peer electronic cash system.
 2. Buterin, V. (2014). Ethereum: A next-generation smart contract and decentralized application platform.
-3. Lamport, L., Shostak, R., & Pease, M. (1982). The Byzantine generals problem. 
+3. Lamport, L., Shostak, R., & Pease, M. (1982). The Byzantine generals problem.

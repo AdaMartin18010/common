@@ -15,6 +15,7 @@ $$P = (A, L, T, R, S, G)$$
 ```
 
 其中：
+
 - $A$: 资产集合
 - $L$: 流动性池
 - $T$: 交易机制
@@ -31,6 +32,7 @@ $$LP = (Token_A, Token_B, Reserve_A, Reserve_B, Fee, K)$$
 ```
 
 其中：
+
 - $Token_A, Token_B$: 代币对
 - $Reserve_A, Reserve_B$: 储备量
 - $Fee$: 手续费率
@@ -47,6 +49,7 @@ $$(x + \Delta x)(y - \Delta y) = xy = k$$
 ```
 
 其中：
+
 - $x, y$: 当前储备量
 - $\Delta x, \Delta y$: 交易量
 - $k$: 恒定乘积
@@ -104,6 +107,7 @@ $$APY = \left(1 + \frac{r}{n}\right)^n - 1$$
 ```
 
 其中：
+
 - $r$: 名义利率
 - $n$: 复利次数
 
@@ -765,6 +769,7 @@ DeFi协议通过智能合约实现了去中心化的金融服务，包括自动�
 ---
 
 **参考文献**：
+
 1. Adams, H., Zinsmeister, N., & Salem, M. (2020). Uniswap v2 core.
 2. Aave. (2020). Aave protocol whitepaper.
-3. Yearn Finance. (2020). Yearn finance documentation. 
+3. Yearn Finance. (2020). Yearn finance documentation.

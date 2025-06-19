@@ -43,6 +43,7 @@ const (
 
 **定义 11.8.1.3** (IoT三层架构)
 IoT系统采用三层架构：
+
 1. **感知层**: 负责数据采集和物理世界感知
 2. **网络层**: 负责数据传输和通信
 3. **应用层**: 负责数据处理和业务应用
@@ -173,6 +174,7 @@ func (pl *PerceptionLayer) GetStatus() LayerStatus {
 
 **定义 11.8.1.4** (IoT协议栈)
 IoT协议栈分为四层：
+
 1. **应用层**: MQTT、CoAP、HTTP
 2. **传输层**: TCP、UDP、DTLS
 3. **网络层**: IPv6、6LoWPAN
@@ -502,7 +504,8 @@ func (dc *DataCollector) GetDataChannel() <-chan SensorData {
 ---
 
 **相关链接**:
+
 - [11.8.2 IoT安全](../02-IoT-Security/README.md)
 - [11.8.3 IoT边缘计算](../03-IoT-Edge-Computing/README.md)
 - [11.8.4 IoT应用](../04-IoT-Applications/README.md)
-- [11.9 其他高级主题](../README.md) 
+- [11.9 其他高级主题](../README.md)

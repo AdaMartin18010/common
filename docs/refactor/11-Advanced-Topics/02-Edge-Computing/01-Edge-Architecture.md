@@ -15,6 +15,7 @@ $$EC = (N, R, S)$$
 ```
 
 其中：
+
 - $N$: 边缘节点集合
 - $R$: 资源集合
 - $S$: 服务集合
@@ -28,6 +29,7 @@ $$n = (c, m, s, b)$$
 ```
 
 其中：
+
 - $c$: 计算能力 (CPU核心数)
 - $m$: 内存容量 (GB)
 - $s$: 存储容量 (GB)
@@ -44,16 +46,19 @@ $$L = \{Cloud, Edge, Device\}$$
 ```
 
 **云层 (Cloud Layer)**
+
 - 集中式数据中心
 - 强大的计算和存储能力
 - 全局数据分析和决策
 
 **边缘层 (Edge Layer)**
+
 - 分布式边缘节点
 - 本地数据处理和缓存
 - 实时响应和低延迟
 
 **设备层 (Device Layer)**
+
 - 终端设备和传感器
 - 数据采集和预处理
 - 本地计算和存储
@@ -108,6 +113,7 @@ $$L_{e2e} = L_{prop} + L_{trans} + L_{proc} + L_{queue}$$
 ```
 
 其中：
+
 - $L_{prop}$: 传播延迟
 - $L_{trans}$: 传输延迟
 - $L_{proc}$: 处理延迟
@@ -122,6 +128,7 @@ $$L_{edge} = \frac{d}{c} + T_{process}$$
 ```
 
 其中：
+
 - $d$: 数据传输距离
 - $c$: 光速
 - $T_{process}$: 处理时间
@@ -483,11 +490,13 @@ type NodeStatus struct {
 设云数据中心距离为 $d_{cloud}$，边缘节点距离为 $d_{edge}$。
 
 边缘计算延迟：
+
 ```latex
 $$L_{edge} = \frac{d_{edge}}{c} + T_{process}$$
 ```
 
 云计算延迟：
+
 ```latex
 $$L_{cloud} = \frac{d_{cloud}}{c} + T_{process}$$
 ```
@@ -505,6 +514,7 @@ $$L_{cloud} = \frac{d_{cloud}}{c} + T_{process}$$
 对于任意任务 $t$，其负载 $l_t \leq OPT$。
 
 贪心算法将任务分配给当前负载最小的节点，因此：
+
 ```latex
 $$GREEDY \leq \frac{\sum_{t} l_t}{n} + \max_t l_t \leq \frac{n \cdot OPT}{n} + OPT = 2 \cdot OPT$$
 ```
@@ -518,6 +528,7 @@ $$GREEDY \leq \frac{\sum_{t} l_t}{n} + \max_t l_t \leq \frac{n \cdot OPT}{n} + O
 ---
 
 **参考文献**：
+
 1. Shi, W., Cao, J., Zhang, Q., Li, Y., & Xu, L. (2016). Edge computing: Vision and challenges.
 2. Satyanarayanan, M. (2017). The emergence of edge computing.
-3. Bonomi, F., Milito, R., Zhu, J., & Addepalli, S. (2012). Fog computing and its role in the internet of things. 
+3. Bonomi, F., Milito, R., Zhu, J., & Addepalli, S. (2012). Fog computing and its role in the internet of things.

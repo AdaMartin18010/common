@@ -45,6 +45,7 @@ $$|\psi(\gamma, \beta)\rangle = e^{-i\beta_p H_M} e^{-i\gamma_p H_P} \cdots e^{-
 ```
 
 其中：
+
 - $H_P$: 问题哈密顿量
 - $H_M$: 混合哈密顿量
 - $\gamma, \beta$: 优化参数
@@ -545,6 +546,7 @@ VQE通过最小化期望值来寻找基态，在参数空间足够丰富的情�
 ---
 
 **参考文献**：
+
 1. Peruzzo, A., McClean, J., Shadbolt, P., Yung, M. H., Zhou, X. Q., Love, P. J., ... & O'Brien, J. L. (2014). A variational eigenvalue solver on a photonic quantum processor.
 2. Farhi, E., Goldstone, J., & Gutmann, S. (2014). A quantum approximate optimization algorithm.
-3. Stokes, J., Izaac, J., Killoran, N., & Carleo, G. (2020). Quantum natural gradient. 
+3. Stokes, J., Izaac, J., Killoran, N., & Carleo, G. (2020). Quantum natural gradient.

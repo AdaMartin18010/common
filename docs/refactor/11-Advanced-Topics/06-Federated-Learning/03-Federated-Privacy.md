@@ -774,6 +774,7 @@ func PrivacyPreservingTrainingExample() {
 ---
 
 **参考文献**：
+
 1. Dwork, C. (2006). Differential privacy.
 2. McMahan, H. B., Ramage, D., Talwar, K., Zhang, L. (2018). Learning differentially private recurrent language models.
-3. Bonawitz, K., Ivanov, V., Kreuter, B., Marcedone, A., McMahan, H. B., Patel, S., ... & Seth, K. (2017). Practical secure aggregation for privacy-preserving machine learning. 
+3. Bonawitz, K., Ivanov, V., Kreuter, B., Marcedone, A., McMahan, H. B., Patel, S., ... & Seth, K. (2017). Practical secure aggregation for privacy-preserving machine learning.

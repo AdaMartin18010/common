@@ -15,6 +15,7 @@ $$DT = (P, M, S, C, A)$$
 ```
 
 其中：
+
 - $P$: 物理实体
 - $M$: 数字模型
 - $S$: 同步机制
@@ -30,16 +31,19 @@ $$L = \{Data, Model, Service\}$$
 ```
 
 **数据层 (Data Layer)**
+
 - 实时数据采集
 - 历史数据存储
 - 数据预处理
 
 **模型层 (Model Layer)**
+
 - 几何模型
 - 物理模型
 - 行为模型
 
 **服务层 (Service Layer)**
+
 - 监控服务
 - 分析服务
 - 预测服务
@@ -63,6 +67,7 @@ $$DF = (S, T, P, C)$$
 ```
 
 其中：
+
 - $S$: 数据源集合
 - $T$: 传输通道集合
 - $P$: 处理节点集合
@@ -111,6 +116,7 @@ $$G = (V, E, F)$$
 ```
 
 其中：
+
 - $V$: 顶点集合
 - $E$: 边集合
 - $F$: 面集合
@@ -124,6 +130,7 @@ $$P = (M, F, E, C)$$
 ```
 
 其中：
+
 - $M$: 质量矩阵
 - $F$: 力向量
 - $E$: 能量函数
@@ -138,6 +145,7 @@ $$B = (S, A, T)$$
 ```
 
 其中：
+
 - $S$: 状态集合
 - $A$: 动作集合
 - $T$: 转移函数
@@ -633,11 +641,13 @@ func (haa *HealthAnalysisAlgorithm) GetType() string {
 设同步机制 $S$ 的精度为 $\epsilon$，即 $|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}$。
 
 数据一致性定义为：
+
 ```latex
 $$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}$$
 ```
 
 由于 $|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}$，所以：
+
 ```latex
 $$C \geq 1 - \frac{\epsilon \cdot P_{real}}{P_{real}} = 1 - \epsilon$$
 ```
@@ -646,6 +656,7 @@ $$C \geq 1 - \frac{\epsilon \cdot P_{real}}{P_{real}} = 1 - \epsilon$$
 
 **定理 1.2** (同步频率优化)
 对于给定的精度要求 $\epsilon$，最优同步频率 $f_{opt}$ 满足：
+
 ```latex
 $$f_{opt} = \sqrt{\frac{\alpha}{\beta \cdot \epsilon}}$$
 ```
@@ -654,15 +665,18 @@ $$f_{opt} = \sqrt{\frac{\alpha}{\beta \cdot \epsilon}}$$
 
 **证明**：
 设总成本 $C_{total} = C_{sync} + C_{error}$，其中：
+
 - $C_{sync} = \beta \cdot f$ 是同步成本
 - $C_{error} = \alpha / f$ 是误差成本
 
 对 $f$ 求导并令其为零：
+
 ```latex
 $$\frac{dC_{total}}{df} = \beta - \frac{\alpha}{f^2} = 0$$
 ```
 
 解得：
+
 ```latex
 $$f_{opt} = \sqrt{\frac{\alpha}{\beta}}$$
 ```
@@ -674,6 +688,7 @@ $$f_{opt} = \sqrt{\frac{\alpha}{\beta}}$$
 ---
 
 **参考文献**：
+
 1. Grieves, M. (2016). Digital twin: Manufacturing excellence through virtual factory replication.
 2. Tao, F., Cheng, J., Qi, Q., Zhang, M., Zhang, H., & Sui, F. (2018). Digital twins-driven product design, manufacturing and service with big data.
-3. Kritzinger, W., Karner, M., Traar, G., Henjes, J., & Sihn, W. (2018). Digital Twin in manufacturing: A categorical literature review and classification. 
+3. Kritzinger, W., Karner, M., Traar, G., Henjes, J., & Sihn, W. (2018). Digital Twin in manufacturing: A categorical literature review and classification.

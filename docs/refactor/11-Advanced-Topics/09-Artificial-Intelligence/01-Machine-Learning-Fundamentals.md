@@ -340,6 +340,7 @@ func (lr *LogisticRegression) Evaluate(X [][]float64, y []int) float64 {
 K均值聚类是将数据点分组到K个簇中的算法，使得同一簇内的点相似度高，不同簇间的点相似度低。
 
 **算法步骤**:
+
 1. 随机初始化K个聚类中心
 2. 将每个数据点分配到最近的聚类中心
 3. 重新计算聚类中心
@@ -716,6 +717,7 @@ func (qla *QLearningAgent) GetQTable() map[string]map[string]float64 {
 评估指标用于衡量机器学习模型的性能。
 
 **分类指标**:
+
 - 准确率: $Accuracy = \frac{TP + TN}{TP + TN + FP + FN}$
 - 精确率: $Precision = \frac{TP}{TP + FP}$
 - 召回率: $Recall = \frac{TP}{TP + FN}$
@@ -900,7 +902,8 @@ func (re *RegressionEvaluator) R2Score() float64 {
 ---
 
 **相关链接**:
+
 - [11.9.2 深度学习](../02-Deep-Learning/README.md)
 - [11.9.3 自然语言处理](../03-Natural-Language-Processing/README.md)
 - [11.9.4 计算机视觉](../04-Computer-Vision/README.md)
-- [11.10 其他高级主题](../README.md) 
+- [11.10 其他高级主题](../README.md)

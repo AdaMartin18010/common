@@ -15,6 +15,7 @@ $$SC = (S, F, T, E, G)$$
 ```
 
 其中：
+
 - $S$: 状态集合
 - $F$: 函数集合
 - $T$: 触发条件
@@ -30,6 +31,7 @@ $$s = (Storage, Balance, Code, Nonce)$$
 ```
 
 其中：
+
 - $Storage$: 存储数据
 - $Balance$: 合约余额
 - $Code$: 合约代码
@@ -46,6 +48,7 @@ $$VM = (PC, Stack, Memory, Storage, Gas)$$
 ```
 
 其中：
+
 - $PC$: 程序计数器
 - $Stack$: 操作数栈
 - $Memory$: 内存
@@ -623,6 +626,7 @@ func TokenContractExample() {
 ---
 
 **参考文献**：
+
 1. Wood, G. (2014). Ethereum: A secure decentralised generalised transaction ledger.
 2. Szabo, N. (1996). Smart contracts: Building blocks for digital markets.
-3. Buterin, V. (2014). Ethereum: A next-generation smart contract and decentralized application platform. 
+3. Buterin, V. (2014). Ethereum: A next-generation smart contract and decentralized application platform.

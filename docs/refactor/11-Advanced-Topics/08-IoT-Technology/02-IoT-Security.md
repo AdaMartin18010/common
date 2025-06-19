@@ -42,6 +42,7 @@ const (
 
 **定义 11.8.2.3** (威胁分类)
 IoT安全威胁可以分为以下几类：
+
 1. **物理威胁**: 设备盗窃、物理损坏、侧信道攻击
 2. **网络威胁**: 中间人攻击、拒绝服务、数据包嗅探
 3. **软件威胁**: 恶意软件、缓冲区溢出、代码注入
@@ -513,7 +514,8 @@ func contains(slice []string, item string) bool {
 ---
 
 **相关链接**:
+
 - [11.8.1 IoT基础理论](../01-IoT-Fundamentals/README.md)
 - [11.8.3 IoT边缘计算](../03-IoT-Edge-Computing/README.md)
 - [11.8.4 IoT应用](../04-IoT-Applications/README.md)
-- [11.9 人工智能](../09-Artificial-Intelligence/README.md) 
+- [11.9 人工智能](../09-Artificial-Intelligence/README.md)

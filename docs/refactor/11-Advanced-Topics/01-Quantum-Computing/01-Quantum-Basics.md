@@ -15,6 +15,7 @@ $$|q\rangle = \alpha|0\rangle + \beta|1\rangle$$
 ```
 
 其中：
+
 - $\alpha, \beta \in \mathbb{C}$ 是复数
 - $|\alpha|^2 + |\beta|^2 = 1$ 是归一化条件
 - $|0\rangle, |1\rangle$ 是计算基态
@@ -260,6 +261,7 @@ $$|q\rangle = (c_1\alpha_1 + c_2\alpha_2)|0\rangle + (c_1\beta_1 + c_2\beta_2)|1
 ```
 
 归一化条件：
+
 ```latex
 $$|c_1\alpha_1 + c_2\alpha_2|^2 + |c_1\beta_1 + c_2\beta_2|^2 = 1$$
 ```
@@ -282,6 +284,7 @@ $$U|\phi\rangle|0\rangle = |\phi\rangle|\phi\rangle$$
 ```
 
 内积保持性要求：
+
 ```latex
 $$\langle\psi|\phi\rangle = \langle\psi|\phi\rangle^2$$
 ```
@@ -297,6 +300,7 @@ $$\langle\psi|\phi\rangle = \langle\psi|\phi\rangle^2$$
 ---
 
 **参考文献**：
+
 1. Nielsen, M. A., & Chuang, I. L. (2010). Quantum computation and quantum information.
 2. Preskill, J. (1998). Lecture notes for physics 229: Quantum information and computation.
-3. Kaye, P., Laflamme, R., & Mosca, M. (2007). An introduction to quantum computing. 
+3. Kaye, P., Laflamme, R., & Mosca, M. (2007). An introduction to quantum computing.

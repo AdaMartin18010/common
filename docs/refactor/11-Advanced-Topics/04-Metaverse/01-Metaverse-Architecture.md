@@ -229,6 +229,7 @@ func (g *Governance) Vote(proposalID string, approve bool) {
 ---
 
 **参考文献**：
+
 1. Dionisio, J. D. N., Burns III, W. G., & Gilbert, R. (2013). 3D virtual worlds and the metaverse.
 2. Lee, L. H., Braud, T., Zhou, P., Wang, L., Xu, D., Lin, Z., ... & Hui, P. (2021). All one needs to know about metaverse.
-3. Ball, M. (2022). The Metaverse: And How it Will Revolutionize Everything. 
+3. Ball, M. (2022). The Metaverse: And How it Will Revolutionize Everything.

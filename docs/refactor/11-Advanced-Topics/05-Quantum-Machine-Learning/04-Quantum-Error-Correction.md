@@ -79,6 +79,7 @@ $$B_p = \prod_{e \in \partial(p)} Z_e$$
 ```
 
 其中：
+
 - $A_v$: 顶点 $v$ 的 $X$ 型稳定子
 - $B_p$: 面 $p$ 的 $Z$ 型稳定子
 - $\delta(v)$: 与顶点 $v$ 相邻的边
@@ -579,6 +580,7 @@ func TestErrorCorrection() {
 ---
 
 **参考文献**：
+
 1. Shor, P. W. (1995). Scheme for reducing decoherence in quantum computer memory.
 2. Steane, A. M. (1996). Error correcting codes in quantum theory.
-3. Kitaev, A. Y. (2003). Fault-tolerant quantum computation by anyons. 
+3. Kitaev, A. Y. (2003). Fault-tolerant quantum computation by anyons.
