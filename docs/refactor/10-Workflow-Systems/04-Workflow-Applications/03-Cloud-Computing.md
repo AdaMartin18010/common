@@ -21,7 +21,9 @@
 **定义 1.1.1** (云服务层次)
 云服务层次 $L$ 定义为三层结构：
 
+```latex
 $$L = \{IaaS, PaaS, SaaS\}$$
+```
 
 其中：
 
@@ -32,7 +34,9 @@ $$L = \{IaaS, PaaS, SaaS\}$$
 **定义 1.1.2** (服务依赖关系)
 服务依赖关系 $D$ 定义为：
 
+```latex
 $$D = \{(SaaS, PaaS), (PaaS, IaaS)\}$$
+```
 
 表示上层服务依赖于下层服务。
 
@@ -50,7 +54,9 @@ $$D = \{(SaaS, PaaS), (PaaS, IaaS)\}$$
 **定理 1.2.1** (资源分配最优性)
 对于资源分配问题，存在最优分配 $A^*$ 使得：
 
+```latex
 $$\sum_{r \in R} \sum_{u \in U} C(r, u) \cdot A^*(r, u)$$
+```
 
 达到最大值。
 
@@ -59,14 +65,18 @@ $$\sum_{r \in R} \sum_{u \in U} C(r, u) \cdot A^*(r, u)$$
 **定义 1.2.2** (负载均衡)
 负载均衡函数 $LB$ 定义为：
 
+```latex
 $$LB(S) = \frac{\max_{i} L_i - \min_{i} L_i}{\max_{i} L_i}$$
+```
 
 其中 $L_i$ 是服务器 $i$ 的负载。
 
 **定理 1.2.2** (负载均衡收敛性)
 对于一致性哈希负载均衡，当节点数量 $n \to \infty$ 时：
 
+```latex
 $$\lim_{n \to \infty} LB(S) = 0$$
+```
 
 ## 2. 弹性计算模型
 
@@ -77,13 +87,13 @@ $$\lim_{n \to \infty} LB(S) = 0$$
 **定义 2.1.1** (扩缩容触发条件)
 扩缩容触发条件 $T$ 定义为：
 
-$$
-T = \begin{cases}
-Scale\_Up & \text{if } \rho > \rho_{high} \\
-Scale\_Down & \text{if } \rho < \rho_{low} \\
-No\_Change & \text{otherwise}
-\end{cases}
-$$
+```latex
+$$T = \begin{cases}
+\text{scale-up} & \text{if } \rho > \rho_{high} \\
+\text{scale-down} & \text{if } \rho < \rho_{low} \\
+\text{no-action} & \text{otherwise}
+\end{cases}$$
+```
 
 其中 $\rho$ 是资源利用率。
 

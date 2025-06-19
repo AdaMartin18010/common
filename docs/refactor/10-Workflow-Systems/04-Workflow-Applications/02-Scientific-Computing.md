@@ -24,18 +24,24 @@
 **定理 1.1.1** (主定理)
 对于递归算法 $T(n) = aT(n/b) + f(n)$，其中 $a \geq 1, b > 1$，则：
 
-$$
-T(n) = \begin{cases}
-\Theta(n^{\log_b a}) & \text{if } f(n) = O(n^{\log_b a - \epsilon}) \\
-\Theta(n^{\log_b a} \log n) & \text{if } f(n) = \Theta(n^{\log_b a}) \\
-\Theta(f(n)) & \text{if } f(n) = \Omega(n^{\log_b a + \epsilon})
-\end{cases}
-$$
+```latex
+$$T(n) = \begin{cases}
+O(n^{\log_b a}) & \text{if } f(n) = O(n^{\log_b a - \epsilon}) \\
+O(f(n) \log n) & \text{if } f(n) = O(n^{\log_b a}) \\
+O(f(n)) & \text{if } f(n) = \Omega(n^{\log_b a + \epsilon})
+\end{cases}$$
+```
 
 #### 1.1.2 空间复杂度分析
 
 **定义 1.1.2** (空间复杂度)
 算法的空间复杂度 $S(n)$ 定义为算法执行过程中所需的最大内存空间。
+
+```latex
+$$S(n) = \max_{I \in \mathcal{I}_n} S(I)$$
+```
+
+其中 $\mathcal{I}_n$ 是所有规模为 $n$ 的输入集合。
 
 ### 1.2 数值计算理论
 
@@ -44,14 +50,18 @@ $$
 **定义 1.2.1** (条件数)
 矩阵 $A$ 的条件数 $\kappa(A)$ 定义为：
 
+```latex
 $$\kappa(A) = \|A\| \cdot \|A^{-1}\|$$
+```
 
 其中 $\|\cdot\|$ 是矩阵范数。
 
 **定理 1.2.1** (误差传播)
 对于线性系统 $Ax = b$，相对误差满足：
 
+```latex
 $$\frac{\|\Delta x\|}{\|x\|} \leq \kappa(A) \frac{\|\Delta b\|}{\|b\|}$$
+```
 
 ## 2. 并行计算模型
 
@@ -62,7 +72,9 @@ $$\frac{\|\Delta x\|}{\|x\|} \leq \kappa(A) \frac{\|\Delta b\|}{\|b\|}$$
 **定理 2.1.1** (Amdahl定律)
 对于并行化比例 $p$ 和处理器数量 $n$，加速比 $S(n)$ 为：
 
+```latex
 $$S(n) = \frac{1}{(1-p) + \frac{p}{n}}$$
+```
 
 **证明**:
 设总执行时间为 $T$，可并行化部分为 $pT$，串行部分为 $(1-p)T$。
@@ -78,7 +90,9 @@ $$S(n) = \frac{1}{(1-p) + \frac{p}{n}}$$
 **定理 2.1.2** (Gustafson定律)
 对于固定时间并行化，加速比 $S(n)$ 为：
 
+```latex
 $$S(n) = n - (n-1) \cdot s$$
+```
 
 其中 $s$ 是串行部分的比例。
 

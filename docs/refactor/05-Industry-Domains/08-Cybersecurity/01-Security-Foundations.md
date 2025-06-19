@@ -22,12 +22,16 @@
 **定义 1.1** (安全函数)
 安全函数 $S: M \times K \rightarrow C$ 将消息 $M$ 使用密钥 $K$ 加密为密文 $C$：
 
+```latex
 $$S(m, k) = c \text{ where } c = \text{encrypt}(m, k)$$
+```
 
 **定理 1.1** (安全可逆性)
 对于安全函数 $S$，存在解密函数 $S^{-1}$ 满足：
 
+```latex
 $$S^{-1}(S(m, k), k) = m$$
+```
 
 ### 1.2 安全原则
 
@@ -76,8 +80,10 @@ func (sm *SecurityManager) RegisterProvider(name string, provider SecurityProvid
 **定义 2.1** (对称加密)
 对称加密使用相同密钥进行加密和解密：
 
+```latex
 $$\text{Encrypt}(m, k) = c$$
 $$\text{Decrypt}(c, k) = m$$
+```
 
 ```go
 // AES加密器

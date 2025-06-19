@@ -34,12 +34,15 @@
 
 ### 1.1 业务流程管理
 
-**定义 1.1** (业务流程): 业务流程是一系列相互关联的活动，用于实现特定的业务目标：
+#### 1.1.1 业务流程定义
 
+业务流程 $BP$ 是一个五元组：
+
+```latex
 $$\text{BusinessProcess} = (A, R, D, C, O)$$
+```
 
 其中：
-
 - $A$ 是活动集合
 - $R$ 是角色集合
 - $D$ 是数据集合
@@ -53,11 +56,13 @@ $$\text{BusinessProcess} = (A, R, D, C, O)$$
 3. **可测量**: 流程性能可以量化
 4. **可优化**: 流程可以持续改进
 
-### 1.2 工作流模式
+#### 1.1.2 工作流模式
 
-**定义 1.2** (工作流模式): 工作流模式是解决特定业务问题的标准化解决方案：
+工作流模式集合：
 
+```latex
 $$\text{WorkflowPattern} = \{\text{Sequential}, \text{Parallel}, \text{Choice}, \text{Iteration}, \text{Compensation}\}$$
+```
 
 **常见模式**:
 
@@ -67,11 +72,15 @@ $$\text{WorkflowPattern} = \{\text{Sequential}, \text{Parallel}, \text{Choice}, 
 4. **迭代模式**: 活动重复执行
 5. **补偿模式**: 错误时执行回滚操作
 
-### 1.3 企业集成
+### 1.2 企业集成
 
-**定义 1.3** (企业集成): 企业集成是连接不同系统和数据源的过程：
+#### 1.2.1 企业集成模型
 
+企业集成 $EI$ 定义为：
+
+```latex
 $$\text{EnterpriseIntegration} = \{\text{DataIntegration}, \text{ProcessIntegration}, \text{ApplicationIntegration}\}$$
+```
 
 **集成类型**:
 
