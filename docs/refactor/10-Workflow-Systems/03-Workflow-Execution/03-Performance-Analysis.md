@@ -22,7 +22,9 @@
 **定义 1.1.1** (响应时间)
 工作流的响应时间 $T_{response}$ 定义为从工作流启动到完成的总时间：
 
+```latex
 $$T_{response} = T_{startup} + T_{execution} + T_{cleanup}$$
+```
 
 其中：
 
@@ -33,7 +35,9 @@ $$T_{response} = T_{startup} + T_{execution} + T_{cleanup}$$
 **定义 1.1.2** (吞吐量)
 工作流的吞吐量 $\lambda$ 定义为单位时间内完成的工作流实例数：
 
+```latex
 $$\lambda = \frac{N_{completed}}{T_{period}}$$
+```
 
 其中：
 
@@ -43,7 +47,9 @@ $$\lambda = \frac{N_{completed}}{T_{period}}$$
 **定义 1.1.3** (资源利用率)
 资源利用率 $\rho$ 定义为资源实际使用时间与总时间的比值：
 
+```latex
 $$\rho = \frac{T_{used}}{T_{total}}$$
+```
 
 ### 1.2 性能模型
 
@@ -52,7 +58,9 @@ $$\rho = \frac{T_{used}}{T_{total}}$$
 **定理 1.2.1** (Little's Law)
 对于稳态系统，系统中的平均工作流数量 $L$ 等于到达率 $\lambda$ 与平均响应时间 $W$ 的乘积：
 
+```latex
 $$L = \lambda W$$
+```
 
 **证明**:
 设 $N(t)$ 为时刻 $t$ 系统中的工作流数量，$A(t)$ 为到时刻 $t$ 的累计到达数，$D(t)$ 为到时刻 $t$ 的累计离开数。
