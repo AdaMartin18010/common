@@ -40,11 +40,19 @@
 
 **定义 1.1** (工作流): 工作流是一个有向图 $W = (N, E, \lambda)$，其中：
 
+```latex
+W = (N, E, \lambda)
+```
+
 - $N$ 是节点集合，表示活动
 - $E \subseteq N \times N$ 是边集合，表示控制流
 - $\lambda: N \rightarrow \Sigma$ 是标签函数，将节点映射到活动类型
 
 **定义 1.2** (工作流实例): 工作流实例是工作流的一个执行，表示为 $I = (W, s, \tau)$，其中：
+
+```latex
+I = (W, s, \tau)
+```
 
 - $W$ 是工作流定义
 - $s: N \rightarrow \{active, completed, failed\}$ 是状态函数
@@ -53,6 +61,10 @@
 ### 1.2 活动
 
 **定义 1.3** (活动): 活动是工作流中的基本执行单元，表示为 $A = (id, type, input, output, behavior)$，其中：
+
+```latex
+A = (id, type, input, output, behavior)
+```
 
 - $id$ 是唯一标识符
 - $type \in \{task, subprocess, gateway\}$ 是活动类型
@@ -70,6 +82,10 @@
 
 **定义 1.4** (转换): 转换是活动之间的连接，表示为 $T = (from, to, condition, action)$，其中：
 
+```latex
+T = (from, to, condition, action)
+```
+
 - $from$ 是源活动
 - $to$ 是目标活动
 - $condition$ 是转换条件
@@ -85,11 +101,15 @@
 
 **定义 1.5** (活动状态): 活动状态是活动在某个时刻的执行状态，定义为：
 
-$$\text{State} = \{ready, active, completed, failed, suspended, cancelled\}$$
+```latex
+\text{State} = \{ready, active, completed, failed, suspended, cancelled\}
+```
 
 **定义 1.6** (工作流状态): 工作流状态是所有活动状态的组合：
 
-$$S_W = \prod_{A \in N} \text{State}_A$$
+```latex
+S_W = \prod_{A \in N} \text{State}_A
+```
 
 ## 2. 控制流概念
 
@@ -97,37 +117,63 @@ $$S_W = \prod_{A \in N} \text{State}_A$$
 
 **定义 2.1** (顺序执行): 活动 $A_1, A_2, \ldots, A_n$ 的顺序执行定义为：
 
-$$\text{Sequence}(A_1, A_2, \ldots, A_n) = A_1 \circ A_2 \circ \cdots \circ A_n$$
+```latex
+\text{Sequence}(A_1, A_2, \ldots, A_n) = A_1 \circ A_2 \circ \cdots \circ A_n
+```
 
-**公理 2.1** (结合律): $(A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)$
+**公理 2.1** (结合律): 
+
+```latex
+(A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)
+```
 
 ### 2.2 并行执行
 
 **定义 2.2** (并行执行): 活动 $A_1, A_2, \ldots, A_n$ 的并行执行定义为：
 
-$$\text{Parallel}(A_1, A_2, \ldots, A_n) = A_1 \parallel A_2 \parallel \cdots \parallel A_n$$
+```latex
+\text{Parallel}(A_1, A_2, \ldots, A_n) = A_1 \parallel A_2 \parallel \cdots \parallel A_n
+```
 
-**公理 2.2** (交换律): $A_1 \parallel A_2 = A_2 \parallel A_1$
+**公理 2.2** (交换律): 
 
-**公理 2.3** (结合律): $(A_1 \parallel A_2) \parallel A_3 = A_1 \parallel (A_2 \parallel A_3)$
+```latex
+A_1 \parallel A_2 = A_2 \parallel A_1
+```
+
+**公理 2.3** (结合律): 
+
+```latex
+(A_1 \parallel A_2) \parallel A_3 = A_1 \parallel (A_2 \parallel A_3)
+```
 
 ### 2.3 条件分支
 
 **定义 2.3** (条件分支): 基于条件 $c$ 在活动 $A_1$ 和 $A_2$ 之间选择：
 
-$$\text{Choice}(c, A_1, A_2) = \text{if } c \text{ then } A_1 \text{ else } A_2$$
+```latex
+\text{Choice}(c, A_1, A_2) = \text{if } c \text{ then } A_1 \text{ else } A_2
+```
 
-**公理 2.4** (选择幂等): $\text{Choice}(c, A, A) = A$
+**公理 2.4** (选择幂等): 
+
+```latex
+\text{Choice}(c, A, A) = A
+```
 
 ### 2.4 循环
 
 **定义 2.4** (循环): 活动 $A$ 在条件 $c$ 下重复执行：
 
-$$\text{Loop}(c, A) = \text{while } c \text{ do } A$$
+```latex
+\text{Loop}(c, A) = \text{while } c \text{ do } A
+```
 
 **定理 2.1**: 循环可以表示为递归：
 
-$$\text{Loop}(c, A) = \text{Choice}(c, A \circ \text{Loop}(c, A), \text{skip})$$
+```latex
+\text{Loop}(c, A) = \text{Choice}(c, A \circ \text{Loop}(c, A), \text{skip})
+```
 
 ## 3. 数据流概念
 
@@ -135,7 +181,9 @@ $$\text{Loop}(c, A) = \text{Choice}(c, A \circ \text{Loop}(c, A), \text{skip})$$
 
 **定义 3.1** (数据传递): 从活动 $A_1$ 到活动 $A_2$ 的数据传递定义为：
 
-$$\text{DataFlow}(A_1, A_2, \sigma) = \{(d_1, d_2) \mid d_2 = \sigma(d_1)\}$$
+```latex
+\text{DataFlow}(A_1, A_2, \sigma) = \{(d_1, d_2) \mid d_2 = \sigma(d_1)\}
+```
 
 其中 $\sigma$ 是数据转换函数。
 
@@ -143,13 +191,17 @@ $$\text{DataFlow}(A_1, A_2, \sigma) = \{(d_1, d_2) \mid d_2 = \sigma(d_1)\}$$
 
 **定义 3.2** (数据转换): 数据转换函数 $\sigma: D_1 \rightarrow D_2$ 满足：
 
-$$\forall d_1 \in D_1, \exists d_2 \in D_2: \sigma(d_1) = d_2$$
+```latex
+\forall d_1 \in D_1, \exists d_2 \in D_2: \sigma(d_1) = d_2
+```
 
 ### 3.3 数据聚合
 
 **定义 3.3** (数据聚合): 多个数据源的聚合定义为：
 
-$$\text{Aggregate}(\{d_1, d_2, \ldots, d_n\}, \oplus) = d_1 \oplus d_2 \oplus \cdots \oplus d_n$$
+```latex
+\text{Aggregate}(\{d_1, d_2, \ldots, d_n\}, \oplus) = d_1 \oplus d_2 \oplus \cdots \oplus d_n
+```
 
 其中 $\oplus$ 是聚合操作符。
 
@@ -159,7 +211,9 @@ $$\text{Aggregate}(\{d_1, d_2, \ldots, d_n\}, \oplus) = d_1 \oplus d_2 \oplus \c
 
 **定义 4.1** (错误处理): 活动 $A$ 的错误处理定义为：
 
-$$\text{ErrorHandler}(A, E) = A \oplus E$$
+```latex
+\text{ErrorHandler}(A, E) = A \oplus E
+```
 
 其中 $E$ 是错误处理活动，$\oplus$ 表示错误处理组合。
 
@@ -167,7 +221,9 @@ $$\text{ErrorHandler}(A, E) = A \oplus E$$
 
 **定义 4.2** (补偿): 活动 $A$ 的补偿活动 $\bar{A}$ 满足：
 
-$$A \circ \bar{A} \sim \text{skip}$$
+```latex
+A \circ \bar{A} \sim \text{skip}
+```
 
 其中 $\sim$ 表示语义等价。
 
@@ -175,7 +231,9 @@ $$A \circ \bar{A} \sim \text{skip}$$
 
 **定义 4.3** (重试): 活动 $A$ 的重试策略定义为：
 
-$$\text{Retry}(A, n, \delta) = \text{repeat } A \text{ up to } n \text{ times with delay } \delta$$
+```latex
+\text{Retry}(A, n, \delta) = \text{repeat } A \text{ up to } n \text{ times with delay } \delta
+```
 
 ## 5. 形式化定义
 
@@ -196,8 +254,18 @@ $$\text{Retry}(A, n, \delta) = \text{repeat } A \text{ up to } n \text{ times wi
 
 **公理系统 $\mathcal{A}$**:
 
-1. **结合律**: $(A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)$
-2. **交换律**: $A_1 \parallel A_2 = A_2 \parallel A_1$
+1. **结合律**: 
+
+```latex
+(A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)
+```
+
+2. **交换律**: 
+
+```latex
+A_1 \parallel A_2 = A_2 \parallel A_1
+```
+
 3. **分配律**: $A_1 \circ (A_2 \parallel A_3) = (A_1 \circ A_2) \parallel (A_1 \circ A_3)$
 4. **单位元**: $A \circ \text{skip} = \text{skip} \circ A = A$
 5. **幂等律**: $A \parallel A = A$

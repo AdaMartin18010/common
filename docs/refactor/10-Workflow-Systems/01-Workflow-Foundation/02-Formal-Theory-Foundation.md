@@ -38,6 +38,10 @@
 
 **定义 1.1** (工作流空间): 工作流空间 $W$ 是一个三元组 $(S, T, \rightarrow)$，其中：
 
+```latex
+W = (S, T, \rightarrow)
+```
+
 - $S$ 是状态集合
 - $T$ 是转换集合  
 - $\rightarrow \subseteq S \times T \times S$ 是转换关系
@@ -48,19 +52,35 @@
 
 **定义 1.3** (顺序组合): 对于工作流 $w_1$ 和 $w_2$，其顺序组合 $w_1 \circ w_2$ 定义为：
 
-$$w_1 \circ w_2 = \{(s, t, s') \mid (s, t, s') \in w_1 \text{ 或 } (s, t, s') \in w_2\}$$
+```latex
+w_1 \circ w_2 = \{(s, t, s') \mid (s, t, s') \in w_1 \text{ 或 } (s, t, s') \in w_2\}
+```
 
 **定义 1.4** (并行组合): 对于工作流 $w_1$ 和 $w_2$，其并行组合 $w_1 \parallel w_2$ 定义为：
 
-$$w_1 \parallel w_2 = \{(s, t, s') \mid (s, t, s') \in w_1 \text{ 且 } (s, t, s') \in w_2\}$$
+```latex
+w_1 \parallel w_2 = \{(s, t, s') \mid (s, t, s') \in w_1 \text{ 且 } (s, t, s') \in w_2\}
+```
 
 ### 1.3 代数公理
 
-**公理 1.1** (结合律): $(w_1 \circ w_2) \circ w_3 = w_1 \circ (w_2 \circ w_3)$
+**公理 1.1** (结合律): 
 
-**公理 1.2** (交换律): $w_1 \parallel w_2 = w_2 \parallel w_1$
+```latex
+(w_1 \circ w_2) \circ w_3 = w_1 \circ (w_2 \circ w_3)
+```
 
-**公理 1.3** (分配律): $w_1 \circ (w_2 \parallel w_3) = (w_1 \circ w_2) \parallel (w_1 \circ w_3)$
+**公理 1.2** (交换律): 
+
+```latex
+w_1 \parallel w_2 = w_2 \parallel w_1
+```
+
+**公理 1.3** (分配律): 
+
+```latex
+w_1 \circ (w_2 \parallel w_3) = (w_1 \circ w_2) \parallel (w_1 \circ w_3)
+```
 
 ## 2. 同伦论视角
 
@@ -79,7 +99,9 @@ $$w_1 \parallel w_2 = \{(s, t, s') \mid (s, t, s') \in w_1 \text{ 且 } (s, t, s
 
 **定义 2.2** (路径同伦): 两个路径 $\alpha, \beta: [0,1] \rightarrow W$ 是同伦的，如果存在连续映射 $H: [0,1] \times [0,1] \rightarrow W$ 使得：
 
-$$H(t,0) = \alpha(t), \quad H(t,1) = \beta(t)$$
+```latex
+H(t,0) = \alpha(t), \quad H(t,1) = \beta(t)
+```
 
 **定理 2.2**: 同伦关系是等价关系。
 
@@ -124,7 +146,9 @@ $$H(t,0) = \alpha(t), \quad H(t,1) = \beta(t)$$
 
 **定义 3.2** (工作流函子): 工作流函子 $F: \mathcal{W} \rightarrow \mathcal{W}'$ 保持工作流结构：
 
-$$F(w_1 \circ w_2) = F(w_1) \circ F(w_2)$$
+```latex
+F(w_1 \circ w_2) = F(w_1) \circ F(w_2)
+```
 
 **定义 3.3** (自然变换): 自然变换 $\eta: F \Rightarrow G$ 是态射族 $\eta_w: F(w) \rightarrow G(w)$，满足自然性条件。
 
@@ -138,7 +162,9 @@ $$F(w_1 \circ w_2) = F(w_1) \circ F(w_2)$$
 
 **定义 4.1** (LTL语法): 线性时态逻辑公式定义为：
 
-$$\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \phi \vee \phi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \phi$$
+```latex
+\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \phi \vee \phi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \phi
+```
 
 其中：
 
@@ -151,7 +177,9 @@ $$\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \phi \vee \phi \mid \math
 
 **定义 4.2** (CTL语法): 计算树逻辑公式定义为：
 
-$$\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \mathbf{EX} \phi \mid \mathbf{EF} \phi \mid \mathbf{EG} \phi \mid \mathbf{E}[\phi \mathbf{U} \psi]$$
+```latex
+\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \mathbf{EX} \phi \mid \mathbf{EF} \phi \mid \mathbf{EG} \phi \mid \mathbf{E}[\phi \mathbf{U} \psi]
+```
 
 ### 4.3 模型检验
 
