@@ -53,7 +53,10 @@ IoT安全威胁可以分为以下几类：
 
 **证明**:
 设威胁概率为 $P$，影响程度为 $I$，则风险 $R$ 为：
+
+```latex
 $$R = P \times I$$
+```
 
 ### 11.8.2.2.2 Go实现威胁分析
 
@@ -129,7 +132,10 @@ func (ta *ThreatAnalyzer) GetHighRiskThreats(threshold float64) []*Threat {
 
 **证明**:
 设单因子认证被破解的概率为 $p$，则 $n$ 因子认证被破解的概率为：
+
+```latex
 $$P_{break} = p^n$$
+```
 
 ### 11.8.2.3.2 Go实现认证系统
 
@@ -515,7 +521,8 @@ func contains(slice []string, item string) bool {
 
 **相关链接**:
 
-- [11.8.1 IoT基础理论](../01-IoT-Fundamentals/README.md)
-- [11.8.3 IoT边缘计算](../03-IoT-Edge-Computing/README.md)
-- [11.8.4 IoT应用](../04-IoT-Applications/README.md)
-- [11.9 人工智能](../09-Artificial-Intelligence/README.md)
+- [11.8.1 IoT基础理论](../01-IoT-Foundation.md)
+- [11.8.3 IoT边缘计算](../03-IoT-Edge-Computing.md)
+- [11.8.4 IoT应用](../04-IoT-Applications.md)
+- [11.7 区块链技术](../../07-Blockchain-Technology/README.md)
+- [05.08 网络安全](../../../05-Industry-Domains/08-Cybersecurity/README.md)

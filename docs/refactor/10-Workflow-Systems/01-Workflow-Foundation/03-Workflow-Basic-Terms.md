@@ -121,7 +121,7 @@ S_W = \prod_{A \in N} \text{State}_A
 \text{Sequence}(A_1, A_2, \ldots, A_n) = A_1 \circ A_2 \circ \cdots \circ A_n
 ```
 
-**公理 2.1** (结合律): 
+**公理 2.1** (结合律):
 
 ```latex
 (A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)
@@ -135,13 +135,13 @@ S_W = \prod_{A \in N} \text{State}_A
 \text{Parallel}(A_1, A_2, \ldots, A_n) = A_1 \parallel A_2 \parallel \cdots \parallel A_n
 ```
 
-**公理 2.2** (交换律): 
+**公理 2.2** (交换律):
 
 ```latex
 A_1 \parallel A_2 = A_2 \parallel A_1
 ```
 
-**公理 2.3** (结合律): 
+**公理 2.3** (结合律):
 
 ```latex
 (A_1 \parallel A_2) \parallel A_3 = A_1 \parallel (A_2 \parallel A_3)
@@ -155,7 +155,7 @@ A_1 \parallel A_2 = A_2 \parallel A_1
 \text{Choice}(c, A_1, A_2) = \text{if } c \text{ then } A_1 \text{ else } A_2
 ```
 
-**公理 2.4** (选择幂等): 
+**公理 2.4** (选择幂等):
 
 ```latex
 \text{Choice}(c, A, A) = A
@@ -254,17 +254,17 @@ A \circ \bar{A} \sim \text{skip}
 
 **公理系统 $\mathcal{A}$**:
 
-1. **结合律**: 
+1. **结合律**:
 
-```latex
-(A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)
-```
+    ```latex
+    (A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)
+    ```
 
-2. **交换律**: 
+2. **交换律**:
 
-```latex
-A_1 \parallel A_2 = A_2 \parallel A_1
-```
+    ```latex
+    A_1 \parallel A_2 = A_2 \parallel A_1
+    ```
 
 3. **分配律**: $A_1 \circ (A_2 \parallel A_3) = (A_1 \circ A_2) \parallel (A_1 \circ A_3)$
 4. **单位元**: $A \circ \text{skip} = \text{skip} \circ A = A$

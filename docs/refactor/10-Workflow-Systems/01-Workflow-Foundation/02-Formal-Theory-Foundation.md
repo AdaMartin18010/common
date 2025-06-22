@@ -64,19 +64,19 @@ w_1 \parallel w_2 = \{(s, t, s') \mid (s, t, s') \in w_1 \text{ 且 } (s, t, s')
 
 ### 1.3 代数公理
 
-**公理 1.1** (结合律): 
+**公理 1.1** (结合律):
 
 ```latex
 (w_1 \circ w_2) \circ w_3 = w_1 \circ (w_2 \circ w_3)
 ```
 
-**公理 1.2** (交换律): 
+**公理 1.2** (交换律):
 
 ```latex
 w_1 \parallel w_2 = w_2 \parallel w_1
 ```
 
-**公理 1.3** (分配律): 
+**公理 1.3** (分配律):
 
 ```latex
 w_1 \circ (w_2 \parallel w_3) = (w_1 \circ w_2) \parallel (w_1 \circ w_3)
