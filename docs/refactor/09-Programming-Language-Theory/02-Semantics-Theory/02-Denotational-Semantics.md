@@ -9,14 +9,26 @@
 ### 1.1 指称语义定义
 
 **定义 1.1** (指称语义)
-指称语义是一个三元组 $\mathcal{D} = (\mathcal{S}, \mathcal{V}, \mathcal{M})$，其中：
+指称语义是一个三元组 ```latex
+$\mathcal{D} = (\mathcal{S}, \mathcal{V}, \mathcal{M})$
+```，其中：
 
-- $\mathcal{S}$ 是语法域
-- $\mathcal{V}$ 是值域
-- $\mathcal{M}: \mathcal{S} \rightarrow \mathcal{V}$ 是语义函数
+- ```latex
+$\mathcal{S}$
+``` 是语法域
+- ```latex
+$\mathcal{V}$
+``` 是值域
+- ```latex
+$\mathcal{M}: \mathcal{S} \rightarrow \mathcal{V}$
+``` 是语义函数
 
 **定理 1.1** (指称语义完备性)
-对于任意程序 $P \in \mathcal{S}$，存在唯一的语义值 $\mathcal{M}[\![P]\!] \in \mathcal{V}$。
+对于任意程序 ```latex
+$P \in \mathcal{S}$
+```，存在唯一的语义值 ```latex
+$\mathcal{M}[\![P]\!] \in \mathcal{V}$
+```。
 
 **证明**:
 
@@ -27,22 +39,40 @@
 ### 1.2 域理论基础
 
 **定义 1.2** (偏序集)
-偏序集是一个二元组 $(D, \sqsubseteq)$，其中：
+偏序集是一个二元组 ```latex
+$(D, \sqsubseteq)$
+```，其中：
 
-- $D$ 是集合
-- $\sqsubseteq$ 是偏序关系
+- ```latex
+$D$
+``` 是集合
+- ```latex
+$\sqsubseteq$
+``` 是偏序关系
 
 **定义 1.3** (完全偏序集)
-完全偏序集(CPO)是一个偏序集 $(D, \sqsubseteq)$，其中：
+完全偏序集(CPO)是一个偏序集 ```latex
+$(D, \sqsubseteq)$
+```，其中：
 
-1. 存在最小元素 $\bot$
+1. 存在最小元素 ```latex
+$\bot$
+```
 2. 每个有向集都有最小上界
 
 **定义 1.4** (连续函数)
-函数 $f: D \rightarrow E$ 是连续的，当且仅当：
+函数 ```latex
+$f: D \rightarrow E$
+``` 是连续的，当且仅当：
 
-1. $f$ 是单调的
-2. 对于每个有向集 $X \subseteq D$，$f(\bigsqcup X) = \bigsqcup f(X)$
+1. ```latex
+$f$
+``` 是单调的
+2. 对于每个有向集 ```latex
+$X \subseteq D$
+```，```latex
+$f(\bigsqcup X) = \bigsqcup f(X)$
+```
 
 ```go
 // 域理论实现
@@ -113,12 +143,24 @@ func (cf *ContinuousFunction) IsMonotonic() bool {
 **定义 2.1** (基本域)
 基本域包括：
 
-- $\mathbb{N}_\bot$: 自然数域
-- $\mathbb{B}_\bot$: 布尔域
-- $\mathbb{Z}_\bot$: 整数域
+- ```latex
+$\mathbb{N}_\bot$
+```: 自然数域
+- ```latex
+$\mathbb{B}_\bot$
+```: 布尔域
+- ```latex
+$\mathbb{Z}_\bot$
+```: 整数域
 
 **定义 2.2** (函数域)
-函数域 $D \rightarrow E$ 是所有从 $D$ 到 $E$ 的连续函数的集合。
+函数域 ```latex
+$D \rightarrow E$
+``` 是所有从 ```latex
+$D$
+``` 到 ```latex
+$E$
+``` 的连续函数的集合。
 
 ```go
 // 基本域实现
@@ -186,10 +228,22 @@ func (fd *FunctionDomain) Apply(input Domain) Domain {
 ### 2.2 复合域
 
 **定义 2.3** (乘积域)
-乘积域 $D \times E$ 是所有有序对 $(d, e)$ 的集合，其中 $d \in D, e \in E$。
+乘积域 ```latex
+$D \times E$
+``` 是所有有序对 ```latex
+$(d, e)$
+``` 的集合，其中 ```latex
+$d \in D, e \in E$
+```。
 
 **定义 2.4** (和域)
-和域 $D + E$ 是 $D$ 和 $E$ 的不相交并集。
+和域 ```latex
+$D + E$
+``` 是 ```latex
+$D$
+``` 和 ```latex
+$E$
+``` 的不相交并集。
 
 ```go
 // 乘积域
@@ -248,11 +302,19 @@ func (sd *SumDomain) LessThan(other Domain) bool {
 ### 3.1 表达式语义
 
 **定义 3.1** (表达式语义函数)
-表达式语义函数 $\mathcal{E}: \text{Exp} \rightarrow (\text{Env} \rightarrow \text{Val})$ 定义为：
+表达式语义函数 ```latex
+$\mathcal{E}: \text{Exp} \rightarrow (\text{Env} \rightarrow \text{Val})$
+``` 定义为：
 
-$$\mathcal{E}[\![n]\!]\rho = n$$
-$$\mathcal{E}[\![x]\!]\rho = \rho(x)$$
-$$\mathcal{E}[\![e_1 + e_2]\!]\rho = \mathcal{E}[\![e_1]\!]\rho + \mathcal{E}[\![e_2]\!]\rho$$
+$```latex
+$\mathcal{E}[\![n]\!]\rho = n$
+```$
+$```latex
+$\mathcal{E}[\![x]\!]\rho = \rho(x)$
+```$
+$```latex
+$\mathcal{E}[\![e_1 + e_2]\!]\rho = \mathcal{E}[\![e_1]\!]\rho + \mathcal{E}[\![e_2]\!]\rho$
+```$
 
 ```go
 // 语义函数实现
@@ -323,11 +385,19 @@ func (sf *SemanticFunction) bottom() Domain {
 ### 3.2 语句语义
 
 **定义 3.2** (语句语义函数)
-语句语义函数 $\mathcal{S}: \text{Stmt} \rightarrow (\text{Env} \rightarrow \text{Env})$ 定义为：
+语句语义函数 ```latex
+$\mathcal{S}: \text{Stmt} \rightarrow (\text{Env} \rightarrow \text{Env})$
+``` 定义为：
 
-$$\mathcal{S}[\![\text{skip}]\!]\rho = \rho$$
-$$\mathcal{S}[\![x := e]\!]\rho = \rho[x \mapsto \mathcal{E}[\![e]\!]\rho]$$
-$$\mathcal{S}[\![s_1; s_2]\!]\rho = \mathcal{S}[\![s_2]\!](\mathcal{S}[\![s_1]\!]\rho)$$
+$```latex
+$\mathcal{S}[\![\text{skip}]\!]\rho = \rho$
+```$
+$```latex
+$\mathcal{S}[\![x := e]\!]\rho = \rho[x \mapsto \mathcal{E}[\![e]\!]\rho]$
+```$
+$```latex
+$\mathcal{S}[\![s_1; s_2]\!]\rho = \mathcal{S}[\![s_2]\!](\mathcal{S}[\![s_1]\!]\rho)$
+```$
 
 ```go
 // 语句语义
@@ -436,13 +506,23 @@ func (sf *SemanticFunction) domainsEqual(d1, d2 Domain) bool {
 ### 4.1 不动点理论
 
 **定理 4.1** (不动点定理)
-在完全偏序集 $(D, \sqsubseteq)$ 上，每个连续函数 $f: D \rightarrow D$ 都有最小不动点 $\text{fix}(f)$。
+在完全偏序集 ```latex
+$(D, \sqsubseteq)$
+``` 上，每个连续函数 ```latex
+$f: D \rightarrow D$
+``` 都有最小不动点 ```latex
+$\text{fix}(f)$
+```。
 
 **证明**:
 
-1. 定义序列 $x_0 = \bot, x_{n+1} = f(x_n)$
+1. 定义序列 ```latex
+$x_0 = \bot, x_{n+1} = f(x_n)$
+```
 2. 证明序列是递增的
-3. 证明极限是 $f$ 的不动点
+3. 证明极限是 ```latex
+$f$
+``` 的不动点
 4. 证明是最小不动点
 
 ```go
@@ -503,9 +583,13 @@ func (sf *SemanticFunction) recursiveFunctionSemantics(rec *RecursiveFunction, e
 ### 4.2 递归函数语义
 
 **定义 4.1** (递归函数语义)
-递归函数 $f = \lambda x.e$ 的语义定义为：
+递归函数 ```latex
+$f = \lambda x.e$
+``` 的语义定义为：
 
-$$\mathcal{F}[\![f]\!] = \text{fix}(\lambda f.\lambda x.\mathcal{E}[\![e]\!]\rho[x \mapsto x, f \mapsto f])$$
+$```latex
+$\mathcal{F}[\![f]\!] = \text{fix}(\lambda f.\lambda x.\mathcal{E}[\![e]\!]\rho[x \mapsto x, f \mapsto f])$
+```$
 
 ```go
 // 递归函数
@@ -551,11 +635,23 @@ func (sf *SemanticFunction) applicationSemantics(app *Application, env Environme
 ### 5.1 程序等价性
 
 **定义 5.1** (语义等价)
-两个程序 $P_1$ 和 $P_2$ 语义等价，当且仅当：
-$$\mathcal{M}[\![P_1]\!] = \mathcal{M}[\![P_2]\!]$$
+两个程序 ```latex
+$P_1$
+``` 和 ```latex
+$P_2$
+``` 语义等价，当且仅当：
+$```latex
+$\mathcal{M}[\![P_1]\!] = \mathcal{M}[\![P_2]\!]$
+```$
 
 **定理 5.1** (等价性保持)
-如果 $P_1 \equiv P_2$，则对于任意上下文 $C$，$C[P_1] \equiv C[P_2]$。
+如果 ```latex
+$P_1 \equiv P_2$
+```，则对于任意上下文 ```latex
+$C$
+```，```latex
+$C[P_1] \equiv C[P_2]$
+```。
 
 ```go
 // 语义等价检查器

@@ -41,24 +41,48 @@
 ### 1.1 定义
 
 **定义 1.1.1** (图)
-图 $G = (V, E)$ 由顶点集 $V$ 和边集 $E$ 组成，其中 $E \subseteq V \times V$。
+图 ```latex
+$G = (V, E)$
+``` 由顶点集 ```latex
+$V$
+``` 和边集 ```latex
+$E$
+``` 组成，其中 ```latex
+$E \subseteq V \times V$
+```。
 
 **定义 1.1.2** (有向图)
-有向图 $G = (V, E)$ 中，边是有序对 $(u, v) \in E$。
+有向图 ```latex
+$G = (V, E)$
+``` 中，边是有序对 ```latex
+$(u, v) \in E$
+```。
 
 **定义 1.1.3** (无向图)
-无向图中，边是无序对 $\{u, v\} \in E$。
+无向图中，边是无序对 ```latex
+$\{u, v\} \in E$
+```。
 
 ### 1.2 基本性质
 
 **定义 1.2.1** (度数)
 
-- 入度: $deg^-(v) = |\{u : (u, v) \in E\}|$
-- 出度: $deg^+(v) = |\{u : (v, u) \in E\}|$
-- 度数: $deg(v) = deg^-(v) + deg^+(v)$
+- 入度: ```latex
+$deg^-(v) = |\{u : (u, v) \in E\}|$
+```
+- 出度: ```latex
+$deg^+(v) = |\{u : (v, u) \in E\}|$
+```
+- 度数: ```latex
+$deg(v) = deg^-(v) + deg^+(v)$
+```
 
 **定理 1.2.1** (握手定理)
-对于无向图 $G = (V, E)$，$\sum_{v \in V} deg(v) = 2|E|$
+对于无向图 ```latex
+$G = (V, E)$
+```，```latex
+$\sum_{v \in V} deg(v) = 2|E|$
+```
 
 **证明**:
 每条边贡献给两个顶点的度数，因此总度数等于边数的两倍。
@@ -234,7 +258,11 @@ func (g *AdjacencyListGraph) Degree(vertexID int) (inDegree, outDegree int) {
 ### 2.1 邻接矩阵
 
 **定义 2.1.1** (邻接矩阵)
-对于图 $G = (V, E)$，邻接矩阵 $A$ 定义为：
+对于图 ```latex
+$G = (V, E)$
+```，邻接矩阵 ```latex
+$A$
+``` 定义为：
 $A[i][j] = \begin{cases}
 1 & \text{if } (i,j) \in E \\
 0 & \text{otherwise}
@@ -343,7 +371,9 @@ def DFS(G, start):
                     stack.append(neighbor)
 ```
 
-**时间复杂度**: $O(|V| + |E|)$
+**时间复杂度**: ```latex
+$O(|V| + |E|)$
+```
 
 ### 3.2 广度优先搜索 (BFS)
 
@@ -364,7 +394,9 @@ def BFS(G, start):
                 queue.append(neighbor)
 ```
 
-**时间复杂度**: $O(|V| + |E|)$
+**时间复杂度**: ```latex
+$O(|V| + |E|)$
+```
 
 ### 3.3 Go语言实现
 
@@ -534,7 +566,9 @@ def Dijkstra(G, start):
     return distances
 ```
 
-**时间复杂度**: $O((|V| + |E|) \log |V|)$
+**时间复杂度**: ```latex
+$O((|V| + |E|) \log |V|)$
+```
 
 ### 4.2 Bellman-Ford算法
 
@@ -558,7 +592,9 @@ def BellmanFord(G, start):
     return distances
 ```
 
-**时间复杂度**: $O(|V| \cdot |E|)$
+**时间复杂度**: ```latex
+$O(|V| \cdot |E|)$
+```
 
 ### 4.3 Go语言实现
 
@@ -740,7 +776,9 @@ def Kruskal(G):
     return mst
 ```
 
-**时间复杂度**: $O(|E| \log |E|)$
+**时间复杂度**: ```latex
+$O(|E| \log |E|)$
+```
 
 ### 5.2 Prim算法
 
@@ -768,7 +806,9 @@ def Prim(G, start):
     return mst
 ```
 
-**时间复杂度**: $O((|V| + |E|) \log |V|)$
+**时间复杂度**: ```latex
+$O((|V| + |E|) \log |V|)$
+```
 
 ### 5.3 Go语言实现
 
@@ -932,13 +972,25 @@ func Prim(g Graph, startID int) []*Edge {
 ### 6.1 最大流问题
 
 **定义 6.1.1** (流网络)
-流网络 $G = (V, E)$ 是一个有向图，每条边 $(u, v)$ 有容量 $c(u, v) \geq 0$。
+流网络 ```latex
+$G = (V, E)$
+``` 是一个有向图，每条边 ```latex
+$(u, v)$
+``` 有容量 ```latex
+$c(u, v) \geq 0$
+```。
 
 **定义 6.1.2** (流)
-流 $f: V \times V \rightarrow \mathbb{R}$ 满足：
+流 ```latex
+$f: V \times V \rightarrow \mathbb{R}$
+``` 满足：
 
-1. 容量约束: $0 \leq f(u, v) \leq c(u, v)$
-2. 流量守恒: $\sum_{v \in V} f(v, u) = \sum_{v \in V} f(u, v)$
+1. 容量约束: ```latex
+$0 \leq f(u, v) \leq c(u, v)$
+```
+2. 流量守恒: ```latex
+$\sum_{v \in V} f(v, u) = \sum_{v \in V} f(u, v)$
+```
 
 ### 6.2 Ford-Fulkerson算法
 

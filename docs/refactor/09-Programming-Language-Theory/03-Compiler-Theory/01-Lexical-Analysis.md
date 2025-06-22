@@ -17,21 +17,39 @@
 
 #### 1.1.1 词法分析定义
 
-词法分析是一个函数 $L: \Sigma^* \rightarrow T^*$，其中：
+词法分析是一个函数 ```latex
+$L: \Sigma^* \rightarrow T^*$
+```，其中：
 
-- $\Sigma$ 是输入字母表
-- $T$ 是标记集合
-- $L$ 将输入字符串映射为标记序列
+- ```latex
+$\Sigma$
+``` 是输入字母表
+- ```latex
+$T$
+``` 是标记集合
+- ```latex
+$L$
+``` 将输入字符串映射为标记序列
 
-对于任意输入字符串 $s \in \Sigma^*$，词法分析器产生唯一的标记序列。
+对于任意输入字符串 ```latex
+$s \in \Sigma^*$
+```，词法分析器产生唯一的标记序列。
 
 #### 1.1.2 标记定义
 
-标记是一个三元组 $(type, value, position)$，其中：
+标记是一个三元组 ```latex
+$(type, value, position)$
+```，其中：
 
-- $type$ 是标记类型
-- $value$ 是标记值
-- $position$ 是位置信息
+- ```latex
+$type$
+``` 是标记类型
+- ```latex
+$value$
+``` 是标记值
+- ```latex
+$position$
+``` 是位置信息
 
 ```go
 // 标记定义
@@ -97,53 +115,107 @@ func (tt TokenType) String() string {
 正则表达式语法：
 
 ```latex
-$$R ::= \varepsilon \mid a \mid R_1 \cdot R_2 \mid R_1 + R_2 \mid R^*$$
+$```latex
+$R ::= \varepsilon \mid a \mid R_1 \cdot R_2 \mid R_1 + R_2 \mid R^*$
+```$
 ```
 
 其中：
 
-- $\varepsilon$ 是空字符串
-- $a$ 是字母表中的符号
-- $\cdot$ 是连接操作
-- $+$ 是选择操作
-- $*$ 是Kleene星号
+- ```latex
+$\varepsilon$
+``` 是空字符串
+- ```latex
+$a$
+``` 是字母表中的符号
+- ```latex
+$\cdot$
+``` 是连接操作
+- ```latex
+$+$
+``` 是选择操作
+- ```latex
+$*$
+``` 是Kleene星号
 
 #### 1.2.2 有限自动机
 
-确定性有限自动机是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
+确定性有限自动机是一个五元组 ```latex
+$M = (Q, \Sigma, \delta, q_0, F)$
+```，其中：
 
-- $Q$: 状态集合
-- $\Sigma$: 输入字母表
-- $\delta: Q \times \Sigma \rightarrow Q$: 状态转移函数
-- $q_0 \in Q$: 初始状态
-- $F \subseteq Q$: 接受状态集合
+- ```latex
+$Q$
+```: 状态集合
+- ```latex
+$\Sigma$
+```: 输入字母表
+- ```latex
+$\delta: Q \times \Sigma \rightarrow Q$
+```: 状态转移函数
+- ```latex
+$q_0 \in Q$
+```: 初始状态
+- ```latex
+$F \subseteq Q$
+```: 接受状态集合
 
 ## 3. 有限自动机
 
 ### 3.1 确定性有限自动机
 
 **定义 2.1** (DFA)
-确定性有限自动机是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
+确定性有限自动机是一个五元组 ```latex
+$M = (Q, \Sigma, \delta, q_0, F)$
+```，其中：
 
-- $Q$ 是状态集合
-- $\Sigma$ 是输入字母表
-- $\delta: Q \times \Sigma \rightarrow Q$ 是转移函数
-- $q_0 \in Q$ 是初始状态
-- $F \subseteq Q$ 是接受状态集合
+- ```latex
+$Q$
+``` 是状态集合
+- ```latex
+$\Sigma$
+``` 是输入字母表
+- ```latex
+$\delta: Q \times \Sigma \rightarrow Q$
+``` 是转移函数
+- ```latex
+$q_0 \in Q$
+``` 是初始状态
+- ```latex
+$F \subseteq Q$
+``` 是接受状态集合
 
 **定理 2.1** (DFA接受性)
-DFA $M$ 接受字符串 $w$，当且仅当存在状态序列 $q_0, q_1, \ldots, q_n$ 使得：
+DFA ```latex
+$M$
+``` 接受字符串 ```latex
+$w$
+```，当且仅当存在状态序列 ```latex
+$q_0, q_1, \ldots, q_n$
+``` 使得：
 
-1. $q_0$ 是初始状态
-2. $\delta(q_i, w_i) = q_{i+1}$ 对于 $0 \leq i < n$
-3. $q_n \in F$
+1. ```latex
+$q_0$
+``` 是初始状态
+2. ```latex
+$\delta(q_i, w_i) = q_{i+1}$
+``` 对于 ```latex
+$0 \leq i < n$
+```
+3. ```latex
+$q_n \in F$
+```
 
 ### 3.2 非确定性有限自动机
 
 **定义 2.2** (NFA)
-非确定性有限自动机是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
+非确定性有限自动机是一个五元组 ```latex
+$M = (Q, \Sigma, \delta, q_0, F)$
+```，其中：
 
-- $\delta: Q \times \Sigma \rightarrow 2^Q$ 是转移函数
+- ```latex
+$\delta: Q \times \Sigma \rightarrow 2^Q$
+``` 是转移函数
 - 其他定义与DFA相同
 
 **定理 2.2** (NFA到DFA转换)

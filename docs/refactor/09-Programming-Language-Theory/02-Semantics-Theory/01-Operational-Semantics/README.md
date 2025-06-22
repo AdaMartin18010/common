@@ -36,25 +36,41 @@
 操作语义通过描述程序执行的具体步骤来定义程序的含义。它关注程序如何从初始状态转换到最终状态。
 
 **定义 1.2**: 配置
-配置是一个二元组 $(e, \sigma)$，其中：
+配置是一个二元组 ```latex
+$(e, \sigma)$
+```，其中：
 
-- $e$ 是程序表达式
-- $\sigma$ 是程序状态（通常是变量到值的映射）
+- ```latex
+$e$
+``` 是程序表达式
+- ```latex
+$\sigma$
+``` 是程序状态（通常是变量到值的映射）
 
 **定义 1.3**: 转换关系
-转换关系 $\rightarrow$ 是配置之间的二元关系，表示程序的一步执行：
-$$(e, \sigma) \rightarrow (e', \sigma')$$
+转换关系 ```latex
+$\rightarrow$
+``` 是配置之间的二元关系，表示程序的一步执行：
+$```latex
+$(e, \sigma) \rightarrow (e', \sigma')$
+```$
 
 **定义 1.4**: 多步转换
-多步转换 $\rightarrow^*$ 是转换关系的自反传递闭包：
-$$(e, \sigma) \rightarrow^* (e', \sigma')$$
+多步转换 ```latex
+$\rightarrow^*$
+``` 是转换关系的自反传递闭包：
+$```latex
+$(e, \sigma) \rightarrow^* (e', \sigma')$
+```$
 
 ### 1.2 语义规则
 
 **定义 1.5**: 语义规则
 语义规则采用自然演绎的形式：
 
-$$\frac{\text{premises}}{\text{conclusion}}$$
+$```latex
+$\frac{\text{premises}}{\text{conclusion}}$
+```$
 
 其中：
 
@@ -70,12 +86,30 @@ $$\frac{\text{premises}}{\text{conclusion}}$$
 ### 1.3 语义关系
 
 **定义 1.7**: 语义等价
-两个表达式 $e_1$ 和 $e_2$ 在状态 $\sigma$ 下语义等价，记作 $e_1 \equiv_\sigma e_2$，如果：
-$$\forall \sigma': (e_1, \sigma) \rightarrow^* (v, \sigma') \iff (e_2, \sigma) \rightarrow^* (v, \sigma')$$
+两个表达式 ```latex
+$e_1$
+``` 和 ```latex
+$e_2$
+``` 在状态 ```latex
+$\sigma$
+``` 下语义等价，记作 ```latex
+$e_1 \equiv_\sigma e_2$
+```，如果：
+$```latex
+$\forall \sigma': (e_1, \sigma) \rightarrow^* (v, \sigma') \iff (e_2, \sigma) \rightarrow^* (v, \sigma')$
+```$
 
 **定义 1.8**: 语义包含
-表达式 $e_1$ 语义包含 $e_2$，记作 $e_1 \sqsupseteq e_2$，如果：
-$$\forall \sigma, \sigma': (e_2, \sigma) \rightarrow^* (v, \sigma') \Rightarrow (e_1, \sigma) \rightarrow^* (v, \sigma')$$
+表达式 ```latex
+$e_1$
+``` 语义包含 ```latex
+$e_2$
+```，记作 ```latex
+$e_1 \sqsupseteq e_2$
+```，如果：
+$```latex
+$\forall \sigma, \sigma': (e_2, \sigma) \rightarrow^* (v, \sigma') \Rightarrow (e_1, \sigma) \rightarrow^* (v, \sigma')$
+```$
 
 ## 2. 小步语义
 
@@ -85,14 +119,20 @@ $$\forall \sigma, \sigma': (e_2, \sigma) \rightarrow^* (v, \sigma') \Rightarrow 
 小步语义描述程序的最小执行步骤，每次转换只执行一个基本操作。
 
 **定义 2.2**: 小步转换关系
-小步转换关系 $\rightarrow$ 满足：
+小步转换关系 ```latex
+$\rightarrow$
+``` 满足：
 
 1. **确定性**: 对于每个配置，最多有一个后继配置
 2. **终止性**: 每个执行序列要么终止，要么无限执行
 3. **局部性**: 每次转换只影响表达式的局部部分
 
 **定义 2.3**: 求值上下文
-求值上下文 $E$ 是一个表达式模板，包含一个"洞" $[\cdot]$，表示可以插入子表达式的位置。
+求值上下文 ```latex
+$E$
+``` 是一个表达式模板，包含一个"洞" ```latex
+$[\cdot]$
+```，表示可以插入子表达式的位置。
 
 ### 2.2 规则系统
 
@@ -214,15 +254,35 @@ func (sss *SmallStepSemantics) performOperation(left, op, right Expression) (Exp
 ### 2.3 性质
 
 **定理 2.1**: 小步语义的确定性
-如果 $(e, \sigma) \rightarrow (e_1, \sigma_1)$ 且 $(e, \sigma) \rightarrow (e_2, \sigma_2)$，则 $(e_1, \sigma_1) = (e_2, \sigma_2)$。
+如果 ```latex
+$(e, \sigma) \rightarrow (e_1, \sigma_1)$
+``` 且 ```latex
+$(e, \sigma) \rightarrow (e_2, \sigma_2)$
+```，则 ```latex
+$(e_1, \sigma_1) = (e_2, \sigma_2)$
+```。
 
 **定理 2.2**: 小步语义的终止性
-对于任何表达式 $e$ 和状态 $\sigma$，存在有限序列：
-$$(e, \sigma) \rightarrow (e_1, \sigma_1) \rightarrow \cdots \rightarrow (v, \sigma_n)$$
-其中 $v$ 是值。
+对于任何表达式 ```latex
+$e$
+``` 和状态 ```latex
+$\sigma$
+```，存在有限序列：
+$```latex
+$(e, \sigma) \rightarrow (e_1, \sigma_1) \rightarrow \cdots \rightarrow (v, \sigma_n)$
+```$
+其中 ```latex
+$v$
+``` 是值。
 
 **定理 2.3**: 小步语义的局部性
-如果 $e \rightarrow e'$，则对于任何上下文 $E$，$E[e] \rightarrow E[e']$。
+如果 ```latex
+$e \rightarrow e'$
+```，则对于任何上下文 ```latex
+$E$
+```，```latex
+$E[e] \rightarrow E[e']$
+```。
 
 ## 3. 大步语义
 
@@ -232,10 +292,22 @@ $$(e, \sigma) \rightarrow (e_1, \sigma_1) \rightarrow \cdots \rightarrow (v, \si
 大步语义直接描述表达式的最终求值结果，不关注中间步骤。
 
 **定义 3.2**: 大步求值关系
-大步求值关系 $\Downarrow$ 定义为：
-$$(e, \sigma) \Downarrow (v, \sigma')$$
+大步求值关系 ```latex
+$\Downarrow$
+``` 定义为：
+$```latex
+$(e, \sigma) \Downarrow (v, \sigma')$
+```$
 
-表示表达式 $e$ 在状态 $\sigma$ 下求值得到值 $v$ 和最终状态 $\sigma'$。
+表示表达式 ```latex
+$e$
+``` 在状态 ```latex
+$\sigma$
+``` 下求值得到值 ```latex
+$v$
+``` 和最终状态 ```latex
+$\sigma'$
+```。
 
 **定义 3.3**: 大步语义规则
 大步语义规则直接描述表达式的求值结果，不需要中间状态。
@@ -338,16 +410,36 @@ func (iv *IntValue) String() string {
 ### 3.3 与小步语义的关系
 
 **定理 3.1**: 小步语义与大步语义的等价性
-对于任何表达式 $e$ 和状态 $\sigma$：
-$$(e, \sigma) \Downarrow (v, \sigma') \iff (e, \sigma) \rightarrow^* (v, \sigma')$$
+对于任何表达式 ```latex
+$e$
+``` 和状态 ```latex
+$\sigma$
+```：
+$```latex
+$(e, \sigma) \Downarrow (v, \sigma') \iff (e, \sigma) \rightarrow^* (v, \sigma')$
+```$
 
 **证明**:
 
-1. **充分性**: 如果 $(e, \sigma) \Downarrow (v, \sigma')$，则存在有限的小步序列 $(e, \sigma) \rightarrow^* (v, \sigma')$
-2. **必要性**: 如果 $(e, \sigma) \rightarrow^* (v, \sigma')$，则 $(e, \sigma) \Downarrow (v, \sigma')$
+1. **充分性**: 如果 ```latex
+$(e, \sigma) \Downarrow (v, \sigma')$
+```，则存在有限的小步序列 ```latex
+$(e, \sigma) \rightarrow^* (v, \sigma')$
+```
+2. **必要性**: 如果 ```latex
+$(e, \sigma) \rightarrow^* (v, \sigma')$
+```，则 ```latex
+$(e, \sigma) \Downarrow (v, \sigma')$
+```
 
 **定理 3.2**: 大步语义的确定性
-如果 $(e, \sigma) \Downarrow (v_1, \sigma_1)$ 且 $(e, \sigma) \Downarrow (v_2, \sigma_2)$，则 $(v_1, \sigma_1) = (v_2, \sigma_2)$。
+如果 ```latex
+$(e, \sigma) \Downarrow (v_1, \sigma_1)$
+``` 且 ```latex
+$(e, \sigma) \Downarrow (v_2, \sigma_2)$
+```，则 ```latex
+$(v_1, \sigma_1) = (v_2, \sigma_2)$
+```。
 
 ## 4. 结构化操作语义
 
@@ -357,12 +449,22 @@ $$(e, \sigma) \Downarrow (v, \sigma') \iff (e, \sigma) \rightarrow^* (v, \sigma'
 结构化操作语义是一种形式化的操作语义方法，使用标签转换系统来描述程序行为。
 
 **定义 4.2**: 标签转换系统
-标签转换系统是一个四元组 $(S, L, \rightarrow, s_0)$，其中：
+标签转换系统是一个四元组 ```latex
+$(S, L, \rightarrow, s_0)$
+```，其中：
 
-- $S$ 是状态集合
-- $L$ 是标签集合
-- $\rightarrow \subseteq S \times L \times S$ 是转换关系
-- $s_0 \in S$ 是初始状态
+- ```latex
+$S$
+``` 是状态集合
+- ```latex
+$L$
+``` 是标签集合
+- ```latex
+$\rightarrow \subseteq S \times L \times S$
+``` 是转换关系
+- ```latex
+$s_0 \in S$
+``` 是初始状态
 
 **算法 4.1**: SOS规则实现
 
@@ -445,7 +547,15 @@ func (engine *SOSEngine) applyConclusion(state State, conclusion Conclusion) Sta
 ### 4.2 标签转换系统
 
 **定义 4.3**: 标签转换
-标签转换是一个三元组 $(s, l, s')$，表示状态 $s$ 通过标签 $l$ 转换到状态 $s'$。
+标签转换是一个三元组 ```latex
+$(s, l, s')$
+```，表示状态 ```latex
+$s$
+``` 通过标签 ```latex
+$l$
+``` 转换到状态 ```latex
+$s'$
+```。
 
 **算法 4.2**: 标签转换系统实现
 

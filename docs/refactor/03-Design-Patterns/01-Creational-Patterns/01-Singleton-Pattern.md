@@ -50,8 +50,12 @@
 单例模式是一种创建型设计模式，确保一个类只有一个实例，并提供一个全局访问点。
 
 **形式化定义**：
-设 $C$ 是一个类，单例模式确保：
-$$\forall x, y \in C: x = y$$
+设 ```latex
+$C$
+``` 是一个类，单例模式确保：
+$```latex
+$\forall x, y \in C: x = y$
+```$
 
 **目的**：
 
@@ -95,30 +99,56 @@ $$\forall x, y \in C: x = y$$
 ### 2.1 数学定义
 
 **定义 2.1.1** (单例类)
-单例类 $S$ 是一个满足以下条件的类：
+单例类 ```latex
+$S$
+``` 是一个满足以下条件的类：
 
-1. **唯一性**：$\forall x, y \in S: x = y$
-2. **存在性**：$\exists x \in S$
-3. **可访问性**：$\forall x \in S: \text{accessible}(x)$
+1. **唯一性**：```latex
+$\forall x, y \in S: x = y$
+```
+2. **存在性**：```latex
+$\exists x \in S$
+```
+3. **可访问性**：```latex
+$\forall x \in S: \text{accessible}(x)$
+```
 
 **定义 2.1.2** (单例函数)
-单例函数 $f: \emptyset \to S$ 满足：
-$$f() = \text{the unique instance of } S$$
+单例函数 ```latex
+$f: \emptyset \to S$
+``` 满足：
+$```latex
+$f() = \text{the unique instance of } S$
+```$
 
 **定义 2.1.3** (线程安全单例)
-线程安全单例 $S$ 满足：
-$$\forall t_1, t_2 \in \text{Threads}: f_{t_1}() = f_{t_2}()$$
+线程安全单例 ```latex
+$S$
+``` 满足：
+$```latex
+$\forall t_1, t_2 \in \text{Threads}: f_{t_1}() = f_{t_2}()$
+```$
 
 ### 2.2 类型系统
 
 **定义 2.2.1** (单例类型)
-在类型系统中，单例类型 $T$ 满足：
-$$\text{Card}(T) = 1$$
+在类型系统中，单例类型 ```latex
+$T$
+``` 满足：
+$```latex
+$\text{Card}(T) = 1$
+```$
 
-其中 $\text{Card}(T)$ 表示类型 $T$ 的基数。
+其中 ```latex
+$\text{Card}(T)$
+``` 表示类型 ```latex
+$T$
+``` 的基数。
 
 **定义 2.2.2** (单例接口)
-单例接口 $I$ 定义：
+单例接口 ```latex
+$I$
+``` 定义：
 
 ```typescript
 interface Singleton<T> {
@@ -128,8 +158,12 @@ interface Singleton<T> {
 ```
 
 **定义 2.2.3** (单例约束)
-单例约束 $C$ 确保：
-$$\forall x, y: \text{instanceOf}(x, T) \land \text{instanceOf}(y, T) \Rightarrow x = y$$
+单例约束 ```latex
+$C$
+``` 确保：
+$```latex
+$\forall x, y: \text{instanceOf}(x, T) \land \text{instanceOf}(y, T) \Rightarrow x = y$
+```$
 
 ### 2.3 行为规范
 
@@ -1493,13 +1527,27 @@ func (p *ConnectionPool) updateMetrics(start time.Time) {
 4. 所有调用都返回同一个实例
 
 **形式化证明**：
-设 $f$ 是获取实例的函数，$o$ 是 `sync.Once` 实例，$c$ 是创建实例的函数。
+设 ```latex
+$f$
+``` 是获取实例的函数，```latex
+$o$
+``` 是 `sync.Once` 实例，```latex
+$c$
+``` 是创建实例的函数。
 
-$$\forall x, y: f() = o.Do(c) \land f() = o.Do(c) \Rightarrow x = y$$
+$```latex
+$\forall x, y: f() = o.Do(c) \land f() = o.Do(c) \Rightarrow x = y$
+```$
 
-由于 `sync.Once` 保证 $o.Do(c)$ 只执行一次，所以 $x = y$。
+由于 `sync.Once` 保证 ```latex
+$o.Do(c)$
+``` 只执行一次，所以 ```latex
+$x = y$
+```。
 
+```latex
 $\square$
+```
 
 ### 8.2 线程安全定理
 
@@ -1514,13 +1562,23 @@ $\square$
 4. 因此所有goroutine都获得相同的实例
 
 **形式化证明**：
-设 $T$ 是线程集合，$f_t$ 是线程 $t$ 的获取实例函数。
+设 ```latex
+$T$
+``` 是线程集合，```latex
+$f_t$
+``` 是线程 ```latex
+$t$
+``` 的获取实例函数。
 
-$$\forall t_1, t_2 \in T: f_{t_1}() = f_{t_2}()$$
+$```latex
+$\forall t_1, t_2 \in T: f_{t_1}() = f_{t_2}()$
+```$
 
 由于 `sync.Once` 的线程安全保证，所有线程都获得相同的实例。
 
+```latex
 $\square$
+```
 
 ### 8.3 性能定理
 
@@ -1529,18 +1587,30 @@ $\square$
 
 **证明**：
 
-1. 第一次调用需要创建实例，开销为 $O(1)$
-2. 后续调用只需要内存访问，开销为 $O(1)$
+1. 第一次调用需要创建实例，开销为 ```latex
+$O(1)$
+```
+2. 后续调用只需要内存访问，开销为 ```latex
+$O(1)$
+```
 3. 没有锁竞争，避免了互斥锁的开销
 4. 内存屏障开销最小
 
 **复杂度分析**：
 
-- 时间复杂度：$O(1)$
-- 空间复杂度：$O(1)$
-- 并发开销：$O(1)$
+- 时间复杂度：```latex
+$O(1)$
+```
+- 空间复杂度：```latex
+$O(1)$
+```
+- 并发开销：```latex
+$O(1)$
+```
 
+```latex
 $\square$
+```
 
 ---
 

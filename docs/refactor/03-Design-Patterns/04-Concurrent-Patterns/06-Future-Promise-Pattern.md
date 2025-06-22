@@ -73,53 +73,107 @@ Future/Promise模式的核心思想是：
 
 ### 2.1 基本概念
 
-设 $F$ 为Future集合，$P$ 为Promise集合，$V$ 为值集合，$E$ 为错误集合，$S$ 为状态集合。
+设 ```latex
+$F$
+``` 为Future集合，```latex
+$P$
+``` 为Promise集合，```latex
+$V$
+``` 为值集合，```latex
+$E$
+``` 为错误集合，```latex
+$S$
+``` 为状态集合。
 
 **定义 2.1** (Future)
-Future是一个四元组 $(f, value, error, state)$，其中：
+Future是一个四元组 ```latex
+$(f, value, error, state)$
+```，其中：
 
-- $f \in F$ 是Future实例
-- $value \in V$ 是计算结果
-- $error \in E$ 是错误信息
-- $state \in \{pending, fulfilled, rejected\}$ 是状态
+- ```latex
+$f \in F$
+``` 是Future实例
+- ```latex
+$value \in V$
+``` 是计算结果
+- ```latex
+$error \in E$
+``` 是错误信息
+- ```latex
+$state \in \{pending, fulfilled, rejected\}$
+``` 是状态
 
 **定义 2.2** (Promise)
-Promise是一个三元组 $(p, future, setters)$，其中：
+Promise是一个三元组 ```latex
+$(p, future, setters)$
+```，其中：
 
-- $p \in P$ 是Promise实例
-- $future \in F$ 是关联的Future
-- $setters$ 是设置结果的函数集合
+- ```latex
+$p \in P$
+``` 是Promise实例
+- ```latex
+$future \in F$
+``` 是关联的Future
+- ```latex
+$setters$
+``` 是设置结果的函数集合
 
 **定义 2.3** (状态转换)
 
 ```latex
 Future的状态转换遵循以下规则：
-$$pending \rightarrow fulfilled \text{ (当设置值)}$$
-$$pending \rightarrow rejected \text{ (当设置错误)}$$
+$```latex
+$pending \rightarrow fulfilled \text{ (当设置值)}$
+```$
+$```latex
+$pending \rightarrow rejected \text{ (当设置错误)}$
+```$
 ```
 
 ### 2.2 操作语义
 
 **公理 2.1** (Future创建)
-对于值 $v$：
-$$create\_future() = (f, null, null, pending)$$
+对于值 ```latex
+$v$
+```：
+$```latex
+$create\_future() = (f, null, null, pending)$
+```$
 
 **公理 2.2** (Promise创建)
-对于Future $f$：
-$$create\_promise(f) = (p, f, \{resolve, reject\})$$
+对于Future ```latex
+$f$
+```：
+$```latex
+$create\_promise(f) = (p, f, \{resolve, reject\})$
+```$
 
 **公理 2.3** (结果设置)
-对于Promise $p$ 和值 $v$：
-$$resolve(p, v) = set\_value(future(p), v) \land set\_state(future(p), fulfilled)$$
+对于Promise ```latex
+$p$
+``` 和值 ```latex
+$v$
+```：
+$```latex
+$resolve(p, v) = set\_value(future(p), v) \land set\_state(future(p), fulfilled)$
+```$
 
 **公理 2.4** (错误设置)
-对于Promise $p$ 和错误 $e$：
-$$reject(p, e) = set\_error(future(p), e) \land set\_state(future(p), rejected)$$
+对于Promise ```latex
+$p$
+``` 和错误 ```latex
+$e$
+```：
+$```latex
+$reject(p, e) = set\_error(future(p), e) \land set\_state(future(p), rejected)$
+```$
 
 **公理 2.5** (结果获取)
 
 ```latex
-对于Future $f$：
+对于Future ```latex
+$f$
+```：
 $$get(f) = \begin{cases}
 value(f) & \text{if } state(f) = fulfilled \\
 error(f) & \text{if } state(f) = rejected \\
@@ -132,7 +186,11 @@ block\_until\_complete(f) & \text{if } state(f) = pending
 **定义 2.4** (Then操作)
 
 ```latex
-对于Future $f$ 和函数 $g$：
+对于Future ```latex
+$f$
+``` 和函数 ```latex
+$g$
+```：
 $$then(f, g) = \begin{cases}
 g(value(f)) & \text{if } state(f) = fulfilled \\
 reject(error(f)) & \text{if } state(f) = rejected \\
@@ -143,7 +201,11 @@ pending & \text{if } state(f) = pending
 **定义 2.5** (Catch操作)
 
 ```latex
-对于Future $f$ 和错误处理函数 $h$：
+对于Future ```latex
+$f$
+``` 和错误处理函数 ```latex
+$h$
+```：
 $$catch(f, h) = \begin{cases}
 value(f) & \text{if } state(f) = fulfilled \\
 h(error(f)) & \text{if } state(f) = rejected \\
@@ -160,41 +222,71 @@ pending & \text{if } state(f) = pending
 Future可以建模为函子：
 
 **定义 3.1** (Future函子)
-Future函子 $F: \text{Set} \rightarrow \text{Set}$ 定义为：
-$$F(A) = \{pending\} \cup A \cup E$$
+Future函子 ```latex
+$F: \text{Set} \rightarrow \text{Set}$
+``` 定义为：
+$```latex
+$F(A) = \{pending\} \cup A \cup E$
+```$
 
 **定理 3.1** (函子性质)
 Future满足函子的性质：
 
-1. **单位律**: $F(id_A) = id_{F(A)}$
-2. **结合律**: $F(g \circ f) = F(g) \circ F(f)$
+1. **单位律**: ```latex
+$F(id_A) = id_{F(A)}$
+```
+2. **结合律**: ```latex
+$F(g \circ f) = F(g) \circ F(f)$
+```
 
 ### 3.2 单子理论
 
 Future可以建模为单子：
 
 **定义 3.2** (Future单子)
-Future单子 $(F, \eta, \mu)$ 定义为：
+Future单子 ```latex
+$(F, \eta, \mu)$
+``` 定义为：
 
-- $F$ 是Future函子
-- $\eta_A: A \rightarrow F(A)$ 是单位映射
-- $\mu_A: F(F(A)) \rightarrow F(A)$ 是乘法映射
+- ```latex
+$F$
+``` 是Future函子
+- ```latex
+$\eta_A: A \rightarrow F(A)$
+``` 是单位映射
+- ```latex
+$\mu_A: F(F(A)) \rightarrow F(A)$
+``` 是乘法映射
 
 **定理 3.2** (单子定律)
 Future满足单子定律：
 
-1. **左单位律**: $\mu \circ F(\eta) = id$
-2. **右单位律**: $\mu \circ \eta_F = id$
-3. **结合律**: $\mu \circ F(\mu) = \mu \circ \mu$
+1. **左单位律**: ```latex
+$\mu \circ F(\eta) = id$
+```
+2. **右单位律**: ```latex
+$\mu \circ \eta_F = id$
+```
+3. **结合律**: ```latex
+$\mu \circ F(\mu) = \mu \circ \mu$
+```
 
 ### 3.3 异步计算理论
 
 **定义 3.3** (异步计算)
-异步计算是一个三元组 $(input, computation, output)$，其中：
+异步计算是一个三元组 ```latex
+$(input, computation, output)$
+```，其中：
 
-- $input$ 是输入数据
-- $computation$ 是计算函数
-- $output$ 是输出Future
+- ```latex
+$input$
+``` 是输入数据
+- ```latex
+$computation$
+``` 是计算函数
+- ```latex
+$output$
+``` 是输出Future
 
 **定理 3.3** (异步计算性质)
 异步计算满足以下性质：
@@ -1242,17 +1334,35 @@ func main() {
 
 ### 6.1 时间复杂度
 
-- **Future创建**: $O(1)$
-- **Promise创建**: $O(1)$
-- **结果设置**: $O(1)$
-- **结果获取**: $O(1)$ (如果已完成)
-- **链式操作**: $O(1)$
+- **Future创建**: ```latex
+$O(1)$
+```
+- **Promise创建**: ```latex
+$O(1)$
+```
+- **结果设置**: ```latex
+$O(1)$
+```
+- **结果获取**: ```latex
+$O(1)$
+``` (如果已完成)
+- **链式操作**: ```latex
+$O(1)$
+```
 
 ### 6.2 空间复杂度
 
-- **Future对象**: $O(1)$
-- **Promise对象**: $O(1)$
-- **回调队列**: $O(n)$，其中 $n$ 是回调数量
+- **Future对象**: ```latex
+$O(1)$
+```
+- **Promise对象**: ```latex
+$O(1)$
+```
+- **回调队列**: ```latex
+$O(n)$
+```，其中 ```latex
+$n$
+``` 是回调数量
 
 ### 6.3 性能优化建议
 

@@ -8,14 +8,26 @@ Saga模式是一种用于管理分布式事务的设计模式，通过将长事�
 
 ### 1.2 形式化定义
 
-设 $T$ 为事务集合，$S$ 为步骤集合，$C$ 为补偿操作集合，则Saga模式可形式化为：
+设 ```latex
+$T$
+``` 为事务集合，```latex
+$S$
+``` 为步骤集合，```latex
+$C$
+``` 为补偿操作集合，则Saga模式可形式化为：
 
-$$Saga = (T, S, C, \sigma, \rho)$$
+$```latex
+$Saga = (T, S, C, \sigma, \rho)$
+```$
 
 其中：
 
-- $\sigma: T \rightarrow 2^S$ 为事务到步骤的映射
-- $\rho: S \rightarrow C$ 为步骤到补偿操作的映射
+- ```latex
+$\sigma: T \rightarrow 2^S$
+``` 为事务到步骤的映射
+- ```latex
+$\rho: S \rightarrow C$
+``` 为步骤到补偿操作的映射
 
 ### 1.3 数学性质
 
@@ -653,13 +665,25 @@ func main() {
 
 ### 5.1 时间复杂度
 
-- **编排式Saga**: $O(n)$，其中 $n$ 为步骤数量
-- **协同式Saga**: $O(e)$，其中 $e$ 为事件数量
+- **编排式Saga**: ```latex
+$O(n)$
+```，其中 ```latex
+$n$
+``` 为步骤数量
+- **协同式Saga**: ```latex
+$O(e)$
+```，其中 ```latex
+$e$
+``` 为事件数量
 
 ### 5.2 空间复杂度
 
-- **编排式Saga**: $O(n)$
-- **协同式Saga**: $O(e)$
+- **编排式Saga**: ```latex
+$O(n)$
+```
+- **协同式Saga**: ```latex
+$O(e)$
+```
 
 ### 5.3 一致性保证
 

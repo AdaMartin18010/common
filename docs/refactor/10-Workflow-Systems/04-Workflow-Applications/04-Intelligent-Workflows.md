@@ -18,22 +18,48 @@
 
 #### 1.1.1 智能工作流定义
 
-智能工作流 $IW$ 是一个六元组 $(T, D, L, A, M, E)$，其中：
+智能工作流 ```latex
+$IW$
+``` 是一个六元组 ```latex
+$(T, D, L, A, M, E)$
+```，其中：
 
-- $T$: 任务集合
-- $D$: 决策点集合
-- $L$: 学习模块
-- $A$: 智能代理集合
-- $M$: 模型集合
-- $E$: 评估函数
+- ```latex
+$T$
+```: 任务集合
+- ```latex
+$D$
+```: 决策点集合
+- ```latex
+$L$
+```: 学习模块
+- ```latex
+$A$
+```: 智能代理集合
+- ```latex
+$M$
+```: 模型集合
+- ```latex
+$E$
+```: 评估函数
 
 #### 1.1.2 智能决策点
 
-智能决策点 $d \in D$ 是一个三元组 $(c, m, a)$，其中：
+智能决策点 ```latex
+$d \in D$
+``` 是一个三元组 ```latex
+$(c, m, a)$
+```，其中：
 
-- $c$: 决策条件
-- $m$: 决策模型
-- $a$: 决策动作
+- ```latex
+$c$
+```: 决策条件
+- ```latex
+$m$
+```: 决策模型
+- ```latex
+$a$
+```: 决策动作
 
 ### 1.2 强化学习模型
 
@@ -42,24 +68,38 @@
 **定义 1.2.1** (Q-Learning)
 Q-Learning是一种无模型强化学习算法，Q值更新公式为：
 
-$$Q(s, a) \leftarrow Q(s, a) + \alpha[r + \gamma \max_{a'} Q(s', a') - Q(s, a)]$$
+$```latex
+$Q(s, a) \leftarrow Q(s, a) + \alpha[r + \gamma \max_{a'} Q(s', a') - Q(s, a)]$
+```$
 
 其中：
 
-- $\alpha$: 学习率
-- $\gamma$: 折扣因子
-- $r$: 奖励
-- $s'$: 下一状态
+- ```latex
+$\alpha$
+```: 学习率
+- ```latex
+$\gamma$
+```: 折扣因子
+- ```latex
+$r$
+```: 奖励
+- ```latex
+$s'$
+```: 下一状态
 
 **定理 1.2.1** (Q-Learning收敛性)
 在满足适当条件下，Q-Learning算法收敛到最优Q值：
 
-$$\lim_{t \to \infty} Q_t(s, a) = Q^*(s, a)$$
+$```latex
+$\lim_{t \to \infty} Q_t(s, a) = Q^*(s, a)$
+```$
 
 **证明**:
 通过随机逼近理论，Q-Learning可以表示为随机差分方程：
 
-$$Q_{t+1}(s, a) = Q_t(s, a) + \alpha_t[r_t + \gamma \max_{a'} Q_t(s_{t+1}, a') - Q_t(s_t, a_t)]$$
+$```latex
+$Q_{t+1}(s, a) = Q_t(s, a) + \alpha_t[r_t + \gamma \max_{a'} Q_t(s_{t+1}, a') - Q_t(s_t, a_t)]$
+```$
 
 在满足Robbins-Monro条件下，算法收敛。
 
@@ -68,7 +108,9 @@ $$Q_{t+1}(s, a) = Q_t(s, a) + \alpha_t[r_t + \gamma \max_{a'} Q_t(s_{t+1}, a') -
 **定义 1.2.2** (策略梯度)
 策略梯度算法通过梯度上升优化策略参数：
 
-$$\nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta}[\nabla_\theta \log \pi_\theta(a|s) Q^\pi(s, a)]$$
+$```latex
+$\nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta}[\nabla_\theta \log \pi_\theta(a|s) Q^\pi(s, a)]$
+```$
 
 **算法 1.2.1** (策略梯度算法)
 

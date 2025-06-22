@@ -39,15 +39,29 @@
 
 ### 1.1 数学定义
 
-设 $S$ 为主题集合，$O$ 为观察者集合，$E$ 为事件集合，观察者模式满足以下公理：
+设 ```latex
+$S$
+``` 为主题集合，```latex
+$O$
+``` 为观察者集合，```latex
+$E$
+``` 为事件集合，观察者模式满足以下公理：
 
-$$\forall s \in S, \forall o \in O, \forall e \in E: \text{notify}(s, o, e) \rightarrow \text{update}(o, e)$$
+$```latex
+$\forall s \in S, \forall o \in O, \forall e \in E: \text{notify}(s, o, e) \rightarrow \text{update}(o, e)$
+```$
 
 **形式化约束**：
 
-- **订阅关系**: $\text{subscribe}(o, s) \iff o \in \text{observers}(s)$
-- **通知机制**: $\text{event}(s, e) \implies \forall o \in \text{observers}(s): \text{notify}(o, e)$
-- **解耦性**: $\text{independent}(s, o) \land \text{loose\_coupling}(s, o)$
+- **订阅关系**: ```latex
+$\text{subscribe}(o, s) \iff o \in \text{observers}(s)$
+```
+- **通知机制**: ```latex
+$\text{event}(s, e) \implies \forall o \in \text{observers}(s): \text{notify}(o, e)$
+```
+- **解耦性**: ```latex
+$\text{independent}(s, o) \land \text{loose\_coupling}(s, o)$
+```
 
 ### 1.2 类型理论定义
 

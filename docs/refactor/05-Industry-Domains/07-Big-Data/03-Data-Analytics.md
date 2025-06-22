@@ -20,16 +20,36 @@
 ### 1.1 数据分析模型
 
 **定义 1.1** (数据分析函数)
-数据分析函数 $f: D \rightarrow A$ 将数据集 $D$ 映射到分析结果 $A$：
+数据分析函数 ```latex
+$f: D \rightarrow A$
+``` 将数据集 ```latex
+$D$
+``` 映射到分析结果 ```latex
+$A$
+```：
 
-$$f(D) = \text{analyze}(D, \text{method}, \text{params})$$
+$```latex
+$f(D) = \text{analyze}(D, \text{method}, \text{params})$
+```$
 
-其中 $\text{method}$ 是分析方法，$\text{params}$ 是参数集合。
+其中 ```latex
+$\text{method}$
+``` 是分析方法，```latex
+$\text{params}$
+``` 是参数集合。
 
 **定理 1.1** (分析一致性)
-对于数据集 $D$ 和分析方法 $m$，如果 $D_1 \subseteq D_2$，则：
+对于数据集 ```latex
+$D$
+``` 和分析方法 ```latex
+$m$
+```，如果 ```latex
+$D_1 \subseteq D_2$
+```，则：
 
-$$f(D_1, m) \subseteq f(D_2, m)$$
+$```latex
+$f(D_1, m) \subseteq f(D_2, m)$
+```$
 
 ### 1.2 分析框架
 
@@ -102,7 +122,9 @@ func (ba *BaseAnalyzer) GetMetrics() map[string]float64 {
 **定义 2.1** (描述性统计)
 描述性统计是对数据集基本特征的量化描述：
 
-$$\text{DescriptiveStats}(D) = \{\text{mean}, \text{median}, \text{mode}, \text{variance}, \text{skewness}, \text{kurtosis}\}$$
+$```latex
+$\text{DescriptiveStats}(D) = \{\text{mean}, \text{median}, \text{mode}, \text{variance}, \text{skewness}, \text{kurtosis}\}$
+```$
 
 ```go
 // 描述性统计分析器
@@ -391,11 +413,17 @@ func (ia *InferentialAnalyzer) normalCDF(x float64) float64 {
 ### 3.1 监督学习
 
 **定义 3.1** (监督学习)
-监督学习是从标记数据中学习映射函数 $f: X \rightarrow Y$：
+监督学习是从标记数据中学习映射函数 ```latex
+$f: X \rightarrow Y$
+```：
 
-$$\text{SupervisedLearning}(D) = \arg\min_f \sum_{(x,y) \in D} L(f(x), y)$$
+$```latex
+$\text{SupervisedLearning}(D) = \arg\min_f \sum_{(x,y) \in D} L(f(x), y)$
+```$
 
-其中 $L$ 是损失函数。
+其中 ```latex
+$L$
+``` 是损失函数。
 
 ```go
 // 监督学习接口
@@ -737,11 +765,21 @@ func (km *KMeans) GetCentroids() []map[string]float64 {
 ### 4.1 关联规则挖掘
 
 **定义 4.1** (关联规则)
-关联规则是形如 $X \rightarrow Y$ 的规则，其中 $X$ 和 $Y$ 是项集：
+关联规则是形如 ```latex
+$X \rightarrow Y$
+``` 的规则，其中 ```latex
+$X$
+``` 和 ```latex
+$Y$
+``` 是项集：
 
-$$\text{Support}(X) = \frac{|\{t \in T : X \subseteq t\}|}{|T|}$$
+$```latex
+$\text{Support}(X) = \frac{|\{t \in T : X \subseteq t\}|}{|T|}$
+```$
 
-$$\text{Confidence}(X \rightarrow Y) = \frac{\text{Support}(X \cup Y)}{\text{Support}(X)}$$
+$```latex
+$\text{Confidence}(X \rightarrow Y) = \frac{\text{Support}(X \cup Y)}{\text{Support}(X)}$
+```$
 
 ```go
 // 关联规则挖掘器

@@ -8,26 +8,44 @@
 
 ### 1.1.1 数字孪生模型
 
-数字孪生 $DT$ 是一个五元组 $(P, M, S, C, A)$，其中：
+数字孪生 ```latex
+$DT$
+``` 是一个五元组 ```latex
+$(P, M, S, C, A)$
+```，其中：
 
 ```latex
-$$DT = (P, M, S, C, A)$$
+$```latex
+$DT = (P, M, S, C, A)$
+```$
 ```
 
 其中：
 
-- $P$: 物理实体
-- $M$: 数字模型
-- $S$: 同步机制
-- $C$: 连接接口
-- $A$: 分析算法
+- ```latex
+$P$
+```: 物理实体
+- ```latex
+$M$
+```: 数字模型
+- ```latex
+$S$
+```: 同步机制
+- ```latex
+$C$
+```: 连接接口
+- ```latex
+$A$
+```: 分析算法
 
 ### 1.1.2 数字孪生层次
 
 数字孪生分为三个层次：
 
 ```latex
-$$L = \{Data, Model, Service\}$$
+$```latex
+$L = \{Data, Model, Service\}$
+```$
 ```
 
 **数据层 (Data Layer)**
@@ -52,103 +70,179 @@ $$L = \{Data, Model, Service\}$$
 
 ### 1.2.1 系统架构
 
-数字孪生系统架构 $SA$ 定义为：
+数字孪生系统架构 ```latex
+$SA$
+``` 定义为：
 
 ```latex
-$$SA = \{Sensing, Communication, Computing, Storage, Visualization\}$$
+$```latex
+$SA = \{Sensing, Communication, Computing, Storage, Visualization\}$
+```$
 ```
 
 ### 1.2.2 数据流模型
 
-数据流 $DF$ 是一个四元组 $(S, T, P, C)$，其中：
+数据流 ```latex
+$DF$
+``` 是一个四元组 ```latex
+$(S, T, P, C)$
+```，其中：
 
 ```latex
-$$DF = (S, T, P, C)$$
+$```latex
+$DF = (S, T, P, C)$
+```$
 ```
 
 其中：
 
-- $S$: 数据源集合
-- $T$: 传输通道集合
-- $P$: 处理节点集合
-- $C$: 控制逻辑集合
+- ```latex
+$S$
+```: 数据源集合
+- ```latex
+$T$
+```: 传输通道集合
+- ```latex
+$P$
+```: 处理节点集合
+- ```latex
+$C$
+```: 控制逻辑集合
 
 ## 1.3 同步机制
 
 ### 1.3.1 实时同步
 
-实时同步函数 $Sync: P \times M \rightarrow M$ 定义为：
+实时同步函数 ```latex
+$Sync: P \times M \rightarrow M$
+``` 定义为：
 
 ```latex
-$$Sync(p, m) = m'$$
+$```latex
+$Sync(p, m) = m'$
+```$
 ```
 
-其中 $m'$ 是更新后的数字模型。
+其中 ```latex
+$m'$
+``` 是更新后的数字模型。
 
 ### 1.3.2 同步频率
 
-同步频率 $f_{sync}$ 定义为：
+同步频率 ```latex
+$f_{sync}$
+``` 定义为：
 
 ```latex
-$$f_{sync} = \frac{1}{T_{sync}}$$
+$```latex
+$f_{sync} = \frac{1}{T_{sync}}$
+```$
 ```
 
-其中 $T_{sync}$ 是同步周期。
+其中 ```latex
+$T_{sync}$
+``` 是同步周期。
 
 ### 1.3.3 数据一致性
 
-数据一致性度量 $C$ 定义为：
+数据一致性度量 ```latex
+$C$
+``` 定义为：
 
 ```latex
-$$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}$$
+$```latex
+$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}$
+```$
 ```
 
-其中 $P_{real}$ 是物理实体状态，$P_{virtual}$ 是虚拟模型状态。
+其中 ```latex
+$P_{real}$
+``` 是物理实体状态，```latex
+$P_{virtual}$
+``` 是虚拟模型状态。
 
 ## 1.4 建模方法
 
 ### 1.4.1 几何建模
 
-几何模型 $G$ 是一个三元组 $(V, E, F)$，其中：
+几何模型 ```latex
+$G$
+``` 是一个三元组 ```latex
+$(V, E, F)$
+```，其中：
 
 ```latex
-$$G = (V, E, F)$$
+$```latex
+$G = (V, E, F)$
+```$
 ```
 
 其中：
 
-- $V$: 顶点集合
-- $E$: 边集合
-- $F$: 面集合
+- ```latex
+$V$
+```: 顶点集合
+- ```latex
+$E$
+```: 边集合
+- ```latex
+$F$
+```: 面集合
 
 ### 1.4.2 物理建模
 
-物理模型 $P$ 是一个四元组 $(M, F, E, C)$，其中：
+物理模型 ```latex
+$P$
+``` 是一个四元组 ```latex
+$(M, F, E, C)$
+```，其中：
 
 ```latex
-$$P = (M, F, E, C)$$
+$```latex
+$P = (M, F, E, C)$
+```$
 ```
 
 其中：
 
-- $M$: 质量矩阵
-- $F$: 力向量
-- $E$: 能量函数
-- $C$: 约束条件
+- ```latex
+$M$
+```: 质量矩阵
+- ```latex
+$F$
+```: 力向量
+- ```latex
+$E$
+```: 能量函数
+- ```latex
+$C$
+```: 约束条件
 
 ### 1.4.3 行为建模
 
-行为模型 $B$ 是一个三元组 $(S, A, T)$，其中：
+行为模型 ```latex
+$B$
+``` 是一个三元组 ```latex
+$(S, A, T)$
+```，其中：
 
 ```latex
-$$B = (S, A, T)$$
+$```latex
+$B = (S, A, T)$
+```$
 ```
 
 其中：
 
-- $S$: 状态集合
-- $A$: 动作集合
-- $T$: 转移函数
+- ```latex
+$S$
+```: 状态集合
+- ```latex
+$A$
+```: 动作集合
+- ```latex
+$T$
+```: 转移函数
 
 ## 1.5 Go语言实现
 
@@ -635,50 +729,92 @@ func (haa *HealthAnalysisAlgorithm) GetType() string {
 ### 1.7.1 数字孪生一致性
 
 **定理 1.1** (数字孪生一致性)
-对于数字孪生 $DT = (P, M, S, C, A)$，如果同步机制 $S$ 是 $\epsilon$-精确的，则数据一致性 $C \geq 1 - \epsilon$。
+对于数字孪生 ```latex
+$DT = (P, M, S, C, A)$
+```，如果同步机制 ```latex
+$S$
+``` 是 ```latex
+$\epsilon$
+```-精确的，则数据一致性 ```latex
+$C \geq 1 - \epsilon$
+```。
 
 **证明**：
-设同步机制 $S$ 的精度为 $\epsilon$，即 $|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}$。
+设同步机制 ```latex
+$S$
+``` 的精度为 ```latex
+$\epsilon$
+```，即 ```latex
+$|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}$
+```。
 
 数据一致性定义为：
 
 ```latex
-$$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}$$
+$```latex
+$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}$
+```$
 ```
 
-由于 $|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}$，所以：
+由于 ```latex
+$|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}$
+```，所以：
 
 ```latex
-$$C \geq 1 - \frac{\epsilon \cdot P_{real}}{P_{real}} = 1 - \epsilon$$
+$```latex
+$C \geq 1 - \frac{\epsilon \cdot P_{real}}{P_{real}} = 1 - \epsilon$
+```$
 ```
 
 ### 1.7.2 同步频率优化
 
 **定理 1.2** (同步频率优化)
-对于给定的精度要求 $\epsilon$，最优同步频率 $f_{opt}$ 满足：
+对于给定的精度要求 ```latex
+$\epsilon$
+```，最优同步频率 ```latex
+$f_{opt}$
+``` 满足：
 
 ```latex
-$$f_{opt} = \sqrt{\frac{\alpha}{\beta \cdot \epsilon}}$$
+$```latex
+$f_{opt} = \sqrt{\frac{\alpha}{\beta \cdot \epsilon}}$
+```$
 ```
 
-其中 $\alpha$ 是系统变化率，$\beta$ 是同步成本。
+其中 ```latex
+$\alpha$
+``` 是系统变化率，```latex
+$\beta$
+``` 是同步成本。
 
 **证明**：
-设总成本 $C_{total} = C_{sync} + C_{error}$，其中：
+设总成本 ```latex
+$C_{total} = C_{sync} + C_{error}$
+```，其中：
 
-- $C_{sync} = \beta \cdot f$ 是同步成本
-- $C_{error} = \alpha / f$ 是误差成本
+- ```latex
+$C_{sync} = \beta \cdot f$
+``` 是同步成本
+- ```latex
+$C_{error} = \alpha / f$
+``` 是误差成本
 
-对 $f$ 求导并令其为零：
+对 ```latex
+$f$
+``` 求导并令其为零：
 
 ```latex
-$$\frac{dC_{total}}{df} = \beta - \frac{\alpha}{f^2} = 0$$
+$```latex
+$\frac{dC_{total}}{df} = \beta - \frac{\alpha}{f^2} = 0$
+```$
 ```
 
 解得：
 
 ```latex
-$$f_{opt} = \sqrt{\frac{\alpha}{\beta}}$$
+$```latex
+$f_{opt} = \sqrt{\frac{\alpha}{\beta}}$
+```$
 ```
 
 ## 1.8 总结

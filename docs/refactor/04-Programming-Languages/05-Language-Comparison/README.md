@@ -36,101 +36,201 @@
 **定义 1** (语言比较维度)
 编程语言比较包含以下维度：
 
-- 语法维度：$S = \{s_1, s_2, \ldots, s_n\}$
-- 语义维度：$M = \{m_1, m_2, \ldots, m_n\}$
-- 性能维度：$P = \{p_1, p_2, \ldots, p_n\}$
-- 生态维度：$E = \{e_1, e_2, \ldots, e_n\}$
+- 语法维度：```latex
+$S = \{s_1, s_2, \ldots, s_n\}$
+```
+- 语义维度：```latex
+$M = \{m_1, m_2, \ldots, m_n\}$
+```
+- 性能维度：```latex
+$P = \{p_1, p_2, \ldots, p_n\}$
+```
+- 生态维度：```latex
+$E = \{e_1, e_2, \ldots, e_n\}$
+```
 
 **定义 2** (比较矩阵)
-对于语言 $L_1$ 和 $L_2$，比较矩阵 $C$ 定义为：
-$$C_{ij} = \text{compare}(L_1^i, L_2^j)$$
+对于语言 ```latex
+$L_1$
+``` 和 ```latex
+$L_2$
+```，比较矩阵 ```latex
+$C$
+``` 定义为：
+$```latex
+$C_{ij} = \text{compare}(L_1^i, L_2^j)$
+```$
 
-其中 $L_1^i$ 表示语言 $L_1$ 的第 $i$ 个特性。
+其中 ```latex
+$L_1^i$
+``` 表示语言 ```latex
+$L_1$
+``` 的第 ```latex
+$i$
+``` 个特性。
 
 ### 评估标准
 
 **定义 3** (评估标准)
-评估标准 $A$ 包含以下指标：
+评估标准 ```latex
+$A$
+``` 包含以下指标：
 
-- 可读性：$R = \sum_{i=1}^n w_i \cdot r_i$
-- 可维护性：$M = \sum_{i=1}^n w_i \cdot m_i$
-- 性能：$P = \sum_{i=1}^n w_i \cdot p_i$
-- 安全性：$S = \sum_{i=1}^n w_i \cdot s_i$
+- 可读性：```latex
+$R = \sum_{i=1}^n w_i \cdot r_i$
+```
+- 可维护性：```latex
+$M = \sum_{i=1}^n w_i \cdot m_i$
+```
+- 性能：```latex
+$P = \sum_{i=1}^n w_i \cdot p_i$
+```
+- 安全性：```latex
+$S = \sum_{i=1}^n w_i \cdot s_i$
+```
 
-其中 $w_i$ 是权重，$r_i, m_i, p_i, s_i$ 是各维度的评分。
+其中 ```latex
+$w_i$
+``` 是权重，```latex
+$r_i, m_i, p_i, s_i$
+``` 是各维度的评分。
 
 ### 量化方法
 
 **定义 4** (量化评分)
-对于特性 $f$，量化评分 $Q(f)$ 定义为：
-$$Q(f) = \frac{\sum_{i=1}^n s_i \cdot w_i}{\sum_{i=1}^n w_i}$$
+对于特性 ```latex
+$f$
+```，量化评分 ```latex
+$Q(f)$
+``` 定义为：
+$```latex
+$Q(f) = \frac{\sum_{i=1}^n s_i \cdot w_i}{\sum_{i=1}^n w_i}$
+```$
 
-其中 $s_i$ 是第 $i$ 个评估者的评分，$w_i$ 是权重。
+其中 ```latex
+$s_i$
+``` 是第 ```latex
+$i$
+``` 个评估者的评分，```latex
+$w_i$
+``` 是权重。
 
 ## 语言特性比较
 
 ### 类型系统
 
 **定义 5** (类型系统强度)
-类型系统强度 $T$ 定义为：
-$$T = \alpha \cdot S + \beta \cdot C + \gamma \cdot P$$
+类型系统强度 ```latex
+$T$
+``` 定义为：
+$```latex
+$T = \alpha \cdot S + \beta \cdot C + \gamma \cdot P$
+```$
 
 其中：
 
-- $S$: 静态类型检查强度
-- $C$: 编译时检查强度
-- $P$: 类型安全保证强度
-- $\alpha, \beta, \gamma$: 权重系数
+- ```latex
+$S$
+```: 静态类型检查强度
+- ```latex
+$C$
+```: 编译时检查强度
+- ```latex
+$P$
+```: 类型安全保证强度
+- ```latex
+$\alpha, \beta, \gamma$
+```: 权重系数
 
 **定理 1** (类型安全)
-如果语言 $L$ 的类型系统强度 $T(L) > T_{threshold}$，则 $L$ 提供类型安全保证。
+如果语言 ```latex
+$L$
+``` 的类型系统强度 ```latex
+$T(L) > T_{threshold}$
+```，则 ```latex
+$L$
+``` 提供类型安全保证。
 
 ### 内存管理
 
 **定义 6** (内存管理模型)
-内存管理模型 $M$ 包含以下组件：
+内存管理模型 ```latex
+$M$
+``` 包含以下组件：
 
-- 分配策略：$A: \mathbb{N} \to \text{Address}$
-- 回收策略：$G: \text{Address} \to \{\text{Keep}, \text{Free}\}$
-- 安全策略：$S: \text{Address} \to \{\text{Safe}, \text{Unsafe}\}$
+- 分配策略：```latex
+$A: \mathbb{N} \to \text{Address}$
+```
+- 回收策略：```latex
+$G: \text{Address} \to \{\text{Keep}, \text{Free}\}$
+```
+- 安全策略：```latex
+$S: \text{Address} \to \{\text{Safe}, \text{Unsafe}\}$
+```
 
 **定理 2** (内存安全)
 如果内存管理模型满足：
-$$\forall a \in \text{Address}: S(a) = \text{Safe} \implies G(a) = \text{Keep}$$
+$```latex
+$\forall a \in \text{Address}: S(a) = \text{Safe} \implies G(a) = \text{Keep}$
+```$
 
 则系统提供内存安全保证。
 
 ### 并发模型
 
 **定义 7** (并发模型)
-并发模型 $C$ 定义为：
-$$C = (P, \Sigma, \delta, p_0)$$
+并发模型 ```latex
+$C$
+``` 定义为：
+$```latex
+$C = (P, \Sigma, \delta, p_0)$
+```$
 
 其中：
 
-- $P$: 进程集合
-- $\Sigma$: 同步事件集合
-- $\delta: P \times \Sigma \to P$: 状态转换函数
-- $p_0 \in P$: 初始进程
+- ```latex
+$P$
+```: 进程集合
+- ```latex
+$\Sigma$
+```: 同步事件集合
+- ```latex
+$\delta: P \times \Sigma \to P$
+```: 状态转换函数
+- ```latex
+$p_0 \in P$
+```: 初始进程
 
 **定理 3** (并发安全性)
 如果并发模型满足：
-$$\forall p_1, p_2 \in P: \text{race}(p_1, p_2) = \text{false}$$
+$```latex
+$\forall p_1, p_2 \in P: \text{race}(p_1, p_2) = \text{false}$
+```$
 
 则系统提供并发安全保证。
 
 ### 错误处理
 
 **定义 8** (错误处理模型)
-错误处理模型 $E$ 包含：
+错误处理模型 ```latex
+$E$
+``` 包含：
 
-- 错误类型：$T_E = \{t_1, t_2, \ldots, t_n\}$
-- 处理策略：$H: T_E \to \text{Strategy}$
-- 传播机制：$P: \text{Error} \to \text{Handler}$
+- 错误类型：```latex
+$T_E = \{t_1, t_2, \ldots, t_n\}$
+```
+- 处理策略：```latex
+$H: T_E \to \text{Strategy}$
+```
+- 传播机制：```latex
+$P: \text{Error} \to \text{Handler}$
+```
 
 **定理 4** (错误处理完整性)
 如果错误处理模型满足：
-$$\forall e \in \text{Error}: \exists h \in \text{Handler}: P(e) = h$$
+$```latex
+$\forall e \in \text{Error}: \exists h \in \text{Handler}: P(e) = h$
+```$
 
 则系统提供完整的错误处理。
 

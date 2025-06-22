@@ -68,35 +68,59 @@
 ### 2.1 边缘计算系统定义
 
 **定义 2.1.1** (边缘计算系统)
-边缘计算系统是一个六元组 $ECS = (N, T, C, D, F, R)$，其中：
+边缘计算系统是一个六元组 ```latex
+$ECS = (N, T, C, D, F, R)$
+```，其中：
 
-- $N = \{n_1, n_2, ..., n_m\}$ 是边缘节点集合
-- $T = \{t_1, t_2, ..., t_k\}$ 是任务集合
-- $C = \{c_1, c_2, ..., c_l\}$ 是计算资源集合
-- $D = \{d_1, d_2, ..., d_p\}$ 是数据集合
-- $F: T \times N \rightarrow \mathbb{R}^+$ 是任务分配函数
-- $R: N \times N \rightarrow \mathbb{R}^+$ 是网络延迟函数
+- ```latex
+$N = \{n_1, n_2, ..., n_m\}$
+``` 是边缘节点集合
+- ```latex
+$T = \{t_1, t_2, ..., t_k\}$
+``` 是任务集合
+- ```latex
+$C = \{c_1, c_2, ..., c_l\}$
+``` 是计算资源集合
+- ```latex
+$D = \{d_1, d_2, ..., d_p\}$
+``` 是数据集合
+- ```latex
+$F: T \times N \rightarrow \mathbb{R}^+$
+``` 是任务分配函数
+- ```latex
+$R: N \times N \rightarrow \mathbb{R}^+$
+``` 是网络延迟函数
 
 ### 2.2 任务调度定义
 
 **定义 2.1.2** (任务调度)
-任务调度是一个函数 $S: T \rightarrow N$，将任务映射到边缘节点。
+任务调度是一个函数 ```latex
+$S: T \rightarrow N$
+```，将任务映射到边缘节点。
 
 **定义 2.1.3** (调度成本)
 调度成本定义为：
-$$Cost(S) = \sum_{t \in T} \sum_{n \in N} F(t, n) \cdot \delta(S(t), n)$$
+$```latex
+$Cost(S) = \sum_{t \in T} \sum_{n \in N} F(t, n) \cdot \delta(S(t), n)$
+```$
 
-其中 $\delta(i, j)$ 是克罗内克函数：
+其中 ```latex
+$\delta(i, j)$
+``` 是克罗内克函数：
+```latex
 $$\delta(i, j) = \begin{cases}
 1 & \text{如果 } i = j \\
 0 & \text{否则}
 \end{cases}$$
+```
 
 ### 2.3 负载均衡定义
 
 **定义 2.1.4** (负载均衡)
 负载均衡的目标是最小化最大负载：
-$$\min_{S} \max_{n \in N} \sum_{t \in T} F(t, n) \cdot \delta(S(t), n)$$
+$```latex
+$\min_{S} \max_{n \in N} \sum_{t \in T} F(t, n) \cdot \delta(S(t), n)$
+```$
 
 ## 3. 数学基础
 
@@ -104,24 +128,42 @@ $$\min_{S} \max_{n \in N} \sum_{t \in T} F(t, n) \cdot \delta(S(t), n)$$
 
 **定理 3.1.1** (M/M/1队列)
 对于M/M/1队列，平均等待时间为：
-$$W = \frac{\lambda}{\mu(\mu - \lambda)}$$
+$```latex
+$W = \frac{\lambda}{\mu(\mu - \lambda)}$
+```$
 
-其中 $\lambda$ 是到达率，$\mu$ 是服务率。
+其中 ```latex
+$\lambda$
+``` 是到达率，```latex
+$\mu$
+``` 是服务率。
 
 **证明**:
-设 $L$ 是队列长度，$W$ 是等待时间。
-根据Little's Law：$L = \lambda W$
+设 ```latex
+$L$
+``` 是队列长度，```latex
+$W$
+``` 是等待时间。
+根据Little's Law：```latex
+$L = \lambda W$
+```
 
 对于M/M/1队列：
-$$L = \frac{\rho}{1-\rho} = \frac{\lambda/\mu}{1-\lambda/\mu} = \frac{\lambda}{\mu-\lambda}$$
+$```latex
+$L = \frac{\rho}{1-\rho} = \frac{\lambda/\mu}{1-\lambda/\mu} = \frac{\lambda}{\mu-\lambda}$
+```$
 
 因此：
-$$W = \frac{L}{\lambda} = \frac{\lambda}{\mu(\mu-\lambda)}$$
+$```latex
+$W = \frac{L}{\lambda} = \frac{\lambda}{\mu(\mu-\lambda)}$
+```$
 
 ### 3.2 图论
 
 **定理 3.1.2** (最短路径)
-对于图 $G = (V, E)$，Dijkstra算法可以找到从源点到所有其他顶点的最短路径。
+对于图 ```latex
+$G = (V, E)$
+```，Dijkstra算法可以找到从源点到所有其他顶点的最短路径。
 
 **算法 3.1.1** (Dijkstra算法)
 ```
@@ -149,14 +191,22 @@ $$W = \frac{L}{\lambda} = \frac{\lambda}{\mu(\mu-\lambda)}$$
 
 **定理 3.1.3** (拉格朗日乘数法)
 对于约束优化问题：
-$$\min f(x) \text{ subject to } g_i(x) = 0, i = 1,2,...,m$$
+$```latex
+$\min f(x) \text{ subject to } g_i(x) = 0, i = 1,2,...,m$
+```$
 
 拉格朗日函数为：
-$$L(x, \lambda) = f(x) + \sum_{i=1}^{m} \lambda_i g_i(x)$$
+$```latex
+$L(x, \lambda) = f(x) + \sum_{i=1}^{m} \lambda_i g_i(x)$
+```$
 
 最优解满足：
-$$\nabla_x L(x^*, \lambda^*) = 0$$
-$$\nabla_\lambda L(x^*, \lambda^*) = 0$$
+$```latex
+$\nabla_x L(x^*, \lambda^*) = 0$
+```$
+$```latex
+$\nabla_\lambda L(x^*, \lambda^*) = 0$
+```$
 
 ## 4. 系统架构
 
@@ -246,16 +296,34 @@ graph LR
 
 **定理 5.1.1** (贪心算法近似比)
 贪心任务调度算法的近似比为：
-$$\frac{C_{greedy}}{C_{optimal}} \leq 2$$
+$```latex
+$\frac{C_{greedy}}{C_{optimal}} \leq 2$
+```$
 
 **证明**:
-设 $C_{optimal}$ 是最优解的成本，$C_{greedy}$ 是贪心解的成本。
+设 ```latex
+$C_{optimal}$
+``` 是最优解的成本，```latex
+$C_{greedy}$
+``` 是贪心解的成本。
 
-对于任意任务 $t$，贪心算法将其分配给当前负载最小的节点。设该节点在分配前的负载为 $L_{min}$，则：
-$$C_{greedy} \leq L_{min} + F(t, n)$$
+对于任意任务 ```latex
+$t$
+```，贪心算法将其分配给当前负载最小的节点。设该节点在分配前的负载为 ```latex
+$L_{min}$
+```，则：
+$```latex
+$C_{greedy} \leq L_{min} + F(t, n)$
+```$
 
-由于 $L_{min} \leq C_{optimal}$（否则该节点不会是最小负载），且 $F(t, n) \leq C_{optimal}$，因此：
-$$C_{greedy} \leq 2 \cdot C_{optimal}$$
+由于 ```latex
+$L_{min} \leq C_{optimal}$
+```（否则该节点不会是最小负载），且 ```latex
+$F(t, n) \leq C_{optimal}$
+```，因此：
+$```latex
+$C_{greedy} \leq 2 \cdot C_{optimal}$
+```$
 
 ### 5.2 负载均衡算法
 
@@ -985,10 +1053,24 @@ func main() {
 ### 7.1 任务调度优化
 
 **定理 7.1.1** (调度优化)
-对于 $n$ 个任务和 $m$ 个节点，最优调度的时间复杂度为 $O(n^m)$。
+对于 ```latex
+$n$
+``` 个任务和 ```latex
+$m$
+``` 个节点，最优调度的时间复杂度为 ```latex
+$O(n^m)$
+```。
 
 **证明**:
-每个任务有 $m$ 个选择，总共 $n$ 个任务，因此总共有 $m^n$ 种可能的调度方案。找到最优方案需要检查所有可能性，时间复杂度为 $O(m^n)$。
+每个任务有 ```latex
+$m$
+``` 个选择，总共 ```latex
+$n$
+``` 个任务，因此总共有 ```latex
+$m^n$
+``` 种可能的调度方案。找到最优方案需要检查所有可能性，时间复杂度为 ```latex
+$O(m^n)$
+```。
 
 ### 7.2 负载均衡优化
 
@@ -1008,9 +1090,13 @@ func main() {
 
 **定理 7.1.2** (资源分配下界)
 对于资源分配问题，任何算法的竞争比至少为：
-$$\frac{C_{online}}{C_{optimal}} \geq \frac{\log n}{\log \log n}$$
+$```latex
+$\frac{C_{online}}{C_{optimal}} \geq \frac{\log n}{\log \log n}$
+```$
 
-其中 $n$ 是资源数量。
+其中 ```latex
+$n$
+``` 是资源数量。
 
 ## 8. 安全机制
 
@@ -1031,17 +1117,29 @@ $$\frac{C_{online}}{C_{optimal}} \geq \frac{\log n}{\log \log n}$$
 ### 8.2 数据加密
 
 **定义 8.1.1** (端到端加密)
-端到端加密函数 $E: M \times K \rightarrow C$ 满足：
-$$E(m, k) = c$$
-$$D(c, k) = m$$
+端到端加密函数 ```latex
+$E: M \times K \rightarrow C$
+``` 满足：
+$```latex
+$E(m, k) = c$
+```$
+$```latex
+$D(c, k) = m$
+```$
 
-其中 $D$ 是解密函数。
+其中 ```latex
+$D$
+``` 是解密函数。
 
 ### 8.3 访问控制
 
 **定理 8.1.1** (访问控制安全性)
-对于访问控制矩阵 $A$，如果满足：
-$$\forall i,j: A[i,j] \leq A[i,k] \cdot A[k,j]$$
+对于访问控制矩阵 ```latex
+$A$
+```，如果满足：
+$```latex
+$\forall i,j: A[i,j] \leq A[i,k] \cdot A[k,j]$
+```$
 
 则系统是安全的。
 

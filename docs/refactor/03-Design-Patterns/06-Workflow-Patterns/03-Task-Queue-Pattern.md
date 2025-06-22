@@ -79,28 +79,50 @@
 ### 2.1 任务队列模型
 
 **定义 2.1 (任务队列)**
-任务队列是一个三元组 $Q = (T, W, S)$，其中：
+任务队列是一个三元组 ```latex
+$Q = (T, W, S)$
+```，其中：
 
-- $T = \{t_1, t_2, ..., t_n\}$ 是任务集合
-- $W = \{w_1, w_2, ..., w_m\}$ 是工作者集合
-- $S: T \rightarrow W$ 是调度函数
+- ```latex
+$T = \{t_1, t_2, ..., t_n\}$
+``` 是任务集合
+- ```latex
+$W = \{w_1, w_2, ..., w_m\}$
+``` 是工作者集合
+- ```latex
+$S: T \rightarrow W$
+``` 是调度函数
 
 **定义 2.2 (任务)**
-任务是一个四元组 $t = (id, payload, priority, deadline)$，其中：
+任务是一个四元组 ```latex
+$t = (id, payload, priority, deadline)$
+```，其中：
 
-- $id$ 是任务唯一标识符
-- $payload$ 是任务执行内容
-- $priority$ 是任务优先级
-- $deadline$ 是任务截止时间
+- ```latex
+$id$
+``` 是任务唯一标识符
+- ```latex
+$payload$
+``` 是任务执行内容
+- ```latex
+$priority$
+``` 是任务优先级
+- ```latex
+$deadline$
+``` 是任务截止时间
 
 ### 2.2 调度语义
 
 **定义 2.3 (调度策略)**
-调度策略是一个函数 $f: T \times W \rightarrow \mathbb{R}$，用于计算任务与工作者的匹配度。
+调度策略是一个函数 ```latex
+$f: T \times W \rightarrow \mathbb{R}$
+```，用于计算任务与工作者的匹配度。
 
 **定义 2.4 (最优调度)**
 最优调度是使总执行时间最小的调度：
-$$\text{minimize } \sum_{t \in T} \text{execution\_time}(t, S(t))$$
+$```latex
+$\text{minimize } \sum_{t \in T} \text{execution\_time}(t, S(t))$
+```$
 
 ### 2.3 队列正确性
 
@@ -128,35 +150,59 @@ M/M/c队列是具有泊松到达、指数服务时间和c个服务器的队列�
 
 ```latex
 M/M/c队列中任务数的稳态分布为：
+```latex
 $$P(N = n) = \begin{cases}
 \frac{\rho^n}{n!}P_0 & \text{if } n < c \\
 \frac{\rho^n}{c!c^{n-c}}P_0 & \text{if } n \geq c
 \end{cases}$$
-其中 $\rho = \frac{\lambda}{c\mu}$ 是系统利用率。
+```
+其中 ```latex
+$\rho = \frac{\lambda}{c\mu}$
+``` 是系统利用率。
 ```
 
 **定理 3.2 (等待时间)**
 M/M/c队列的平均等待时间为：
-$$W_q = \frac{P_c}{\mu c(1-\rho)}$$
-其中 $P_c$ 是所有服务器都忙的概率。
+$```latex
+$W_q = \frac{P_c}{\mu c(1-\rho)}$
+```$
+其中 ```latex
+$P_c$
+``` 是所有服务器都忙的概率。
 
 ### 3.2 优先级调度
 
 **定义 3.2 (优先级队列)**
 优先级队列根据任务优先级排序：
-$$\forall t_1, t_2 \in T: \text{priority}(t_1) > \text{priority}(t_2) \Rightarrow t_1 \prec t_2$$
+$```latex
+$\forall t_1, t_2 \in T: \text{priority}(t_1) > \text{priority}(t_2) \Rightarrow t_1 \prec t_2$
+```$
 
 **定理 3.3 (优先级调度性能)**
 优先级调度的平均等待时间为：
-$$W_q = \sum_{i=1}^{k} \frac{\lambda_i W_{q,i}}{\lambda}$$
-其中 $k$ 是优先级级别数，$\lambda_i$ 是第 $i$ 级任务的到达率。
+$```latex
+$W_q = \sum_{i=1}^{k} \frac{\lambda_i W_{q,i}}{\lambda}$
+```$
+其中 ```latex
+$k$
+``` 是优先级级别数，```latex
+$\lambda_i$
+``` 是第 ```latex
+$i$
+``` 级任务的到达率。
 
 ### 3.3 负载均衡
 
 **定义 3.3 (负载均衡度)**
 负载均衡度定义为：
-$$\text{Balance} = 1 - \frac{\max_{w \in W} L(w) - \min_{w \in W} L(w)}{\max_{w \in W} L(w)}$$
-其中 $L(w)$ 是工作者 $w$ 的负载。
+$```latex
+$\text{Balance} = 1 - \frac{\max_{w \in W} L(w) - \min_{w \in W} L(w)}{\max_{w \in W} L(w)}$
+```$
+其中 ```latex
+$L(w)$
+``` 是工作者 ```latex
+$w$
+``` 的负载。
 
 ## 4. 队列模型
 
@@ -227,8 +273,12 @@ const (
 2. 工作者按顺序获取任务
 3. 简单公平，适合所有任务优先级相同的情况
 
-**时间复杂度**: $O(1)$
-**空间复杂度**: $O(n)$
+**时间复杂度**: ```latex
+$O(1)$
+```
+**空间复杂度**: ```latex
+$O(n)$
+```
 
 ### 5.2 优先级调度
 
@@ -238,8 +288,12 @@ const (
 2. 高优先级任务优先执行
 3. 相同优先级按FIFO顺序
 
-**时间复杂度**: $O(\log n)$
-**空间复杂度**: $O(n)$
+**时间复杂度**: ```latex
+$O(\log n)$
+```
+**空间复杂度**: ```latex
+$O(n)$
+```
 
 ### 5.3 轮询调度
 
@@ -249,8 +303,12 @@ const (
 2. 确保负载均衡
 3. 适合任务执行时间相近的情况
 
-**时间复杂度**: $O(1)$
-**空间复杂度**: $O(n)$
+**时间复杂度**: ```latex
+$O(1)$
+```
+**空间复杂度**: ```latex
+$O(n)$
+```
 
 ### 5.4 最少连接调度
 
@@ -260,8 +318,12 @@ const (
 2. 动态负载均衡
 3. 适合任务执行时间差异较大的情况
 
-**时间复杂度**: $O(m)$
-**空间复杂度**: $O(n)$
+**时间复杂度**: ```latex
+$O(m)$
+```
+**空间复杂度**: ```latex
+$O(n)$
+```
 
 ## 6. Go语言实现
 
@@ -965,25 +1027,47 @@ func main() {
 ### 7.1 时间复杂度
 
 **定理 7.1 (任务提交时间复杂度)**
-任务提交的时间复杂度为 $O(1)$。
+任务提交的时间复杂度为 ```latex
+$O(1)$
+```。
 
 **定理 7.2 (任务调度时间复杂度)**
-任务调度的时间复杂度为 $O(\log n)$，其中 $n$ 是队列中的任务数量。
+任务调度的时间复杂度为 ```latex
+$O(\log n)$
+```，其中 ```latex
+$n$
+``` 是队列中的任务数量。
 
 **定理 7.3 (工作者调度时间复杂度)**
-工作者调度的时间复杂度为 $O(m)$，其中 $m$ 是工作者数量。
+工作者调度的时间复杂度为 ```latex
+$O(m)$
+```，其中 ```latex
+$m$
+``` 是工作者数量。
 
 ### 7.2 空间复杂度
 
 **定理 7.4 (任务队列空间复杂度)**
-任务队列的空间复杂度为 $O(n)$，其中 $n$ 是任务数量。
+任务队列的空间复杂度为 ```latex
+$O(n)$
+```，其中 ```latex
+$n$
+``` 是任务数量。
 
 ### 7.3 吞吐量分析
 
 **定理 7.5 (系统吞吐量)**
 系统吞吐量为：
-$$\text{Throughput} = \min(\lambda, c\mu)$$
-其中 $\lambda$ 是任务到达率，$c$ 是工作者数量，$\mu$ 是服务率。
+$```latex
+$\text{Throughput} = \min(\lambda, c\mu)$
+```$
+其中 ```latex
+$\lambda$
+``` 是任务到达率，```latex
+$c$
+``` 是工作者数量，```latex
+$\mu$
+``` 是服务率。
 
 ## 8. 应用场景
 

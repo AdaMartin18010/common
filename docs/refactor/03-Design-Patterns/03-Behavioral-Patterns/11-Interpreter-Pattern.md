@@ -95,53 +95,117 @@ classDiagram
 
 ### 2.1 基本定义
 
-设 $\mathcal{E}$ 为表达式集合，$\mathcal{C}$ 为上下文集合，$\mathcal{V}$ 为值集合。
+设 ```latex
+$\mathcal{E}$
+``` 为表达式集合，```latex
+$\mathcal{C}$
+``` 为上下文集合，```latex
+$\mathcal{V}$
+``` 为值集合。
 
 **定义 2.1** (解释器模式)
-解释器模式是一个四元组 $(\mathcal{E}, \mathcal{C}, \mathcal{V}, \mathcal{I})$，其中：
+解释器模式是一个四元组 ```latex
+$(\mathcal{E}, \mathcal{C}, \mathcal{V}, \mathcal{I})$
+```，其中：
 
-- $\mathcal{E} = \mathcal{E}_T \cup \mathcal{E}_N$ 是表达式集合
-- $\mathcal{E}_T = \{E_1^T, E_2^T, \ldots, E_n^T\}$ 是终结表达式集合
-- $\mathcal{E}_N = \{E_1^N, E_2^N, \ldots, E_m^N\}$ 是非终结表达式集合
-- $\mathcal{C} = \{C_1, C_2, \ldots, C_k\}$ 是上下文集合
-- $\mathcal{V} = \{V_1, V_2, \ldots, V_l\}$ 是值集合
-- $\mathcal{I}: \mathcal{E} \times \mathcal{C} \rightarrow \mathcal{V}$ 是解释函数
+- ```latex
+$\mathcal{E} = \mathcal{E}_T \cup \mathcal{E}_N$
+``` 是表达式集合
+- ```latex
+$\mathcal{E}_T = \{E_1^T, E_2^T, \ldots, E_n^T\}$
+``` 是终结表达式集合
+- ```latex
+$\mathcal{E}_N = \{E_1^N, E_2^N, \ldots, E_m^N\}$
+``` 是非终结表达式集合
+- ```latex
+$\mathcal{C} = \{C_1, C_2, \ldots, C_k\}$
+``` 是上下文集合
+- ```latex
+$\mathcal{V} = \{V_1, V_2, \ldots, V_l\}$
+``` 是值集合
+- ```latex
+$\mathcal{I}: \mathcal{E} \times \mathcal{C} \rightarrow \mathcal{V}$
+``` 是解释函数
 
 ### 2.2 形式化规范
 
 **公理 2.1** (终结表达式解释)
-对于任意终结表达式 $E^T \in \mathcal{E}_T$ 和上下文 $C \in \mathcal{C}$：
+对于任意终结表达式 ```latex
+$E^T \in \mathcal{E}_T$
+``` 和上下文 ```latex
+$C \in \mathcal{C}$
+```：
 
-$$\mathcal{I}(E^T, C) = f_{E^T}(C)$$
+$```latex
+$\mathcal{I}(E^T, C) = f_{E^T}(C)$
+```$
 
-其中 $f_{E^T}$ 是终结表达式 $E^T$ 的解释函数。
+其中 ```latex
+$f_{E^T}$
+``` 是终结表达式 ```latex
+$E^T$
+``` 的解释函数。
 
 **公理 2.2** (非终结表达式解释)
-对于任意非终结表达式 $E^N \in \mathcal{E}_N$ 和上下文 $C \in \mathcal{C}$：
+对于任意非终结表达式 ```latex
+$E^N \in \mathcal{E}_N$
+``` 和上下文 ```latex
+$C \in \mathcal{C}$
+```：
 
-$$\mathcal{I}(E^N, C) = g_{E^N}(\mathcal{I}(E_1, C), \mathcal{I}(E_2, C), \ldots, \mathcal{I}(E_k, C))$$
+$```latex
+$\mathcal{I}(E^N, C) = g_{E^N}(\mathcal{I}(E_1, C), \mathcal{I}(E_2, C), \ldots, \mathcal{I}(E_k, C))$
+```$
 
-其中 $g_{E^N}$ 是非终结表达式 $E^N$ 的组合函数，$E_1, E_2, \ldots, E_k$ 是 $E^N$ 的子表达式。
+其中 ```latex
+$g_{E^N}$
+``` 是非终结表达式 ```latex
+$E^N$
+``` 的组合函数，```latex
+$E_1, E_2, \ldots, E_k$
+``` 是 ```latex
+$E^N$
+``` 的子表达式。
 
 ### 2.3 语法树定义
 
 **定义 2.2** (抽象语法树)
-抽象语法树是一个有向树 $T = (V, E)$，其中：
+抽象语法树是一个有向树 ```latex
+$T = (V, E)$
+```，其中：
 
-- $V = \mathcal{E}$ 是节点集合
-- $E \subseteq V \times V$ 是边集合
-- 对于任意非终结节点 $v \in \mathcal{E}_N$，存在子节点集合 $\{v_1, v_2, \ldots, v_k\} \subseteq V$
+- ```latex
+$V = \mathcal{E}$
+``` 是节点集合
+- ```latex
+$E \subseteq V \times V$
+``` 是边集合
+- 对于任意非终结节点 ```latex
+$v \in \mathcal{E}_N$
+```，存在子节点集合 ```latex
+$\{v_1, v_2, \ldots, v_k\} \subseteq V$
+```
 
 ## 3. 数学基础
 
 ### 3.1 递归函数理论
 
 **定理 3.1** (解释器递归性)
-设 $T$ 为抽象语法树，$h(T)$ 为树的高度，则解释器的时间复杂度为：
+设 ```latex
+$T$
+``` 为抽象语法树，```latex
+$h(T)$
+``` 为树的高度，则解释器的时间复杂度为：
 
-$$T(n) = O(h(T) \cdot \text{avg}(|V_i|))$$
+$```latex
+$T(n) = O(h(T) \cdot \text{avg}(|V_i|))$
+```$
 
-其中 $|V_i|$ 是第 $i$ 层节点的平均数量。
+其中 ```latex
+$|V_i|$
+``` 是第 ```latex
+$i$
+``` 层节点的平均数量。
 
 **证明**:
 
@@ -153,9 +217,17 @@ $$T(n) = O(h(T) \cdot \text{avg}(|V_i|))$$
 ### 3.2 上下文无关文法
 
 **定理 3.2** (文法表达能力)
-设 $G$ 为上下文无关文法，$L(G)$ 为 $G$ 生成的语言，则解释器能够解释的语言集合为：
+设 ```latex
+$G$
+``` 为上下文无关文法，```latex
+$L(G)$
+``` 为 ```latex
+$G$
+``` 生成的语言，则解释器能够解释的语言集合为：
 
-$$\mathcal{L} = \{L(G) | G \text{ 是上下文无关文法}\}$$
+$```latex
+$\mathcal{L} = \{L(G) | G \text{ 是上下文无关文法}\}$
+```$
 
 **证明**:
 
@@ -167,9 +239,15 @@ $$\mathcal{L} = \{L(G) | G \text{ 是上下文无关文法}\}$$
 ### 3.3 语义函数
 
 **定理 3.3** (语义函数连续性)
-设 $\mathcal{I}$ 为解释函数，$\mathcal{C}$ 为上下文集合，则：
+设 ```latex
+$\mathcal{I}$
+``` 为解释函数，```latex
+$\mathcal{C}$
+``` 为上下文集合，则：
 
-$$\forall C_1, C_2 \in \mathcal{C}: \text{distance}(C_1, C_2) < \delta \Rightarrow \text{distance}(\mathcal{I}(E, C_1), \mathcal{I}(E, C_2)) < \epsilon$$
+$```latex
+$\forall C_1, C_2 \in \mathcal{C}: \text{distance}(C_1, C_2) < \delta \Rightarrow \text{distance}(\mathcal{I}(E, C_1), \mathcal{I}(E, C_2)) < \epsilon$
+```$
 
 **证明**:
 
@@ -995,12 +1073,22 @@ func TestInterpreterPattern(t *testing.T) {
 
 ### 10.4 数学总结
 
-解释器模式通过形式化定义 $(\mathcal{E}, \mathcal{C}, \mathcal{V}, \mathcal{I})$ 实现了语法的解释，其中：
+解释器模式通过形式化定义 ```latex
+$(\mathcal{E}, \mathcal{C}, \mathcal{V}, \mathcal{I})$
+``` 实现了语法的解释，其中：
 
-- **终结表达式**: $\mathcal{I}(E^T, C) = f_{E^T}(C)$
-- **非终结表达式**: $\mathcal{I}(E^N, C) = g_{E^N}(\mathcal{I}(E_1, C), \mathcal{I}(E_2, C), \ldots, \mathcal{I}(E_k, C))$
-- **时间复杂度**: $T(n) = O(h(T) \cdot \text{avg}(|V_i|))$
-- **空间复杂度**: $S(n) = O(n + m + h + k)$
+- **终结表达式**: ```latex
+$\mathcal{I}(E^T, C) = f_{E^T}(C)$
+```
+- **非终结表达式**: ```latex
+$\mathcal{I}(E^N, C) = g_{E^N}(\mathcal{I}(E_1, C), \mathcal{I}(E_2, C), \ldots, \mathcal{I}(E_k, C))$
+```
+- **时间复杂度**: ```latex
+$T(n) = O(h(T) \cdot \text{avg}(|V_i|))$
+```
+- **空间复杂度**: ```latex
+$S(n) = O(n + m + h + k)$
+```
 
 这种模式在Go语言中通过接口和泛型得到了优雅的实现，既保持了类型安全，又提供了良好的扩展性。
 

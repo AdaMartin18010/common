@@ -9,12 +9,22 @@
 ### 1.1 语言语法定义
 
 **定义 1.1** (工作流语言语法)
-工作流语言的语法是一个四元组 $G = (V_N, V_T, P, S)$，其中：
+工作流语言的语法是一个四元组 ```latex
+$G = (V_N, V_T, P, S)$
+```，其中：
 
-- $V_N$ 是非终结符集合
-- $V_T$ 是终结符集合
-- $P$ 是产生式规则集合
-- $S$ 是开始符号
+- ```latex
+$V_N$
+``` 是非终结符集合
+- ```latex
+$V_T$
+``` 是终结符集合
+- ```latex
+$P$
+``` 是产生式规则集合
+- ```latex
+$S$
+``` 是开始符号
 
 **BNF语法定义**:
 
@@ -37,16 +47,30 @@ metadata    ::= 'metadata' '{' key_value* '}'
 ### 1.2 语言语义模型
 
 **定义 1.2** (工作流语言语义)
-工作流语言的语义是一个三元组 $\mathcal{S} = (D, \mathcal{I}, \mathcal{E})$，其中：
+工作流语言的语义是一个三元组 ```latex
+$\mathcal{S} = (D, \mathcal{I}, \mathcal{E})$
+```，其中：
 
-- $D$ 是域集合
-- $\mathcal{I}$ 是解释函数
-- $\mathcal{E}$ 是求值函数
+- ```latex
+$D$
+``` 是域集合
+- ```latex
+$\mathcal{I}$
+``` 是解释函数
+- ```latex
+$\mathcal{E}$
+``` 是求值函数
 
 **语义规则**:
-$$\mathcal{E}[\![\text{workflow}]\!] = \mathcal{I}(\text{workflow})$$
-$$\mathcal{E}[\![\text{state}]\!] = \mathcal{I}(\text{state})$$
-$$\mathcal{E}[\![\text{transition}]\!] = \mathcal{I}(\text{transition})$$
+$```latex
+$\mathcal{E}[\![\text{workflow}]\!] = \mathcal{I}(\text{workflow})$
+```$
+$```latex
+$\mathcal{E}[\![\text{state}]\!] = \mathcal{I}(\text{state})$
+```$
+$```latex
+$\mathcal{E}[\![\text{transition}]\!] = \mathcal{I}(\text{transition})$
+```$
 
 ## 2. 工作流DSL设计
 
@@ -433,11 +457,21 @@ func (h *HTTPRequestExtension) Cleanup() error {
 ### 4.1 语言性能优化
 
 **定理 4.1** (工作流语言性能)
-对于工作流语言 $L$，其执行时间复杂度为 $O(n \cdot m \cdot k)$，其中：
+对于工作流语言 ```latex
+$L$
+```，其执行时间复杂度为 ```latex
+$O(n \cdot m \cdot k)$
+```，其中：
 
-- $n$ 是工作流状态数量
-- $m$ 是事件数量
-- $k$ 是平均转移数量
+- ```latex
+$n$
+``` 是工作流状态数量
+- ```latex
+$m$
+``` 是事件数量
+- ```latex
+$k$
+``` 是平均转移数量
 
 **优化策略**:
 
@@ -510,7 +544,9 @@ func (wo *WorkflowOptimizer) Optimize() *OptimizedWorkflow {
 ### 4.2 语言安全性
 
 **定义 4.1** (工作流语言安全性)
-工作流语言 $L$ 是安全的，当且仅当：
+工作流语言 ```latex
+$L$
+``` 是安全的，当且仅当：
 
 1. 类型安全：所有表达式都有正确的类型
 2. 状态安全：所有状态转移都是有效的

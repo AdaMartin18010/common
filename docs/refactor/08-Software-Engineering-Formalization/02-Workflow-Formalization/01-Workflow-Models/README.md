@@ -36,53 +36,117 @@
 
 ### 1.1 形式化定义
 
-**定义 1.1** (工作流): 工作流是一个四元组 $W = (S, T, \delta, s_0)$，其中：
+**定义 1.1** (工作流): 工作流是一个四元组 ```latex
+$W = (S, T, \delta, s_0)$
+```，其中：
 
-- $S$ 是状态集合
-- $T$ 是任务集合  
-- $\delta: S \times T \rightarrow S$ 是状态转换函数
-- $s_0 \in S$ 是初始状态
+- ```latex
+$S$
+``` 是状态集合
+- ```latex
+$T$
+``` 是任务集合  
+- ```latex
+$\delta: S \times T \rightarrow S$
+``` 是状态转换函数
+- ```latex
+$s_0 \in S$
+``` 是初始状态
 
-**定义 1.2** (工作流执行): 工作流执行是一个序列 $\sigma = (s_0, t_1, s_1, t_2, s_2, \ldots, t_n, s_n)$，其中：
+**定义 1.2** (工作流执行): 工作流执行是一个序列 ```latex
+$\sigma = (s_0, t_1, s_1, t_2, s_2, \ldots, t_n, s_n)$
+```，其中：
 
-- $s_i \in S$ 是状态
-- $t_i \in T$ 是任务
-- $s_i = \delta(s_{i-1}, t_i)$ 对所有 $i \geq 1$
+- ```latex
+$s_i \in S$
+``` 是状态
+- ```latex
+$t_i \in T$
+``` 是任务
+- ```latex
+$s_i = \delta(s_{i-1}, t_i)$
+``` 对所有 ```latex
+$i \geq 1$
+```
 
-**定义 1.3** (工作流组合): 对于两个工作流 $W_1 = (S_1, T_1, \delta_1, s_{01})$ 和 $W_2 = (S_2, T_2, \delta_2, s_{02})$，其顺序组合定义为：
+**定义 1.3** (工作流组合): 对于两个工作流 ```latex
+$W_1 = (S_1, T_1, \delta_1, s_{01})$
+``` 和 ```latex
+$W_2 = (S_2, T_2, \delta_2, s_{02})$
+```，其顺序组合定义为：
 
-$$W_1 \circ W_2 = (S_1 \times S_2, T_1 \cup T_2, \delta_{12}, (s_{01}, s_{02}))$$
+$```latex
+$W_1 \circ W_2 = (S_1 \times S_2, T_1 \cup T_2, \delta_{12}, (s_{01}, s_{02}))$
+```$
 
-其中 $\delta_{12}$ 满足：
+其中 ```latex
+$\delta_{12}$
+``` 满足：
 
+```latex
 $$\delta_{12}((s_1, s_2), t) = \begin{cases}
 (\delta_1(s_1, t), s_2) & \text{if } t \in T_1 \\
 (s_1, \delta_2(s_2, t)) & \text{if } t \in T_2
 \end{cases}$$
+```
 
 ### 1.2 数学公理
 
 **公理 1.1** (结合律): 工作流组合满足结合律：
 
-$$(W_1 \circ W_2) \circ W_3 = W_1 \circ (W_2 \circ W_3)$$
+$```latex
+$(W_1 \circ W_2) \circ W_3 = W_1 \circ (W_2 \circ W_3)$
+```$
 
-**公理 1.2** (单位元): 存在单位工作流 $I$，使得：
+**公理 1.2** (单位元): 存在单位工作流 ```latex
+$I$
+```，使得：
 
-$$W \circ I = I \circ W = W$$
+$```latex
+$W \circ I = I \circ W = W$
+```$
 
 **公理 1.3** (分配律): 并行组合对顺序组合满足分配律：
 
-$$(W_1 \parallel W_2) \circ W_3 = (W_1 \circ W_3) \parallel (W_2 \circ W_3)$$
+$```latex
+$(W_1 \parallel W_2) \circ W_3 = (W_1 \circ W_3) \parallel (W_2 \circ W_3)$
+```$
 
 ### 1.3 基本定理
 
-**定理 1.1** (工作流确定性): 如果工作流 $W$ 的转换函数 $\delta$ 是确定的，则对于任意初始状态和任务序列，执行结果是唯一的。
+**定理 1.1** (工作流确定性): 如果工作流 ```latex
+$W$
+``` 的转换函数 ```latex
+$\delta$
+``` 是确定的，则对于任意初始状态和任务序列，执行结果是唯一的。
 
-**证明**: 假设存在两个不同的执行序列 $\sigma_1$ 和 $\sigma_2$，由于 $\delta$ 是确定的，$s_i = \delta(s_{i-1}, t_i)$ 唯一确定，因此 $\sigma_1 = \sigma_2$。$\square$
+**证明**: 假设存在两个不同的执行序列 ```latex
+$\sigma_1$
+``` 和 ```latex
+$\sigma_2$
+```，由于 ```latex
+$\delta$
+``` 是确定的，```latex
+$s_i = \delta(s_{i-1}, t_i)$
+``` 唯一确定，因此 ```latex
+$\sigma_1 = \sigma_2$
+```。```latex
+$\square$
+```
 
-**定理 1.2** (组合性保持): 如果工作流 $W_1$ 和 $W_2$ 都是确定的，则其组合 $W_1 \circ W_2$ 也是确定的。
+**定理 1.2** (组合性保持): 如果工作流 ```latex
+$W_1$
+``` 和 ```latex
+$W_2$
+``` 都是确定的，则其组合 ```latex
+$W_1 \circ W_2$
+``` 也是确定的。
 
-**证明**: 由定义 1.3，$\delta_{12}$ 是确定的，因此组合工作流也是确定的。$\square$
+**证明**: 由定义 1.3，```latex
+$\delta_{12}$
+``` 是确定的，因此组合工作流也是确定的。```latex
+$\square$
+```
 
 ---
 
@@ -90,24 +154,50 @@ $$(W_1 \parallel W_2) \circ W_3 = (W_1 \circ W_3) \parallel (W_2 \circ W_3)$$
 
 ### 2.1 工作流空间
 
-**定义 2.1** (工作流空间): 工作流空间 $\mathcal{W}$ 是所有可能工作流的集合，配备同伦等价关系。
+**定义 2.1** (工作流空间): 工作流空间 ```latex
+$\mathcal{W}$
+``` 是所有可能工作流的集合，配备同伦等价关系。
 
-**定义 2.2** (执行路径): 工作流 $W$ 的执行路径是连续映射 $\gamma: [0,1] \rightarrow \mathcal{W}$，其中 $\gamma(0)$ 是初始状态，$\gamma(1)$ 是终止状态。
+**定义 2.2** (执行路径): 工作流 ```latex
+$W$
+``` 的执行路径是连续映射 ```latex
+$\gamma: [0,1] \rightarrow \mathcal{W}$
+```，其中 ```latex
+$\gamma(0)$
+``` 是初始状态，```latex
+$\gamma(1)$
+``` 是终止状态。
 
 ### 2.2 同伦等价
 
-**定义 2.3** (同伦等价): 两个工作流执行 $\gamma_1, \gamma_2$ 是同伦等价的，如果存在连续映射 $H: [0,1] \times [0,1] \rightarrow \mathcal{W}$ 使得：
+**定义 2.3** (同伦等价): 两个工作流执行 ```latex
+$\gamma_1, \gamma_2$
+``` 是同伦等价的，如果存在连续映射 ```latex
+$H: [0,1] \times [0,1] \rightarrow \mathcal{W}$
+``` 使得：
 
-- $H(t,0) = \gamma_1(t)$
-- $H(t,1) = \gamma_2(t)$
-- $H(0,s) = \gamma_1(0) = \gamma_2(0)$
-- $H(1,s) = \gamma_1(1) = \gamma_2(1)$
+- ```latex
+$H(t,0) = \gamma_1(t)$
+```
+- ```latex
+$H(t,1) = \gamma_2(t)$
+```
+- ```latex
+$H(0,s) = \gamma_1(0) = \gamma_2(0)$
+```
+- ```latex
+$H(1,s) = \gamma_1(1) = \gamma_2(1)$
+```
 
 **定理 2.1** (同伦不变性): 同伦等价的工作流执行具有相同的语义性质。
 
 ### 2.3 基本群
 
-**定义 2.4** (工作流基本群): 工作流空间 $\mathcal{W}$ 的基本群 $\pi_1(\mathcal{W})$ 是所有同伦等价类的集合，配备路径组合运算。
+**定义 2.4** (工作流基本群): 工作流空间 ```latex
+$\mathcal{W}$
+``` 的基本群 ```latex
+$\pi_1(\mathcal{W})$
+``` 是所有同伦等价类的集合，配备路径组合运算。
 
 **定理 2.2** (基本群结构): 工作流基本群是一个群，其中：
 
@@ -121,29 +211,59 @@ $$(W_1 \parallel W_2) \circ W_3 = (W_1 \circ W_3) \parallel (W_2 \circ W_3)$$
 
 ### 3.1 工作流范畴
 
-**定义 3.1** (工作流范畴): 工作流范畴 $\mathcal{C}$ 定义为：
+**定义 3.1** (工作流范畴): 工作流范畴 ```latex
+$\mathcal{C}$
+``` 定义为：
 
-- **对象**: 系统状态 $s \in S$
-- **态射**: 工作流转换 $f: s_1 \rightarrow s_2$
+- **对象**: 系统状态 ```latex
+$s \in S$
+```
+- **态射**: 工作流转换 ```latex
+$f: s_1 \rightarrow s_2$
+```
 - **组合**: 态射的复合运算
-- **单位元**: 恒等态射 $\text{id}_s: s \rightarrow s$
+- **单位元**: 恒等态射 ```latex
+$\text{id}_s: s \rightarrow s$
+```
 
-**定理 3.1** (范畴性质): 工作流范畴 $\mathcal{C}$ 满足范畴的所有公理。
+**定理 3.1** (范畴性质): 工作流范畴 ```latex
+$\mathcal{C}$
+``` 满足范畴的所有公理。
 
 ### 3.2 函子映射
 
-**定义 3.2** (工作流函子): 函子 $F: \mathcal{C} \rightarrow \mathcal{D}$ 将工作流范畴映射到另一个范畴，保持：
+**定义 3.2** (工作流函子): 函子 ```latex
+$F: \mathcal{C} \rightarrow \mathcal{D}$
+``` 将工作流范畴映射到另一个范畴，保持：
 
-- 对象映射: $F: \text{Obj}(\mathcal{C}) \rightarrow \text{Obj}(\mathcal{D})$
-- 态射映射: $F: \text{Hom}(s_1, s_2) \rightarrow \text{Hom}(F(s_1), F(s_2))$
-- 组合保持: $F(f \circ g) = F(f) \circ F(g)$
-- 单位元保持: $F(\text{id}_s) = \text{id}_{F(s)}$
+- 对象映射: ```latex
+$F: \text{Obj}(\mathcal{C}) \rightarrow \text{Obj}(\mathcal{D})$
+```
+- 态射映射: ```latex
+$F: \text{Hom}(s_1, s_2) \rightarrow \text{Hom}(F(s_1), F(s_2))$
+```
+- 组合保持: ```latex
+$F(f \circ g) = F(f) \circ F(g)$
+```
+- 单位元保持: ```latex
+$F(\text{id}_s) = \text{id}_{F(s)}$
+```
 
 ### 3.3 自然变换
 
-**定义 3.3** (自然变换): 两个函子 $F, G: \mathcal{C} \rightarrow \mathcal{D}$ 之间的自然变换 $\eta: F \Rightarrow G$ 是一族态射 $\eta_s: F(s) \rightarrow G(s)$，使得对于任意态射 $f: s_1 \rightarrow s_2$，有：
+**定义 3.3** (自然变换): 两个函子 ```latex
+$F, G: \mathcal{C} \rightarrow \mathcal{D}$
+``` 之间的自然变换 ```latex
+$\eta: F \Rightarrow G$
+``` 是一族态射 ```latex
+$\eta_s: F(s) \rightarrow G(s)$
+```，使得对于任意态射 ```latex
+$f: s_1 \rightarrow s_2$
+```，有：
 
-$$G(f) \circ \eta_{s_1} = \eta_{s_2} \circ F(f)$$
+$```latex
+$G(f) \circ \eta_{s_1} = \eta_{s_2} \circ F(f)$
+```$
 
 ---
 
@@ -697,27 +817,61 @@ func ErrorHandlingWorkflow() {
 
 ### 6.1 时间复杂度
 
-**定理 6.1**: 工作流执行的时间复杂度为 $O(|T| + |E|)$，其中 $|T|$ 是任务数量，$|E|$ 是依赖边数量。
+**定理 6.1**: 工作流执行的时间复杂度为 ```latex
+$O(|T| + |E|)$
+```，其中 ```latex
+$|T|$
+``` 是任务数量，```latex
+$|E|$
+``` 是依赖边数量。
 
 **证明**:
-- 拓扑排序: $O(|T| + |E|)$
-- 任务执行: $O(|T|)$
-- 总时间复杂度: $O(|T| + |E|)$ $\square$
+- 拓扑排序: ```latex
+$O(|T| + |E|)$
+```
+- 任务执行: ```latex
+$O(|T|)$
+```
+- 总时间复杂度: ```latex
+$O(|T| + |E|)$
+``` ```latex
+$\square$
+```
 
 ### 6.2 空间复杂度
 
-**定理 6.2**: 工作流执行的空间复杂度为 $O(|T| + |E|)$。
+**定理 6.2**: 工作流执行的空间复杂度为 ```latex
+$O(|T| + |E|)$
+```。
 
 **证明**:
-- 依赖图存储: $O(|T| + |E|)$
-- 结果缓存: $O(|T|)$
-- 总空间复杂度: $O(|T| + |E|)$ $\square$
+- 依赖图存储: ```latex
+$O(|T| + |E|)$
+```
+- 结果缓存: ```latex
+$O(|T|)$
+```
+- 总空间复杂度: ```latex
+$O(|T| + |E|)$
+``` ```latex
+$\square$
+```
 
 ### 6.3 并发性能
 
-**定理 6.3**: 使用 $n$ 个工作协程时，理想情况下的加速比为 $O(n)$。
+**定理 6.3**: 使用 ```latex
+$n$
+``` 个工作协程时，理想情况下的加速比为 ```latex
+$O(n)$
+```。
 
-**证明**: 在任务间无依赖的情况下，$n$ 个协程可以并行执行，因此加速比为 $O(n)$。$\square$
+**证明**: 在任务间无依赖的情况下，```latex
+$n$
+``` 个协程可以并行执行，因此加速比为 ```latex
+$O(n)$
+```。```latex
+$\square$
+```
 
 **实际性能考虑**:
 - 任务依赖限制了并行度

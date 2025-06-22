@@ -41,13 +41,25 @@
 工作流是对工作过程的系统化描述和自动化执行，涉及工作任务如何结构化、谁执行任务、任务的先后顺序、信息如何流转、以及如何跟踪任务完成情况的定义。
 
 **形式化定义**：
-工作流可以表示为五元组 $W = \{A, T, D, R, C\}$，其中：
+工作流可以表示为五元组 ```latex
+$W = \{A, T, D, R, C\}$
+```，其中：
 
-- $A$：活动集合 (Activities)
-- $T$：活动间转移关系 (Transitions)
-- $D$：数据对象集合 (Data Objects)
-- $R$：资源集合 (Resources)
-- $C$：约束条件集合 (Constraints)
+- ```latex
+$A$
+```：活动集合 (Activities)
+- ```latex
+$T$
+```：活动间转移关系 (Transitions)
+- ```latex
+$D$
+```：数据对象集合 (Data Objects)
+- ```latex
+$R$
+```：资源集合 (Resources)
+- ```latex
+$C$
+```：约束条件集合 (Constraints)
 
 ### 2. 工作流管理联盟 (WfMC) 定义
 

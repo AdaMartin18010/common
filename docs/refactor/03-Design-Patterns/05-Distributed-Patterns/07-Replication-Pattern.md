@@ -75,26 +75,50 @@
 
 ### 2.1 复制系统模型
 
-设复制系统 $R = \{r_1, r_2, ..., r_n\}$ 包含 $n$ 个副本。
+设复制系统 ```latex
+$R = \{r_1, r_2, ..., r_n\}$
+``` 包含 ```latex
+$n$
+``` 个副本。
 
 **定义 2.1 (复制函数)**
-复制函数 $f: D \rightarrow R^n$ 将数据项 $d$ 映射到 $n$ 个副本。
+复制函数 ```latex
+$f: D \rightarrow R^n$
+``` 将数据项 ```latex
+$d$
+``` 映射到 ```latex
+$n$
+``` 个副本。
 
 **定义 2.2 (副本一致性)**
-副本 $r_i$ 和 $r_j$ 是一致的，当且仅当：
-$$\forall d \in D: f(d)_i = f(d)_j$$
+副本 ```latex
+$r_i$
+``` 和 ```latex
+$r_j$
+``` 是一致的，当且仅当：
+$```latex
+$\forall d \in D: f(d)_i = f(d)_j$
+```$
 
 ### 2.2 复制拓扑
 
 **定义 2.3 (复制拓扑)**
-复制拓扑 $T = (R, E)$ 是一个有向图，其中：
+复制拓扑 ```latex
+$T = (R, E)$
+``` 是一个有向图，其中：
 
-- $R$ 是副本集合
-- $E \subseteq R \times R$ 是复制关系集合
+- ```latex
+$R$
+``` 是副本集合
+- ```latex
+$E \subseteq R \times R$
+``` 是复制关系集合
 
 **定义 2.4 (主从复制)**
 主从复制拓扑满足：
-$$\exists r_m \in R: \forall r \in R \setminus \{r_m\}: (r_m, r) \in E$$
+$```latex
+$\exists r_m \in R: \forall r \in R \setminus \{r_m\}: (r_m, r) \in E$
+```$
 
 ### 2.3 复制正确性
 
@@ -136,21 +160,31 @@ $$\exists r_m \in R: \forall r \in R \setminus \{r_m\}: (r_m, r) \in E$$
 
 **定义 3.1 (强一致性)**
 强一致性要求所有操作按全局顺序执行：
-$$\forall o_1, o_2: o_1 \prec o_2 \Rightarrow \text{all replicas see } o_1 \text{ before } o_2$$
+$```latex
+$\forall o_1, o_2: o_1 \prec o_2 \Rightarrow \text{all replicas see } o_1 \text{ before } o_2$
+```$
 
 **定义 3.2 (最终一致性)**
 最终一致性要求在没有新更新的情况下，所有副本最终收敛：
-$$\lim_{t \to \infty} \forall r_i, r_j: f(d)_i(t) = f(d)_j(t)$$
+$```latex
+$\lim_{t \to \infty} \forall r_i, r_j: f(d)_i(t) = f(d)_j(t)$
+```$
 
 ### 3.3 复制延迟分析
 
 **定理 3.2 (复制延迟下界)**
-在异步网络中，复制延迟的下界为网络延迟 $d$：
-$$T_{replication} \geq d$$
+在异步网络中，复制延迟的下界为网络延迟 ```latex
+$d$
+```：
+$```latex
+$T_{replication} \geq d$
+```$
 
 **定理 3.3 (复制延迟上界)**
 使用异步复制的延迟上界为：
-$$T_{replication} \leq d + \text{processing time}$$
+$```latex
+$T_{replication} \leq d + \text{processing time}$
+```$
 
 ## 4. 复制策略
 
@@ -1023,19 +1057,33 @@ func main() {
 ### 7.2 网络开销分析
 
 **定理 7.1 (主从复制网络开销)**
-主从复制的网络开销为 $O(n)$，其中 $n$ 是从节点数量。
+主从复制的网络开销为 ```latex
+$O(n)$
+```，其中 ```latex
+$n$
+``` 是从节点数量。
 
 **定理 7.2 (多主复制网络开销)**
-多主复制的网络开销为 $O(m^2)$，其中 $m$ 是主节点数量。
+多主复制的网络开销为 ```latex
+$O(m^2)$
+```，其中 ```latex
+$m$
+``` 是主节点数量。
 
 **定理 7.3 (无主复制网络开销)**
-无主复制的网络开销为 $O(r^2)$，其中 $r$ 是副本数量。
+无主复制的网络开销为 ```latex
+$O(r^2)$
+```，其中 ```latex
+$r$
+``` 是副本数量。
 
 ### 7.3 一致性延迟分析
 
 **定理 7.4 (最终一致性延迟)**
 在异步网络中，最终一致性的延迟为：
-$$T_{consistency} = O(\text{network delay} + \text{sync interval})$$
+$```latex
+$T_{consistency} = O(\text{network delay} + \text{sync interval})$
+```$
 
 ## 8. 应用场景
 

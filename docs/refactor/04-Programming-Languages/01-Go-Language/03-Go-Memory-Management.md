@@ -43,10 +43,22 @@ Main Memory (100-300 cycles) → Disk (millions of cycles)
 ```
 
 **形式化定义**：
-设 $M_i$ 为第 $i$ 层内存，$t_i$ 为访问时间，$s_i$ 为容量，则：
+设 ```latex
+$M_i$
+``` 为第 ```latex
+$i$
+``` 层内存，```latex
+$t_i$
+``` 为访问时间，```latex
+$s_i$
+``` 为容量，则：
 
-$$t_1 < t_2 < t_3 < t_4 < t_5$$
-$$s_1 < s_2 < s_3 < s_4 < s_5$$
+$```latex
+$t_1 < t_2 < t_3 < t_4 < t_5$
+```$
+$```latex
+$s_1 < s_2 < s_3 < s_4 < s_5$
+```$
 
 **局部性原理**：
 
@@ -85,23 +97,37 @@ func (m *CacheFriendlyMatrix) GetColumnMajor(row, col int) float64 {
 #### 1.2.1 分配策略分类
 
 **形式化定义**：
-设 $S$ 为内存空间，$R$ 为请求序列，$A$ 为分配算法，则：
+设 ```latex
+$S$
+``` 为内存空间，```latex
+$R$
+``` 为请求序列，```latex
+$A$
+``` 为分配算法，则：
 
-$$A: R \rightarrow S$$
+$```latex
+$A: R \rightarrow S$
+```$
 
 **主要分配策略**：
 
 1. **首次适应算法 (First Fit)**
    - 从空闲链表头部开始查找第一个足够大的块
-   - 时间复杂度：$O(n)$
+   - 时间复杂度：```latex
+$O(n)$
+```
 
 2. **最佳适应算法 (Best Fit)**
    - 查找最小的足够大的空闲块
-   - 时间复杂度：$O(n)$
+   - 时间复杂度：```latex
+$O(n)$
+```
 
 3. **最坏适应算法 (Worst Fit)**
    - 查找最大的空闲块
-   - 时间复杂度：$O(n)$
+   - 时间复杂度：```latex
+$O(n)$
+```
 
 ```go
 // 内存分配策略实现
@@ -157,9 +183,15 @@ func (b *BestFitStrategy) Allocate(blocks []*MemoryBlock, size uintptr) *MemoryB
 **定义**：内存碎片化是指内存中存在大量小的、不连续的空闲块，无法满足大块内存分配需求。
 
 **碎片化度量**：
-$$Fragmentation = \frac{\sum_{i=1}^{n} (block_i - request_i)}{\sum_{i=1}^{n} block_i}$$
+$```latex
+$Fragmentation = \frac{\sum_{i=1}^{n} (block_i - request_i)}{\sum_{i=1}^{n} block_i}$
+```$
 
-其中 $block_i$ 是分配块大小，$request_i$ 是请求大小。
+其中 ```latex
+$block_i$
+``` 是分配块大小，```latex
+$request_i$
+``` 是请求大小。
 
 ```go
 // 内存碎片化检测
@@ -195,9 +227,15 @@ func (fa *FragmentationAnalyzer) CalculateFragmentation() float64 {
 **定义**：从根对象出发，通过引用关系能够到达的对象称为可达对象，否则为不可达对象。
 
 **形式化定义**：
-设 $G = (V, E)$ 为对象图，$R \subseteq V$ 为根对象集合，则可达对象集合为：
+设 ```latex
+$G = (V, E)$
+``` 为对象图，```latex
+$R \subseteq V$
+``` 为根对象集合，则可达对象集合为：
 
-$$Reachable(R) = \{v \in V | \exists path \text{ from } r \in R \text{ to } v\}$$
+$```latex
+$Reachable(R) = \{v \in V | \exists path \text{ from } r \in R \text{ to } v\}$
+```$
 
 ```go
 // 可达性分析实现

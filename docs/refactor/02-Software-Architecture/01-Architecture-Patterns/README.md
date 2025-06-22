@@ -9,38 +9,78 @@
 ### 1.1 形式化定义
 
 **定义 1.1.1 (分层架构)**
-分层架构是一个四元组 $LA = (L, \prec, I, C)$，其中：
+分层架构是一个四元组 ```latex
+$LA = (L, \prec, I, C)$
+```，其中：
 
-- $L = \{L_1, L_2, \ldots, L_n\}$ 是层集合
-- $\prec \subseteq L \times L$ 是依赖关系，$L_i \prec L_j$ 表示 $L_i$ 依赖 $L_j$
-- $I: L \to \mathcal{P}(C)$ 是接口映射，$I(L_i)$ 表示层 $L_i$ 提供的接口
-- $C$ 是组件集合
+- ```latex
+$L = \{L_1, L_2, \ldots, L_n\}$
+``` 是层集合
+- ```latex
+$\prec \subseteq L \times L$
+``` 是依赖关系，```latex
+$L_i \prec L_j$
+``` 表示 ```latex
+$L_i$
+``` 依赖 ```latex
+$L_j$
+```
+- ```latex
+$I: L \to \mathcal{P}(C)$
+``` 是接口映射，```latex
+$I(L_i)$
+``` 表示层 ```latex
+$L_i$
+``` 提供的接口
+- ```latex
+$C$
+``` 是组件集合
 
 **定义 1.1.2 (分层约束)**
 分层架构必须满足以下约束：
 
-1. **传递性**: $L_i \prec L_j \land L_j \prec L_k \implies L_i \prec L_k$
-2. **反对称性**: $L_i \prec L_j \land L_j \prec L_i \implies L_i = L_j$
-3. **无环性**: $\neg(L_i \prec L_i)$
-4. **接口一致性**: $L_i \prec L_j \implies I(L_i) \cap I(L_j) \neq \emptyset$
+1. **传递性**: ```latex
+$L_i \prec L_j \land L_j \prec L_k \implies L_i \prec L_k$
+```
+2. **反对称性**: ```latex
+$L_i \prec L_j \land L_j \prec L_i \implies L_i = L_j$
+```
+3. **无环性**: ```latex
+$\neg(L_i \prec L_i)$
+```
+4. **接口一致性**: ```latex
+$L_i \prec L_j \implies I(L_i) \cap I(L_j) \neq \emptyset$
+```
 
 ### 1.2 分层架构定理
 
 **定理 1.2.1 (分层架构的偏序性)**
-分层架构的依赖关系 $\prec$ 构成偏序关系。
+分层架构的依赖关系 ```latex
+$\prec$
+``` 构成偏序关系。
 
 **证明**：
 
-1. 自反性：由定义，$L_i \not\prec L_i$，但可以定义 $L_i \preceq L_i$
+1. 自反性：由定义，```latex
+$L_i \not\prec L_i$
+```，但可以定义 ```latex
+$L_i \preceq L_i$
+```
 2. 反对称性：由分层约束2
 3. 传递性：由分层约束1
 
 **定理 1.2.2 (分层架构的拓扑排序)**
-分层架构存在拓扑排序，即存在全序 $\leq$ 使得 $\prec \subseteq \leq$。
+分层架构存在拓扑排序，即存在全序 ```latex
+$\leq$
+``` 使得 ```latex
+$\prec \subseteq \leq$
+```。
 
 **证明**：
 
-1. 由于 $\prec$ 是无环偏序，根据拓扑排序定理，存在拓扑排序
+1. 由于 ```latex
+$\prec$
+``` 是无环偏序，根据拓扑排序定理，存在拓扑排序
 2. 拓扑排序保证了层的正确构建顺序
 
 ### 1.3 Go语言实现
@@ -202,21 +242,41 @@ func (lav *LayeredArchitectureValidator) TopologicalSort() []Layer {
 ### 2.1 形式化定义
 
 **定义 2.1.1 (微服务架构)**
-微服务架构是一个五元组 $MSA = (S, C, N, P, R)$，其中：
+微服务架构是一个五元组 ```latex
+$MSA = (S, C, N, P, R)$
+```，其中：
 
-- $S = \{s_1, s_2, \ldots, s_n\}$ 是服务集合
-- $C: S \to \mathcal{P}(C)$ 是服务到组件的映射
-- $N: S \times S \to \mathcal{P}(C)$ 是网络通信映射
-- $P: S \to \mathcal{P}(P)$ 是服务到端点的映射
-- $R: S \to \mathcal{P}(R)$ 是服务到资源的映射
+- ```latex
+$S = \{s_1, s_2, \ldots, s_n\}$
+``` 是服务集合
+- ```latex
+$C: S \to \mathcal{P}(C)$
+``` 是服务到组件的映射
+- ```latex
+$N: S \times S \to \mathcal{P}(C)$
+``` 是网络通信映射
+- ```latex
+$P: S \to \mathcal{P}(P)$
+``` 是服务到端点的映射
+- ```latex
+$R: S \to \mathcal{P}(R)$
+``` 是服务到资源的映射
 
 **定义 2.1.2 (微服务约束)**
 微服务架构必须满足以下约束：
 
-1. **独立性**: $\forall s_i, s_j \in S: i \neq j \implies C(s_i) \cap C(s_j) = \emptyset$
-2. **自治性**: $\forall s \in S: \exists p \in P(s): p \text{ 是独立的部署单元}$
-3. **松耦合**: $\forall s_i, s_j \in S: N(s_i, s_j) \text{ 通过标准协议}$
-4. **高内聚**: $\forall s \in S: C(s) \text{ 具有单一职责}$
+1. **独立性**: ```latex
+$\forall s_i, s_j \in S: i \neq j \implies C(s_i) \cap C(s_j) = \emptyset$
+```
+2. **自治性**: ```latex
+$\forall s \in S: \exists p \in P(s): p \text{ 是独立的部署单元}$
+```
+3. **松耦合**: ```latex
+$\forall s_i, s_j \in S: N(s_i, s_j) \text{ 通过标准协议}$
+```
+4. **高内聚**: ```latex
+$\forall s \in S: C(s) \text{ 具有单一职责}$
+```
 
 ### 2.2 微服务架构定理
 
@@ -388,22 +448,44 @@ func (sd *ServiceDiscovery) HealthCheck(serviceID string) bool {
 ### 3.1 形式化定义
 
 **定义 3.1.1 (事件驱动架构)**
-事件驱动架构是一个六元组 $EDA = (E, P, C, B, H, T)$，其中：
+事件驱动架构是一个六元组 ```latex
+$EDA = (E, P, C, B, H, T)$
+```，其中：
 
-- $E = \{e_1, e_2, \ldots, e_n\}$ 是事件集合
-- $P: E \to \mathcal{P}(P)$ 是事件到生产者的映射
-- $C: E \to \mathcal{P}(C)$ 是事件到消费者的映射
-- $B: E \to B$ 是事件到总线的映射
-- $H: E \to \mathcal{P}(H)$ 是事件到处理器的映射
-- $T: E \to T$ 是事件到类型的映射
+- ```latex
+$E = \{e_1, e_2, \ldots, e_n\}$
+``` 是事件集合
+- ```latex
+$P: E \to \mathcal{P}(P)$
+``` 是事件到生产者的映射
+- ```latex
+$C: E \to \mathcal{P}(C)$
+``` 是事件到消费者的映射
+- ```latex
+$B: E \to B$
+``` 是事件到总线的映射
+- ```latex
+$H: E \to \mathcal{P}(H)$
+``` 是事件到处理器的映射
+- ```latex
+$T: E \to T$
+``` 是事件到类型的映射
 
 **定义 3.1.2 (事件驱动约束)**
 事件驱动架构必须满足以下约束：
 
-1. **异步性**: $\forall e \in E: P(e) \cap C(e) = \emptyset$
-2. **解耦性**: $\forall e_1, e_2 \in E: e_1 \neq e_2 \implies P(e_1) \cap P(e_2) = \emptyset$
-3. **可扩展性**: $\forall e \in E: |C(e)| \text{ 可以动态变化}$
-4. **可靠性**: $\forall e \in E: \exists h \in H(e): h \text{ 保证事件处理}$
+1. **异步性**: ```latex
+$\forall e \in E: P(e) \cap C(e) = \emptyset$
+```
+2. **解耦性**: ```latex
+$\forall e_1, e_2 \in E: e_1 \neq e_2 \implies P(e_1) \cap P(e_2) = \emptyset$
+```
+3. **可扩展性**: ```latex
+$\forall e \in E: |C(e)| \text{ 可以动态变化}$
+```
+4. **可靠性**: ```latex
+$\forall e \in E: \exists h \in H(e): h \text{ 保证事件处理}$
+```
 
 ### 3.2 事件驱动架构定理
 

@@ -34,21 +34,45 @@
 ### 1.1 基本概念
 
 **定义 1.1.1** (状态机)
-状态机是一个五元组 $M = (S, S_0, \Sigma, \delta, F)$，其中：
+状态机是一个五元组 ```latex
+$M = (S, S_0, \Sigma, \delta, F)$
+```，其中：
 
-- $S$ 是状态集
-- $S_0 \subseteq S$ 是初始状态集
-- $\Sigma$ 是输入字母表
-- $\delta: S \times \Sigma \rightarrow 2^S$ 是转移函数
-- $F \subseteq S$ 是接受状态集
+- ```latex
+$S$
+``` 是状态集
+- ```latex
+$S_0 \subseteq S$
+``` 是初始状态集
+- ```latex
+$\Sigma$
+``` 是输入字母表
+- ```latex
+$\delta: S \times \Sigma \rightarrow 2^S$
+``` 是转移函数
+- ```latex
+$F \subseteq S$
+``` 是接受状态集
 
 **定义 1.1.2** (Kripke结构)
-Kripke结构是一个四元组 $K = (S, S_0, R, L)$，其中：
+Kripke结构是一个四元组 ```latex
+$K = (S, S_0, R, L)$
+```，其中：
 
-- $S$ 是状态集
-- $S_0 \subseteq S$ 是初始状态集
-- $R \subseteq S \times S$ 是转移关系
-- $L: S \rightarrow 2^{AP}$ 是标记函数，$AP$ 是原子命题集
+- ```latex
+$S$
+``` 是状态集
+- ```latex
+$S_0 \subseteq S$
+``` 是初始状态集
+- ```latex
+$R \subseteq S \times S$
+``` 是转移关系
+- ```latex
+$L: S \rightarrow 2^{AP}$
+``` 是标记函数，```latex
+$AP$
+``` 是原子命题集
 
 ### 1.2 Go语言实现
 
@@ -209,28 +233,72 @@ func (ks *KripkeStructure) GetLabels(state string) []string {
 
 **定义 2.1.1** (LTL语法)
 LTL公式的语法：
+```latex
 $\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid X \phi \mid F \phi \mid G \phi \mid \phi U \phi \mid \phi R \phi$
+```
 
 其中：
 
-- $X \phi$: 下一个状态满足 $\phi$
-- $F \phi$: 将来某个状态满足 $\phi$
-- $G \phi$: 所有将来状态都满足 $\phi$
-- $\phi U \psi$: $\phi$ 直到 $\psi$ 成立
-- $\phi R \psi$: $\phi$ 释放 $\psi$
+- ```latex
+$X \phi$
+```: 下一个状态满足 ```latex
+$\phi$
+```
+- ```latex
+$F \phi$
+```: 将来某个状态满足 ```latex
+$\phi$
+```
+- ```latex
+$G \phi$
+```: 所有将来状态都满足 ```latex
+$\phi$
+```
+- ```latex
+$\phi U \psi$
+```: ```latex
+$\phi$
+``` 直到 ```latex
+$\psi$
+``` 成立
+- ```latex
+$\phi R \psi$
+```: ```latex
+$\phi$
+``` 释放 ```latex
+$\psi$
+```
 
 ### 2.2 计算树逻辑 (CTL)
 
 **定义 2.2.1** (CTL语法)
 CTL公式的语法：
+```latex
 $\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid EX \phi \mid AX \phi \mid EF \phi \mid AF \phi \mid EG \phi \mid AG \phi \mid E[\phi U \psi] \mid A[\phi U \psi]$
+```
 
 其中：
 
-- $EX \phi$: 存在一个后继状态满足 $\phi$
-- $AX \phi$: 所有后继状态都满足 $\phi$
-- $EF \phi$: 存在一条路径，将来某个状态满足 $\phi$
-- $AF \phi$: 所有路径，将来某个状态都满足 $\phi$
+- ```latex
+$EX \phi$
+```: 存在一个后继状态满足 ```latex
+$\phi$
+```
+- ```latex
+$AX \phi$
+```: 所有后继状态都满足 ```latex
+$\phi$
+```
+- ```latex
+$EF \phi$
+```: 存在一条路径，将来某个状态满足 ```latex
+$\phi$
+```
+- ```latex
+$AF \phi$
+```: 所有路径，将来某个状态都满足 ```latex
+$\phi$
+```
 
 ### 2.3 Go语言实现
 

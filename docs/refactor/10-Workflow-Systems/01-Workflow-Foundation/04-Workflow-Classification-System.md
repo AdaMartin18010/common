@@ -48,33 +48,45 @@
 
 **定义 1.1** (控制流分类): 基于工作流中活动之间的控制关系进行分类：
 
-$$\text{ControlFlowClass}(W) = \{\text{Sequential}, \text{Parallel}, \text{Conditional}, \text{Iterative}, \text{Hybrid}\}$$
+$```latex
+$\text{ControlFlowClass}(W) = \{\text{Sequential}, \text{Parallel}, \text{Conditional}, \text{Iterative}, \text{Hybrid}\}$
+```$
 
 ### 1.2 按数据流分类
 
 **定义 1.2** (数据流分类): 基于工作流中数据的流动方式进行分类：
 
-$$\text{DataFlowClass}(W) = \{\text{DataDriven}, \text{EventDriven}, \text{StateDriven}, \text{MessageDriven}\}$$
+$```latex
+$\text{DataFlowClass}(W) = \{\text{DataDriven}, \text{EventDriven}, \text{StateDriven}, \text{MessageDriven}\}$
+```$
 
 ### 1.3 按应用领域分类
 
 **定义 1.3** (应用领域分类): 基于工作流的应用场景进行分类：
 
-$$\text{DomainClass}(W) = \{\text{BusinessProcess}, \text{ScientificComputing}, \text{DataProcessing}, \text{SystemManagement}\}$$
+$```latex
+$\text{DomainClass}(W) = \{\text{BusinessProcess}, \text{ScientificComputing}, \text{DataProcessing}, \text{SystemManagement}\}$
+```$
 
 ### 1.4 按执行模式分类
 
 **定义 1.4** (执行模式分类): 基于工作流的执行方式进行分类：
 
-$$\text{ExecutionClass}(W) = \{\text{Synchronous}, \text{Asynchronous}, \text{Distributed}, \text{CloudNative}\}$$
+$```latex
+$\text{ExecutionClass}(W) = \{\text{Synchronous}, \text{Asynchronous}, \text{Distributed}, \text{CloudNative}\}$
+```$
 
 ## 2. 控制流分类
 
 ### 2.1 顺序工作流
 
-**定义 2.1** (顺序工作流): 工作流 $W$ 是顺序的，如果其活动图是线性链：
+**定义 2.1** (顺序工作流): 工作流 ```latex
+$W$
+``` 是顺序的，如果其活动图是线性链：
 
-$$\text{Sequential}(W) \iff \forall A_i, A_j \in N: (A_i, A_j) \in E \implies i < j$$
+$```latex
+$\text{Sequential}(W) \iff \forall A_i, A_j \in N: (A_i, A_j) \in E \implies i < j$
+```$
 
 **特征**:
 
@@ -83,7 +95,9 @@ $$\text{Sequential}(W) \iff \forall A_i, A_j \in N: (A_i, A_j) \in E \implies i 
 - 无分支和合并
 
 **形式化表示**:
-$$W_{seq} = A_1 \circ A_2 \circ \cdots \circ A_n$$
+$```latex
+$W_{seq} = A_1 \circ A_2 \circ \cdots \circ A_n$
+```$
 
 **Go语言实现**:
 
@@ -108,11 +122,21 @@ func (sw *SequentialWorkflow) Execute(ctx context.Context, input interface{}) (i
 
 ### 2.2 并行工作流
 
-**定义 2.2** (并行工作流): 工作流 $W$ 是并行的，如果存在活动可以同时执行：
+**定义 2.2** (并行工作流): 工作流 ```latex
+$W$
+``` 是并行的，如果存在活动可以同时执行：
 
-$$\text{Parallel}(W) \iff \exists A_i, A_j \in N: \text{Independent}(A_i, A_j)$$
+$```latex
+$\text{Parallel}(W) \iff \exists A_i, A_j \in N: \text{Independent}(A_i, A_j)$
+```$
 
-其中 $\text{Independent}(A_i, A_j)$ 表示 $A_i$ 和 $A_j$ 之间没有依赖关系。
+其中 ```latex
+$\text{Independent}(A_i, A_j)$
+``` 表示 ```latex
+$A_i$
+``` 和 ```latex
+$A_j$
+``` 之间没有依赖关系。
 
 **特征**:
 
@@ -121,7 +145,9 @@ $$\text{Parallel}(W) \iff \exists A_i, A_j \in N: \text{Independent}(A_i, A_j)$$
 - 提高执行效率
 
 **形式化表示**:
-$$W_{par} = A_1 \parallel A_2 \parallel \cdots \parallel A_n$$
+$```latex
+$W_{par} = A_1 \parallel A_2 \parallel \cdots \parallel A_n$
+```$
 
 **Go语言实现**:
 
@@ -163,9 +189,13 @@ func (pw *ParallelWorkflow) Execute(ctx context.Context, input interface{}) (int
 
 ### 2.3 条件工作流
 
-**定义 2.3** (条件工作流): 工作流 $W$ 是条件的，如果包含条件分支：
+**定义 2.3** (条件工作流): 工作流 ```latex
+$W$
+``` 是条件的，如果包含条件分支：
 
-$$\text{Conditional}(W) \iff \exists A \in N: \text{OutDegree}(A) > 1$$
+$```latex
+$\text{Conditional}(W) \iff \exists A \in N: \text{OutDegree}(A) > 1$
+```$
 
 **特征**:
 
@@ -174,7 +204,9 @@ $$\text{Conditional}(W) \iff \exists A \in N: \text{OutDegree}(A) > 1$$
 - 支持多种执行路径
 
 **形式化表示**:
-$$W_{cond} = \text{if } c_1 \text{ then } W_1 \text{ else if } c_2 \text{ then } W_2 \text{ else } W_3$$
+$```latex
+$W_{cond} = \text{if } c_1 \text{ then } W_1 \text{ else if } c_2 \text{ then } W_2 \text{ else } W_3$
+```$
 
 **Go语言实现**:
 
@@ -203,11 +235,17 @@ func (cw *ConditionalWorkflow) Execute(ctx context.Context, input interface{}) (
 
 ### 2.4 循环工作流
 
-**定义 2.4** (循环工作流): 工作流 $W$ 是循环的，如果包含循环结构：
+**定义 2.4** (循环工作流): 工作流 ```latex
+$W$
+``` 是循环的，如果包含循环结构：
 
-$$\text{Iterative}(W) \iff \exists \text{cycle in } G_W$$
+$```latex
+$\text{Iterative}(W) \iff \exists \text{cycle in } G_W$
+```$
 
-其中 $G_W$ 是工作流的有向图表示。
+其中 ```latex
+$G_W$
+``` 是工作流的有向图表示。
 
 **特征**:
 
@@ -216,7 +254,9 @@ $$\text{Iterative}(W) \iff \exists \text{cycle in } G_W$$
 - 支持迭代处理
 
 **形式化表示**:
-$$W_{loop} = \text{while } c \text{ do } W_1$$
+$```latex
+$W_{loop} = \text{while } c \text{ do } W_1$
+```$
 
 **Go语言实现**:
 
@@ -247,9 +287,13 @@ func (iw *IterativeWorkflow) Execute(ctx context.Context, input interface{}) (in
 
 ### 2.5 混合工作流
 
-**定义 2.5** (混合工作流): 工作流 $W$ 是混合的，如果包含多种控制流模式：
+**定义 2.5** (混合工作流): 工作流 ```latex
+$W$
+``` 是混合的，如果包含多种控制流模式：
 
-$$\text{Hybrid}(W) \iff \text{Sequential}(W) \land \text{Parallel}(W) \land \text{Conditional}(W)$$
+$```latex
+$\text{Hybrid}(W) \iff \text{Sequential}(W) \land \text{Parallel}(W) \land \text{Conditional}(W)$
+```$
 
 **特征**:
 
@@ -263,7 +307,9 @@ $$\text{Hybrid}(W) \iff \text{Sequential}(W) \land \text{Parallel}(W) \land \tex
 
 **定义 3.1** (数据驱动工作流): 工作流的执行由数据可用性驱动：
 
-$$\text{DataDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{DataAvailable}(A)$$
+$```latex
+$\text{DataDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{DataAvailable}(A)$
+```$
 
 **特征**:
 
@@ -334,7 +380,9 @@ func (ddw *DataDrivenWorkflow) isDataAvailable(deps []string) bool {
 
 **定义 3.2** (事件驱动工作流): 工作流的执行由事件触发：
 
-$$\text{EventDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{EventOccurred}(A)$$
+$```latex
+$\text{EventDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{EventOccurred}(A)$
+```$
 
 **特征**:
 
@@ -346,7 +394,9 @@ $$\text{EventDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{EventOc
 
 **定义 3.3** (状态驱动工作流): 工作流的执行由状态转换驱动：
 
-$$\text{StateDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{StateTransition}(A)$$
+$```latex
+$\text{StateDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{StateTransition}(A)$
+```$
 
 **特征**:
 
@@ -358,7 +408,9 @@ $$\text{StateDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{StateTr
 
 **定义 3.4** (消息驱动工作流): 工作流的执行由消息传递驱动：
 
-$$\text{MessageDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{MessageReceived}(A)$$
+$```latex
+$\text{MessageDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{MessageReceived}(A)$
+```$
 
 **特征**:
 
@@ -372,7 +424,9 @@ $$\text{MessageDriven}(W) \iff \forall A \in N: \text{Ready}(A) \iff \text{Messa
 
 **定义 4.1** (业务流程工作流): 用于企业业务流程自动化的工作流：
 
-$$\text{BusinessProcess}(W) \iff \text{Domain}(W) = \text{Business}$$
+$```latex
+$\text{BusinessProcess}(W) \iff \text{Domain}(W) = \text{Business}$
+```$
 
 **特征**:
 
@@ -385,7 +439,9 @@ $$\text{BusinessProcess}(W) \iff \text{Domain}(W) = \text{Business}$$
 
 **定义 4.2** (科学计算工作流): 用于科学计算和数据分析的工作流：
 
-$$\text{ScientificComputing}(W) \iff \text{Domain}(W) = \text{Scientific}$$
+$```latex
+$\text{ScientificComputing}(W) \iff \text{Domain}(W) = \text{Scientific}$
+```$
 
 **特征**:
 
@@ -398,7 +454,9 @@ $$\text{ScientificComputing}(W) \iff \text{Domain}(W) = \text{Scientific}$$
 
 **定义 4.3** (数据处理工作流): 用于大规模数据处理的工作流：
 
-$$\text{DataProcessing}(W) \iff \text{Domain}(W) = \text{Data}$$
+$```latex
+$\text{DataProcessing}(W) \iff \text{Domain}(W) = \text{Data}$
+```$
 
 **特征**:
 
@@ -411,7 +469,9 @@ $$\text{DataProcessing}(W) \iff \text{Domain}(W) = \text{Data}$$
 
 **定义 4.4** (系统管理工作流): 用于IT系统管理的工作流：
 
-$$\text{SystemManagement}(W) \iff \text{Domain}(W) = \text{System}$$
+$```latex
+$\text{SystemManagement}(W) \iff \text{Domain}(W) = \text{System}$
+```$
 
 **特征**:
 
@@ -426,7 +486,9 @@ $$\text{SystemManagement}(W) \iff \text{Domain}(W) = \text{System}$$
 
 **定义 5.1** (同步执行): 工作流按顺序同步执行：
 
-$$\text{Synchronous}(W) \iff \forall A_i, A_j \in N: \text{Execute}(A_i) \cap \text{Execute}(A_j) = \emptyset$$
+$```latex
+$\text{Synchronous}(W) \iff \forall A_i, A_j \in N: \text{Execute}(A_i) \cap \text{Execute}(A_j) = \emptyset$
+```$
 
 **特征**:
 
@@ -439,7 +501,9 @@ $$\text{Synchronous}(W) \iff \forall A_i, A_j \in N: \text{Execute}(A_i) \cap \t
 
 **定义 5.2** (异步执行): 工作流支持异步执行：
 
-$$\text{Asynchronous}(W) \iff \exists A_i, A_j \in N: \text{Execute}(A_i) \cap \text{Execute}(A_j) \neq \emptyset$$
+$```latex
+$\text{Asynchronous}(W) \iff \exists A_i, A_j \in N: \text{Execute}(A_i) \cap \text{Execute}(A_j) \neq \emptyset$
+```$
 
 **特征**:
 
@@ -452,7 +516,9 @@ $$\text{Asynchronous}(W) \iff \exists A_i, A_j \in N: \text{Execute}(A_i) \cap \
 
 **定义 5.3** (分布式执行): 工作流在多个节点上执行：
 
-$$\text{Distributed}(W) \iff \exists A_i, A_j \in N: \text{Node}(A_i) \neq \text{Node}(A_j)$$
+$```latex
+$\text{Distributed}(W) \iff \exists A_i, A_j \in N: \text{Node}(A_i) \neq \text{Node}(A_j)$
+```$
 
 **特征**:
 
@@ -465,7 +531,9 @@ $$\text{Distributed}(W) \iff \exists A_i, A_j \in N: \text{Node}(A_i) \neq \text
 
 **定义 5.4** (云原生执行): 工作流在云环境中执行：
 
-$$\text{CloudNative}(W) \iff \text{Environment}(W) = \text{Cloud}$$
+$```latex
+$\text{CloudNative}(W) \iff \text{Environment}(W) = \text{Cloud}$
+```$
 
 **特征**:
 
@@ -478,22 +546,36 @@ $$\text{CloudNative}(W) \iff \text{Environment}(W) = \text{Cloud}$$
 
 ### 6.1 代数分类
 
-**定义 6.1** (工作流代数): 工作流代数是一个四元组 $(W, \circ, \parallel, \text{skip})$，其中：
+**定义 6.1** (工作流代数): 工作流代数是一个四元组 ```latex
+$(W, \circ, \parallel, \text{skip})$
+```，其中：
 
-- $W$ 是工作流集合
-- $\circ$ 是顺序组合操作
-- $\parallel$ 是并行组合操作
-- $\text{skip}$ 是单位元
+- ```latex
+$W$
+``` 是工作流集合
+- ```latex
+$\circ$
+``` 是顺序组合操作
+- ```latex
+$\parallel$
+``` 是并行组合操作
+- ```latex
+$\text{skip}$
+``` 是单位元
 
 **分类定理 6.1**: 任何工作流都可以表示为基本工作流的组合：
 
-$$W = \text{skip} \circ W_1 \circ W_2 \circ \cdots \circ W_n$$
+$```latex
+$W = \text{skip} \circ W_1 \circ W_2 \circ \cdots \circ W_n$
+```$
 
 ### 6.2 拓扑分类
 
 **定义 6.2** (工作流拓扑): 工作流的拓扑分类基于其图结构：
 
-$$\text{TopologyClass}(W) = \{\text{Linear}, \text{Tree}, \text{DAG}, \text{Graph}, \text{Cyclic}\}$$
+$```latex
+$\text{TopologyClass}(W) = \{\text{Linear}, \text{Tree}, \text{DAG}, \text{Graph}, \text{Cyclic}\}$
+```$
 
 **分类算法 6.1**: 拓扑分类算法：
 
@@ -519,7 +601,9 @@ func ClassifyTopology(workflow Workflow) TopologyClass {
 
 **定义 6.3** (工作流逻辑): 工作流的逻辑分类基于其行为属性：
 
-$$\text{LogicClass}(W) = \{\text{Deterministic}, \text{NonDeterministic}, \text{Probabilistic}\}$$
+$```latex
+$\text{LogicClass}(W) = \{\text{Deterministic}, \text{NonDeterministic}, \text{Probabilistic}\}$
+```$
 
 ## 7. Go语言实现
 

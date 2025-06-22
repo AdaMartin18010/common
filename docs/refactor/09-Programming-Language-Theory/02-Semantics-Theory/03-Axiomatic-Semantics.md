@@ -25,10 +25,18 @@
 
 其中：
 
-- $\mathcal{P}$ 是前置条件集合
-- $\mathcal{Q}$ 是后置条件集合  
-- $\mathcal{R}$ 是推理规则集合
-- $\vdash$ 是推导关系
+- ```latex
+$\mathcal{P}$
+``` 是前置条件集合
+- ```latex
+$\mathcal{Q}$
+``` 是后置条件集合  
+- ```latex
+$\mathcal{R}$
+``` 是推理规则集合
+- ```latex
+$\vdash$
+``` 是推导关系
 
 ### 1.2 核心概念
 
@@ -38,7 +46,13 @@
 \{P\} \text{ } C \text{ } \{Q\}
 ```
 
-表示：如果前置条件 $P$ 成立，执行程序 $C$ 后，后置条件 $Q$ 成立。
+表示：如果前置条件 ```latex
+$P$
+``` 成立，执行程序 ```latex
+$C$
+``` 后，后置条件 ```latex
+$Q$
+``` 成立。
 
 #### 1.2.2 正确性分类
 
@@ -142,7 +156,9 @@ func (cr *ConditionalRule) IsValid() bool {
 \frac{\{P \land B\} \text{ } C \text{ } \{P\}}{\{P\} \text{ } \text{while } B \text{ do } C \text{ } \{P \land \neg B\}}
 ```
 
-其中 $P$ 是循环不变式。
+其中 ```latex
+$P$
+``` 是循环不变式。
 
 **Go语言实现**：
 
@@ -207,7 +223,11 @@ func (wr *WhileRule) ProveTermination() bool {
 \text{wp}(\text{while } B \text{ do } C, Q) = \exists k \geq 0: H_k(Q)
 ```
 
-其中 $H_k$ 是循环的 $k$ 次展开。
+其中 ```latex
+$H_k$
+``` 是循环的 ```latex
+$k$
+``` 次展开。
 
 **Go语言实现**：
 
@@ -522,9 +542,15 @@ func (hlv *HoareLogicVerifier) implies(P, Q string) bool {
 
 其中：
 
-- $\mathcal{A}$ 是公理集合
-- $\mathcal{R}$ 是推理规则集合
-- $\vdash$ 是推导关系
+- ```latex
+$\mathcal{A}$
+``` 是公理集合
+- ```latex
+$\mathcal{R}$
+``` 是推理规则集合
+- ```latex
+$\vdash$
+``` 是推导关系
 
 ### 7.2 证明构造
 

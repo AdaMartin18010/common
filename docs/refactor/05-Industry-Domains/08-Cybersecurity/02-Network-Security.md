@@ -7,12 +7,22 @@
 网络安全是保护网络基础设施、网络服务和网络数据免受未授权访问、使用、披露、中断、修改或破坏的过程。
 
 **形式化定义**：
-设 $N = (V, E)$ 为网络图，其中 $V$ 为节点集合，$E$ 为边集合。
-网络安全函数 $S: N \times T \rightarrow \{0,1\}$ 定义为：
+设 ```latex
+$N = (V, E)$
+``` 为网络图，其中 ```latex
+$V$
+``` 为节点集合，```latex
+$E$
+``` 为边集合。
+网络安全函数 ```latex
+$S: N \times T \rightarrow \{0,1\}$
+``` 定义为：
+```latex
 $$S(N,t) = \begin{cases}
 1 & \text{if } N \text{ is secure at time } t \\
 0 & \text{otherwise}
 \end{cases}$$
+```
 
 ### 2.1.2 网络安全威胁模型
 
@@ -23,17 +33,41 @@ $$S(N,t) = \begin{cases}
 4. **外部威胁**：外部攻击者
 
 **威胁概率模型**：
-$$P(T_i) = \sum_{j=1}^{n} P(T_i|V_j) \cdot P(V_j)$$
-其中 $T_i$ 为威胁类型，$V_j$ 为漏洞类型。
+$```latex
+$P(T_i) = \sum_{j=1}^{n} P(T_i|V_j) \cdot P(V_j)$
+```$
+其中 ```latex
+$T_i$
+``` 为威胁类型，```latex
+$V_j$
+``` 为漏洞类型。
 
 ### 2.1.3 网络安全原则
 
 **CIA三元组**：
-- **机密性 (Confidentiality)**：$C = \frac{|S|}{|T|}$
-- **完整性 (Integrity)**：$I = \frac{|V|}{|D|}$
-- **可用性 (Availability)**：$A = \frac{|U|}{|R|}$
+- **机密性 (Confidentiality)**：```latex
+$C = \frac{|S|}{|T|}$
+```
+- **完整性 (Integrity)**：```latex
+$I = \frac{|V|}{|D|}$
+```
+- **可用性 (Availability)**：```latex
+$A = \frac{|U|}{|R|}$
+```
 
-其中 $S$ 为安全传输的数据，$T$ 为总数据，$V$ 为验证通过的数据，$D$ 为总数据，$U$ 为可用时间，$R$ 为总时间。
+其中 ```latex
+$S$
+``` 为安全传输的数据，```latex
+$T$
+``` 为总数据，```latex
+$V$
+``` 为验证通过的数据，```latex
+$D$
+``` 为总数据，```latex
+$U$
+``` 为可用时间，```latex
+$R$
+``` 为总时间。
 
 ## 2.2 网络协议安全
 
@@ -486,7 +520,9 @@ func (nm *NetworkMonitor) Monitor() {
 - **混合评估**：结合定性和定量
 
 **风险评估公式**：
-$$Risk = Threat \times Vulnerability \times Impact$$
+$```latex
+$Risk = Threat \times Vulnerability \times Impact$
+```$
 
 ## 2.6 网络安全最佳实践
 

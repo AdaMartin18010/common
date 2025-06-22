@@ -11,24 +11,42 @@
 联邦优化的目标函数：
 
 ```latex
-$$\min_w F(w) = \sum_{i=1}^N p_i F_i(w)$$
+$```latex
+$\min_w F(w) = \sum_{i=1}^N p_i F_i(w)$
+```$
 ```
 
 其中：
 
-- $F_i(w)$: 客户端 $i$ 的本地目标函数
-- $p_i = \frac{|D_i|}{|D|}$: 客户端 $i$ 的数据权重
-- $N$: 客户端数量
+- ```latex
+$F_i(w)$
+```: 客户端 ```latex
+$i$
+``` 的本地目标函数
+- ```latex
+$p_i = \frac{|D_i|}{|D|}$
+```: 客户端 ```latex
+$i$
+``` 的数据权重
+- ```latex
+$N$
+```: 客户端数量
 
 ### 2.1.2 数据异质性
 
 数据异质性通过统计异质性度量：
 
 ```latex
-$$\Gamma = F^* - \sum_{i=1}^N p_i F_i^*$$
+$```latex
+$\Gamma = F^* - \sum_{i=1}^N p_i F_i^*$
+```$
 ```
 
-其中 $F^*$ 和 $F_i^*$ 分别是全局和本地最优值。
+其中 ```latex
+$F^*$
+``` 和 ```latex
+$F_i^*$
+``` 分别是全局和本地最优值。
 
 ## 2.2 联邦平均算法（FedAvg）
 
@@ -37,13 +55,19 @@ $$\Gamma = F^* - \sum_{i=1}^N p_i F_i^*$$
 FedAvg算法的更新规则：
 
 ```latex
-$$w_{t+1} = \sum_{i=1}^N p_i w_{t+1}^i$$
+$```latex
+$w_{t+1} = \sum_{i=1}^N p_i w_{t+1}^i$
+```$
 ```
 
-其中客户端 $i$ 的本地更新：
+其中客户端 ```latex
+$i$
+``` 的本地更新：
 
 ```latex
-$$w_{t+1}^i = w_t - \eta_t \nabla F_i(w_t)$$
+$```latex
+$w_{t+1}^i = w_t - \eta_t \nabla F_i(w_t)$
+```$
 ```
 
 ### 2.2.2 收敛性分析
@@ -51,10 +75,14 @@ $$w_{t+1}^i = w_t - \eta_t \nabla F_i(w_t)$$
 在强凸和Lipschitz条件下，FedAvg的收敛率：
 
 ```latex
-$$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{T}\right)$$
+$```latex
+$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{T}\right)$
+```$
 ```
 
-其中 $\sigma^2$ 是梯度方差。
+其中 ```latex
+$\sigma^2$
+``` 是梯度方差。
 
 ## 2.3 联邦近端算法（FedProx）
 
@@ -63,17 +91,23 @@ $$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{T}\right)$$
 FedProx通过添加近端项来稳定训练：
 
 ```latex
-$$\min_w F_i(w) + \frac{\mu}{2} \|w - w_t\|^2$$
+$```latex
+$\min_w F_i(w) + \frac{\mu}{2} \|w - w_t\|^2$
+```$
 ```
 
-其中 $\mu$ 是近端参数。
+其中 ```latex
+$\mu$
+``` 是近端参数。
 
 ### 2.3.2 更新规则
 
 FedProx的更新规则：
 
 ```latex
-$$w_{t+1}^i = \arg\min_w \left\{F_i(w) + \frac{\mu}{2} \|w - w_t\|^2\right\}$$
+$```latex
+$w_{t+1}^i = \arg\min_w \left\{F_i(w) + \frac{\mu}{2} \|w - w_t\|^2\right\}$
+```$
 ```
 
 ### 2.3.3 收敛性
@@ -81,7 +115,9 @@ $$w_{t+1}^i = \arg\min_w \left\{F_i(w) + \frac{\mu}{2} \|w - w_t\|^2\right\}$$
 FedProx的收敛性：
 
 ```latex
-$$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{\mu T}\right)$$
+$```latex
+$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{\mu T}\right)$
+```$
 ```
 
 ## 2.4 联邦自适应算法
@@ -91,9 +127,15 @@ $$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{\mu T}\righ
 FedAdam结合了Adam优化器和联邦学习：
 
 ```latex
-$$m_{t+1} = \beta_1 m_t + (1-\beta_1) \sum_{i=1}^N p_i \nabla F_i(w_t)$$
-$$v_{t+1} = \beta_2 v_t + (1-\beta_2) \left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2$$
-$$w_{t+1} = w_t - \frac{\eta_t}{\sqrt{v_{t+1}} + \epsilon} m_{t+1}$$
+$```latex
+$m_{t+1} = \beta_1 m_t + (1-\beta_1) \sum_{i=1}^N p_i \nabla F_i(w_t)$
+```$
+$```latex
+$v_{t+1} = \beta_2 v_t + (1-\beta_2) \left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2$
+```$
+$```latex
+$w_{t+1} = w_t - \frac{\eta_t}{\sqrt{v_{t+1}} + \epsilon} m_{t+1}$
+```$
 ```
 
 ### 2.4.2 FedYogi
@@ -101,7 +143,9 @@ $$w_{t+1} = w_t - \frac{\eta_t}{\sqrt{v_{t+1}} + \epsilon} m_{t+1}$$
 FedYogi改进了FedAdam的方差估计：
 
 ```latex
-$$v_{t+1} = v_t - (1-\beta_2) \text{sign}\left(\left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2 - v_t\right) \left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2$$
+$```latex
+$v_{t+1} = v_t - (1-\beta_2) \text{sign}\left(\left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2 - v_t\right) \left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2$
+```$
 ```
 
 ## 2.5 通信效率优化
@@ -111,13 +155,17 @@ $$v_{t+1} = v_t - (1-\beta_2) \text{sign}\left(\left(\sum_{i=1}^N p_i \nabla F_i
 模型压缩技术：
 
 ```latex
-$$C_{compressed} = \text{Compress}(w)$$
+$```latex
+$C_{compressed} = \text{Compress}(w)$
+```$
 ```
 
 压缩率：
 
 ```latex
-$$\rho = \frac{\text{Size}(C_{compressed})}{\text{Size}(w)}$$
+$```latex
+$\rho = \frac{\text{Size}(C_{compressed})}{\text{Size}(w)}$
+```$
 ```
 
 ### 2.5.2 梯度压缩
@@ -125,7 +173,9 @@ $$\rho = \frac{\text{Size}(C_{compressed})}{\text{Size}(w)}$$
 梯度压缩算法：
 
 ```latex
-$$\text{Compress}(\nabla F_i(w)) = \text{TopK}(\nabla F_i(w), k)$$
+$```latex
+$\text{Compress}(\nabla F_i(w)) = \text{TopK}(\nabla F_i(w), k)$
+```$
 ```
 
 其中TopK保留最大的k个梯度分量。

@@ -20,35 +20,57 @@
 #### 1.1.1 基本性能指标
 
 **定义 1.1.1** (响应时间)
-工作流的响应时间 $T_{response}$ 定义为从工作流启动到完成的总时间：
+工作流的响应时间 ```latex
+$T_{response}$
+``` 定义为从工作流启动到完成的总时间：
 
 ```latex
-$$T_{response} = T_{startup} + T_{execution} + T_{cleanup}$$
+$```latex
+$T_{response} = T_{startup} + T_{execution} + T_{cleanup}$
+```$
 ```
 
 其中：
 
-- $T_{startup}$: 启动时间
-- $T_{execution}$: 执行时间
-- $T_{cleanup}$: 清理时间
+- ```latex
+$T_{startup}$
+```: 启动时间
+- ```latex
+$T_{execution}$
+```: 执行时间
+- ```latex
+$T_{cleanup}$
+```: 清理时间
 
 **定义 1.1.2** (吞吐量)
-工作流的吞吐量 $\lambda$ 定义为单位时间内完成的工作流实例数：
+工作流的吞吐量 ```latex
+$\lambda$
+``` 定义为单位时间内完成的工作流实例数：
 
 ```latex
-$$\lambda = \frac{N_{completed}}{T_{period}}$$
+$```latex
+$\lambda = \frac{N_{completed}}{T_{period}}$
+```$
 ```
 
 其中：
 
-- $N_{completed}$: 完成的工作流实例数
-- $T_{period}$: 观察时间周期
+- ```latex
+$N_{completed}$
+```: 完成的工作流实例数
+- ```latex
+$T_{period}$
+```: 观察时间周期
 
 **定义 1.1.3** (资源利用率)
-资源利用率 $\rho$ 定义为资源实际使用时间与总时间的比值：
+资源利用率 ```latex
+$\rho$
+``` 定义为资源实际使用时间与总时间的比值：
 
 ```latex
-$$\rho = \frac{T_{used}}{T_{total}}$$
+$```latex
+$\rho = \frac{T_{used}}{T_{total}}$
+```$
 ```
 
 ### 1.2 性能模型
@@ -56,35 +78,77 @@ $$\rho = \frac{T_{used}}{T_{total}}$$
 #### 1.2.1 队列模型
 
 **定理 1.2.1** (Little's Law)
-对于稳态系统，系统中的平均工作流数量 $L$ 等于到达率 $\lambda$ 与平均响应时间 $W$ 的乘积：
+对于稳态系统，系统中的平均工作流数量 ```latex
+$L$
+``` 等于到达率 ```latex
+$\lambda$
+``` 与平均响应时间 ```latex
+$W$
+``` 的乘积：
 
 ```latex
-$$L = \lambda W$$
+$```latex
+$L = \lambda W$
+```$
 ```
 
 **证明**:
-设 $N(t)$ 为时刻 $t$ 系统中的工作流数量，$A(t)$ 为到时刻 $t$ 的累计到达数，$D(t)$ 为到时刻 $t$ 的累计离开数。
+设 ```latex
+$N(t)$
+``` 为时刻 ```latex
+$t$
+``` 系统中的工作流数量，```latex
+$A(t)$
+``` 为到时刻 ```latex
+$t$
+``` 的累计到达数，```latex
+$D(t)$
+``` 为到时刻 ```latex
+$t$
+``` 的累计离开数。
 
 则：
-$$N(t) = A(t) - D(t)$$
+$```latex
+$N(t) = A(t) - D(t)$
+```$
 
-在时间区间 $[0, T]$ 内，平均系统负载为：
-$$L = \frac{1}{T} \int_0^T N(t) dt$$
+在时间区间 ```latex
+$[0, T]$
+``` 内，平均系统负载为：
+$```latex
+$L = \frac{1}{T} \int_0^T N(t) dt$
+```$
 
 平均响应时间为：
-$$W = \frac{\int_0^T N(t) dt}{A(T)}$$
+$```latex
+$W = \frac{\int_0^T N(t) dt}{A(T)}$
+```$
 
-当 $T \to \infty$ 时，到达率 $\lambda = \lim_{T \to \infty} \frac{A(T)}{T}$，因此：
-$$L = \lambda W$$
+当 ```latex
+$T \to \infty$
+``` 时，到达率 ```latex
+$\lambda = \lim_{T \to \infty} \frac{A(T)}{T}$
+```，因此：
+$```latex
+$L = \lambda W$
+```$
 
 #### 1.2.2 网络流模型
 
 **定义 1.2.1** (工作流网络)
-工作流网络 $G = (V, E, c)$ 是一个有向图，其中：
+工作流网络 ```latex
+$G = (V, E, c)$
+``` 是一个有向图，其中：
 
-- $V$: 节点集合（任务节点）
-- $E$: 边集合（数据流）
-- $c: E \to \mathbb{R}^+$: 容量函数（处理能力）
+- ```latex
+$V$
+```: 节点集合（任务节点）
+- ```latex
+$E$
+```: 边集合（数据流）
+- ```latex
+$c: E \to \mathbb{R}^+$
+```: 容量函数（处理能力）
 
 **定理 1.2.2** (最大流最小割定理)
 工作流网络中的最大流量等于最小割的容量。
@@ -96,36 +160,72 @@ $$L = \lambda W$$
 #### 2.1.1 状态转移模型
 
 **定义 2.1.1** (工作流状态)
-工作流状态 $S = (s_1, s_2, ..., s_n)$ 表示各任务节点的执行状态，其中 $s_i \in \{idle, running, completed, failed\}$。
+工作流状态 ```latex
+$S = (s_1, s_2, ..., s_n)$
+``` 表示各任务节点的执行状态，其中 ```latex
+$s_i \in \{idle, running, completed, failed\}$
+```。
 
 **定义 2.1.2** (状态转移概率)
-状态转移概率矩阵 $P = [p_{ij}]$ 定义从状态 $i$ 到状态 $j$ 的转移概率。
+状态转移概率矩阵 ```latex
+$P = [p_{ij}]$
+``` 定义从状态 ```latex
+$i$
+``` 到状态 ```latex
+$j$
+``` 的转移概率。
 
 **定理 2.1.1** (稳态概率)
-对于不可约的马尔可夫链，存在唯一的稳态概率分布 $\pi$ 满足：
+对于不可约的马尔可夫链，存在唯一的稳态概率分布 ```latex
+$\pi$
+``` 满足：
 
-$$\pi P = \pi$$
-$$\sum_{i} \pi_i = 1$$
+$```latex
+$\pi P = \pi$
+```$
+$```latex
+$\sum_{i} \pi_i = 1$
+```$
 
 ### 2.2 Petri网性能模型
 
 #### 2.2.1 时间Petri网
 
 **定义 2.2.1** (时间Petri网)
-时间Petri网 $TPN = (P, T, F, M_0, \tau)$ 其中：
+时间Petri网 ```latex
+$TPN = (P, T, F, M_0, \tau)$
+``` 其中：
 
-- $P$: 库所集合
-- $T$: 变迁集合
-- $F$: 流关系
-- $M_0$: 初始标识
-- $\tau: T \to \mathbb{R}^+ \times \mathbb{R}^+$: 时间区间函数
+- ```latex
+$P$
+```: 库所集合
+- ```latex
+$T$
+```: 变迁集合
+- ```latex
+$F$
+```: 流关系
+- ```latex
+$M_0$
+```: 初始标识
+- ```latex
+$\tau: T \to \mathbb{R}^+ \times \mathbb{R}^+$
+```: 时间区间函数
 
 **定义 2.2.2** (可达性图)
-时间Petri网的可达性图 $RG = (V, E, \tau)$ 其中：
+时间Petri网的可达性图 ```latex
+$RG = (V, E, \tau)$
+``` 其中：
 
-- $V$: 可达标识集合
-- $E$: 变迁关系
-- $\tau: E \to \mathbb{R}^+$: 时间标签
+- ```latex
+$V$
+```: 可达标识集合
+- ```latex
+$E$
+```: 变迁关系
+- ```latex
+$\tau: E \to \mathbb{R}^+$
+```: 时间标签
 
 ## 3. 性能分析算法
 
@@ -187,14 +287,24 @@ func CriticalPath(workflow *Workflow) []Task {
 #### 3.1.2 松弛时间计算
 
 **定义 3.1.1** (松弛时间)
-任务 $t$ 的松弛时间 $slack(t)$ 定义为：
+任务 ```latex
+$t$
+``` 的松弛时间 ```latex
+$slack(t)$
+``` 定义为：
 
-$$slack(t) = LS(t) - ES(t)$$
+$```latex
+$slack(t) = LS(t) - ES(t)$
+```$
 
 其中：
 
-- $LS(t)$: 最晚开始时间
-- $ES(t)$: 最早开始时间
+- ```latex
+$LS(t)$
+```: 最晚开始时间
+- ```latex
+$ES(t)$
+```: 最早开始时间
 
 **定理 3.1.1** (关键路径性质)
 关键路径上的所有任务松弛时间为零。
@@ -237,15 +347,33 @@ func calculateUtilization(task *Task) float64 {
 #### 3.2.2 资源竞争分析
 
 **定义 3.2.1** (资源竞争度)
-资源 $r$ 的竞争度 $C(r)$ 定义为：
+资源 ```latex
+$r$
+``` 的竞争度 ```latex
+$C(r)$
+``` 定义为：
 
-$$C(r) = \frac{\sum_{t \in T_r} w(t)}{c(r)}$$
+$```latex
+$C(r) = \frac{\sum_{t \in T_r} w(t)}{c(r)}$
+```$
 
 其中：
 
-- $T_r$: 使用资源 $r$ 的任务集合
-- $w(t)$: 任务 $t$ 的工作量
-- $c(r)$: 资源 $r$ 的容量
+- ```latex
+$T_r$
+```: 使用资源 ```latex
+$r$
+``` 的任务集合
+- ```latex
+$w(t)$
+```: 任务 ```latex
+$t$
+``` 的工作量
+- ```latex
+$c(r)$
+```: 资源 ```latex
+$r$
+``` 的容量
 
 ## 4. 性能优化策略
 
@@ -302,14 +430,22 @@ func (wrrs *WeightedRoundRobinStrategy) SelectWorker(workers []Worker, task *Tas
 #### 4.1.2 自适应负载均衡
 
 **定义 4.1.1** (自适应因子)
-自适应因子 $\alpha(t)$ 定义为：
+自适应因子 ```latex
+$\alpha(t)$
+``` 定义为：
 
-$$\alpha(t) = \frac{\lambda_{current}(t)}{\lambda_{target}}$$
+$```latex
+$\alpha(t) = \frac{\lambda_{current}(t)}{\lambda_{target}}$
+```$
 
 其中：
 
-- $\lambda_{current}(t)$: 当前吞吐量
-- $\lambda_{target}$: 目标吞吐量
+- ```latex
+$\lambda_{current}(t)$
+```: 当前吞吐量
+- ```latex
+$\lambda_{target}$
+```: 目标吞吐量
 
 ### 4.2 缓存优化
 
@@ -370,13 +506,21 @@ func (lru *LRUPolicy) Demote(key string, level *CacheLevel) {
 #### 4.2.2 缓存命中率优化
 
 **定理 4.2.1** (缓存命中率)
-对于LRU缓存，命中率 $h$ 与缓存大小 $C$ 的关系为：
+对于LRU缓存，命中率 ```latex
+$h$
+``` 与缓存大小 ```latex
+$C$
+``` 的关系为：
 
-$$h = 1 - \frac{1}{C + 1}$$
+$```latex
+$h = 1 - \frac{1}{C + 1}$
+```$
 
 **证明**:
 设访问模式为均匀分布，则：
-$$h = \frac{C}{C + 1} = 1 - \frac{1}{C + 1}$$
+$```latex
+$h = \frac{C}{C + 1} = 1 - \frac{1}{C + 1}$
+```$
 
 ### 4.3 并行化优化
 
@@ -431,10 +575,20 @@ func (pe *ParallelExecutor) executeTask(task Task) Result {
 #### 4.3.2 数据并行化
 
 **定义 4.3.1** (数据分片)
-数据分片 $S = \{s_1, s_2, ..., s_n\}$ 将数据集 $D$ 划分为 $n$ 个不相交的子集：
+数据分片 ```latex
+$S = \{s_1, s_2, ..., s_n\}$
+``` 将数据集 ```latex
+$D$
+``` 划分为 ```latex
+$n$
+``` 个不相交的子集：
 
-$$D = \bigcup_{i=1}^n s_i$$
-$$s_i \cap s_j = \emptyset, \forall i \neq j$$
+$```latex
+$D = \bigcup_{i=1}^n s_i$
+```$
+$```latex
+$s_i \cap s_j = \emptyset, \forall i \neq j$
+```$
 
 **算法 4.3.2** (数据并行处理)
 

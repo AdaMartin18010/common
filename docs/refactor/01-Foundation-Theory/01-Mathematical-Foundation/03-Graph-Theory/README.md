@@ -39,43 +39,89 @@
 
 ### 1.1 图的定义
 
-**定义 1.1**: 图 $G = (V, E)$ 是一个有序对，其中：
+**定义 1.1**: 图 ```latex
+$G = (V, E)$
+``` 是一个有序对，其中：
 
-- $V$ 是顶点集（vertex set），$V \neq \emptyset$
-- $E$ 是边集（edge set），$E \subseteq V \times V$
+- ```latex
+$V$
+``` 是顶点集（vertex set），```latex
+$V \neq \emptyset$
+```
+- ```latex
+$E$
+``` 是边集（edge set），```latex
+$E \subseteq V \times V$
+```
 
-**定义 1.2**: 对于边 $e = (u, v) \in E$：
+**定义 1.2**: 对于边 ```latex
+$e = (u, v) \in E$
+```：
 
-- $u$ 和 $v$ 是 $e$ 的端点
-- $u$ 和 $v$ 是相邻的（adjacent）
-- $e$ 与 $u$ 和 $v$ 相关联（incident）
+- ```latex
+$u$
+``` 和 ```latex
+$v$
+``` 是 ```latex
+$e$
+``` 的端点
+- ```latex
+$u$
+``` 和 ```latex
+$v$
+``` 是相邻的（adjacent）
+- ```latex
+$e$
+``` 与 ```latex
+$u$
+``` 和 ```latex
+$v$
+``` 相关联（incident）
 
 ### 1.2 图的类型
 
 **定义 1.3**: 无向图（Undirected Graph）
 
-- 边是无序对：$(u, v) = (v, u)$
+- 边是无序对：```latex
+$(u, v) = (v, u)$
+```
 - 邻接关系是对称的
 
 **定义 1.4**: 有向图（Directed Graph）
 
-- 边是有序对：$(u, v) \neq (v, u)$
+- 边是有序对：```latex
+$(u, v) \neq (v, u)$
+```
 - 邻接关系不对称
 
 **定义 1.5**: 加权图（Weighted Graph）
 
-- 每条边 $e$ 关联一个权重 $w(e) \in \mathbb{R}$
+- 每条边 ```latex
+$e$
+``` 关联一个权重 ```latex
+$w(e) \in \mathbb{R}$
+```
 
 ### 1.3 基本性质
 
 **定义 1.6**: 顶点的度（Degree）
 
-- 无向图：$deg(v) = |\{e \in E : v \text{ 是 } e \text{ 的端点}\}|$
-- 有向图：入度 $deg^-(v)$ 和出度 $deg^+(v)$
+- 无向图：```latex
+$deg(v) = |\{e \in E : v \text{ 是 } e \text{ 的端点}\}|$
+```
+- 有向图：入度 ```latex
+$deg^-(v)$
+``` 和出度 ```latex
+$deg^+(v)$
+```
 
 **定理 1.1**: 握手定理
-对于无向图 $G = (V, E)$：
-$$\sum_{v \in V} deg(v) = 2|E|$$
+对于无向图 ```latex
+$G = (V, E)$
+```：
+$```latex
+$\sum_{v \in V} deg(v) = 2|E|$
+```$
 
 **证明**:
 每条边贡献给两个顶点的度，因此总度数等于边数的两倍。
@@ -84,36 +130,50 @@ $$\sum_{v \in V} deg(v) = 2|E|$$
 
 ### 2.1 邻接矩阵
 
-**定义 2.1**: 邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵：
+**定义 2.1**: 邻接矩阵 ```latex
+$A$
+``` 是一个 ```latex
+$|V| \times |V|$
+``` 的矩阵：
 
+```latex
 $$
 A[i][j] = \begin{cases}
 1 & \text{if } (i, j) \in E \\
 0 & \text{otherwise}
 \end{cases}
 $$
+```
 
 **性质**:
 
 - 无向图的邻接矩阵是对称的
 - 对角线元素为0（无自环）
-- 空间复杂度：$O(|V|^2)$
+- 空间复杂度：```latex
+$O(|V|^2)$
+```
 
 ### 2.2 邻接表
 
 **定义 2.2**: 邻接表为每个顶点维护一个邻接顶点列表：
-$$Adj[v] = \{u \in V : (v, u) \in E\}$$
+$```latex
+$Adj[v] = \{u \in V : (v, u) \in E\}$
+```$
 
 **性质**:
 
-- 空间复杂度：$O(|V| + |E|)$
+- 空间复杂度：```latex
+$O(|V| + |E|)$
+```
 - 适合稀疏图
 - 遍历邻接顶点效率高
 
 ### 2.3 边列表
 
 **定义 2.3**: 边列表直接存储所有边：
-$$E = \{(u_1, v_1), (u_2, v_2), \ldots, (u_m, v_m)\}$$
+$```latex
+$E = \{(u_1, v_1), (u_2, v_2), \ldots, (u_m, v_m)\}$
+```$
 
 ## 3. 图算法
 
@@ -136,7 +196,9 @@ func DFS(graph *Graph, start int, visited map[int]bool) {
 }
 ```
 
-**时间复杂度**: $O(|V| + |E|)$
+**时间复杂度**: ```latex
+$O(|V| + |E|)$
+```
 
 #### 3.1.2 广度优先搜索 (BFS)
 
@@ -163,7 +225,9 @@ func BFS(graph *Graph, start int) {
 }
 ```
 
-**时间复杂度**: $O(|V| + |E|)$
+**时间复杂度**: ```latex
+$O(|V| + |E|)$
+```
 
 ### 3.2 最短路径
 
@@ -172,14 +236,18 @@ func BFS(graph *Graph, start int) {
 **定理 3.1**: Dijkstra算法正确性
 对于非负权图，Dijkstra算法能找到从源点到所有其他顶点的最短路径。
 
-**算法复杂度**: $O((|V| + |E|) \log |V|)$
+**算法复杂度**: ```latex
+$O((|V| + |E|) \log |V|)$
+```
 
 #### 3.2.2 Floyd-Warshall算法
 
 **定理 3.2**: Floyd-Warshall算法
 对于任意图，Floyd-Warshall算法能找到所有顶点对之间的最短路径。
 
-**算法复杂度**: $O(|V|^3)$
+**算法复杂度**: ```latex
+$O(|V|^3)$
+```
 
 ### 3.3 最小生成树
 
@@ -188,35 +256,69 @@ func BFS(graph *Graph, start int) {
 **定理 3.3**: Kruskal算法正确性
 Kruskal算法能找到图的最小生成树。
 
-**算法复杂度**: $O(|E| \log |E|)$
+**算法复杂度**: ```latex
+$O(|E| \log |E|)$
+```
 
 #### 3.3.2 Prim算法
 
 **定理 3.4**: Prim算法正确性
 Prim算法能找到图的最小生成树。
 
-**算法复杂度**: $O((|V| + |E|) \log |V|)$
+**算法复杂度**: ```latex
+$O((|V| + |E|) \log |V|)$
+```
 
 ## 4. 形式化定义
 
 ### 4.1 图的同构
 
 **定义 4.1**: 图同构
-两个图 $G_1 = (V_1, E_1)$ 和 $G_2 = (V_2, E_2)$ 是同构的，如果存在双射 $f: V_1 \rightarrow V_2$ 使得：
-$$(u, v) \in E_1 \iff (f(u), f(v)) \in E_2$$
+两个图 ```latex
+$G_1 = (V_1, E_1)$
+``` 和 ```latex
+$G_2 = (V_2, E_2)$
+``` 是同构的，如果存在双射 ```latex
+$f: V_1 \rightarrow V_2$
+``` 使得：
+$```latex
+$(u, v) \in E_1 \iff (f(u), f(v)) \in E_2$
+```$
 
 ### 4.2 图的连通性
 
 **定义 4.2**: 连通图
-无向图 $G$ 是连通的，如果对于任意两个顶点 $u, v \in V$，存在从 $u$ 到 $v$ 的路径。
+无向图 ```latex
+$G$
+``` 是连通的，如果对于任意两个顶点 ```latex
+$u, v \in V$
+```，存在从 ```latex
+$u$
+``` 到 ```latex
+$v$
+``` 的路径。
 
 **定义 4.3**: 强连通图
-有向图 $G$ 是强连通的，如果对于任意两个顶点 $u, v \in V$，存在从 $u$ 到 $v$ 的有向路径。
+有向图 ```latex
+$G$
+``` 是强连通的，如果对于任意两个顶点 ```latex
+$u, v \in V$
+```，存在从 ```latex
+$u$
+``` 到 ```latex
+$v$
+``` 的有向路径。
 
 ### 4.3 图的着色
 
 **定义 4.4**: 图着色
-图 $G$ 的 $k$-着色是一个函数 $c: V \rightarrow \{1, 2, \ldots, k\}$，使得相邻顶点有不同的颜色。
+图 ```latex
+$G$
+``` 的 ```latex
+$k$
+```-着色是一个函数 ```latex
+$c: V \rightarrow \{1, 2, \ldots, k\}$
+```，使得相邻顶点有不同的颜色。
 
 **定理 4.1**: 四色定理
 任何平面图都可以用四种颜色着色。

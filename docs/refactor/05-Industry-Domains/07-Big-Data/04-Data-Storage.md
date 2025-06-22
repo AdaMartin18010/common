@@ -20,14 +20,30 @@
 ### 1.1 存储模型
 
 **定义 1.1** (存储函数)
-存储函数 $S: D \times K \rightarrow V$ 将数据 $D$ 以键 $K$ 存储到值 $V$：
+存储函数 ```latex
+$S: D \times K \rightarrow V$
+``` 将数据 ```latex
+$D$
+``` 以键 ```latex
+$K$
+``` 存储到值 ```latex
+$V$
+```：
 
-$$S(d, k) = v \text{ where } v = \text{encode}(d)$$
+$```latex
+$S(d, k) = v \text{ where } v = \text{encode}(d)$
+```$
 
 **定理 1.1** (存储一致性)
-对于存储函数 $S$，如果 $d_1 = d_2$，则：
+对于存储函数 ```latex
+$S$
+```，如果 ```latex
+$d_1 = d_2$
+```，则：
 
-$$S(d_1, k) = S(d_2, k)$$
+$```latex
+$S(d_1, k) = S(d_2, k)$
+```$
 
 ### 1.2 存储接口
 
@@ -74,9 +90,17 @@ func (sm *StorageManager) RegisterStorage(name string, storage Storage) {
 **定义 2.1** (分布式存储)
 分布式存储将数据分散存储在多个节点上：
 
-$$\text{DistributedStorage}(D) = \bigcup_{i=1}^{n} S_i(D_i)$$
+$```latex
+$\text{DistributedStorage}(D) = \bigcup_{i=1}^{n} S_i(D_i)$
+```$
 
-其中 $S_i$ 是第 $i$ 个存储节点，$D_i$ 是分配给该节点的数据。
+其中 ```latex
+$S_i$
+``` 是第 ```latex
+$i$
+``` 个存储节点，```latex
+$D_i$
+``` 是分配给该节点的数据。
 
 ```go
 // 分布式存储节点
@@ -280,7 +304,9 @@ func (ls *ListSharder) GetShard(key string) int {
 **定义 3.1** (数据仓库)
 数据仓库是面向主题的、集成的、相对稳定的、反映历史变化的数据集合：
 
-$$\text{DataWarehouse} = \{\text{ODS}, \text{DW}, \text{DM}\}$$
+$```latex
+$\text{DataWarehouse} = \{\text{ODS}, \text{DW}, \text{DM}\}$
+```$
 
 其中 ODS 是操作数据存储，DW 是数据仓库，DM 是数据集市。
 
@@ -585,7 +611,9 @@ func (dl *DatabaseLoader) Load(target string, records []Record) error {
 **定义 4.2** (数据湖)
 数据湖是存储原始数据的集中式存储库，支持多种数据格式：
 
-$$\text{DataLake} = \{\text{RawData}, \text{ProcessedData}, \text{CuratedData}\}$$
+$```latex
+$\text{DataLake} = \{\text{RawData}, \text{ProcessedData}, \text{CuratedData}\}$
+```$
 
 ```go
 // 数据湖

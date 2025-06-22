@@ -9,12 +9,22 @@ Go语言是一种静态类型、编译型编程语言，具有简洁的语法、
 ### 1.1 形式化定义
 
 **定义 1.1.1 (Go程序)**
-Go程序是一个四元组 $GP = (P, I, F, M)$，其中：
+Go程序是一个四元组 ```latex
+$GP = (P, I, F, M)$
+```，其中：
 
-- $P = \{p_1, p_2, \ldots, p_n\}$ 是包集合
-- $I: P \to \mathcal{P}(I)$ 是包到导入的映射
-- $F: P \to \mathcal{P}(F)$ 是包到函数的映射
-- $M: P \to \mathcal{P}(M)$ 是包到方法的映射
+- ```latex
+$P = \{p_1, p_2, \ldots, p_n\}$
+``` 是包集合
+- ```latex
+$I: P \to \mathcal{P}(I)$
+``` 是包到导入的映射
+- ```latex
+$F: P \to \mathcal{P}(F)$
+``` 是包到函数的映射
+- ```latex
+$M: P \to \mathcal{P}(M)$
+``` 是包到方法的映射
 
 **定义 1.1.2 (Go语法)**
 Go语法由以下BNF规则定义：
@@ -31,15 +41,21 @@ Declaration ::= ConstDecl | TypeDecl | VarDecl
 
 **定义 1.2.1 (标识符)**
 标识符的语法规则：
-$$\text{Identifier} ::= \text{Letter} (\text{Letter} \mid \text{Digit})^*$$
+$```latex
+$\text{Identifier} ::= \text{Letter} (\text{Letter} \mid \text{Digit})^*$
+```$
 
 **定义 1.2.2 (类型声明)**
 类型声明的语法规则：
-$$\text{TypeDecl} ::= "type" \text{TypeSpec} \mid "type" "(" \text{TypeSpec}^* ")"$$
+$```latex
+$\text{TypeDecl} ::= "type" \text{TypeSpec} \mid "type" "(" \text{TypeSpec}^* ")"$
+```$
 
 **定义 1.2.3 (函数声明)**
 函数声明的语法规则：
-$$\text{FunctionDecl} ::= "func" \text{FunctionName} \text{Signature} \text{FunctionBody}$$
+$```latex
+$\text{FunctionDecl} ::= "func" \text{FunctionName} \text{Signature} \text{FunctionBody}$
+```$
 
 ### 1.3 Go语言实现
 
@@ -482,26 +498,48 @@ func (gsv *GoSyntaxValidator) isValidImportPath(path string) bool {
 ### 2.1 形式化定义
 
 **定义 2.1.1 (Go类型系统)**
-Go类型系统是一个五元组 $GTS = (T, \leq, \circ, I, R)$，其中：
+Go类型系统是一个五元组 ```latex
+$GTS = (T, \leq, \circ, I, R)$
+```，其中：
 
-- $T$ 是类型集合
-- $\leq \subseteq T \times T$ 是子类型关系
-- $\circ: T \times T \to T$ 是类型组合操作
-- $I: T \to \mathcal{P}(M)$ 是类型到方法的映射
-- $R: T \to \mathcal{P}(T)$ 是类型到接口的映射
+- ```latex
+$T$
+``` 是类型集合
+- ```latex
+$\leq \subseteq T \times T$
+``` 是子类型关系
+- ```latex
+$\circ: T \times T \to T$
+``` 是类型组合操作
+- ```latex
+$I: T \to \mathcal{P}(M)$
+``` 是类型到方法的映射
+- ```latex
+$R: T \to \mathcal{P}(T)$
+``` 是类型到接口的映射
 
 **定义 2.1.2 (类型约束)**
 Go类型系统必须满足以下约束：
 
-1. **自反性**: $\forall t \in T: t \leq t$
-2. **传递性**: $\forall t_1, t_2, t_3 \in T: t_1 \leq t_2 \land t_2 \leq t_3 \implies t_1 \leq t_3$
-3. **反对称性**: $\forall t_1, t_2 \in T: t_1 \leq t_2 \land t_2 \leq t_1 \implies t_1 = t_2$
-4. **接口实现**: $\forall t \in T: \forall i \in R(t): I(t) \supseteq I(i)$
+1. **自反性**: ```latex
+$\forall t \in T: t \leq t$
+```
+2. **传递性**: ```latex
+$\forall t_1, t_2, t_3 \in T: t_1 \leq t_2 \land t_2 \leq t_3 \implies t_1 \leq t_3$
+```
+3. **反对称性**: ```latex
+$\forall t_1, t_2 \in T: t_1 \leq t_2 \land t_2 \leq t_1 \implies t_1 = t_2$
+```
+4. **接口实现**: ```latex
+$\forall t \in T: \forall i \in R(t): I(t) \supseteq I(i)$
+```
 
 ### 2.2 类型系统定理
 
 **定理 2.2.1 (类型系统的偏序性)**
-Go类型系统的子类型关系 $\leq$ 构成偏序关系。
+Go类型系统的子类型关系 ```latex
+$\leq$
+``` 构成偏序关系。
 
 **证明**：
 
@@ -510,12 +548,26 @@ Go类型系统的子类型关系 $\leq$ 构成偏序关系。
 3. 反对称性：由定义2.1.2约束3
 
 **定理 2.2.2 (接口实现的正确性)**
-如果类型 $t$ 实现接口 $i$，则 $t$ 提供 $i$ 的所有方法。
+如果类型 ```latex
+$t$
+``` 实现接口 ```latex
+$i$
+```，则 ```latex
+$t$
+``` 提供 ```latex
+$i$
+``` 的所有方法。
 
 **证明**：
 
-1. 由接口实现约束，$I(t) \supseteq I(i)$
-2. 因此 $t$ 提供 $i$ 的所有方法
+1. 由接口实现约束，```latex
+$I(t) \supseteq I(i)$
+```
+2. 因此 ```latex
+$t$
+``` 提供 ```latex
+$i$
+``` 的所有方法
 3. 使用结构归纳法证明实现的正确性
 
 ### 2.3 Go语言实现
@@ -827,22 +879,44 @@ func (tc *TypeChecker) getNumericResultType(left, right Type) (Type, error) {
 ### 3.1 形式化定义
 
 **定义 3.1.1 (Go并发模型)**
-Go并发模型是一个六元组 $GCM = (G, C, M, S, R, L)$，其中：
+Go并发模型是一个六元组 ```latex
+$GCM = (G, C, M, S, R, L)$
+```，其中：
 
-- $G = \{g_1, g_2, \ldots, g_n\}$ 是goroutine集合
-- $C = \{c_1, c_2, \ldots, c_m\}$ 是通道集合
-- $M: G \to \mathcal{P}(M)$ 是goroutine到方法的映射
-- $S: C \to \mathcal{P}(G)$ 是通道到发送者的映射
-- $R: C \to \mathcal{P}(G)$ 是通道到接收者的映射
-- $L: G \to \mathcal{P}(L)$ 是goroutine到锁的映射
+- ```latex
+$G = \{g_1, g_2, \ldots, g_n\}$
+``` 是goroutine集合
+- ```latex
+$C = \{c_1, c_2, \ldots, c_m\}$
+``` 是通道集合
+- ```latex
+$M: G \to \mathcal{P}(M)$
+``` 是goroutine到方法的映射
+- ```latex
+$S: C \to \mathcal{P}(G)$
+``` 是通道到发送者的映射
+- ```latex
+$R: C \to \mathcal{P}(G)$
+``` 是通道到接收者的映射
+- ```latex
+$L: G \to \mathcal{P}(L)$
+``` 是goroutine到锁的映射
 
 **定义 3.1.2 (并发约束)**
 Go并发模型必须满足以下约束：
 
-1. **goroutine独立性**: $\forall g_1, g_2 \in G: g_1 \neq g_2 \implies M(g_1) \cap M(g_2) = \emptyset$
-2. **通道通信**: $\forall c \in C: S(c) \cap R(c) \neq \emptyset \implies \text{通信发生}$
-3. **死锁避免**: $\forall g \in G: \exists \text{路径使得 } g \text{ 可以继续执行}$
-4. **内存安全**: $\forall g_1, g_2 \in G: g_1 \neq g_2 \implies L(g_1) \cap L(g_2) = \emptyset$
+1. **goroutine独立性**: ```latex
+$\forall g_1, g_2 \in G: g_1 \neq g_2 \implies M(g_1) \cap M(g_2) = \emptyset$
+```
+2. **通道通信**: ```latex
+$\forall c \in C: S(c) \cap R(c) \neq \emptyset \implies \text{通信发生}$
+```
+3. **死锁避免**: ```latex
+$\forall g \in G: \exists \text{路径使得 } g \text{ 可以继续执行}$
+```
+4. **内存安全**: ```latex
+$\forall g_1, g_2 \in G: g_1 \neq g_2 \implies L(g_1) \cap L(g_2) = \emptyset$
+```
 
 ### 3.2 并发模型定理
 

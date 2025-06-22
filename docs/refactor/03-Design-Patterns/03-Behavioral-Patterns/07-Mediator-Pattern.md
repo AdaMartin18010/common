@@ -71,16 +71,32 @@
 
 ### 2.1 中介者定义
 
-设 $M$ 为中介者集合，$C$ 为同事对象集合，$I$ 为交互集合，则中介者模式可形式化为：
+设 ```latex
+$M$
+``` 为中介者集合，```latex
+$C$
+``` 为同事对象集合，```latex
+$I$
+``` 为交互集合，则中介者模式可形式化为：
 
-$$\text{Mediator Pattern} = (M, C, I, \text{mediate})$$
+$```latex
+$\text{Mediator Pattern} = (M, C, I, \text{mediate})$
+```$
 
 其中：
 
-- $M = \{m_1, m_2, ..., m_n\}$ 为中介者集合
-- $C = \{c_1, c_2, ..., c_m\}$ 为同事对象集合
-- $I = \{i_1, i_2, ..., i_k\}$ 为交互集合
-- $\text{mediate}: M \times C \times I \rightarrow \text{Result}$ 为中介函数
+- ```latex
+$M = \{m_1, m_2, ..., m_n\}$
+``` 为中介者集合
+- ```latex
+$C = \{c_1, c_2, ..., c_m\}$
+``` 为同事对象集合
+- ```latex
+$I = \{i_1, i_2, ..., i_k\}$
+``` 为交互集合
+- ```latex
+$\text{mediate}: M \times C \times I \rightarrow \text{Result}$
+``` 为中介函数
 
 ### 2.2 中介者接口定义
 
@@ -144,33 +160,53 @@ func (bc *BaseColleague) SendEvent(event string, data interface{}) error {
 
 中介者模式基于图论中的星形图概念：
 
-$$G = (V, E)$$
+$```latex
+$G = (V, E)$
+```$
 
 其中：
 
-- $V$ 为顶点集合（同事对象）
-- $E$ 为边集合（交互关系）
+- ```latex
+$V$
+``` 为顶点集合（同事对象）
+- ```latex
+$E$
+``` 为边集合（交互关系）
 - 所有边都通过中心顶点（中介者）
 
 ### 3.2 关系代数
 
 中介者模式体现了关系代数的投影和连接操作：
 
-$$\pi_{colleague1, colleague2}(\sigma_{event}(Interaction))$$
+$```latex
+$\pi_{colleague1, colleague2}(\sigma_{event}(Interaction))$
+```$
 
 ### 3.3 状态机理论
 
 中介者可以建模为状态机：
 
-$$M = (Q, \Sigma, \delta, q_0, F)$$
+$```latex
+$M = (Q, \Sigma, \delta, q_0, F)$
+```$
 
 其中：
 
-- $Q$ 为状态集合（交互状态）
-- $\Sigma$ 为输入字母表（事件集合）
-- $\delta$ 为状态转移函数
-- $q_0$ 为初始状态
-- $F$ 为接受状态集合
+- ```latex
+$Q$
+``` 为状态集合（交互状态）
+- ```latex
+$\Sigma$
+``` 为输入字母表（事件集合）
+- ```latex
+$\delta$
+``` 为状态转移函数
+- ```latex
+$q_0$
+``` 为初始状态
+- ```latex
+$F$
+``` 为接受状态集合
 
 ## 4. 模式结构
 
@@ -1298,13 +1334,33 @@ func (sm *SafeMediator) NotifySafe(sender mediator.Colleague, event string, data
 **定理**：中介者模式满足开闭原则
 
 **证明**：
-设 $M$ 为现有中介者集合，$M'$ 为新增中介者集合，$C$ 为同事对象集合。
+设 ```latex
+$M$
+``` 为现有中介者集合，```latex
+$M'$
+``` 为新增中介者集合，```latex
+$C$
+``` 为同事对象集合。
 
-对于任意 $m \in M'$，由于 $m$ 实现了中介者接口 $P$，且 $C$ 依赖于 $P$ 而非具体实现，因此：
+对于任意 ```latex
+$m \in M'$
+```，由于 ```latex
+$m$
+``` 实现了中介者接口 ```latex
+$P$
+```，且 ```latex
+$C$
+``` 依赖于 ```latex
+$P$
+``` 而非具体实现，因此：
 
-$$C \circ m \text{ 是有效的}$$
+$```latex
+$C \circ m \text{ 是有效的}$
+```$
 
-且不需要修改 $C$ 的代码，因此满足开闭原则。
+且不需要修改 ```latex
+$C$
+``` 的代码，因此满足开闭原则。
 
 **证毕**。
 

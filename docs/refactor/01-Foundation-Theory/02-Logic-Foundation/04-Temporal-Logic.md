@@ -34,21 +34,59 @@
 
 时态逻辑是研究时间相关性质的模态逻辑分支，用于描述系统在时间上的行为。在软件工程中，时态逻辑广泛应用于程序验证、硬件验证和协议验证。
 
-**定义 1.1**: 时态逻辑语言 $\mathcal{L}_{TL}$ 由以下部分组成：
+**定义 1.1**: 时态逻辑语言 ```latex
+$\mathcal{L}_{TL}$
+``` 由以下部分组成：
 
-- 原子命题集合 $AP = \{p, q, r, \ldots\}$
-- 逻辑连接词：$\neg, \land, \lor, \rightarrow$
-- 时态算子：$\mathbf{X}$ (下一个), $\mathbf{F}$ (将来), $\mathbf{G}$ (全局), $\mathbf{U}$ (直到)
-- 路径量词：$\mathbf{A}$ (所有路径), $\mathbf{E}$ (存在路径)
+- 原子命题集合 ```latex
+$AP = \{p, q, r, \ldots\}$
+```
+- 逻辑连接词：```latex
+$\neg, \land, \lor, \rightarrow$
+```
+- 时态算子：```latex
+$\mathbf{X}$
+``` (下一个), ```latex
+$\mathbf{F}$
+``` (将来), ```latex
+$\mathbf{G}$
+``` (全局), ```latex
+$\mathbf{U}$
+``` (直到)
+- 路径量词：```latex
+$\mathbf{A}$
+``` (所有路径), ```latex
+$\mathbf{E}$
+``` (存在路径)
 
 ### 1.2 时态算子
 
 **定义 1.2**: 基本时态算子的语义：
 
-- $\mathbf{X} \phi$ 表示"下一个时刻 $\phi$"
-- $\mathbf{F} \phi$ 表示"将来某个时刻 $\phi$"
-- $\mathbf{G} \phi$ 表示"全局 $\phi$"（所有时刻都 $\phi$）
-- $\phi \mathbf{U} \psi$ 表示"$\phi$ 直到 $\psi$"
+- ```latex
+$\mathbf{X} \phi$
+``` 表示"下一个时刻 ```latex
+$\phi$
+```"
+- ```latex
+$\mathbf{F} \phi$
+``` 表示"将来某个时刻 ```latex
+$\phi$
+```"
+- ```latex
+$\mathbf{G} \phi$
+``` 表示"全局 ```latex
+$\phi$
+```"（所有时刻都 ```latex
+$\phi$
+```）
+- ```latex
+$\phi \mathbf{U} \psi$
+``` 表示"```latex
+$\phi$
+``` 直到 ```latex
+$\psi$
+```"
 
 ### 1.3 线性时态逻辑
 
@@ -56,8 +94,12 @@
 
 **LTL公式示例**:
 
-- $\mathbf{G}(request \rightarrow \mathbf{F} response)$ - "每个请求最终都会得到响应"
-- $\mathbf{G}(mutex \rightarrow \mathbf{X}(\neg mutex))$ - "互斥锁在下一个时刻会被释放"
+- ```latex
+$\mathbf{G}(request \rightarrow \mathbf{F} response)$
+``` - "每个请求最终都会得到响应"
+- ```latex
+$\mathbf{G}(mutex \rightarrow \mathbf{X}(\neg mutex))$
+``` - "互斥锁在下一个时刻会被释放"
 
 ### 1.4 分支时态逻辑
 
@@ -65,8 +107,12 @@
 
 **CTL公式示例**:
 
-- $\mathbf{AG}(safe)$ - "在所有可达状态中都是安全的"
-- $\mathbf{EF}(error)$ - "存在一条路径最终会到达错误状态"
+- ```latex
+$\mathbf{AG}(safe)$
+``` - "在所有可达状态中都是安全的"
+- ```latex
+$\mathbf{EF}(error)$
+``` - "存在一条路径最终会到达错误状态"
 
 ## 2. 形式化定义
 
@@ -74,27 +120,44 @@
 
 **定义 2.1**: LTL公式的归纳定义：
 
-$$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \psi$$
+$```latex
+$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \psi$
+```$
 
-其中 $p \in AP$ 是原子命题。
+其中 ```latex
+$p \in AP$
+``` 是原子命题。
 
 ### 2.2 CTL语法
 
 **定义 2.2**: CTL公式的归纳定义：
 
-$$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{AX} \phi \mid \mathbf{EX} \phi \mid \mathbf{AF} \phi \mid \mathbf{EF} \phi \mid \mathbf{AG} \phi \mid \mathbf{EG} \phi \mid \mathbf{A}[\phi \mathbf{U} \psi] \mid \mathbf{E}[\phi \mathbf{U} \psi]$$
+$```latex
+$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{AX} \phi \mid \mathbf{EX} \phi \mid \mathbf{AF} \phi \mid \mathbf{EF} \phi \mid \mathbf{AG} \phi \mid \mathbf{EG} \phi \mid \mathbf{A}[\phi \mathbf{U} \psi] \mid \mathbf{E}[\phi \mathbf{U} \psi]$
+```$
 
 ### 2.3 语义定义
 
-**定义 2.3**: 对于Kripke结构 $M = (S, S_0, R, L)$，其中：
+**定义 2.3**: 对于Kripke结构 ```latex
+$M = (S, S_0, R, L)$
+```，其中：
 
-- $S$ 是状态集合
-- $S_0 \subseteq S$ 是初始状态集合
-- $R \subseteq S \times S$ 是转移关系
-- $L: S \rightarrow 2^{AP}$ 是标记函数
+- ```latex
+$S$
+``` 是状态集合
+- ```latex
+$S_0 \subseteq S$
+``` 是初始状态集合
+- ```latex
+$R \subseteq S \times S$
+``` 是转移关系
+- ```latex
+$L: S \rightarrow 2^{AP}$
+``` 是标记函数
 
 **LTL语义**:
 
+```latex
 $$\begin{align}
 \pi, i &\models p \text{ 当且仅当 } p \in L(\pi[i]) \\
 \pi, i &\models \neg \phi \text{ 当且仅当 } \pi, i \not\models \phi \\
@@ -104,6 +167,7 @@ $$\begin{align}
 \pi, i &\models \mathbf{G} \phi \text{ 当且仅当 } \forall j \geq i: \pi, j \models \phi \\
 \pi, i &\models \phi \mathbf{U} \psi \text{ 当且仅当 } \exists j \geq i: \pi, j \models \psi \text{ 且 } \forall k \in [i,j): \pi, k \models \phi
 \end{align}$$
+```
 
 ## 3. Go语言实现
 
@@ -769,14 +833,30 @@ func (pv *ProtocolVerification) VerifyLiveness() bool {
 
 ### 5.1 完备性定理
 
-**定理 5.1** (LTL完备性): 对于任意LTL公式 $\phi$，如果 $\phi$ 在所有Kripke结构中有效，则 $\phi$ 在LTL公理系统中可证。
+**定理 5.1** (LTL完备性): 对于任意LTL公式 ```latex
+$\phi$
+```，如果 ```latex
+$\phi$
+``` 在所有Kripke结构中有效，则 ```latex
+$\phi$
+``` 在LTL公理系统中可证。
 
 **证明**:
-1. 假设 $\phi$ 在LTL公理系统中不可证
-2. 构造典范模型 $M^c$
-3. 证明 $M^c \not\models \phi$
-4. 这与 $\phi$ 在所有模型中有效矛盾
-5. 因此 $\phi$ 在LTL公理系统中可证
+1. 假设 ```latex
+$\phi$
+``` 在LTL公理系统中不可证
+2. 构造典范模型 ```latex
+$M^c$
+```
+3. 证明 ```latex
+$M^c \not\models \phi$
+```
+4. 这与 ```latex
+$\phi$
+``` 在所有模型中有效矛盾
+5. 因此 ```latex
+$\phi$
+``` 在LTL公理系统中可证
 
 ### 5.2 模型检查算法
 
@@ -792,7 +872,9 @@ func (pv *ProtocolVerification) VerifyLiveness() bool {
 5. 否则，返回 P 中的接受路径作为反例
 ```
 
-**定理 5.2**: LTL模型检查的时间复杂度为 $O(|M| \times 2^{|\phi|})$。
+**定理 5.2**: LTL模型检查的时间复杂度为 ```latex
+$O(|M| \times 2^{|\phi|})$
+```。
 
 ### 5.3 复杂度分析
 

@@ -64,25 +64,45 @@
 
 ### 2.1 集合论定义
 
-设 $P$ 为程序集合，$F$ 为范式集合，$S$ 为语义集合，则编程范式满足：
+设 ```latex
+$P$
+``` 为程序集合，```latex
+$F$
+``` 为范式集合，```latex
+$S$
+``` 为语义集合，则编程范式满足：
 
-$$\forall f \in F, \exists s \in S : f = \text{paradigm}(s)$$
+$```latex
+$\forall f \in F, \exists s \in S : f = \text{paradigm}(s)$
+```$
 
-其中 $\text{paradigm}: S \rightarrow F$ 为范式映射函数。
+其中 ```latex
+$\text{paradigm}: S \rightarrow F$
+``` 为范式映射函数。
 
 ### 2.2 函数式定义
 
-定义范式函数族 $\mathcal{P} = \{p_s : P \rightarrow P \mid s \in S\}$，满足：
+定义范式函数族 ```latex
+$\mathcal{P} = \{p_s : P \rightarrow P \mid s \in S\}$
+```，满足：
 
-$$p_s(program) = \text{transform}(program, s)$$
+$```latex
+$p_s(program) = \text{transform}(program, s)$
+```$
 
 ### 2.3 类型论定义
 
 在类型论中，编程范式可以表示为：
 
-$$\text{Paradigm} = \Pi_{s:S} \Sigma_{p:P} \text{Program}(p)$$
+$```latex
+$\text{Paradigm} = \Pi_{s:S} \Sigma_{p:P} \text{Program}(p)$
+```$
 
-其中 $\text{Program}(p)$ 表示程序 $p$ 的类型。
+其中 ```latex
+$\text{Program}(p)$
+``` 表示程序 ```latex
+$p$
+``` 的类型。
 
 ---
 
@@ -94,8 +114,14 @@ $$\text{Paradigm} = \Pi_{s:S} \Sigma_{p:P} \text{Program}(p)$$
 
 **证明**:
 
-1. 设 $f_1, f_2$ 为两个不同的范式
-2. 对于任意程序 $p$，$f_1(p) \neq f_2(p)$
+1. 设 ```latex
+$f_1, f_2$
+``` 为两个不同的范式
+2. 对于任意程序 ```latex
+$p$
+```，```latex
+$f_1(p) \neq f_2(p)$
+```
 3. 因此范式之间相互独立
 
 ### 3.2 范式组合性证明
@@ -104,9 +130,17 @@ $$\text{Paradigm} = \Pi_{s:S} \Sigma_{p:P} \text{Program}(p)$$
 
 **证明**:
 
-1. 设 $f_1, f_2$ 为两个范式
-2. 组合范式 $f_{composite} = f_1 \circ f_2$
-3. 对于任意程序 $p$，$f_{composite}(p) = f_1(f_2(p))$
+1. 设 ```latex
+$f_1, f_2$
+``` 为两个范式
+2. 组合范式 ```latex
+$f_{composite} = f_1 \circ f_2$
+```
+3. 对于任意程序 ```latex
+$p$
+```，```latex
+$f_{composite}(p) = f_1(f_2(p))$
+```
 4. 因此范式支持组合
 
 ---
@@ -1031,19 +1065,39 @@ func BenchmarkFunctionalParadigm(b *testing.B) {
 
 ### 5.1 时间复杂度
 
-- **命令式编程**: $O(n)$ 线性时间复杂度
-- **函数式编程**: $O(n \log n)$ 由于不可变性
-- **面向对象编程**: $O(n)$ 方法调用开销
-- **逻辑编程**: $O(2^n)$ 回溯搜索
-- **并发编程**: $O(n/p)$ p为处理器数量
+- **命令式编程**: ```latex
+$O(n)$
+``` 线性时间复杂度
+- **函数式编程**: ```latex
+$O(n \log n)$
+``` 由于不可变性
+- **面向对象编程**: ```latex
+$O(n)$
+``` 方法调用开销
+- **逻辑编程**: ```latex
+$O(2^n)$
+``` 回溯搜索
+- **并发编程**: ```latex
+$O(n/p)$
+``` p为处理器数量
 
 ### 5.2 空间复杂度
 
-- **命令式编程**: $O(1)$ 原地操作
-- **函数式编程**: $O(n)$ 不可变性导致
-- **面向对象编程**: $O(n)$ 对象开销
-- **逻辑编程**: $O(n)$ 搜索空间
-- **并发编程**: $O(n)$ 线程开销
+- **命令式编程**: ```latex
+$O(1)$
+``` 原地操作
+- **函数式编程**: ```latex
+$O(n)$
+``` 不可变性导致
+- **面向对象编程**: ```latex
+$O(n)$
+``` 对象开销
+- **逻辑编程**: ```latex
+$O(n)$
+``` 搜索空间
+- **并发编程**: ```latex
+$O(n)$
+``` 线程开销
 
 ### 5.3 性能优化
 

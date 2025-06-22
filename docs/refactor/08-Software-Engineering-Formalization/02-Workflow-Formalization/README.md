@@ -45,42 +45,84 @@
 
 ### 1.1 基本定义
 
-**定义 1.1** (工作流): 工作流 $W = (S, T, F, M_0)$ 是一个四元组，其中：
+**定义 1.1** (工作流): 工作流 ```latex
+$W = (S, T, F, M_0)$
+``` 是一个四元组，其中：
 
-- $S$ 是状态集合
-- $T$ 是任务集合
-- $F \subseteq (S \times T) \cup (T \times S)$ 是流关系
-- $M_0 \subseteq S$ 是初始标记
+- ```latex
+$S$
+``` 是状态集合
+- ```latex
+$T$
+``` 是任务集合
+- ```latex
+$F \subseteq (S \times T) \cup (T \times S)$
+``` 是流关系
+- ```latex
+$M_0 \subseteq S$
+``` 是初始标记
 
 ### 1.2 Petri网模型
 
-**定义 1.2** (Petri网): Petri网 $N = (P, T, F, W, M_0)$ 包含：
+**定义 1.2** (Petri网): Petri网 ```latex
+$N = (P, T, F, W, M_0)$
+``` 包含：
 
-- $P$: 库所集合
-- $T$: 变迁集合
-- $F \subseteq (P \times T) \cup (T \times P)$: 流关系
-- $W: F \rightarrow \mathbb{N}$: 权重函数
-- $M_0: P \rightarrow \mathbb{N}$: 初始标记
+- ```latex
+$P$
+```: 库所集合
+- ```latex
+$T$
+```: 变迁集合
+- ```latex
+$F \subseteq (P \times T) \cup (T \times P)$
+```: 流关系
+- ```latex
+$W: F \rightarrow \mathbb{N}$
+```: 权重函数
+- ```latex
+$M_0: P \rightarrow \mathbb{N}$
+```: 初始标记
 
 ### 1.3 状态机模型
 
-**定义 1.3** (状态机): 状态机 $M = (Q, \Sigma, \delta, q_0, F)$ 包含：
+**定义 1.3** (状态机): 状态机 ```latex
+$M = (Q, \Sigma, \delta, q_0, F)$
+``` 包含：
 
-- $Q$: 状态集合
-- $\Sigma$: 输入字母表
-- $\delta: Q \times \Sigma \rightarrow Q$: 转移函数
-- $q_0 \in Q$: 初始状态
-- $F \subseteq Q$: 接受状态集合
+- ```latex
+$Q$
+```: 状态集合
+- ```latex
+$\Sigma$
+```: 输入字母表
+- ```latex
+$\delta: Q \times \Sigma \rightarrow Q$
+```: 转移函数
+- ```latex
+$q_0 \in Q$
+```: 初始状态
+- ```latex
+$F \subseteq Q$
+```: 接受状态集合
 
 ## 2. 工作流语言 (Workflow Languages)
 
 ### 2.1 工作流代数
 
-**定义 2.1** (工作流代数): 工作流代数 $(W, \circ, \parallel, +)$ 包含：
+**定义 2.1** (工作流代数): 工作流代数 ```latex
+$(W, \circ, \parallel, +)$
+``` 包含：
 
-- $\circ$: 顺序组合
-- $\parallel$: 并行组合
-- $+$: 选择组合
+- ```latex
+$\circ$
+```: 顺序组合
+- ```latex
+$\parallel$
+```: 并行组合
+- ```latex
+$+$
+```: 选择组合
 
 ### 2.2 形式化语法
 
@@ -116,19 +158,35 @@ w ::= \text{skip} \mid \text{task}(a) \mid w_1 \circ w_2 \mid w_1 \parallel w_2 
 
 ### 3.2 安全性验证
 
-**定义 3.2** (安全性): 工作流 $W$ 满足安全性性质 $\phi$，如果所有执行路径都满足 $\phi$。
+**定义 3.2** (安全性): 工作流 ```latex
+$W$
+``` 满足安全性性质 ```latex
+$\phi$
+```，如果所有执行路径都满足 ```latex
+$\phi$
+```。
 
 ### 3.3 活性验证
 
-**定义 3.3** (活性): 工作流 $W$ 满足活性性质 $\phi$，如果存在执行路径满足 $\phi$。
+**定义 3.3** (活性): 工作流 ```latex
+$W$
+``` 满足活性性质 ```latex
+$\phi$
+```，如果存在执行路径满足 ```latex
+$\phi$
+```。
 
 ## 4. 工作流优化 (Workflow Optimization)
 
 ### 4.1 性能指标
 
-**定义 4.1** (执行时间): 工作流的执行时间 $T(W)$ 是完成所有任务所需的时间。
+**定义 4.1** (执行时间): 工作流的执行时间 ```latex
+$T(W)$
+``` 是完成所有任务所需的时间。
 
-**定义 4.2** (资源利用率): 资源利用率 $U(W)$ 是资源使用效率的度量。
+**定义 4.2** (资源利用率): 资源利用率 ```latex
+$U(W)$
+``` 是资源使用效率的度量。
 
 ### 4.2 优化目标
 
@@ -142,11 +200,23 @@ w ::= \text{skip} \mid \text{task}(a) \mid w_1 \circ w_2 \mid w_1 \parallel w_2 
 
 ### 5.1 工作流路径空间
 
-**定义 5.1** (路径空间): 工作流 $W$ 的路径空间 $\Omega W$ 是所有可能执行路径的集合。
+**定义 5.1** (路径空间): 工作流 ```latex
+$W$
+``` 的路径空间 ```latex
+$\Omega W$
+``` 是所有可能执行路径的集合。
 
 ### 5.2 同伦等价
 
-**定义 5.2** (同伦等价): 两个工作流 $W_1$ 和 $W_2$ 是同伦等价的，如果存在连续变形将 $W_1$ 转换为 $W_2$。
+**定义 5.2** (同伦等价): 两个工作流 ```latex
+$W_1$
+``` 和 ```latex
+$W_2$
+``` 是同伦等价的，如果存在连续变形将 ```latex
+$W_1$
+``` 转换为 ```latex
+$W_2$
+```。
 
 ## 6. Go语言实现
 

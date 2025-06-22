@@ -340,7 +340,11 @@ func (dw *MedicalDataWarehouse) ExtractTransformLoad(sourceData []Patient) error
     
     stmt, err := tx.Prepare(`
         INSERT INTO patients (id, name, gender, birth_date, address)
-        VALUES ($1, $2, $3, $4, $5)
+        VALUES (```latex
+$1, $
+```2, ```latex
+$3, $
+```4, $5)
         ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
             gender = EXCLUDED.gender,
@@ -498,7 +502,11 @@ func (p *PatientDataProcessor) Process(data []byte) error {
     // 处理患者数据
     query := `
         INSERT INTO patient_events (patient_id, event_type, event_data, timestamp)
-        VALUES ($1, $2, $3, $4)
+        VALUES (```latex
+$1, $
+```2, ```latex
+$3, $
+```4)
     `
     
     _, err := p.db.Exec(query, patient.ID, "patient_update", data, time.Now())

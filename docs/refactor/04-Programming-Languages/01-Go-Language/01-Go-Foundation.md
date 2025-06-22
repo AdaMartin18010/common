@@ -92,56 +92,116 @@ graph TB
 
 ### 2.1 基本定义
 
-设 $\mathcal{T}$ 为类型集合，$\mathcal{V}$ 为值集合，$\mathcal{E}$ 为表达式集合。
+设 ```latex
+$\mathcal{T}$
+``` 为类型集合，```latex
+$\mathcal{V}$
+``` 为值集合，```latex
+$\mathcal{E}$
+``` 为表达式集合。
 
 **定义 2.1** (Go类型系统)
-Go类型系统是一个四元组 $(\mathcal{T}, \mathcal{V}, \mathcal{E}, \mathcal{R})$，其中：
+Go类型系统是一个四元组 ```latex
+$(\mathcal{T}, \mathcal{V}, \mathcal{E}, \mathcal{R})$
+```，其中：
 
-- $\mathcal{T} = \mathcal{T}_b \cup \mathcal{T}_c \cup \mathcal{T}_i$ 是类型集合
-- $\mathcal{T}_b = \{\text{int}, \text{float64}, \text{string}, \text{bool}\}$ 是基本类型集合
-- $\mathcal{T}_c = \{\text{struct}, \text{array}, \text{slice}, \text{map}\}$ 是复合类型集合
-- $\mathcal{T}_i = \{\text{interface}\}$ 是接口类型集合
-- $\mathcal{V}$ 是值集合
-- $\mathcal{E}$ 是表达式集合
-- $\mathcal{R}: \mathcal{E} \rightarrow \mathcal{T}$ 是类型推导函数
+- ```latex
+$\mathcal{T} = \mathcal{T}_b \cup \mathcal{T}_c \cup \mathcal{T}_i$
+``` 是类型集合
+- ```latex
+$\mathcal{T}_b = \{\text{int}, \text{float64}, \text{string}, \text{bool}\}$
+``` 是基本类型集合
+- ```latex
+$\mathcal{T}_c = \{\text{struct}, \text{array}, \text{slice}, \text{map}\}$
+``` 是复合类型集合
+- ```latex
+$\mathcal{T}_i = \{\text{interface}\}$
+``` 是接口类型集合
+- ```latex
+$\mathcal{V}$
+``` 是值集合
+- ```latex
+$\mathcal{E}$
+``` 是表达式集合
+- ```latex
+$\mathcal{R}: \mathcal{E} \rightarrow \mathcal{T}$
+``` 是类型推导函数
 
 **定义 2.2** (Go并发模型)
-Go并发模型是一个三元组 $(\mathcal{G}, \mathcal{C}, \mathcal{S})$，其中：
+Go并发模型是一个三元组 ```latex
+$(\mathcal{G}, \mathcal{C}, \mathcal{S})$
+```，其中：
 
-- $\mathcal{G}$ 是Goroutine集合
-- $\mathcal{C}$ 是Channel集合
-- $\mathcal{S}: \mathcal{G} \times \mathcal{C} \rightarrow \mathcal{V}$ 是通信函数
+- ```latex
+$\mathcal{G}$
+``` 是Goroutine集合
+- ```latex
+$\mathcal{C}$
+``` 是Channel集合
+- ```latex
+$\mathcal{S}: \mathcal{G} \times \mathcal{C} \rightarrow \mathcal{V}$
+``` 是通信函数
 
 ### 2.2 形式化规范
 
 **公理 2.1** (类型安全)
-对于任意表达式 $e \in \mathcal{E}$ 和类型 $t \in \mathcal{T}$：
+对于任意表达式 ```latex
+$e \in \mathcal{E}$
+``` 和类型 ```latex
+$t \in \mathcal{T}$
+```：
 
-$$\mathcal{R}(e) = t \Rightarrow \text{type\_safe}(e, t)$$
+$```latex
+$\mathcal{R}(e) = t \Rightarrow \text{type\_safe}(e, t)$
+```$
 
 **公理 2.2** (并发安全)
-对于任意Goroutine $g \in \mathcal{G}$ 和Channel $c \in \mathcal{C}$：
+对于任意Goroutine ```latex
+$g \in \mathcal{G}$
+``` 和Channel ```latex
+$c \in \mathcal{C}$
+```：
 
-$$\text{concurrent\_safe}(g, c) \Leftrightarrow \text{no\_race\_condition}(g, c)$$
+$```latex
+$\text{concurrent\_safe}(g, c) \Leftrightarrow \text{no\_race\_condition}(g, c)$
+```$
 
 ### 2.3 内存模型定义
 
 **定义 2.3** (Go内存模型)
-Go内存模型是一个四元组 $(\mathcal{M}, \mathcal{A}, \mathcal{H}, \mathcal{O})$，其中：
+Go内存模型是一个四元组 ```latex
+$(\mathcal{M}, \mathcal{A}, \mathcal{H}, \mathcal{O})$
+```，其中：
 
-- $\mathcal{M}$ 是内存位置集合
-- $\mathcal{A}$ 是原子操作集合
-- $\mathcal{H}$ 是happens-before关系
-- $\mathcal{O}$ 是操作顺序
+- ```latex
+$\mathcal{M}$
+``` 是内存位置集合
+- ```latex
+$\mathcal{A}$
+``` 是原子操作集合
+- ```latex
+$\mathcal{H}$
+``` 是happens-before关系
+- ```latex
+$\mathcal{O}$
+``` 是操作顺序
 
 ## 3. 数学基础
 
 ### 3.1 类型论基础
 
 **定理 3.1** (类型推导一致性)
-设 $\Gamma$ 为类型环境，$e$ 为表达式，$t$ 为类型，则：
+设 ```latex
+$\Gamma$
+``` 为类型环境，```latex
+$e$
+``` 为表达式，```latex
+$t$
+``` 为类型，则：
 
-$$\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)$$
+$```latex
+$\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)$
+```$
 
 **证明**:
 
@@ -152,9 +212,17 @@ $$\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)$$
 ### 3.2 并发理论
 
 **定理 3.2** (CSP通信安全性)
-设 $P$ 和 $Q$ 为进程，$c$ 为通信通道，则：
+设 ```latex
+$P$
+``` 和 ```latex
+$Q$
+``` 为进程，```latex
+$c$
+``` 为通信通道，则：
 
-$$\text{communicate}(P, Q, c) \Rightarrow \text{no\_deadlock}(P, Q)$$
+$```latex
+$\text{communicate}(P, Q, c) \Rightarrow \text{no\_deadlock}(P, Q)$
+```$
 
 **证明**:
 
@@ -165,9 +233,15 @@ $$\text{communicate}(P, Q, c) \Rightarrow \text{no\_deadlock}(P, Q)$$
 ### 3.3 算法复杂度
 
 **定理 3.3** (垃圾回收复杂度)
-设 $n$ 为对象数量，$m$ 为存活对象数量，则标记-清除算法的复杂度为：
+设 ```latex
+$n$
+``` 为对象数量，```latex
+$m$
+``` 为存活对象数量，则标记-清除算法的复杂度为：
 
-$$T(n) = O(n) + O(m)$$
+$```latex
+$T(n) = O(n) + O(m)$
+```$
 
 **证明**:
 
@@ -1399,12 +1473,22 @@ func putBuffer(buf []byte) {
 
 ### 10.4 数学总结
 
-Go语言通过形式化定义 $(\mathcal{T}, \mathcal{V}, \mathcal{E}, \mathcal{R})$ 实现了类型安全的编程，其中：
+Go语言通过形式化定义 ```latex
+$(\mathcal{T}, \mathcal{V}, \mathcal{E}, \mathcal{R})$
+``` 实现了类型安全的编程，其中：
 
-- **类型安全**: $\mathcal{R}(e) = t \Rightarrow \text{type\_safe}(e, t)$
-- **并发安全**: $\text{concurrent\_safe}(g, c) \Leftrightarrow \text{no\_race\_condition}(g, c)$
-- **内存管理**: $T(n) = O(n) + O(m)$
-- **类型推导**: $\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)$
+- **类型安全**: ```latex
+$\mathcal{R}(e) = t \Rightarrow \text{type\_safe}(e, t)$
+```
+- **并发安全**: ```latex
+$\text{concurrent\_safe}(g, c) \Leftrightarrow \text{no\_race\_condition}(g, c)$
+```
+- **内存管理**: ```latex
+$T(n) = O(n) + O(m)$
+```
+- **类型推导**: ```latex
+$\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)$
+```
 
 这种语言设计在并发编程、系统开发和网络服务等领域得到了广泛应用，既保持了高性能，又提供了良好的开发体验。
 

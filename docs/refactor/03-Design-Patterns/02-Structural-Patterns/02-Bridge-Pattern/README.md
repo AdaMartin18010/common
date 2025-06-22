@@ -9,43 +9,73 @@
 ### 基本概念
 
 **定义 2.2.1** (抽象)
-抽象 $A$ 是一个接口或抽象类的集合，定义了系统的行为规范：
-$$A = \{a_1, a_2, \ldots, a_n\}$$
+抽象 ```latex
+$A$
+``` 是一个接口或抽象类的集合，定义了系统的行为规范：
+$```latex
+$A = \{a_1, a_2, \ldots, a_n\}$
+```$
 
-其中 $a_i$ 是抽象方法。
+其中 ```latex
+$a_i$
+``` 是抽象方法。
 
 **定义 2.2.2** (实现)
-实现 $I$ 是一个具体类的集合，提供了抽象的具体实现：
-$$I = \{i_1, i_2, \ldots, i_m\}$$
+实现 ```latex
+$I$
+``` 是一个具体类的集合，提供了抽象的具体实现：
+$```latex
+$I = \{i_1, i_2, \ldots, i_m\}$
+```$
 
-其中 $i_j$ 是具体实现。
+其中 ```latex
+$i_j$
+``` 是具体实现。
 
 **定义 2.2.3** (桥接)
-桥接 $B$ 是抽象与实现之间的连接：
-$$B: A \times I \rightarrow \text{System}$$
+桥接 ```latex
+$B$
+``` 是抽象与实现之间的连接：
+$```latex
+$B: A \times I \rightarrow \text{System}$
+```$
 
 ### 桥接模式的形式化模型
 
 **定义 2.2.4** (桥接模式)
 桥接模式是一个三元组：
-$$\text{BridgePattern} = \langle A, I, B \rangle$$
+$```latex
+$\text{BridgePattern} = \langle A, I, B \rangle$
+```$
 
 其中：
 
-- $A$: 抽象集合
-- $I$: 实现集合
-- $B$: 桥接函数
+- ```latex
+$A$
+```: 抽象集合
+- ```latex
+$I$
+```: 实现集合
+- ```latex
+$B$
+```: 桥接函数
 
 **定义 2.2.5** (解耦性)
-抽象与实现解耦，记作 $A \perp I$，当且仅当：
-$$\forall a \in A, \forall i \in I: \text{change}(a) \not\Rightarrow \text{change}(i)$$
+抽象与实现解耦，记作 ```latex
+$A \perp I$
+```，当且仅当：
+$```latex
+$\forall a \in A, \forall i \in I: \text{change}(a) \not\Rightarrow \text{change}(i)$
+```$
 
 ## 核心定理
 
 ### 定理 2.2.1: 桥接模式的解耦性
 
 **定理**: 桥接模式实现抽象与实现的完全解耦：
-$$A \perp I$$
+$```latex
+$A \perp I$
+```$
 
 **证明**:
 
@@ -57,7 +87,9 @@ $$A \perp I$$
 ### 定理 2.2.2: 桥接模式的组合性
 
 **定理**: 桥接模式支持任意组合：
-$$\forall a \in A, \forall i \in I: B(a, i) \text{ is valid}$$
+$```latex
+$\forall a \in A, \forall i \in I: B(a, i) \text{ is valid}$
+```$
 
 **证明**:
 

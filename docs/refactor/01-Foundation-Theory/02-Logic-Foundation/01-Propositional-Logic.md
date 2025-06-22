@@ -38,7 +38,9 @@
 命题是一个具有确定真值的陈述句，其真值要么为真（true），要么为假（false）。
 
 **定义 1.2 (原子命题)**
-原子命题是不可再分解的基本命题，通常用大写字母 $P, Q, R, \ldots$ 表示。
+原子命题是不可再分解的基本命题，通常用大写字母 ```latex
+$P, Q, R, \ldots$
+``` 表示。
 
 **定义 1.3 (复合命题)**
 复合命题是由原子命题通过逻辑连接词组合而成的命题。
@@ -46,19 +48,67 @@
 ### 1.2 逻辑连接词
 
 **定义 1.4 (否定)**
-否定连接词 $\neg$ 表示"非"，对于命题 $P$，$\neg P$ 表示"非 $P$"。
+否定连接词 ```latex
+$\neg$
+``` 表示"非"，对于命题 ```latex
+$P$
+```，```latex
+$\neg P$
+``` 表示"非 ```latex
+$P$
+```"。
 
 **定义 1.5 (合取)**
-合取连接词 $\wedge$ 表示"且"，对于命题 $P, Q$，$P \wedge Q$ 表示"$P$ 且 $Q$"。
+合取连接词 ```latex
+$\wedge$
+``` 表示"且"，对于命题 ```latex
+$P, Q$
+```，```latex
+$P \wedge Q$
+``` 表示"```latex
+$P$
+``` 且 ```latex
+$Q$
+```"。
 
 **定义 1.6 (析取)**
-析取连接词 $\vee$ 表示"或"，对于命题 $P, Q$，$P \vee Q$ 表示"$P$ 或 $Q$"。
+析取连接词 ```latex
+$\vee$
+``` 表示"或"，对于命题 ```latex
+$P, Q$
+```，```latex
+$P \vee Q$
+``` 表示"```latex
+$P$
+``` 或 ```latex
+$Q$
+```"。
 
 **定义 1.7 (蕴含)**
-蕴含连接词 $\rightarrow$ 表示"如果...那么"，对于命题 $P, Q$，$P \rightarrow Q$ 表示"如果 $P$ 那么 $Q$"。
+蕴含连接词 ```latex
+$\rightarrow$
+``` 表示"如果...那么"，对于命题 ```latex
+$P, Q$
+```，```latex
+$P \rightarrow Q$
+``` 表示"如果 ```latex
+$P$
+``` 那么 ```latex
+$Q$
+```"。
 
 **定义 1.8 (等价)**
-等价连接词 $\leftrightarrow$ 表示"当且仅当"，对于命题 $P, Q$，$P \leftrightarrow Q$ 表示"$P$ 当且仅当 $Q$"。
+等价连接词 ```latex
+$\leftrightarrow$
+``` 表示"当且仅当"，对于命题 ```latex
+$P, Q$
+```，```latex
+$P \leftrightarrow Q$
+``` 表示"```latex
+$P$
+``` 当且仅当 ```latex
+$Q$
+```"。
 
 ### 1.3 命题公式
 
@@ -66,8 +116,16 @@
 命题公式的递归定义：
 
 1. 原子命题是命题公式
-2. 如果 $\phi$ 是命题公式，则 $\neg \phi$ 是命题公式
-3. 如果 $\phi, \psi$ 是命题公式，则 $(\phi \wedge \psi), (\phi \vee \psi), (\phi \rightarrow \psi), (\phi \leftrightarrow \psi)$ 是命题公式
+2. 如果 ```latex
+$\phi$
+``` 是命题公式，则 ```latex
+$\neg \phi$
+``` 是命题公式
+3. 如果 ```latex
+$\phi, \psi$
+``` 是命题公式，则 ```latex
+$(\phi \wedge \psi), (\phi \vee \psi), (\phi \rightarrow \psi), (\phi \leftrightarrow \psi)$
+``` 是命题公式
 4. 只有通过上述规则构造的表达式才是命题公式
 
 ## 2. 语义学
@@ -75,48 +133,92 @@
 ### 2.1 真值表
 
 **定义 2.1 (真值赋值)**
-真值赋值是从原子命题集合到 $\{true, false\}$ 的函数。
+真值赋值是从原子命题集合到 ```latex
+$\{true, false\}$
+``` 的函数。
 
 **定义 2.2 (真值表)**
 真值表是描述命题公式在所有可能真值赋值下真值的表格。
 
 **定理 2.1 (真值表构造)**
-对于包含 $n$ 个不同原子命题的命题公式，其真值表有 $2^n$ 行。
+对于包含 ```latex
+$n$
+``` 个不同原子命题的命题公式，其真值表有 ```latex
+$2^n$
+``` 行。
 
 **证明**：
-每个原子命题有两种可能的真值，根据乘法原理，$n$ 个原子命题共有 $2^n$ 种不同的真值赋值组合。
+每个原子命题有两种可能的真值，根据乘法原理，```latex
+$n$
+``` 个原子命题共有 ```latex
+$2^n$
+``` 种不同的真值赋值组合。
 
 ### 2.2 语义函数
 
 **定义 2.3 (语义函数)**
-语义函数 $\llbracket \cdot \rrbracket$ 将命题公式映射到真值，满足：
+语义函数 ```latex
+$\llbracket \cdot \rrbracket$
+``` 将命题公式映射到真值，满足：
 
-1. $\llbracket P \rrbracket = v(P)$ 对于原子命题 $P$
-2. $\llbracket \neg \phi \rrbracket = \neg \llbracket \phi \rrbracket$
-3. $\llbracket \phi \wedge \psi \rrbracket = \llbracket \phi \rrbracket \wedge \llbracket \psi \rrbracket$
-4. $\llbracket \phi \vee \psi \rrbracket = \llbracket \phi \rrbracket \vee \llbracket \psi \rrbracket$
-5. $\llbracket \phi \rightarrow \psi \rrbracket = \neg \llbracket \phi \rrbracket \vee \llbracket \psi \rrbracket$
-6. $\llbracket \phi \leftrightarrow \psi \rrbracket = (\llbracket \phi \rrbracket \rightarrow \llbracket \psi \rrbracket) \wedge (\llbracket \psi \rrbracket \rightarrow \llbracket \phi \rrbracket)$
+1. ```latex
+$\llbracket P \rrbracket = v(P)$
+``` 对于原子命题 ```latex
+$P$
+```
+2. ```latex
+$\llbracket \neg \phi \rrbracket = \neg \llbracket \phi \rrbracket$
+```
+3. ```latex
+$\llbracket \phi \wedge \psi \rrbracket = \llbracket \phi \rrbracket \wedge \llbracket \psi \rrbracket$
+```
+4. ```latex
+$\llbracket \phi \vee \psi \rrbracket = \llbracket \phi \rrbracket \vee \llbracket \psi \rrbracket$
+```
+5. ```latex
+$\llbracket \phi \rightarrow \psi \rrbracket = \neg \llbracket \phi \rrbracket \vee \llbracket \psi \rrbracket$
+```
+6. ```latex
+$\llbracket \phi \leftrightarrow \psi \rrbracket = (\llbracket \phi \rrbracket \rightarrow \llbracket \psi \rrbracket) \wedge (\llbracket \psi \rrbracket \rightarrow \llbracket \phi \rrbracket)$
+```
 
 ### 2.3 逻辑等价
 
 **定义 2.4 (逻辑等价)**
-两个命题公式 $\phi, \psi$ 是逻辑等价的，记作 $\phi \equiv \psi$，当且仅当对于所有真值赋值，$\llbracket \phi \rrbracket = \llbracket \psi \rrbracket$。
+两个命题公式 ```latex
+$\phi, \psi$
+``` 是逻辑等价的，记作 ```latex
+$\phi \equiv \psi$
+```，当且仅当对于所有真值赋值，```latex
+$\llbracket \phi \rrbracket = \llbracket \psi \rrbracket$
+```。
 
 **定理 2.2 (德摩根律)**
-对于任意命题公式 $\phi, \psi$：
+对于任意命题公式 ```latex
+$\phi, \psi$
+```：
 
-1. $\neg(\phi \wedge \psi) \equiv \neg \phi \vee \neg \psi$
-2. $\neg(\phi \vee \psi) \equiv \neg \phi \wedge \neg \psi$
+1. ```latex
+$\neg(\phi \wedge \psi) \equiv \neg \phi \vee \neg \psi$
+```
+2. ```latex
+$\neg(\phi \vee \psi) \equiv \neg \phi \wedge \neg \psi$
+```
 
 **证明**：
 通过真值表验证，对于所有真值赋值，两边的真值都相同。
 
 **定理 2.3 (分配律)**
-对于任意命题公式 $\phi, \psi, \chi$：
+对于任意命题公式 ```latex
+$\phi, \psi, \chi$
+```：
 
-1. $\phi \wedge (\psi \vee \chi) \equiv (\phi \wedge \psi) \vee (\phi \wedge \chi)$
-2. $\phi \vee (\psi \wedge \chi) \equiv (\phi \vee \psi) \wedge (\phi \vee \chi)$
+1. ```latex
+$\phi \wedge (\psi \vee \chi) \equiv (\phi \wedge \psi) \vee (\phi \wedge \chi)$
+```
+2. ```latex
+$\phi \vee (\psi \wedge \chi) \equiv (\phi \vee \psi) \wedge (\phi \vee \chi)$
+```
 
 ## 3. 证明系统
 
@@ -127,31 +229,97 @@
 
 **引入规则**：
 
-- $\wedge$-I: 从 $\phi$ 和 $\psi$ 推出 $\phi \wedge \psi$
-- $\vee$-I: 从 $\phi$ 推出 $\phi \vee \psi$ 或 $\psi \vee \phi$
-- $\rightarrow$-I: 从假设 $\phi$ 推出 $\psi$ 后，可以推出 $\phi \rightarrow \psi$
+- ```latex
+$\wedge$
+```-I: 从 ```latex
+$\phi$
+``` 和 ```latex
+$\psi$
+``` 推出 ```latex
+$\phi \wedge \psi$
+```
+- ```latex
+$\vee$
+```-I: 从 ```latex
+$\phi$
+``` 推出 ```latex
+$\phi \vee \psi$
+``` 或 ```latex
+$\psi \vee \phi$
+```
+- ```latex
+$\rightarrow$
+```-I: 从假设 ```latex
+$\phi$
+``` 推出 ```latex
+$\psi$
+``` 后，可以推出 ```latex
+$\phi \rightarrow \psi$
+```
 
 **消除规则**：
 
-- $\wedge$-E: 从 $\phi \wedge \psi$ 推出 $\phi$ 或 $\psi$
-- $\vee$-E: 从 $\phi \vee \psi$ 和 $\phi \rightarrow \chi$ 和 $\psi \rightarrow \chi$ 推出 $\chi$
-- $\rightarrow$-E: 从 $\phi$ 和 $\phi \rightarrow \psi$ 推出 $\psi$
+- ```latex
+$\wedge$
+```-E: 从 ```latex
+$\phi \wedge \psi$
+``` 推出 ```latex
+$\phi$
+``` 或 ```latex
+$\psi$
+```
+- ```latex
+$\vee$
+```-E: 从 ```latex
+$\phi \vee \psi$
+``` 和 ```latex
+$\phi \rightarrow \chi$
+``` 和 ```latex
+$\psi \rightarrow \chi$
+``` 推出 ```latex
+$\chi$
+```
+- ```latex
+$\rightarrow$
+```-E: 从 ```latex
+$\phi$
+``` 和 ```latex
+$\phi \rightarrow \psi$
+``` 推出 ```latex
+$\psi$
+```
 
 **定理 3.1 (自然演绎的可靠性)**
-如果 $\Gamma \vdash \phi$，则 $\Gamma \models \phi$。
+如果 ```latex
+$\Gamma \vdash \phi$
+```，则 ```latex
+$\Gamma \models \phi$
+```。
 
 ### 3.2 公理系统
 
 **定义 3.2 (公理系统)**
 命题逻辑的公理系统包含以下公理模式：
 
-1. $\phi \rightarrow (\psi \rightarrow \phi)$
-2. $(\phi \rightarrow (\psi \rightarrow \chi)) \rightarrow ((\phi \rightarrow \psi) \rightarrow (\phi \rightarrow \chi))$
-3. $(\neg \phi \rightarrow \neg \psi) \rightarrow (\psi \rightarrow \phi)$
+1. ```latex
+$\phi \rightarrow (\psi \rightarrow \phi)$
+```
+2. ```latex
+$(\phi \rightarrow (\psi \rightarrow \chi)) \rightarrow ((\phi \rightarrow \psi) \rightarrow (\phi \rightarrow \chi))$
+```
+3. ```latex
+$(\neg \phi \rightarrow \neg \psi) \rightarrow (\psi \rightarrow \phi)$
+```
 
 **推理规则**：
 
-- 分离规则（MP）：从 $\phi$ 和 $\phi \rightarrow \psi$ 推出 $\psi$
+- 分离规则（MP）：从 ```latex
+$\phi$
+``` 和 ```latex
+$\phi \rightarrow \psi$
+``` 推出 ```latex
+$\psi$
+```
 
 ### 3.3 归结原理
 
@@ -159,54 +327,134 @@
 子句是文字的析取，其中文字是原子命题或其否定。
 
 **定义 3.4 (归结规则)**
-对于子句 $C_1 = A \vee L$ 和 $C_2 = B \vee \neg L$，归结规则推出 $C_1 \vee C_2 = A \vee B$。
+对于子句 ```latex
+$C_1 = A \vee L$
+``` 和 ```latex
+$C_2 = B \vee \neg L$
+```，归结规则推出 ```latex
+$C_1 \vee C_2 = A \vee B$
+```。
 
 **定理 3.2 (归结的完备性)**
-如果命题公式集合 $\Gamma$ 是不可满足的，则可以通过归结规则推出空子句。
+如果命题公式集合 ```latex
+$\Gamma$
+``` 是不可满足的，则可以通过归结规则推出空子句。
 
 ## 4. 形式化定义
 
 ### 4.1 语法定义
 
 **定义 4.1 (命题逻辑语言)**
-命题逻辑语言 $\mathcal{L}$ 由以下部分组成：
+命题逻辑语言 ```latex
+$\mathcal{L}$
+``` 由以下部分组成：
 
-- 原子命题集合 $\mathcal{P} = \{P_1, P_2, \ldots\}$
-- 逻辑连接词集合 $\{\neg, \wedge, \vee, \rightarrow, \leftrightarrow\}$
-- 括号 $\{(, )\}$
+- 原子命题集合 ```latex
+$\mathcal{P} = \{P_1, P_2, \ldots\}$
+```
+- 逻辑连接词集合 ```latex
+$\{\neg, \wedge, \vee, \rightarrow, \leftrightarrow\}$
+```
+- 括号 ```latex
+$\{(, )\}$
+```
 
 **定义 4.2 (公式集合)**
-公式集合 $\mathcal{F}$ 是满足以下条件的最小集合：
+公式集合 ```latex
+$\mathcal{F}$
+``` 是满足以下条件的最小集合：
 
-1. $\mathcal{P} \subseteq \mathcal{F}$
-2. 如果 $\phi \in \mathcal{F}$，则 $\neg \phi \in \mathcal{F}$
-3. 如果 $\phi, \psi \in \mathcal{F}$，则 $(\phi \wedge \psi), (\phi \vee \psi), (\phi \rightarrow \psi), (\phi \leftrightarrow \psi) \in \mathcal{F}$
+1. ```latex
+$\mathcal{P} \subseteq \mathcal{F}$
+```
+2. 如果 ```latex
+$\phi \in \mathcal{F}$
+```，则 ```latex
+$\neg \phi \in \mathcal{F}$
+```
+3. 如果 ```latex
+$\phi, \psi \in \mathcal{F}$
+```，则 ```latex
+$(\phi \wedge \psi), (\phi \vee \psi), (\phi \rightarrow \psi), (\phi \leftrightarrow \psi) \in \mathcal{F}$
+```
 
 ### 4.2 语义定义
 
 **定义 4.3 (解释)**
-解释 $I$ 是从原子命题集合 $\mathcal{P}$ 到 $\{true, false\}$ 的函数。
+解释 ```latex
+$I$
+``` 是从原子命题集合 ```latex
+$\mathcal{P}$
+``` 到 ```latex
+$\{true, false\}$
+``` 的函数。
 
 **定义 4.4 (满足关系)**
-满足关系 $\models$ 递归定义如下：
+满足关系 ```latex
+$\models$
+``` 递归定义如下：
 
-1. $I \models P$ 当且仅当 $I(P) = true$
-2. $I \models \neg \phi$ 当且仅当 $I \not\models \phi$
-3. $I \models \phi \wedge \psi$ 当且仅当 $I \models \phi$ 且 $I \models \psi$
-4. $I \models \phi \vee \psi$ 当且仅当 $I \models \phi$ 或 $I \models \psi$
-5. $I \models \phi \rightarrow \psi$ 当且仅当 $I \not\models \phi$ 或 $I \models \psi$
-6. $I \models \phi \leftrightarrow \psi$ 当且仅当 $I \models \phi$ 等价于 $I \models \psi$
+1. ```latex
+$I \models P$
+``` 当且仅当 ```latex
+$I(P) = true$
+```
+2. ```latex
+$I \models \neg \phi$
+``` 当且仅当 ```latex
+$I \not\models \phi$
+```
+3. ```latex
+$I \models \phi \wedge \psi$
+``` 当且仅当 ```latex
+$I \models \phi$
+``` 且 ```latex
+$I \models \psi$
+```
+4. ```latex
+$I \models \phi \vee \psi$
+``` 当且仅当 ```latex
+$I \models \phi$
+``` 或 ```latex
+$I \models \psi$
+```
+5. ```latex
+$I \models \phi \rightarrow \psi$
+``` 当且仅当 ```latex
+$I \not\models \phi$
+``` 或 ```latex
+$I \models \psi$
+```
+6. ```latex
+$I \models \phi \leftrightarrow \psi$
+``` 当且仅当 ```latex
+$I \models \phi$
+``` 等价于 ```latex
+$I \models \psi$
+```
 
 ### 4.3 完备性定理
 
 **定理 4.1 (命题逻辑的完备性)**
-对于任意命题公式 $\phi$，如果 $\models \phi$，则 $\vdash \phi$。
+对于任意命题公式 ```latex
+$\phi$
+```，如果 ```latex
+$\models \phi$
+```，则 ```latex
+$\vdash \phi$
+```。
 
 **证明**：
 使用真值表方法或归结方法可以构造证明。
 
 **定理 4.2 (命题逻辑的可靠性)**
-对于任意命题公式 $\phi$，如果 $\vdash \phi$，则 $\models \phi$。
+对于任意命题公式 ```latex
+$\phi$
+```，如果 ```latex
+$\vdash \phi$
+```，则 ```latex
+$\models \phi$
+```。
 
 **证明**：
 通过归纳法证明所有推理规则都保持有效性。

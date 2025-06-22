@@ -48,31 +48,67 @@
 ### 1.1 基本概念
 
 **定义 1.1.1** (样本空间)
-样本空间 $\Omega$ 是随机试验所有可能结果的集合。
+样本空间 ```latex
+$\Omega$
+``` 是随机试验所有可能结果的集合。
 
 **定义 1.1.2** (事件)
-事件是样本空间的子集 $A \subseteq \Omega$。
+事件是样本空间的子集 ```latex
+$A \subseteq \Omega$
+```。
 
 **定义 1.1.3** (σ-代数)
-σ-代数 $\mathcal{F}$ 是 $\Omega$ 的子集族，满足：
+σ-代数 ```latex
+$\mathcal{F}$
+``` 是 ```latex
+$\Omega$
+``` 的子集族，满足：
 
-1. $\Omega \in \mathcal{F}$
-2. 如果 $A \in \mathcal{F}$，则 $A^c \in \mathcal{F}$
-3. 如果 $A_1, A_2, ... \in \mathcal{F}$，则 $\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$
+1. ```latex
+$\Omega \in \mathcal{F}$
+```
+2. 如果 ```latex
+$A \in \mathcal{F}$
+```，则 ```latex
+$A^c \in \mathcal{F}$
+```
+3. 如果 ```latex
+$A_1, A_2, ... \in \mathcal{F}$
+```，则 ```latex
+$\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$
+```
 
 **定义 1.1.4** (概率测度)
-概率测度 $P: \mathcal{F} \rightarrow [0,1]$ 满足：
+概率测度 ```latex
+$P: \mathcal{F} \rightarrow [0,1]$
+``` 满足：
 
-1. $P(\Omega) = 1$
-2. 对于互斥事件 $A_1, A_2, ...$，$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
+1. ```latex
+$P(\Omega) = 1$
+```
+2. 对于互斥事件 ```latex
+$A_1, A_2, ...$
+```，```latex
+$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
+```
 
 ### 1.2 概率公理
 
 **公理 1.2.1** (Kolmogorov公理)
 
-1. 非负性: $P(A) \geq 0$ 对所有 $A \in \mathcal{F}$
-2. 规范性: $P(\Omega) = 1$
-3. 可列可加性: 对于互斥事件 $A_1, A_2, ...$，$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
+1. 非负性: ```latex
+$P(A) \geq 0$
+``` 对所有 ```latex
+$A \in \mathcal{F}$
+```
+2. 规范性: ```latex
+$P(\Omega) = 1$
+```
+3. 可列可加性: 对于互斥事件 ```latex
+$A_1, A_2, ...$
+```，```latex
+$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
+```
 
 ### 1.3 Go语言实现
 
@@ -200,7 +236,9 @@ func (ps *ProbabilitySpace) ConditionalProbability(eventA, eventB *Event) float6
 ### 2.1 定义
 
 **定义 2.1.1** (随机变量)
-随机变量 $X: \Omega \rightarrow \mathbb{R}$ 是从样本空间到实数的可测函数。
+随机变量 ```latex
+$X: \Omega \rightarrow \mathbb{R}$
+``` 是从样本空间到实数的可测函数。
 
 **定义 2.1.2** (离散随机变量)
 取有限或可列个值的随机变量。
@@ -211,23 +249,45 @@ func (ps *ProbabilitySpace) ConditionalProbability(eventA, eventB *Event) float6
 ### 2.2 概率质量函数 (PMF)
 
 **定义 2.2.1** (PMF)
-对于离散随机变量 $X$，概率质量函数 $p_X(x) = P(X = x)$。
+对于离散随机变量 ```latex
+$X$
+```，概率质量函数 ```latex
+$p_X(x) = P(X = x)$
+```。
 
 **性质**:
 
-1. $p_X(x) \geq 0$ 对所有 $x$
-2. $\sum_x p_X(x) = 1$
+1. ```latex
+$p_X(x) \geq 0$
+``` 对所有 ```latex
+$x$
+```
+2. ```latex
+$\sum_x p_X(x) = 1$
+```
 
 ### 2.3 概率密度函数 (PDF)
 
 **定义 2.3.1** (PDF)
-对于连续随机变量 $X$，概率密度函数 $f_X(x)$ 满足：
+对于连续随机变量 ```latex
+$X$
+```，概率密度函数 ```latex
+$f_X(x)$
+``` 满足：
+```latex
 $P(a \leq X \leq b) = \int_a^b f_X(x) dx$
+```
 
 **性质**:
 
-1. $f_X(x) \geq 0$ 对所有 $x$
-2. $\int_{-\infty}^{\infty} f_X(x) dx = 1$
+1. ```latex
+$f_X(x) \geq 0$
+``` 对所有 ```latex
+$x$
+```
+2. ```latex
+$\int_{-\infty}^{\infty} f_X(x) dx = 1$
+```
 
 ### 2.4 Go语言实现
 
@@ -405,58 +465,116 @@ func (crv *ContinuousRandomVariable) inverseCDF(p float64) float64 {
 #### 3.1.1 伯努利分布
 
 **定义 3.1.1** (伯努利分布)
-$X \sim Bernoulli(p)$ 的概率质量函数：
-$P(X = k) = p^k(1-p)^{1-k}$，其中 $k \in \{0,1\}$
+```latex
+$X \sim Bernoulli(p)$
+``` 的概率质量函数：
+```latex
+$P(X = k) = p^k(1-p)^{1-k}$
+```，其中 ```latex
+$k \in \{0,1\}$
+```
 
-**期望**: $E[X] = p$
-**方差**: $Var(X) = p(1-p)$
+**期望**: ```latex
+$E[X] = p$
+```
+**方差**: ```latex
+$Var(X) = p(1-p)$
+```
 
 #### 3.1.2 二项分布
 
 **定义 3.1.2** (二项分布)
-$X \sim Binomial(n,p)$ 的概率质量函数：
-$P(X = k) = \binom{n}{k} p^k(1-p)^{n-k}$，其中 $k \in \{0,1,...,n\}$
+```latex
+$X \sim Binomial(n,p)$
+``` 的概率质量函数：
+```latex
+$P(X = k) = \binom{n}{k} p^k(1-p)^{n-k}$
+```，其中 ```latex
+$k \in \{0,1,...,n\}$
+```
 
-**期望**: $E[X] = np$
-**方差**: $Var(X) = np(1-p)$
+**期望**: ```latex
+$E[X] = np$
+```
+**方差**: ```latex
+$Var(X) = np(1-p)$
+```
 
 #### 3.1.3 泊松分布
 
 **定义 3.1.3** (泊松分布)
-$X \sim Poisson(\lambda)$ 的概率质量函数：
-$P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}$，其中 $k \in \{0,1,2,...\}$
+```latex
+$X \sim Poisson(\lambda)$
+``` 的概率质量函数：
+```latex
+$P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}$
+```，其中 ```latex
+$k \in \{0,1,2,...\}$
+```
 
-**期望**: $E[X] = \lambda$
-**方差**: $Var(X) = \lambda$
+**期望**: ```latex
+$E[X] = \lambda$
+```
+**方差**: ```latex
+$Var(X) = \lambda$
+```
 
 ### 3.2 常见连续分布
 
 #### 3.2.1 均匀分布
 
 **定义 3.2.1** (均匀分布)
-$X \sim Uniform(a,b)$ 的概率密度函数：
-$f_X(x) = \frac{1}{b-a}$，其中 $x \in [a,b]$
+```latex
+$X \sim Uniform(a,b)$
+``` 的概率密度函数：
+```latex
+$f_X(x) = \frac{1}{b-a}$
+```，其中 ```latex
+$x \in [a,b]$
+```
 
-**期望**: $E[X] = \frac{a+b}{2}$
-**方差**: $Var(X) = \frac{(b-a)^2}{12}$
+**期望**: ```latex
+$E[X] = \frac{a+b}{2}$
+```
+**方差**: ```latex
+$Var(X) = \frac{(b-a)^2}{12}$
+```
 
 #### 3.2.2 正态分布
 
 **定义 3.2.2** (正态分布)
-$X \sim Normal(\mu,\sigma^2)$ 的概率密度函数：
+```latex
+$X \sim Normal(\mu,\sigma^2)$
+``` 的概率密度函数：
+```latex
 $f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
+```
 
-**期望**: $E[X] = \mu$
-**方差**: $Var(X) = \sigma^2$
+**期望**: ```latex
+$E[X] = \mu$
+```
+**方差**: ```latex
+$Var(X) = \sigma^2$
+```
 
 #### 3.2.3 指数分布
 
 **定义 3.2.3** (指数分布)
-$X \sim Exponential(\lambda)$ 的概率密度函数：
-$f_X(x) = \lambda e^{-\lambda x}$，其中 $x \geq 0$
+```latex
+$X \sim Exponential(\lambda)$
+``` 的概率密度函数：
+```latex
+$f_X(x) = \lambda e^{-\lambda x}$
+```，其中 ```latex
+$x \geq 0$
+```
 
-**期望**: $E[X] = \frac{1}{\lambda}$
-**方差**: $Var(X) = \frac{1}{\lambda^2}$
+**期望**: ```latex
+$E[X] = \frac{1}{\lambda}$
+```
+**方差**: ```latex
+$Var(X) = \frac{1}{\lambda^2}$
+```
 
 ### 3.3 Go语言实现
 
@@ -728,23 +846,45 @@ func (e *Exponential) Variance() float64 {
 ### 4.1 期望
 
 **定义 4.1.1** (期望)
-对于离散随机变量 $X$，期望 $E[X] = \sum_x x \cdot P(X = x)$
-对于连续随机变量 $X$，期望 $E[X] = \int_{-\infty}^{\infty} x \cdot f_X(x) dx$
+对于离散随机变量 ```latex
+$X$
+```，期望 ```latex
+$E[X] = \sum_x x \cdot P(X = x)$
+```
+对于连续随机变量 ```latex
+$X$
+```，期望 ```latex
+$E[X] = \int_{-\infty}^{\infty} x \cdot f_X(x) dx$
+```
 
 **性质**:
 
-1. 线性性: $E[aX + b] = aE[X] + b$
-2. 可加性: $E[X + Y] = E[X] + E[Y]$
+1. 线性性: ```latex
+$E[aX + b] = aE[X] + b$
+```
+2. 可加性: ```latex
+$E[X + Y] = E[X] + E[Y]$
+```
 
 ### 4.2 方差
 
 **定义 4.2.1** (方差)
-方差 $Var(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2$
+方差 ```latex
+$Var(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2$
+```
 
 **性质**:
 
-1. $Var(aX + b) = a^2 Var(X)$
-2. $Var(X + Y) = Var(X) + Var(Y)$ (如果 $X$ 和 $Y$ 独立)
+1. ```latex
+$Var(aX + b) = a^2 Var(X)$
+```
+2. ```latex
+$Var(X + Y) = Var(X) + Var(Y)$
+``` (如果 ```latex
+$X$
+``` 和 ```latex
+$Y$
+``` 独立)
 
 ### 4.3 Go语言实现
 
@@ -857,18 +997,38 @@ func Correlation(x, y []float64) float64 {
 ### 5.1 大数定律
 
 **定理 5.1.1** (弱大数定律)
-设 $X_1, X_2, ...$ 是独立同分布的随机变量，期望为 $\mu$，则：
+设 ```latex
+$X_1, X_2, ...$
+``` 是独立同分布的随机变量，期望为 ```latex
+$\mu$
+```，则：
+```latex
 $\lim_{n \to \infty} P(|\frac{1}{n}\sum_{i=1}^n X_i - \mu| > \epsilon) = 0$
+```
 
 **定理 5.1.2** (强大数定律)
-设 $X_1, X_2, ...$ 是独立同分布的随机变量，期望为 $\mu$，则：
+设 ```latex
+$X_1, X_2, ...$
+``` 是独立同分布的随机变量，期望为 ```latex
+$\mu$
+```，则：
+```latex
 $P(\lim_{n \to \infty} \frac{1}{n}\sum_{i=1}^n X_i = \mu) = 1$
+```
 
 ### 5.2 中心极限定理
 
 **定理 5.2.1** (中心极限定理)
-设 $X_1, X_2, ...$ 是独立同分布的随机变量，期望为 $\mu$，方差为 $\sigma^2$，则：
+设 ```latex
+$X_1, X_2, ...$
+``` 是独立同分布的随机变量，期望为 ```latex
+$\mu$
+```，方差为 ```latex
+$\sigma^2$
+```，则：
+```latex
 $\frac{\sum_{i=1}^n X_i - n\mu}{\sqrt{n}\sigma} \xrightarrow{d} N(0,1)$
+```
 
 ### 5.3 Go语言实现
 

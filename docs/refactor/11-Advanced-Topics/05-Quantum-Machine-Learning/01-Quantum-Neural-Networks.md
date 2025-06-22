@@ -8,64 +8,116 @@
 
 ### 1.1.1 量子神经网络模型
 
-量子神经网络 $QNN$ 是一个五元组 $(Q, U, M, L, O)$，其中：
+量子神经网络 ```latex
+$QNN$
+``` 是一个五元组 ```latex
+$(Q, U, M, L, O)$
+```，其中：
 
 ```latex
-$$QNN = (Q, U, M, L, O)$$
+$```latex
+$QNN = (Q, U, M, L, O)$
+```$
 ```
 
 其中：
 
-- $Q$: 量子比特集合
-- $U$: 量子门集合
-- $M$: 测量操作
-- $L$: 损失函数
-- $O$: 优化算法
+- ```latex
+$Q$
+```: 量子比特集合
+- ```latex
+$U$
+```: 量子门集合
+- ```latex
+$M$
+```: 测量操作
+- ```latex
+$L$
+```: 损失函数
+- ```latex
+$O$
+```: 优化算法
 
 ### 1.1.2 量子神经元
 
-量子神经元 $QN$ 是一个三元组 $(|\psi\rangle, U_\theta, M)$，其中：
+量子神经元 ```latex
+$QN$
+``` 是一个三元组 ```latex
+$(|\psi\rangle, U_\theta, M)$
+```，其中：
 
 ```latex
-$$QN = (|\psi\rangle, U_\theta, M)$$
+$```latex
+$QN = (|\psi\rangle, U_\theta, M)$
+```$
 ```
 
 其中：
 
-- $|\psi\rangle$: 输入量子态
-- $U_\theta$: 参数化量子门
-- $M$: 测量操作
+- ```latex
+$|\psi\rangle$
+```: 输入量子态
+- ```latex
+$U_\theta$
+```: 参数化量子门
+- ```latex
+$M$
+```: 测量操作
 
 ## 1.2 量子门操作
 
 ### 1.2.1 参数化量子门
 
-参数化量子门 $U_\theta$ 定义为：
+参数化量子门 ```latex
+$U_\theta$
+``` 定义为：
 
 ```latex
-$$U_\theta = e^{-i\theta H}$$
+$```latex
+$U_\theta = e^{-i\theta H}$
+```$
 ```
 
-其中 $H$ 是哈密顿量，$\theta$ 是参数。
+其中 ```latex
+$H$
+``` 是哈密顿量，```latex
+$\theta$
+``` 是参数。
 
 ### 1.2.2 量子旋转门
 
-量子旋转门 $R_x(\theta)$, $R_y(\theta)$, $R_z(\theta)$：
+量子旋转门 ```latex
+$R_x(\theta)$
+```, ```latex
+$R_y(\theta)$
+```, ```latex
+$R_z(\theta)$
+```：
 
 ```latex
-$$R_x(\theta) = \begin{pmatrix} \cos\frac{\theta}{2} & -i\sin\frac{\theta}{2} \\ -i\sin\frac{\theta}{2} & \cos\frac{\theta}{2} \end{pmatrix}$$
-$$R_y(\theta) = \begin{pmatrix} \cos\frac{\theta}{2} & -\sin\frac{\theta}{2} \\ \sin\frac{\theta}{2} & \cos\frac{\theta}{2} \end{pmatrix}$$
-$$R_z(\theta) = \begin{pmatrix} e^{-i\theta/2} & 0 \\ 0 & e^{i\theta/2} \end{pmatrix}$$
+$```latex
+$R_x(\theta) = \begin{pmatrix} \cos\frac{\theta}{2} & -i\sin\frac{\theta}{2} \\ -i\sin\frac{\theta}{2} & \cos\frac{\theta}{2} \end{pmatrix}$
+```$
+$```latex
+$R_y(\theta) = \begin{pmatrix} \cos\frac{\theta}{2} & -\sin\frac{\theta}{2} \\ \sin\frac{\theta}{2} & \cos\frac{\theta}{2} \end{pmatrix}$
+```$
+$```latex
+$R_z(\theta) = \begin{pmatrix} e^{-i\theta/2} & 0 \\ 0 & e^{i\theta/2} \end{pmatrix}$
+```$
 ```
 
 ## 1.3 量子测量
 
 ### 1.3.1 期望值测量
 
-对于可观测量 $A$，期望值测量：
+对于可观测量 ```latex
+$A$
+```，期望值测量：
 
 ```latex
-$$\langle A \rangle = \langle\psi|A|\psi\rangle$$
+$```latex
+$\langle A \rangle = \langle\psi|A|\psi\rangle$
+```$
 ```
 
 ### 1.3.2 概率测量
@@ -73,19 +125,27 @@ $$\langle A \rangle = \langle\psi|A|\psi\rangle$$
 测量结果概率：
 
 ```latex
-$$P(i) = |\langle i|\psi\rangle|^2$$
+$```latex
+$P(i) = |\langle i|\psi\rangle|^2$
+```$
 ```
 
-其中 $|i\rangle$ 是测量基态。
+其中 ```latex
+$|i\rangle$
+``` 是测量基态。
 
 ## 1.4 量子梯度
 
 ### 1.4.1 参数化量子电路梯度
 
-对于参数化量子电路 $U(\theta)$，梯度：
+对于参数化量子电路 ```latex
+$U(\theta)$
+```，梯度：
 
 ```latex
-$$\frac{\partial}{\partial\theta_i}\langle\psi|U^\dagger(\theta)AU(\theta)|\psi\rangle = \frac{1}{2}\left[\langle\psi|U^\dagger(\theta+\frac{\pi}{2})AU(\theta+\frac{\pi}{2})|\psi\rangle - \langle\psi|U^\dagger(\theta-\frac{\pi}{2})AU(\theta-\frac{\pi}{2})|\psi\rangle\right]$$
+$```latex
+$\frac{\partial}{\partial\theta_i}\langle\psi|U^\dagger(\theta)AU(\theta)|\psi\rangle = \frac{1}{2}\left[\langle\psi|U^\dagger(\theta+\frac{\pi}{2})AU(\theta+\frac{\pi}{2})|\psi\rangle - \langle\psi|U^\dagger(\theta-\frac{\pi}{2})AU(\theta-\frac{\pi}{2})|\psi\rangle\right]$
+```$
 ```
 
 ### 1.4.2 量子自然梯度
@@ -93,10 +153,14 @@ $$\frac{\partial}{\partial\theta_i}\langle\psi|U^\dagger(\theta)AU(\theta)|\psi\
 量子自然梯度：
 
 ```latex
-$$\nabla_{nat} = F^{-1}\nabla$$
+$```latex
+$\nabla_{nat} = F^{-1}\nabla$
+```$
 ```
 
-其中 $F$ 是量子Fisher信息矩阵。
+其中 ```latex
+$F$
+``` 是量子Fisher信息矩阵。
 
 ## 1.5 Go语言实现
 

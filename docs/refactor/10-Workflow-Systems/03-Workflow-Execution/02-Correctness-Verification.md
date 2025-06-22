@@ -33,25 +33,45 @@
 
 ### 1.1 正确性定义
 
-**定义 1.1** (工作流正确性): 工作流 $W$ 是正确的，如果它满足以下性质：
+**定义 1.1** (工作流正确性): 工作流 ```latex
+$W$
+``` 是正确的，如果它满足以下性质：
 
-$$\text{Correct}(W) = \text{Safe}(W) \land \text{Live}(W) \land \text{Fair}(W)$$
+$```latex
+$\text{Correct}(W) = \text{Safe}(W) \land \text{Live}(W) \land \text{Fair}(W)$
+```$
 
 其中：
 
-- $\text{Safe}(W)$: 安全性，工作流不会进入错误状态
-- $\text{Live}(W)$: 活性，工作流最终会完成
-- $\text{Fair}(W)$: 公平性，所有活动都有机会执行
+- ```latex
+$\text{Safe}(W)$
+```: 安全性，工作流不会进入错误状态
+- ```latex
+$\text{Live}(W)$
+```: 活性，工作流最终会完成
+- ```latex
+$\text{Fair}(W)$
+```: 公平性，所有活动都有机会执行
 
-**定义 1.2** (安全性): 工作流 $W$ 是安全的，如果：
+**定义 1.2** (安全性): 工作流 ```latex
+$W$
+``` 是安全的，如果：
 
-$$\forall M \in R(W, M_0): \text{Invariant}(M)$$
+$```latex
+$\forall M \in R(W, M_0): \text{Invariant}(M)$
+```$
 
-其中 $\text{Invariant}(M)$ 是状态不变量。
+其中 ```latex
+$\text{Invariant}(M)$
+``` 是状态不变量。
 
-**定义 1.3** (活性): 工作流 $W$ 是活的，如果：
+**定义 1.3** (活性): 工作流 ```latex
+$W$
+``` 是活的，如果：
 
-$$\forall t \in T, \forall M \in R(W, M_0): \exists M' \in R(W, M): M'[t\rangle$$
+$```latex
+$\forall t \in T, \forall M \in R(W, M_0): \exists M' \in R(W, M): M'[t\rangle$
+```$
 
 ### 1.2 验证方法
 
@@ -83,12 +103,14 @@ $$\forall t \in T, \forall M \in R(W, M_0): \exists M' \in R(W, M): M'[t\rangle$
 
 **定义 2.1** (模型检验): 模型检验是自动验证有限状态系统是否满足时态逻辑公式的过程：
 
+```latex
 $$
 \text{ModelCheck}(M, \phi) = \begin{cases}
 \text{true} & \text{if } M \models \phi \\
 \text{false} & \text{otherwise}
 \end{cases}
 $$
+```
 
 **算法 2.1** (显式状态模型检验):
 
@@ -136,12 +158,14 @@ func buildStateSpace(model Model) Set[State] {
 
 **定义 2.2** (定理证明): 定理证明是通过逻辑推理证明系统性质的过程：
 
+```latex
 $$
 \text{TheoremProve}(\Gamma, \phi) = \begin{cases}
 \text{true} & \text{if } \Gamma \vdash \phi \\
 \text{false} & \text{otherwise}
 \end{cases}
 $$
+```
 
 **证明策略**:
 
@@ -266,9 +290,15 @@ func (wsa *WorkflowStaticAnalyzer) analyzeControlFlow() []AnalysisResult {
 
 ### 3.1 可达性验证
 
-**定义 3.1** (可达性): 状态 $s'$ 从状态 $s$ 可达，如果存在转换序列：
+**定义 3.1** (可达性): 状态 ```latex
+$s'$
+``` 从状态 ```latex
+$s$
+``` 可达，如果存在转换序列：
 
-$$s \rightarrow s_1 \rightarrow s_2 \rightarrow \cdots \rightarrow s'$$
+$```latex
+$s \rightarrow s_1 \rightarrow s_2 \rightarrow \cdots \rightarrow s'$
+```$
 
 **算法 3.1** (可达性验证):
 
@@ -509,7 +539,9 @@ func isPathFair(path []State) bool {
 
 **定义 4.1** (LTL公式): 线性时态逻辑公式定义为：
 
-$$\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \phi$$
+$```latex
+$\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \phi$
+```$
 
 **算法 4.1** (LTL模型检验):
 
@@ -599,7 +631,9 @@ func (uo *UntilOperator) Evaluate(path []State) bool {
 
 **定义 4.2** (CTL公式): 计算树逻辑公式定义为：
 
-$$\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \mathbf{EX} \phi \mid \mathbf{EF} \phi \mid \mathbf{EG} \phi \mid \mathbf{E}[\phi \mathbf{U} \psi]$$
+$```latex
+$\phi ::= p \mid \neg \phi \mid \phi \wedge \phi \mid \mathbf{EX} \phi \mid \mathbf{EF} \phi \mid \mathbf{EG} \phi \mid \mathbf{E}[\phi \mathbf{U} \psi]$
+```$
 
 **算法 4.2** (CTL模型检验):
 

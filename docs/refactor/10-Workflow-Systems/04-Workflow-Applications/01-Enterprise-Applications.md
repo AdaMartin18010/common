@@ -38,19 +38,33 @@
 
 #### 1.1.1 业务流程定义
 
-业务流程 $BP$ 是一个五元组：
+业务流程 ```latex
+$BP$
+``` 是一个五元组：
 
 ```latex
-$$\text{BusinessProcess} = (A, R, D, C, O)$$
+$```latex
+$\text{BusinessProcess} = (A, R, D, C, O)$
+```$
 ```
 
 其中：
 
-- $A$ 是活动集合
-- $R$ 是角色集合
-- $D$ 是数据集合
-- $C$ 是控制流
-- $O$ 是业务目标
+- ```latex
+$A$
+``` 是活动集合
+- ```latex
+$R$
+``` 是角色集合
+- ```latex
+$D$
+``` 是数据集合
+- ```latex
+$C$
+``` 是控制流
+- ```latex
+$O$
+``` 是业务目标
 
 **业务流程特征**:
 
@@ -64,7 +78,9 @@ $$\text{BusinessProcess} = (A, R, D, C, O)$$
 工作流模式集合：
 
 ```latex
-$$\text{WorkflowPattern} = \{\text{Sequential}, \text{Parallel}, \text{Choice}, \text{Iteration}, \text{Compensation}\}$$
+$```latex
+$\text{WorkflowPattern} = \{\text{Sequential}, \text{Parallel}, \text{Choice}, \text{Iteration}, \text{Compensation}\}$
+```$
 ```
 
 **常见模式**:
@@ -79,10 +95,14 @@ $$\text{WorkflowPattern} = \{\text{Sequential}, \text{Parallel}, \text{Choice}, 
 
 #### 1.2.1 企业集成模型
 
-企业集成 $EI$ 定义为：
+企业集成 ```latex
+$EI$
+``` 定义为：
 
 ```latex
-$$\text{EnterpriseIntegration} = \{\text{DataIntegration}, \text{ProcessIntegration}, \text{ApplicationIntegration}\}$$
+$```latex
+$\text{EnterpriseIntegration} = \{\text{DataIntegration}, \text{ProcessIntegration}, \text{ApplicationIntegration}\}$
+```$
 ```
 
 **集成类型**:

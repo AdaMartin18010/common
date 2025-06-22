@@ -71,17 +71,35 @@
 
 ### 2.1 迭代器定义
 
-设 $A$ 为聚合对象集合，$I$ 为迭代器集合，$E$ 为元素集合，则迭代器模式可形式化为：
+设 ```latex
+$A$
+``` 为聚合对象集合，```latex
+$I$
+``` 为迭代器集合，```latex
+$E$
+``` 为元素集合，则迭代器模式可形式化为：
 
-$$\text{Iterator Pattern} = (A, I, E, \text{next}, \text{hasNext})$$
+$```latex
+$\text{Iterator Pattern} = (A, I, E, \text{next}, \text{hasNext})$
+```$
 
 其中：
 
-- $A = \{a_1, a_2, ..., a_n\}$ 为聚合对象集合
-- $I = \{i_1, i_2, ..., i_m\}$ 为迭代器集合
-- $E$ 为元素集合
-- $\text{next}: I \rightarrow E$ 为下一个元素函数
-- $\text{hasNext}: I \rightarrow \text{bool}$ 为是否有下一个元素函数
+- ```latex
+$A = \{a_1, a_2, ..., a_n\}$
+``` 为聚合对象集合
+- ```latex
+$I = \{i_1, i_2, ..., i_m\}$
+``` 为迭代器集合
+- ```latex
+$E$
+``` 为元素集合
+- ```latex
+$\text{next}: I \rightarrow E$
+``` 为下一个元素函数
+- ```latex
+$\text{hasNext}: I \rightarrow \text{bool}$
+``` 为是否有下一个元素函数
 
 ### 2.2 迭代器接口定义
 
@@ -136,31 +154,53 @@ func (i *BaseIterator[T]) GetIndex() int {
 
 迭代器模式基于序列的概念：
 
-$$S = (e_1, e_2, ..., e_n)$$
+$```latex
+$S = (e_1, e_2, ..., e_n)$
+```$
 
-其中 $e_i$ 为序列中的元素。
+其中 ```latex
+$e_i$
+``` 为序列中的元素。
 
 ### 3.2 函数式编程
 
 迭代器体现了函数式编程的惰性求值：
 
-$$f: A \rightarrow B$$
-$$g: B \rightarrow C$$
-$$h = g \circ f: A \rightarrow C$$
+$```latex
+$f: A \rightarrow B$
+```$
+$```latex
+$g: B \rightarrow C$
+```$
+$```latex
+$h = g \circ f: A \rightarrow C$
+```$
 
 ### 3.3 状态机理论
 
 迭代器可以建模为状态机：
 
-$$M = (Q, \Sigma, \delta, q_0, F)$$
+$```latex
+$M = (Q, \Sigma, \delta, q_0, F)$
+```$
 
 其中：
 
-- $Q$ 为状态集合（当前位置）
-- $\Sigma$ 为输入字母表（操作集合）
-- $\delta$ 为状态转移函数
-- $q_0$ 为初始状态（开始位置）
-- $F$ 为接受状态集合（结束位置）
+- ```latex
+$Q$
+``` 为状态集合（当前位置）
+- ```latex
+$\Sigma$
+``` 为输入字母表（操作集合）
+- ```latex
+$\delta$
+``` 为状态转移函数
+- ```latex
+$q_0$
+``` 为初始状态（开始位置）
+- ```latex
+$F$
+``` 为接受状态集合（结束位置）
 
 ## 4. 模式结构
 
@@ -1336,13 +1376,33 @@ func (si *SafeIterator[T]) NextSafe() IteratorResult[T] {
 **定理**：迭代器模式满足开闭原则
 
 **证明**：
-设 $I$ 为现有迭代器集合，$I'$ 为新增迭代器集合，$A$ 为聚合对象。
+设 ```latex
+$I$
+``` 为现有迭代器集合，```latex
+$I'$
+``` 为新增迭代器集合，```latex
+$A$
+``` 为聚合对象。
 
-对于任意 $i \in I'$，由于 $i$ 实现了迭代器接口 $P$，且 $A$ 依赖于 $P$ 而非具体实现，因此：
+对于任意 ```latex
+$i \in I'$
+```，由于 ```latex
+$i$
+``` 实现了迭代器接口 ```latex
+$P$
+```，且 ```latex
+$A$
+``` 依赖于 ```latex
+$P$
+``` 而非具体实现，因此：
 
-$$A \circ i \text{ 是有效的}$$
+$```latex
+$A \circ i \text{ 是有效的}$
+```$
 
-且不需要修改 $A$ 的代码，因此满足开闭原则。
+且不需要修改 ```latex
+$A$
+``` 的代码，因此满足开闭原则。
 
 **证毕**。
 

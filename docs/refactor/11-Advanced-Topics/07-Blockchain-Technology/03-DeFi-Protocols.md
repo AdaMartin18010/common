@@ -8,35 +8,65 @@
 
 ### 3.1.1 DeFi协议模型
 
-DeFi协议 $P$ 是一个六元组 $(A, L, T, R, S, G)$，其中：
+DeFi协议 ```latex
+$P$
+``` 是一个六元组 ```latex
+$(A, L, T, R, S, G)$
+```，其中：
 
 ```latex
-$$P = (A, L, T, R, S, G)$$
+$```latex
+$P = (A, L, T, R, S, G)$
+```$
 ```
 
 其中：
 
-- $A$: 资产集合
-- $L$: 流动性池
-- $T$: 交易机制
-- $R$: 风险管理
-- $S$: 治理机制
-- $G$: 激励机制
+- ```latex
+$A$
+```: 资产集合
+- ```latex
+$L$
+```: 流动性池
+- ```latex
+$T$
+```: 交易机制
+- ```latex
+$R$
+```: 风险管理
+- ```latex
+$S$
+```: 治理机制
+- ```latex
+$G$
+```: 激励机制
 
 ### 3.1.2 流动性池
 
-流动性池 $LP$ 包含：
+流动性池 ```latex
+$LP$
+``` 包含：
 
 ```latex
-$$LP = (Token_A, Token_B, Reserve_A, Reserve_B, Fee, K)$$
+$```latex
+$LP = (Token_A, Token_B, Reserve_A, Reserve_B, Fee, K)$
+```$
 ```
 
 其中：
 
-- $Token_A, Token_B$: 代币对
-- $Reserve_A, Reserve_B$: 储备量
-- $Fee$: 手续费率
-- $K = Reserve_A \times Reserve_B$: 恒定乘积
+- ```latex
+$Token_A, Token_B$
+```: 代币对
+- ```latex
+$Reserve_A, Reserve_B$
+```: 储备量
+- ```latex
+$Fee$
+```: 手续费率
+- ```latex
+$K = Reserve_A \times Reserve_B$
+```: 恒定乘积
 
 ## 3.2 自动做市商（AMM）
 
@@ -45,21 +75,31 @@ $$LP = (Token_A, Token_B, Reserve_A, Reserve_B, Fee, K)$$
 AMM价格计算：
 
 ```latex
-$$(x + \Delta x)(y - \Delta y) = xy = k$$
+$```latex
+$(x + \Delta x)(y - \Delta y) = xy = k$
+```$
 ```
 
 其中：
 
-- $x, y$: 当前储备量
-- $\Delta x, \Delta y$: 交易量
-- $k$: 恒定乘积
+- ```latex
+$x, y$
+```: 当前储备量
+- ```latex
+$\Delta x, \Delta y$
+```: 交易量
+- ```latex
+$k$
+```: 恒定乘积
 
 ### 3.2.2 价格影响
 
 价格影响计算：
 
 ```latex
-$$\text{Price Impact} = \frac{\Delta P}{P} = \frac{\Delta x}{x + \Delta x}$$
+$```latex
+$\text{Price Impact} = \frac{\Delta P}{P} = \frac{\Delta x}{x + \Delta x}$
+```$
 ```
 
 ### 3.2.3 滑点保护
@@ -67,7 +107,9 @@ $$\text{Price Impact} = \frac{\Delta P}{P} = \frac{\Delta x}{x + \Delta x}$$
 滑点保护：
 
 ```latex
-$$\text{Slippage} = \frac{\text{Expected Price} - \text{Actual Price}}{\text{Expected Price}}$$
+$```latex
+$\text{Slippage} = \frac{\text{Expected Price} - \text{Actual Price}}{\text{Expected Price}}$
+```$
 ```
 
 ## 3.3 借贷协议
@@ -77,7 +119,9 @@ $$\text{Slippage} = \frac{\text{Expected Price} - \text{Actual Price}}{\text{Exp
 借贷协议状态：
 
 ```latex
-$$Loan = (Collateral, Debt, CollateralRatio, LiquidationThreshold)$$
+$```latex
+$Loan = (Collateral, Debt, CollateralRatio, LiquidationThreshold)$
+```$
 ```
 
 ### 3.3.2 抵押率计算
@@ -85,7 +129,9 @@ $$Loan = (Collateral, Debt, CollateralRatio, LiquidationThreshold)$$
 抵押率：
 
 ```latex
-$$\text{Collateral Ratio} = \frac{\text{Collateral Value}}{\text{Debt Value}}$$
+$```latex
+$\text{Collateral Ratio} = \frac{\text{Collateral Value}}{\text{Debt Value}}$
+```$
 ```
 
 ### 3.3.3 清算机制
@@ -93,7 +139,9 @@ $$\text{Collateral Ratio} = \frac{\text{Collateral Value}}{\text{Debt Value}}$$
 清算条件：
 
 ```latex
-$$\text{Collateral Ratio} < \text{Liquidation Threshold}$$
+$```latex
+$\text{Collateral Ratio} < \text{Liquidation Threshold}$
+```$
 ```
 
 ## 3.4 收益聚合器
@@ -103,23 +151,35 @@ $$\text{Collateral Ratio} < \text{Liquidation Threshold}$$
 年化收益率：
 
 ```latex
-$$APY = \left(1 + \frac{r}{n}\right)^n - 1$$
+$```latex
+$APY = \left(1 + \frac{r}{n}\right)^n - 1$
+```$
 ```
 
 其中：
 
-- $r$: 名义利率
-- $n$: 复利次数
+- ```latex
+$r$
+```: 名义利率
+- ```latex
+$n$
+```: 复利次数
 
 ### 3.4.2 策略优化
 
 策略收益：
 
 ```latex
-$$\text{Strategy Return} = \sum_{i=1}^n w_i \times R_i$$
+$```latex
+$\text{Strategy Return} = \sum_{i=1}^n w_i \times R_i$
+```$
 ```
 
-其中 $w_i$ 是权重，$R_i$ 是各策略收益率。
+其中 ```latex
+$w_i$
+``` 是权重，```latex
+$R_i$
+``` 是各策略收益率。
 
 ## 3.5 Go语言实现
 

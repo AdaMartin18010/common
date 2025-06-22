@@ -33,15 +33,27 @@
 ### 1.1 基本概念
 
 **定义 1.1.1** (命题)
-命题是一个具有确定真值的陈述句，用符号 $P, Q, R$ 等表示。
+命题是一个具有确定真值的陈述句，用符号 ```latex
+$P, Q, R$
+``` 等表示。
 
 **定义 1.1.2** (逻辑连接词)
 
-- 否定 (Negation): $\neg P$
-- 合取 (Conjunction): $P \land Q$
-- 析取 (Disjunction): $P \lor Q$
-- 蕴含 (Implication): $P \rightarrow Q$
-- 等价 (Equivalence): $P \leftrightarrow Q$
+- 否定 (Negation): ```latex
+$\neg P$
+```
+- 合取 (Conjunction): ```latex
+$P \land Q$
+```
+- 析取 (Disjunction): ```latex
+$P \lor Q$
+```
+- 蕴含 (Implication): ```latex
+$P \rightarrow Q$
+```
+- 等价 (Equivalence): ```latex
+$P \leftrightarrow Q$
+```
 
 ### 1.2 真值表
 
@@ -154,8 +166,12 @@ func TruthTable(prop Proposition, variables []string) [][]bool {
 ### 1.4 逻辑等价律
 
 **定理 1.4.1** (德摩根律)
+```latex
 $\neg(P \land Q) \equiv \neg P \lor \neg Q$
+```
+```latex
 $\neg(P \lor Q) \equiv \neg P \land \neg Q$
+```
 
 **证明**:
 通过真值表验证：
@@ -174,12 +190,18 @@ $\neg(P \lor Q) \equiv \neg P \land \neg Q$
 ### 2.1 基本概念
 
 **定义 2.1.1** (谓词)
-谓词是描述对象性质的函数，用 $P(x), Q(x,y)$ 等表示。
+谓词是描述对象性质的函数，用 ```latex
+$P(x), Q(x,y)$
+``` 等表示。
 
 **定义 2.1.2** (量词)
 
-- 全称量词 (Universal): $\forall x P(x)$
-- 存在量词 (Existential): $\exists x P(x)$
+- 全称量词 (Universal): ```latex
+$\forall x P(x)$
+```
+- 存在量词 (Existential): ```latex
+$\exists x P(x)$
+```
 
 ### 2.2 Go语言实现
 
@@ -264,15 +286,27 @@ func IsPrime(n int) bool {
 ### 2.3 量词等价律
 
 **定理 2.3.1** (量词否定律)
+```latex
 $\neg \forall x P(x) \equiv \exists x \neg P(x)$
+```
+```latex
 $\neg \exists x P(x) \equiv \forall x \neg P(x)$
+```
 
 **证明**:
-设论域为 $D = \{a_1, a_2, ..., a_n\}$
+设论域为 ```latex
+$D = \{a_1, a_2, ..., a_n\}$
+```
 
+```latex
 $\neg \forall x P(x) \equiv \neg (P(a_1) \land P(a_2) \land ... \land P(a_n))$
+```
+```latex
 $\equiv \neg P(a_1) \lor \neg P(a_2) \lor ... \lor \neg P(a_n)$
+```
+```latex
 $\equiv \exists x \neg P(x)$
+```
 
 ---
 
@@ -283,14 +317,62 @@ $\equiv \exists x \neg P(x)$
 **定义 3.1.1** (推理规则)
 
 1. **引入规则** (Introduction Rules)
-   - $\land$-I: 从 $A$ 和 $B$ 推出 $A \land B$
-   - $\lor$-I: 从 $A$ 推出 $A \lor B$
-   - $\rightarrow$-I: 从假设 $A$ 推出 $B$ 得到 $A \rightarrow B$
+   - ```latex
+$\land$
+```-I: 从 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 推出 ```latex
+$A \land B$
+```
+   - ```latex
+$\lor$
+```-I: 从 ```latex
+$A$
+``` 推出 ```latex
+$A \lor B$
+```
+   - ```latex
+$\rightarrow$
+```-I: 从假设 ```latex
+$A$
+``` 推出 ```latex
+$B$
+``` 得到 ```latex
+$A \rightarrow B$
+```
 
 2. **消除规则** (Elimination Rules)
-   - $\land$-E: 从 $A \land B$ 推出 $A$ 或 $B$
-   - $\lor$-E: 从 $A \lor B$ 和 $A \rightarrow C$ 和 $B \rightarrow C$ 推出 $C$
-   - $\rightarrow$-E: 从 $A \rightarrow B$ 和 $A$ 推出 $B$
+   - ```latex
+$\land$
+```-E: 从 ```latex
+$A \land B$
+``` 推出 ```latex
+$A$
+``` 或 ```latex
+$B$
+```
+   - ```latex
+$\lor$
+```-E: 从 ```latex
+$A \lor B$
+``` 和 ```latex
+$A \rightarrow C$
+``` 和 ```latex
+$B \rightarrow C$
+``` 推出 ```latex
+$C$
+```
+   - ```latex
+$\rightarrow$
+```-E: 从 ```latex
+$A \rightarrow B$
+``` 和 ```latex
+$A$
+``` 推出 ```latex
+$B$
+```
 
 ### 3.2 Go语言实现
 

@@ -17,10 +17,14 @@
 **定义 1.1.1 (集合)** 集合是不同对象的无序聚集，这些对象称为集合的元素。
 
 **公理 1.1.1 (外延公理)** 两个集合相等当且仅当它们包含相同的元素：
-$$\forall x \forall y [\forall z(z \in x \leftrightarrow z \in y) \rightarrow x = y]$$
+$```latex
+$\forall x \forall y [\forall z(z \in x \leftrightarrow z \in y) \rightarrow x = y]$
+```$
 
 **公理 1.1.2 (空集公理)** 存在一个不包含任何元素的集合：
-$$\exists x \forall y(y \notin x)$$
+$```latex
+$\exists x \forall y(y \notin x)$
+```$
 
 ### 1.2 集合的表示
 
@@ -74,10 +78,32 @@ func (s *Set[T]) IsEmpty() bool {
 
 ### 1.3 子集与真子集
 
-**定义 1.3.1 (子集)** 集合 $A$ 是集合 $B$ 的子集，记作 $A \subseteq B$，当且仅当 $A$ 的每个元素都属于 $B$：
-$$A \subseteq B \leftrightarrow \forall x(x \in A \rightarrow x \in B)$$
+**定义 1.3.1 (子集)** 集合 ```latex
+$A$
+``` 是集合 ```latex
+$B$
+``` 的子集，记作 ```latex
+$A \subseteq B$
+```，当且仅当 ```latex
+$A$
+``` 的每个元素都属于 ```latex
+$B$
+```：
+$```latex
+$A \subseteq B \leftrightarrow \forall x(x \in A \rightarrow x \in B)$
+```$
 
-**定义 1.3.2 (真子集)** 集合 $A$ 是集合 $B$ 的真子集，记作 $A \subset B$，当且仅当 $A \subseteq B$ 且 $A \neq B$。
+**定义 1.3.2 (真子集)** 集合 ```latex
+$A$
+``` 是集合 ```latex
+$B$
+``` 的真子集，记作 ```latex
+$A \subset B$
+```，当且仅当 ```latex
+$A \subseteq B$
+``` 且 ```latex
+$A \neq B$
+```。
 
 ```go
 // 子集检查
@@ -108,14 +134,44 @@ func (s *Set[T]) Equals(other *Set[T]) bool {
 
 ### 2.1 基本运算
 
-**定义 2.1.1 (并集)** 集合 $A$ 和 $B$ 的并集是包含所有属于 $A$ 或 $B$ 的元素的集合：
-$$A \cup B = \{x | x \in A \lor x \in B\}$$
+**定义 2.1.1 (并集)** 集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 的并集是包含所有属于 ```latex
+$A$
+``` 或 ```latex
+$B$
+``` 的元素的集合：
+$```latex
+$A \cup B = \{x | x \in A \lor x \in B\}$
+```$
 
-**定义 2.1.2 (交集)** 集合 $A$ 和 $B$ 的交集是包含所有同时属于 $A$ 和 $B$ 的元素的集合：
-$$A \cap B = \{x | x \in A \land x \in B\}$$
+**定义 2.1.2 (交集)** 集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 的交集是包含所有同时属于 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 的元素的集合：
+$```latex
+$A \cap B = \{x | x \in A \land x \in B\}$
+```$
 
-**定义 2.1.3 (差集)** 集合 $A$ 和 $B$ 的差集是包含所有属于 $A$ 但不属于 $B$ 的元素的集合：
-$$A \setminus B = \{x | x \in A \land x \notin B\}$$
+**定义 2.1.3 (差集)** 集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 的差集是包含所有属于 ```latex
+$A$
+``` 但不属于 ```latex
+$B$
+``` 的元素的集合：
+$```latex
+$A \setminus B = \{x | x \in A \land x \notin B\}$
+```$
 
 ```go
 // 并集
@@ -171,17 +227,45 @@ func (s *Set[T]) SymmetricDifference(other *Set[T]) *Set[T] {
 
 ### 2.2 集合运算的性质
 
-**定理 2.2.1 (交换律)** 对于任意集合 $A$ 和 $B$：
-$$A \cup B = B \cup A$$
-$$A \cap B = B \cap A$$
+**定理 2.2.1 (交换律)** 对于任意集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+```：
+$```latex
+$A \cup B = B \cup A$
+```$
+$```latex
+$A \cap B = B \cap A$
+```$
 
-**定理 2.2.2 (结合律)** 对于任意集合 $A$、$B$ 和 $C$：
-$$(A \cup B) \cup C = A \cup (B \cup C)$$
-$$(A \cap B) \cap C = A \cap (B \cap C)$$
+**定理 2.2.2 (结合律)** 对于任意集合 ```latex
+$A$
+```、```latex
+$B$
+``` 和 ```latex
+$C$
+```：
+$```latex
+$(A \cup B) \cup C = A \cup (B \cup C)$
+```$
+$```latex
+$(A \cap B) \cap C = A \cap (B \cap C)$
+```$
 
-**定理 2.2.3 (分配律)** 对于任意集合 $A$、$B$ 和 $C$：
-$$A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$$
-$$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
+**定理 2.2.3 (分配律)** 对于任意集合 ```latex
+$A$
+```、```latex
+$B$
+``` 和 ```latex
+$C$
+```：
+$```latex
+$A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$
+```$
+$```latex
+$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$
+```$
 
 ```go
 // 验证交换律
@@ -217,8 +301,20 @@ func TestAssociativeLaw() {
 
 ### 3.1 笛卡尔积
 
-**定义 3.1.1 (笛卡尔积)** 集合 $A$ 和 $B$ 的笛卡尔积是所有有序对 $(a, b)$ 的集合，其中 $a \in A$ 且 $b \in B$：
-$$A \times B = \{(a, b) | a \in A \land b \in B\}$$
+**定义 3.1.1 (笛卡尔积)** 集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 的笛卡尔积是所有有序对 ```latex
+$(a, b)$
+``` 的集合，其中 ```latex
+$a \in A$
+``` 且 ```latex
+$b \in B$
+```：
+$```latex
+$A \times B = \{(a, b) | a \in A \land b \in B\}$
+```$
 
 ```go
 // 有序对
@@ -248,13 +344,29 @@ func (op OrderedPair[T, U]) Equals(other OrderedPair[T, U]) bool {
 
 ### 3.2 关系
 
-**定义 3.2.1 (二元关系)** 集合 $A$ 和 $B$ 之间的二元关系是 $A \times B$ 的子集。
+**定义 3.2.1 (二元关系)** 集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 之间的二元关系是 ```latex
+$A \times B$
+``` 的子集。
 
-**定义 3.2.2 (等价关系)** 集合 $A$ 上的关系 $R$ 是等价关系，当且仅当它满足：
+**定义 3.2.2 (等价关系)** 集合 ```latex
+$A$
+``` 上的关系 ```latex
+$R$
+``` 是等价关系，当且仅当它满足：
 
-1. **自反性**: $\forall x \in A, xRx$
-2. **对称性**: $\forall x, y \in A, xRy \rightarrow yRx$
-3. **传递性**: $\forall x, y, z \in A, (xRy \land yRz) \rightarrow xRz$
+1. **自反性**: ```latex
+$\forall x \in A, xRx$
+```
+2. **对称性**: ```latex
+$\forall x, y \in A, xRy \rightarrow yRx$
+```
+3. **传递性**: ```latex
+$\forall x, y, z \in A, (xRy \land yRz) \rightarrow xRz$
+```
 
 ```go
 // 关系
@@ -318,10 +430,20 @@ func (r *Relation[T]) IsEquivalenceRelation(universe *Set[T]) bool {
 
 ### 3.3 函数
 
-**定义 3.3.1 (函数)** 从集合 $A$ 到集合 $B$ 的函数是一个关系 $f \subseteq A \times B$，满足：
+**定义 3.3.1 (函数)** 从集合 ```latex
+$A$
+``` 到集合 ```latex
+$B$
+``` 的函数是一个关系 ```latex
+$f \subseteq A \times B$
+```，满足：
 
-1. **定义域**: $\forall x \in A, \exists y \in B, (x, y) \in f$
-2. **单值性**: $\forall x \in A, \forall y_1, y_2 \in B, ((x, y_1) \in f \land (x, y_2) \in f) \rightarrow y_1 = y_2$
+1. **定义域**: ```latex
+$\forall x \in A, \exists y \in B, (x, y) \in f$
+```
+2. **单值性**: ```latex
+$\forall x \in A, \forall y_1, y_2 \in B, ((x, y_1) \in f \land (x, y_2) \in f) \rightarrow y_1 = y_2$
+```
 
 ```go
 // 函数
@@ -381,11 +503,31 @@ func (f *Function[T, U]) IsBijective() bool {
 
 ### 4.1 基数
 
-**定义 4.1.1 (基数)** 集合 $A$ 的基数是衡量 $A$ 中元素数量的概念，记作 $|A|$。
+**定义 4.1.1 (基数)** 集合 ```latex
+$A$
+``` 的基数是衡量 ```latex
+$A$
+``` 中元素数量的概念，记作 ```latex
+$|A|$
+```。
 
-**定义 4.1.2 (有限集)** 如果存在自然数 $n$ 使得集合 $A$ 与 $\{1, 2, \ldots, n\}$ 之间存在双射，则称 $A$ 为有限集。
+**定义 4.1.2 (有限集)** 如果存在自然数 ```latex
+$n$
+``` 使得集合 ```latex
+$A$
+``` 与 ```latex
+$\{1, 2, \ldots, n\}$
+``` 之间存在双射，则称 ```latex
+$A$
+``` 为有限集。
 
-**定义 4.1.3 (可数集)** 如果集合 $A$ 与自然数集 $\mathbb{N}$ 之间存在双射，则称 $A$ 为可数集。
+**定义 4.1.3 (可数集)** 如果集合 ```latex
+$A$
+``` 与自然数集 ```latex
+$\mathbb{N}$
+``` 之间存在双射，则称 ```latex
+$A$
+``` 为可数集。
 
 ```go
 // 基数计算
@@ -427,10 +569,20 @@ func CompareCardinality[T, U comparable](setA *Set[T], setB *Set[U]) string {
 
 ### 4.2 幂集
 
-**定义 4.2.1 (幂集)** 集合 $A$ 的幂集是 $A$ 的所有子集构成的集合：
-$$\mathcal{P}(A) = \{B | B \subseteq A\}$$
+**定义 4.2.1 (幂集)** 集合 ```latex
+$A$
+``` 的幂集是 ```latex
+$A$
+``` 的所有子集构成的集合：
+$```latex
+$\mathcal{P}(A) = \{B | B \subseteq A\}$
+```$
 
-**定理 4.2.1 (幂集基数)** 如果 $|A| = n$，则 $|\mathcal{P}(A)| = 2^n$。
+**定理 4.2.1 (幂集基数)** 如果 ```latex
+$|A| = n$
+```，则 ```latex
+$|\mathcal{P}(A)| = 2^n$
+```。
 
 ```go
 // 幂集生成
@@ -479,14 +631,32 @@ func TestPowerSetCardinality() {
 
 ### 5.1 ZFC公理系统
 
-**公理 5.1.1 (配对公理)** 对于任意两个集合 $x$ 和 $y$，存在一个集合包含它们：
-$$\forall x \forall y \exists z \forall w(w \in z \leftrightarrow w = x \lor w = y)$$
+**公理 5.1.1 (配对公理)** 对于任意两个集合 ```latex
+$x$
+``` 和 ```latex
+$y$
+```，存在一个集合包含它们：
+$```latex
+$\forall x \forall y \exists z \forall w(w \in z \leftrightarrow w = x \lor w = y)$
+```$
 
-**公理 5.1.2 (并集公理)** 对于任意集合族 $\mathcal{F}$，存在一个集合包含所有 $\mathcal{F}$ 中集合的元素：
-$$\forall \mathcal{F} \exists A \forall x(x \in A \leftrightarrow \exists B(B \in \mathcal{F} \land x \in B))$$
+**公理 5.1.2 (并集公理)** 对于任意集合族 ```latex
+$\mathcal{F}$
+```，存在一个集合包含所有 ```latex
+$\mathcal{F}$
+``` 中集合的元素：
+$```latex
+$\forall \mathcal{F} \exists A \forall x(x \in A \leftrightarrow \exists B(B \in \mathcal{F} \land x \in B))$
+```$
 
-**公理 5.1.3 (幂集公理)** 对于任意集合 $x$，存在一个集合包含 $x$ 的所有子集：
-$$\forall x \exists y \forall z(z \in y \leftrightarrow z \subseteq x)$$
+**公理 5.1.3 (幂集公理)** 对于任意集合 ```latex
+$x$
+```，存在一个集合包含 ```latex
+$x$
+``` 的所有子集：
+$```latex
+$\forall x \exists y \forall z(z \in y \leftrightarrow z \subseteq x)$
+```$
 
 ```go
 // 配对公理实现
@@ -516,7 +686,15 @@ func PowerSetAxiom[T comparable](set *Set[T]) *Set[*Set[T]] {
 
 ### 5.2 选择公理
 
-**公理 5.2.1 (选择公理)** 对于任意非空集合族 $\mathcal{F}$，存在一个选择函数 $f: \mathcal{F} \rightarrow \bigcup \mathcal{F}$，使得对于每个 $A \in \mathcal{F}$，有 $f(A) \in A$。
+**公理 5.2.1 (选择公理)** 对于任意非空集合族 ```latex
+$\mathcal{F}$
+```，存在一个选择函数 ```latex
+$f: \mathcal{F} \rightarrow \bigcup \mathcal{F}$
+```，使得对于每个 ```latex
+$A \in \mathcal{F}$
+```，有 ```latex
+$f(A) \in A$
+```。
 
 ```go
 // 选择函数

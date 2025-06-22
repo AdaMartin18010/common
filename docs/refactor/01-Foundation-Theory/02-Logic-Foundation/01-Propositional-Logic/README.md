@@ -50,43 +50,99 @@
 
 ### 逻辑连接词
 
-**定义 4 (否定)**: 命题 $p$ 的否定记为 $\neg p$，真值表为：
+**定义 4 (否定)**: 命题 ```latex
+$p$
+``` 的否定记为 ```latex
+$\neg p$
+```，真值表为：
 
-| $p$ | $\neg p$ |
+| ```latex
+$p$
+``` | ```latex
+$\neg p$
+``` |
 |-----|----------|
 | T   | F        |
 | F   | T        |
 
-**定义 5 (合取)**: 命题 $p$ 和 $q$ 的合取记为 $p \wedge q$，真值表为：
+**定义 5 (合取)**: 命题 ```latex
+$p$
+``` 和 ```latex
+$q$
+``` 的合取记为 ```latex
+$p \wedge q$
+```，真值表为：
 
-| $p$ | $q$ | $p \wedge q$ |
+| ```latex
+$p$
+``` | ```latex
+$q$
+``` | ```latex
+$p \wedge q$
+``` |
 |-----|-----|--------------|
 | T   | T   | T            |
 | T   | F   | F            |
 | F   | T   | F            |
 | F   | F   | F            |
 
-**定义 6 (析取)**: 命题 $p$ 和 $q$ 的析取记为 $p \vee q$，真值表为：
+**定义 6 (析取)**: 命题 ```latex
+$p$
+``` 和 ```latex
+$q$
+``` 的析取记为 ```latex
+$p \vee q$
+```，真值表为：
 
-| $p$ | $q$ | $p \vee q$ |
+| ```latex
+$p$
+``` | ```latex
+$q$
+``` | ```latex
+$p \vee q$
+``` |
 |-----|-----|------------|
 | T   | T   | T          |
 | T   | F   | T          |
 | F   | T   | T          |
 | F   | F   | F          |
 
-**定义 7 (蕴含)**: 命题 $p$ 蕴含 $q$ 记为 $p \rightarrow q$，真值表为：
+**定义 7 (蕴含)**: 命题 ```latex
+$p$
+``` 蕴含 ```latex
+$q$
+``` 记为 ```latex
+$p \rightarrow q$
+```，真值表为：
 
-| $p$ | $q$ | $p \rightarrow q$ |
+| ```latex
+$p$
+``` | ```latex
+$q$
+``` | ```latex
+$p \rightarrow q$
+``` |
 |-----|-----|-------------------|
 | T   | T   | T                 |
 | T   | F   | F                 |
 | F   | T   | T                 |
 | F   | F   | T                 |
 
-**定义 8 (等价)**: 命题 $p$ 等价于 $q$ 记为 $p \leftrightarrow q$，真值表为：
+**定义 8 (等价)**: 命题 ```latex
+$p$
+``` 等价于 ```latex
+$q$
+``` 记为 ```latex
+$p \leftrightarrow q$
+```，真值表为：
 
-| $p$ | $q$ | $p \leftrightarrow q$ |
+| ```latex
+$p$
+``` | ```latex
+$q$
+``` | ```latex
+$p \leftrightarrow q$
+``` |
 |-----|-----|----------------------|
 | T   | T   | T                    |
 | T   | F   | F                    |
@@ -106,84 +162,222 @@
 **定义 10 (命题公式)**: 命题公式按以下规则递归定义：
 
 1. 命题变量是公式
-2. 如果 $\phi$ 是公式，则 $\neg \phi$ 是公式
-3. 如果 $\phi$ 和 $\psi$ 是公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是公式
+2. 如果 ```latex
+$\phi$
+``` 是公式，则 ```latex
+$\neg \phi$
+``` 是公式
+3. 如果 ```latex
+$\phi$
+``` 和 ```latex
+$\psi$
+``` 是公式，则 ```latex
+$(\phi \wedge \psi)$
+```、```latex
+$(\phi \vee \psi)$
+```、```latex
+$(\phi \rightarrow \psi)$
+```、```latex
+$(\phi \leftrightarrow \psi)$
+``` 是公式
 
-**定义 11 (子公式)**: 公式 $\phi$ 的子公式是 $\phi$ 的组成部分。
+**定义 11 (子公式)**: 公式 ```latex
+$\phi$
+``` 的子公式是 ```latex
+$\phi$
+``` 的组成部分。
 
 ### 语义
 
-**定义 12 (解释)**: 解释 $I$ 是从命题变量到真值的映射。
+**定义 12 (解释)**: 解释 ```latex
+$I$
+``` 是从命题变量到真值的映射。
 
-**定义 13 (满足关系)**: 解释 $I$ 满足公式 $\phi$，记为 $I \models \phi$，按以下规则定义：
+**定义 13 (满足关系)**: 解释 ```latex
+$I$
+``` 满足公式 ```latex
+$\phi$
+```，记为 ```latex
+$I \models \phi$
+```，按以下规则定义：
 
-1. $I \models p$ 当且仅当 $I(p) = \text{true}$
-2. $I \models \neg \phi$ 当且仅当 $I \not\models \phi$
-3. $I \models \phi \wedge \psi$ 当且仅当 $I \models \phi$ 且 $I \models \psi$
-4. $I \models \phi \vee \psi$ 当且仅当 $I \models \phi$ 或 $I \models \psi$
-5. $I \models \phi \rightarrow \psi$ 当且仅当 $I \not\models \phi$ 或 $I \models \psi$
-6. $I \models \phi \leftrightarrow \psi$ 当且仅当 $I \models \phi$ 等价于 $I \models \psi$
+1. ```latex
+$I \models p$
+``` 当且仅当 ```latex
+$I(p) = \text{true}$
+```
+2. ```latex
+$I \models \neg \phi$
+``` 当且仅当 ```latex
+$I \not\models \phi$
+```
+3. ```latex
+$I \models \phi \wedge \psi$
+``` 当且仅当 ```latex
+$I \models \phi$
+``` 且 ```latex
+$I \models \psi$
+```
+4. ```latex
+$I \models \phi \vee \psi$
+``` 当且仅当 ```latex
+$I \models \phi$
+``` 或 ```latex
+$I \models \psi$
+```
+5. ```latex
+$I \models \phi \rightarrow \psi$
+``` 当且仅当 ```latex
+$I \not\models \phi$
+``` 或 ```latex
+$I \models \psi$
+```
+6. ```latex
+$I \models \phi \leftrightarrow \psi$
+``` 当且仅当 ```latex
+$I \models \phi$
+``` 等价于 ```latex
+$I \models \psi$
+```
 
-**定义 14 (永真式)**: 公式 $\phi$ 是永真式，如果对所有解释 $I$，$I \models \phi$。
+**定义 14 (永真式)**: 公式 ```latex
+$\phi$
+``` 是永真式，如果对所有解释 ```latex
+$I$
+```，```latex
+$I \models \phi$
+```。
 
-**定义 15 (永假式)**: 公式 $\phi$ 是永假式，如果对所有解释 $I$，$I \not\models \phi$。
+**定义 15 (永假式)**: 公式 ```latex
+$\phi$
+``` 是永假式，如果对所有解释 ```latex
+$I$
+```，```latex
+$I \not\models \phi$
+```。
 
-**定义 16 (可满足式)**: 公式 $\phi$ 是可满足式，如果存在解释 $I$，$I \models \phi$。
+**定义 16 (可满足式)**: 公式 ```latex
+$\phi$
+``` 是可满足式，如果存在解释 ```latex
+$I$
+```，```latex
+$I \models \phi$
+```。
 
 ### 推理规则
 
-**定理 2 (假言推理)**: 如果 $\phi \rightarrow \psi$ 和 $\phi$ 都为真，则 $\psi$ 为真。
+**定理 2 (假言推理)**: 如果 ```latex
+$\phi \rightarrow \psi$
+``` 和 ```latex
+$\phi$
+``` 都为真，则 ```latex
+$\psi$
+``` 为真。
 
-**定理 3 (拒取式)**: 如果 $\phi \rightarrow \psi$ 和 $\neg \psi$ 都为真，则 $\neg \phi$ 为真。
+**定理 3 (拒取式)**: 如果 ```latex
+$\phi \rightarrow \psi$
+``` 和 ```latex
+$\neg \psi$
+``` 都为真，则 ```latex
+$\neg \phi$
+``` 为真。
 
-**定理 4 (析取三段论)**: 如果 $\phi \vee \psi$ 和 $\neg \phi$ 都为真，则 $\psi$ 为真。
+**定理 4 (析取三段论)**: 如果 ```latex
+$\phi \vee \psi$
+``` 和 ```latex
+$\neg \phi$
+``` 都为真，则 ```latex
+$\psi$
+``` 为真。
 
-**定理 5 (构造性二难)**: 如果 $\phi \rightarrow \psi$、$\chi \rightarrow \delta$ 和 $\phi \vee \chi$ 都为真，则 $\psi \vee \delta$ 为真。
+**定理 5 (构造性二难)**: 如果 ```latex
+$\phi \rightarrow \psi$
+```、```latex
+$\chi \rightarrow \delta$
+``` 和 ```latex
+$\phi \vee \chi$
+``` 都为真，则 ```latex
+$\psi \vee \delta$
+``` 为真。
 
 ### 公理系统
 
-**公理 1**: $\phi \rightarrow (\psi \rightarrow \phi)$
+**公理 1**: ```latex
+$\phi \rightarrow (\psi \rightarrow \phi)$
+```
 
-**公理 2**: $(\phi \rightarrow (\psi \rightarrow \chi)) \rightarrow ((\phi \rightarrow \psi) \rightarrow (\phi \rightarrow \chi))$
+**公理 2**: ```latex
+$(\phi \rightarrow (\psi \rightarrow \chi)) \rightarrow ((\phi \rightarrow \psi) \rightarrow (\phi \rightarrow \chi))$
+```
 
-**公理 3**: $(\neg \phi \rightarrow \neg \psi) \rightarrow (\psi \rightarrow \phi)$
+**公理 3**: ```latex
+$(\neg \phi \rightarrow \neg \psi) \rightarrow (\psi \rightarrow \phi)$
+```
 
-**推理规则 (分离规则)**: 从 $\phi$ 和 $\phi \rightarrow \psi$ 可以推出 $\psi$。
+**推理规则 (分离规则)**: 从 ```latex
+$\phi$
+``` 和 ```latex
+$\phi \rightarrow \psi$
+``` 可以推出 ```latex
+$\psi$
+```。
 
 ## 逻辑等价
 
 ### 基本等价律
 
-**定理 6 (双重否定)**: $\neg \neg \phi \equiv \phi$
+**定理 6 (双重否定)**: ```latex
+$\neg \neg \phi \equiv \phi$
+```
 
 **定理 7 (幂等律)**:
 
-- $\phi \wedge \phi \equiv \phi$
-- $\phi \vee \phi \equiv \phi$
+- ```latex
+$\phi \wedge \phi \equiv \phi$
+```
+- ```latex
+$\phi \vee \phi \equiv \phi$
+```
 
 **定理 8 (交换律)**:
 
-- $\phi \wedge \psi \equiv \psi \wedge \phi$
-- $\phi \vee \psi \equiv \psi \vee \phi$
+- ```latex
+$\phi \wedge \psi \equiv \psi \wedge \phi$
+```
+- ```latex
+$\phi \vee \psi \equiv \psi \vee \phi$
+```
 
 **定理 9 (结合律)**:
 
-- $(\phi \wedge \psi) \wedge \chi \equiv \phi \wedge (\psi \wedge \chi)$
-- $(\phi \vee \psi) \vee \chi \equiv \phi \vee (\psi \vee \chi)$
+- ```latex
+$(\phi \wedge \psi) \wedge \chi \equiv \phi \wedge (\psi \wedge \chi)$
+```
+- ```latex
+$(\phi \vee \psi) \vee \chi \equiv \phi \vee (\psi \vee \chi)$
+```
 
 ### 德摩根律
 
 **定理 10 (德摩根律)**:
 
-- $\neg (\phi \wedge \psi) \equiv \neg \phi \vee \neg \psi$
-- $\neg (\phi \vee \psi) \equiv \neg \phi \wedge \neg \psi$
+- ```latex
+$\neg (\phi \wedge \psi) \equiv \neg \phi \vee \neg \psi$
+```
+- ```latex
+$\neg (\phi \vee \psi) \equiv \neg \phi \wedge \neg \psi$
+```
 
 ### 分配律
 
 **定理 11 (分配律)**:
 
-- $\phi \wedge (\psi \vee \chi) \equiv (\phi \wedge \psi) \vee (\phi \wedge \chi)$
-- $\phi \vee (\psi \wedge \chi) \equiv (\phi \vee \psi) \wedge (\phi \vee \chi)$
+- ```latex
+$\phi \wedge (\psi \vee \chi) \equiv (\phi \wedge \psi) \vee (\phi \wedge \chi)$
+```
+- ```latex
+$\phi \vee (\psi \wedge \chi) \equiv (\phi \vee \psi) \wedge (\phi \vee \chi)$
+```
 
 ## 范式
 

@@ -58,10 +58,14 @@
 
 ```latex
 // 量子比特表示
+```latex
 $|q\rangle = \alpha|0\rangle + \beta|1\rangle$
+```
 
 // 量子门操作
+```latex
 $H = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$
+```
 
 // 量子测量
 $P(i) = |\langle i|\psi\rangle|^2$
@@ -147,10 +151,16 @@ func (qsv *QuantumStateVisualizer) BlochSphereCoordinates(qubit *Qubit) (theta, 
 
 ```python
 # 行内数学表达式
-r'(?<!```latex\n)\$([^$]+)\$(?!\n```)'
+r'(?<!```latex\n)\```latex
+$([^$
+```]+)\$(?!\n```)'
 
 # 块级数学表达式  
-r'(?<!```latex\n)\$\$([^$]+)\$\$(?!\n```)'
+r'(?<!```latex\n)\```latex
+$\$
+```([^```latex
+$]+)\$
+```\$(?!\n```)'
 ```
 
 ### 2. 内容结构优化

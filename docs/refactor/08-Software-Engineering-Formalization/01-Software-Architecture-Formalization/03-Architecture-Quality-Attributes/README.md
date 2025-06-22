@@ -31,10 +31,18 @@
 架构质量属性是衡量软件架构优劣的标准，包括功能性属性和非功能性属性。
 
 **定义 1.2**: 质量属性度量
-质量属性度量是一个函数 $M: A \rightarrow \mathbb{R}$，将架构 $A$ 映射到实数值。
+质量属性度量是一个函数 ```latex
+$M: A \rightarrow \mathbb{R}$
+```，将架构 ```latex
+$A$
+``` 映射到实数值。
 
 **定义 1.3**: 质量属性约束
-质量属性约束是一个不等式 $M(A) \geq T$，其中 $T$ 是阈值。
+质量属性约束是一个不等式 ```latex
+$M(A) \geq T$
+```，其中 ```latex
+$T$
+``` 是阈值。
 
 ### 1.2 分类
 
@@ -46,11 +54,19 @@
 ### 1.3 度量
 
 **定义 1.5**: 度量框架
-度量框架是一个三元组 $(M, W, S)$，其中：
+度量框架是一个三元组 ```latex
+$(M, W, S)$
+```，其中：
 
-- $M$ 是度量函数集合
-- $W$ 是权重函数
-- $S$ 是评分函数
+- ```latex
+$M$
+``` 是度量函数集合
+- ```latex
+$W$
+``` 是权重函数
+- ```latex
+$S$
+``` 是评分函数
 
 ## 2. 功能性质量属性
 
@@ -60,7 +76,9 @@
 系统行为符合规格说明的程度。
 
 **度量 2.1**: 正确性度量
-$$Correctness(A) = \frac{|CorrectBehaviors(A)|}{|TotalBehaviors(A)|}$$
+$```latex
+$Correctness(A) = \frac{|CorrectBehaviors(A)|}{|TotalBehaviors(A)|}$
+```$
 
 ### 2.2 完整性
 
@@ -68,7 +86,9 @@ $$Correctness(A) = \frac{|CorrectBehaviors(A)|}{|TotalBehaviors(A)|}$$
 系统实现所有要求功能的能力。
 
 **度量 2.2**: 完整性度量
-$$Completeness(A) = \frac{|ImplementedFeatures(A)|}{|RequiredFeatures(A)|}$$
+$```latex
+$Completeness(A) = \frac{|ImplementedFeatures(A)|}{|RequiredFeatures(A)|}$
+```$
 
 ### 2.3 一致性
 
@@ -83,7 +103,9 @@ $$Completeness(A) = \frac{|ImplementedFeatures(A)|}{|RequiredFeatures(A)|}$$
 系统在给定时间内完成指定任务的能力。
 
 **度量 3.1**: 性能度量
-$$Performance(A) = \frac{1}{ResponseTime(A)}$$
+$```latex
+$Performance(A) = \frac{1}{ResponseTime(A)}$
+```$
 
 ### 3.2 可扩展性
 
@@ -91,7 +113,9 @@ $$Performance(A) = \frac{1}{ResponseTime(A)}$$
 系统处理增加负载的能力。
 
 **度量 3.2**: 可扩展性度量
-$$Scalability(A) = \frac{Throughput(A, Load_2) - Throughput(A, Load_1)}{Load_2 - Load_1}$$
+$```latex
+$Scalability(A) = \frac{Throughput(A, Load_2) - Throughput(A, Load_1)}{Load_2 - Load_1}$
+```$
 
 ### 3.3 可维护性
 
@@ -99,7 +123,9 @@ $$Scalability(A) = \frac{Throughput(A, Load_2) - Throughput(A, Load_1)}{Load_2 -
 系统修改和演化的容易程度。
 
 **度量 3.3**: 可维护性度量
-$$Maintainability(A) = \frac{1}{Complexity(A)}$$
+$```latex
+$Maintainability(A) = \frac{1}{Complexity(A)}$
+```$
 
 ### 3.4 可靠性
 
@@ -107,12 +133,24 @@ $$Maintainability(A) = \frac{1}{Complexity(A)}$$
 系统在指定条件下正确运行的能力。
 
 **度量 3.4**: 可靠性度量
-$$Reliability(A) = \frac{MTBF(A)}{MTBF(A) + MTTR(A)}$$
+$```latex
+$Reliability(A) = \frac{MTBF(A)}{MTBF(A) + MTTR(A)}$
+```$
 
 ## 4. 质量属性权衡
 
 **定义 4.1**: 权衡矩阵
-权衡矩阵 $T$ 是一个 $n \times n$ 矩阵，其中 $T_{ij}$ 表示属性 $i$ 和 $j$ 之间的权衡关系。
+权衡矩阵 ```latex
+$T$
+``` 是一个 ```latex
+$n \times n$
+``` 矩阵，其中 ```latex
+$T_{ij}$
+``` 表示属性 ```latex
+$i$
+``` 和 ```latex
+$j$
+``` 之间的权衡关系。
 
 ## 5. Go语言实现
 

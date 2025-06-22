@@ -25,21 +25,35 @@
 
 课程可以用有向无环图(DAG)表示：
 
-$$C = (V, E, w, \tau)$$
+$```latex
+$C = (V, E, w, \tau)$
+```$
 
 其中：
-- $V$ 是学习单元集合
-- $E$ 是学习依赖关系
-- $w: E \rightarrow \mathbb{R}^+$ 是权重函数
-- $\tau: V \rightarrow \mathbb{R}^+$ 是时间估计函数
+- ```latex
+$V$
+``` 是学习单元集合
+- ```latex
+$E$
+``` 是学习依赖关系
+- ```latex
+$w: E \rightarrow \mathbb{R}^+$
+``` 是权重函数
+- ```latex
+$\tau: V \rightarrow \mathbb{R}^+$
+``` 是时间估计函数
 
 #### 学习目标层次结构
 
 学习目标遵循布鲁姆分类法：
 
-$$\mathcal{O} = \{O_1, O_2, ..., O_n\}$$
+$```latex
+$\mathcal{O} = \{O_1, O_2, ..., O_n\}$
+```$
 
-每个目标 $O_i$ 包含：
+每个目标 ```latex
+$O_i$
+``` 包含：
 - 认知层次：记忆、理解、应用、分析、评价、创造
 - 技能领域：认知、情感、心理运动
 - 评估标准：可观察、可测量、可验证
@@ -50,14 +64,26 @@ $$\mathcal{O} = \{O_1, O_2, ..., O_n\}$$
 
 ADDIE模型包含五个阶段：
 
-$$ADDIE = \langle A, D, D, I, E \rangle$$
+$```latex
+$ADDIE = \langle A, D, D, I, E \rangle$
+```$
 
 其中：
-- $A$ (Analysis): 需求分析
-- $D$ (Design): 教学设计
-- $D$ (Development): 内容开发
-- $I$ (Implementation): 实施部署
-- $E$ (Evaluation): 评估改进
+- ```latex
+$A$
+``` (Analysis): 需求分析
+- ```latex
+$D$
+``` (Design): 教学设计
+- ```latex
+$D$
+``` (Development): 内容开发
+- ```latex
+$I$
+``` (Implementation): 实施部署
+- ```latex
+$E$
+``` (Evaluation): 评估改进
 
 ## 系统架构
 
@@ -1057,7 +1083,9 @@ func (r *CourseRepository) ListCoursesOptimized(ctx context.Context, req ListCou
             match["tags"] = bson.M{"$in": req.Filter.Tags}
         }
         if req.Filter.Search != "" {
-            match["$text"] = bson.M{"$search": req.Filter.Search}
+            match["```latex
+$text"] = bson.M{"$
+```search": req.Filter.Search}
         }
     }
     

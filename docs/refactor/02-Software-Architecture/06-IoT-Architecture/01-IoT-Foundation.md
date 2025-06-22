@@ -4,13 +4,25 @@
 
 ### 1.1.1 IoT系统形式化定义
 
-**定义 1.1** (IoT系统): IoT系统是一个五元组 $\mathcal{I} = (D, G, C, P, A)$，其中：
+**定义 1.1** (IoT系统): IoT系统是一个五元组 ```latex
+$\mathcal{I} = (D, G, C, P, A)$
+```，其中：
 
-- $D$ 是设备集合 (Devices)
-- $G$ 是网关集合 (Gateways)
-- $C$ 是云平台集合 (Cloud)
-- $P$ 是协议集合 (Protocols)
-- $A$ 是应用集合 (Applications)
+- ```latex
+$D$
+``` 是设备集合 (Devices)
+- ```latex
+$G$
+``` 是网关集合 (Gateways)
+- ```latex
+$C$
+``` 是云平台集合 (Cloud)
+- ```latex
+$P$
+``` 是协议集合 (Protocols)
+- ```latex
+$A$
+``` 是应用集合 (Applications)
 
 **IoT架构层次**:
 
@@ -20,12 +32,22 @@
 
 ### 1.1.2 IoT设备模型
 
-**定义 1.2** (IoT设备): IoT设备是一个四元组 $\text{Device} = (S, A, P, C)$，其中：
+**定义 1.2** (IoT设备): IoT设备是一个四元组 ```latex
+$\text{Device} = (S, A, P, C)$
+```，其中：
 
-- $S$ 是传感器集合
-- $A$ 是执行器集合
-- $P$ 是处理单元
-- $C$ 是通信模块
+- ```latex
+$S$
+``` 是传感器集合
+- ```latex
+$A$
+``` 是执行器集合
+- ```latex
+$P$
+``` 是处理单元
+- ```latex
+$C$
+``` 是通信模块
 
 **设备能力模型**:
 

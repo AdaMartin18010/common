@@ -7,12 +7,22 @@
 应用安全是保护应用程序免受安全威胁的过程，包括Web应用、移动应用、桌面应用等。
 
 **形式化定义**：
-设 $A$ 为应用程序集合，$T$ 为威胁集合，$V$ 为漏洞集合。
-应用安全函数 $S: A \times T \times V \rightarrow \{0,1\}$ 定义为：
+设 ```latex
+$A$
+``` 为应用程序集合，```latex
+$T$
+``` 为威胁集合，```latex
+$V$
+``` 为漏洞集合。
+应用安全函数 ```latex
+$S: A \times T \times V \rightarrow \{0,1\}$
+``` 定义为：
+```latex
 $$S(a,t,v) = \begin{cases}
 1 & \text{if application } a \text{ is secure against threat } t \text{ and vulnerability } v \\
 0 & \text{otherwise}
 \end{cases}$$
+```
 
 ### 3.1.2 应用安全威胁模型
 
@@ -23,7 +33,9 @@ $$S(a,t,v) = \begin{cases}
 4. **数据泄露**：敏感信息泄露、配置泄露
 
 **威胁概率计算**：
-$$P(Attack) = P(Vulnerability) \times P(Exploit) \times P(Impact)$$
+$```latex
+$P(Attack) = P(Vulnerability) \times P(Exploit) \times P(Impact)$
+```$
 
 ## 3.2 Web应用安全
 
@@ -148,7 +160,9 @@ func (s *SecureUserService) CreateUser(username, email, password string) error {
     }
 
     // 使用参数化查询
-    query := "INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3)"
+    query := "INSERT INTO users (username, email, password_hash) VALUES (```latex
+$1, $
+```2, $3)"
     _, err = s.db.Exec(query, username, email, hashedPassword)
     if err != nil {
         return fmt.Errorf("failed to create user: %v", err)

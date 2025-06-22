@@ -39,92 +39,218 @@
 集合是不同对象的无序聚集，这些对象称为集合的元素。
 
 **形式化定义**：
-设 $U$ 是论域，集合 $A$ 是 $U$ 的子集，记作 $A \subseteq U$。
+设 ```latex
+$U$
+``` 是论域，集合 ```latex
+$A$
+``` 是 ```latex
+$U$
+``` 的子集，记作 ```latex
+$A \subseteq U$
+```。
 
 **定义 1.1.2** (元素关系)
-元素 $x$ 属于集合 $A$，记作 $x \in A$；元素 $x$ 不属于集合 $A$，记作 $x \notin A$。
+元素 ```latex
+$x$
+``` 属于集合 ```latex
+$A$
+```，记作 ```latex
+$x \in A$
+```；元素 ```latex
+$x$
+``` 不属于集合 ```latex
+$A$
+```，记作 ```latex
+$x \notin A$
+```。
 
 **定义 1.1.3** (集合相等)
-两个集合 $A$ 和 $B$ 相等，当且仅当它们包含相同的元素：
-$$A = B \Leftrightarrow \forall x (x \in A \Leftrightarrow x \in B)$$
+两个集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 相等，当且仅当它们包含相同的元素：
+$```latex
+$A = B \Leftrightarrow \forall x (x \in A \Leftrightarrow x \in B)$
+```$
 
 ### 1.2 集合表示
 
 **定义 1.2.1** (列举法)
 通过列举所有元素来表示集合：
-$$A = \{a_1, a_2, \ldots, a_n\}$$
+$```latex
+$A = \{a_1, a_2, \ldots, a_n\}$
+```$
 
 **定义 1.2.2** (描述法)
 通过描述元素的性质来表示集合：
-$$A = \{x \in U | P(x)\}$$
-其中 $P(x)$ 是谓词，表示元素 $x$ 满足的性质。
+$```latex
+$A = \{x \in U | P(x)\}$
+```$
+其中 ```latex
+$P(x)$
+``` 是谓词，表示元素 ```latex
+$x$
+``` 满足的性质。
 
 **定义 1.2.3** (空集)
-不包含任何元素的集合称为空集，记作 $\emptyset$：
-$$\emptyset = \{x | x \neq x\}$$
+不包含任何元素的集合称为空集，记作 ```latex
+$\emptyset$
+```：
+$```latex
+$\emptyset = \{x | x \neq x\}$
+```$
 
 ### 1.3 集合关系
 
 **定义 1.3.1** (子集)
-集合 $A$ 是集合 $B$ 的子集，记作 $A \subseteq B$：
-$$A \subseteq B \Leftrightarrow \forall x (x \in A \Rightarrow x \in B)$$
+集合 ```latex
+$A$
+``` 是集合 ```latex
+$B$
+``` 的子集，记作 ```latex
+$A \subseteq B$
+```：
+$```latex
+$A \subseteq B \Leftrightarrow \forall x (x \in A \Rightarrow x \in B)$
+```$
 
 **定义 1.3.2** (真子集)
-集合 $A$ 是集合 $B$ 的真子集，记作 $A \subset B$：
-$$A \subset B \Leftrightarrow A \subseteq B \land A \neq B$$
+集合 ```latex
+$A$
+``` 是集合 ```latex
+$B$
+``` 的真子集，记作 ```latex
+$A \subset B$
+```：
+$```latex
+$A \subset B \Leftrightarrow A \subseteq B \land A \neq B$
+```$
 
 **定义 1.3.3** (幂集)
-集合 $A$ 的幂集是 $A$ 的所有子集构成的集合：
-$$\mathcal{P}(A) = \{B | B \subseteq A\}$$
+集合 ```latex
+$A$
+``` 的幂集是 ```latex
+$A$
+``` 的所有子集构成的集合：
+$```latex
+$\mathcal{P}(A) = \{B | B \subseteq A\}$
+```$
 
 ## 2. 集合运算
 
 ### 2.1 基本运算
 
 **定义 2.1.1** (并集)
-集合 $A$ 和 $B$ 的并集：
-$$A \cup B = \{x | x \in A \lor x \in B\}$$
+集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 的并集：
+$```latex
+$A \cup B = \{x | x \in A \lor x \in B\}$
+```$
 
 **定义 2.1.2** (交集)
-集合 $A$ 和 $B$ 的交集：
-$$A \cap B = \{x | x \in A \land x \in B\}$$
+集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 的交集：
+$```latex
+$A \cap B = \{x | x \in A \land x \in B\}$
+```$
 
 **定义 2.1.3** (差集)
-集合 $A$ 和 $B$ 的差集：
-$$A \setminus B = \{x | x \in A \land x \notin B\}$$
+集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 的差集：
+$```latex
+$A \setminus B = \{x | x \in A \land x \notin B\}$
+```$
 
 **定义 2.1.4** (补集)
-集合 $A$ 在论域 $U$ 中的补集：
-$$A^c = U \setminus A = \{x \in U | x \notin A\}$$
+集合 ```latex
+$A$
+``` 在论域 ```latex
+$U$
+``` 中的补集：
+$```latex
+$A^c = U \setminus A = \{x \in U | x \notin A\}$
+```$
 
 ### 2.2 运算性质
 
 **定理 2.2.1** (幂等律)
-对于任意集合 $A$：
-$$A \cup A = A$$
-$$A \cap A = A$$
+对于任意集合 ```latex
+$A$
+```：
+$```latex
+$A \cup A = A$
+```$
+$```latex
+$A \cap A = A$
+```$
 
 **定理 2.2.2** (交换律)
-对于任意集合 $A$ 和 $B$：
-$$A \cup B = B \cup A$$
-$$A \cap B = B \cap A$$
+对于任意集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+```：
+$```latex
+$A \cup B = B \cup A$
+```$
+$```latex
+$A \cap B = B \cap A$
+```$
 
 **定理 2.2.3** (结合律)
-对于任意集合 $A$、$B$ 和 $C$：
-$$(A \cup B) \cup C = A \cup (B \cup C)$$
-$$(A \cap B) \cap C = A \cap (B \cap C)$$
+对于任意集合 ```latex
+$A$
+```、```latex
+$B$
+``` 和 ```latex
+$C$
+```：
+$```latex
+$(A \cup B) \cup C = A \cup (B \cup C)$
+```$
+$```latex
+$(A \cap B) \cap C = A \cap (B \cap C)$
+```$
 
 ### 2.3 运算律
 
 **定理 2.3.1** (分配律)
-对于任意集合 $A$、$B$ 和 $C$：
-$$A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$$
-$$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
+对于任意集合 ```latex
+$A$
+```、```latex
+$B$
+``` 和 ```latex
+$C$
+```：
+$```latex
+$A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$
+```$
+$```latex
+$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$
+```$
 
 **定理 2.3.2** (德摩根律)
-对于任意集合 $A$ 和 $B$：
-$$(A \cup B)^c = A^c \cap B^c$$
-$$(A \cap B)^c = A^c \cup B^c$$
+对于任意集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+```：
+$```latex
+$(A \cup B)^c = A^c \cap B^c$
+```$
+$```latex
+$(A \cap B)^c = A^c \cup B^c$
+```$
 
 ## 3. 集合代数
 
@@ -133,70 +259,162 @@ $$(A \cap B)^c = A^c \cup B^c$$
 **定义 3.1.1** (布尔代数)
 集合代数是一个布尔代数，其中：
 
-- 零元素：$\emptyset$
-- 单位元素：$U$
-- 补运算：$A^c$
-- 并运算：$A \cup B$
-- 交运算：$A \cap B$
+- 零元素：```latex
+$\emptyset$
+```
+- 单位元素：```latex
+$U$
+```
+- 补运算：```latex
+$A^c$
+```
+- 并运算：```latex
+$A \cup B$
+```
+- 交运算：```latex
+$A \cap B$
+```
 
 **定理 3.1.1** (布尔代数性质)
-对于任意集合 $A$、$B$ 和 $C$：
+对于任意集合 ```latex
+$A$
+```、```latex
+$B$
+``` 和 ```latex
+$C$
+```：
 
 1. **吸收律**：
-   $$A \cup (A \cap B) = A$$
-   $$A \cap (A \cup B) = A$$
+   $```latex
+$A \cup (A \cap B) = A$
+```$
+   $```latex
+$A \cap (A \cup B) = A$
+```$
 
 2. **对合律**：
-   $$(A^c)^c = A$$
+   $```latex
+$(A^c)^c = A$
+```$
 
 3. **零律**：
-   $$A \cup U = U$$
-   $$A \cap \emptyset = \emptyset$$
+   $```latex
+$A \cup U = U$
+```$
+   $```latex
+$A \cap \emptyset = \emptyset$
+```$
 
 4. **单位律**：
-   $$A \cup \emptyset = A$$
-   $$A \cap U = A$$
+   $```latex
+$A \cup \emptyset = A$
+```$
+   $```latex
+$A \cap U = A$
+```$
 
 ### 3.2 德摩根律
 
 **定理 3.2.1** (德摩根律推广)
-对于任意集合族 $\{A_i\}_{i \in I}$：
-$$\left(\bigcup_{i \in I} A_i\right)^c = \bigcap_{i \in I} A_i^c$$
-$$\left(\bigcap_{i \in I} A_i\right)^c = \bigcup_{i \in I} A_i^c$$
+对于任意集合族 ```latex
+$\{A_i\}_{i \in I}$
+```：
+$```latex
+$\left(\bigcup_{i \in I} A_i\right)^c = \bigcap_{i \in I} A_i^c$
+```$
+$```latex
+$\left(\bigcap_{i \in I} A_i\right)^c = \bigcup_{i \in I} A_i^c$
+```$
 
 **证明**：
-设 $x \in \left(\bigcup_{i \in I} A_i\right)^c$，则 $x \notin \bigcup_{i \in I} A_i$。
-这意味着对于所有 $i \in I$，$x \notin A_i$，即 $x \in A_i^c$。
-因此 $x \in \bigcap_{i \in I} A_i^c$。
+设 ```latex
+$x \in \left(\bigcup_{i \in I} A_i\right)^c$
+```，则 ```latex
+$x \notin \bigcup_{i \in I} A_i$
+```。
+这意味着对于所有 ```latex
+$i \in I$
+```，```latex
+$x \notin A_i$
+```，即 ```latex
+$x \in A_i^c$
+```。
+因此 ```latex
+$x \in \bigcap_{i \in I} A_i^c$
+```。
 
-反之，设 $x \in \bigcap_{i \in I} A_i^c$，则对于所有 $i \in I$，$x \in A_i^c$。
-这意味着对于所有 $i \in I$，$x \notin A_i$，即 $x \notin \bigcup_{i \in I} A_i$。
-因此 $x \in \left(\bigcup_{i \in I} A_i\right)^c$。
+反之，设 ```latex
+$x \in \bigcap_{i \in I} A_i^c$
+```，则对于所有 ```latex
+$i \in I$
+```，```latex
+$x \in A_i^c$
+```。
+这意味着对于所有 ```latex
+$i \in I$
+```，```latex
+$x \notin A_i$
+```，即 ```latex
+$x \notin \bigcup_{i \in I} A_i$
+```。
+因此 ```latex
+$x \in \left(\bigcup_{i \in I} A_i\right)^c$
+```。
 
+```latex
 $\square$
+```
 
 ### 3.3 分配律
 
 **定理 3.3.1** (分配律推广)
-对于任意集合 $A$ 和集合族 $\{B_i\}_{i \in I}$：
-$$A \cup \left(\bigcap_{i \in I} B_i\right) = \bigcap_{i \in I} (A \cup B_i)$$
-$$A \cap \left(\bigcup_{i \in I} B_i\right) = \bigcup_{i \in I} (A \cap B_i)$$
+对于任意集合 ```latex
+$A$
+``` 和集合族 ```latex
+$\{B_i\}_{i \in I}$
+```：
+$```latex
+$A \cup \left(\bigcap_{i \in I} B_i\right) = \bigcap_{i \in I} (A \cup B_i)$
+```$
+$```latex
+$A \cap \left(\bigcup_{i \in I} B_i\right) = \bigcup_{i \in I} (A \cap B_i)$
+```$
 
 ## 4. 关系与函数
 
 ### 4.1 二元关系
 
 **定义 4.1.1** (二元关系)
-集合 $A$ 和 $B$ 之间的二元关系是 $A \times B$ 的子集：
-$$R \subseteq A \times B$$
+集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+``` 之间的二元关系是 ```latex
+$A \times B$
+``` 的子集：
+$```latex
+$R \subseteq A \times B$
+```$
 
 **定义 4.1.2** (关系性质)
-设 $R$ 是集合 $A$ 上的二元关系：
+设 ```latex
+$R$
+``` 是集合 ```latex
+$A$
+``` 上的二元关系：
 
-1. **自反性**：$\forall x \in A, (x, x) \in R$
-2. **对称性**：$\forall x, y \in A, (x, y) \in R \Rightarrow (y, x) \in R$
-3. **传递性**：$\forall x, y, z \in A, (x, y) \in R \land (y, z) \in R \Rightarrow (x, z) \in R$
-4. **反对称性**：$\forall x, y \in A, (x, y) \in R \land (y, x) \in R \Rightarrow x = y$
+1. **自反性**：```latex
+$\forall x \in A, (x, x) \in R$
+```
+2. **对称性**：```latex
+$\forall x, y \in A, (x, y) \in R \Rightarrow (y, x) \in R$
+```
+3. **传递性**：```latex
+$\forall x, y, z \in A, (x, y) \in R \land (y, z) \in R \Rightarrow (x, z) \in R$
+```
+4. **反对称性**：```latex
+$\forall x, y \in A, (x, y) \in R \land (y, x) \in R \Rightarrow x = y$
+```
 
 ### 4.2 等价关系
 
@@ -204,28 +422,58 @@ $$R \subseteq A \times B$$
 满足自反性、对称性和传递性的二元关系称为等价关系。
 
 **定义 4.2.2** (等价类)
-设 $R$ 是集合 $A$ 上的等价关系，元素 $a \in A$ 的等价类：
-$$[a]_R = \{x \in A | (a, x) \in R\}$$
+设 ```latex
+$R$
+``` 是集合 ```latex
+$A$
+``` 上的等价关系，元素 ```latex
+$a \in A$
+``` 的等价类：
+$```latex
+$[a]_R = \{x \in A | (a, x) \in R\}$
+```$
 
 **定理 4.2.1** (等价类性质)
-设 $R$ 是集合 $A$ 上的等价关系：
+设 ```latex
+$R$
+``` 是集合 ```latex
+$A$
+``` 上的等价关系：
 
-1. $\forall a \in A, a \in [a]_R$
-2. $\forall a, b \in A, [a]_R = [b]_R \lor [a]_R \cap [b]_R = \emptyset$
-3. $\bigcup_{a \in A} [a]_R = A$
+1. ```latex
+$\forall a \in A, a \in [a]_R$
+```
+2. ```latex
+$\forall a, b \in A, [a]_R = [b]_R \lor [a]_R \cap [b]_R = \emptyset$
+```
+3. ```latex
+$\bigcup_{a \in A} [a]_R = A$
+```
 
 ### 4.3 函数
 
 **定义 4.3.1** (函数)
-函数 $f: A \to B$ 是满足以下条件的二元关系：
-$$\forall x \in A, \exists! y \in B, (x, y) \in f$$
+函数 ```latex
+$f: A \to B$
+``` 是满足以下条件的二元关系：
+$```latex
+$\forall x \in A, \exists! y \in B, (x, y) \in f$
+```$
 
 **定义 4.3.2** (函数性质)
-设 $f: A \to B$ 是函数：
+设 ```latex
+$f: A \to B$
+``` 是函数：
 
-1. **单射**：$\forall x_1, x_2 \in A, f(x_1) = f(x_2) \Rightarrow x_1 = x_2$
-2. **满射**：$\forall y \in B, \exists x \in A, f(x) = y$
-3. **双射**：$f$ 既是单射又是满射
+1. **单射**：```latex
+$\forall x_1, x_2 \in A, f(x_1) = f(x_2) \Rightarrow x_1 = x_2$
+```
+2. **满射**：```latex
+$\forall y \in B, \exists x \in A, f(x) = y$
+```
+3. **双射**：```latex
+$f$
+``` 既是单射又是满射
 
 ## 5. Go语言实现
 
@@ -700,38 +948,94 @@ func (su *SetUtils) Reduce[T comparable, U any](set Set[T], reducer func(U, T) U
 ### 6.1 基本定理
 
 **定理 6.1.1** (集合基数)
-对于有限集合 $A$ 和 $B$：
-$$|A \cup B| = |A| + |B| - |A \cap B|$$
+对于有限集合 ```latex
+$A$
+``` 和 ```latex
+$B$
+```：
+$```latex
+$|A \cup B| = |A| + |B| - |A \cap B|$
+```$
 
 **证明**：
-设 $A \cap B = C$，则：
+设 ```latex
+$A \cap B = C$
+```，则：
 
-- $A = (A \setminus C) \cup C$
-- $B = (B \setminus C) \cup C$
-- $A \cup B = (A \setminus C) \cup C \cup (B \setminus C)$
+- ```latex
+$A = (A \setminus C) \cup C$
+```
+- ```latex
+$B = (B \setminus C) \cup C$
+```
+- ```latex
+$A \cup B = (A \setminus C) \cup C \cup (B \setminus C)$
+```
 
-由于 $(A \setminus C)$、$C$ 和 $(B \setminus C)$ 两两不相交：
-$$|A \cup B| = |A \setminus C| + |C| + |B \setminus C|$$
+由于 ```latex
+$(A \setminus C)$
+```、```latex
+$C$
+``` 和 ```latex
+$(B \setminus C)$
+``` 两两不相交：
+$```latex
+$|A \cup B| = |A \setminus C| + |C| + |B \setminus C|$
+```$
 
 又因为：
-$$|A| = |A \setminus C| + |C|$$
-$$|B| = |B \setminus C| + |C|$$
+$```latex
+$|A| = |A \setminus C| + |C|$
+```$
+$```latex
+$|B| = |B \setminus C| + |C|$
+```$
 
 所以：
-$$|A \cup B| = |A| + |B| - |C| = |A| + |B| - |A \cap B|$$
+$```latex
+$|A \cup B| = |A| + |B| - |C| = |A| + |B| - |A \cap B|$
+```$
 
+```latex
 $\square$
+```
 
 **定理 6.1.2** (幂集基数)
-对于有限集合 $A$：
-$$|\mathcal{P}(A)| = 2^{|A|}$$
+对于有限集合 ```latex
+$A$
+```：
+$```latex
+$|\mathcal{P}(A)| = 2^{|A|}$
+```$
 
 **证明**：
-设 $|A| = n$，则 $A$ 的每个子集可以表示为长度为 $n$ 的二进制串，其中第 $i$ 位为 $1$ 表示第 $i$ 个元素在子集中，为 $0$ 表示不在。
+设 ```latex
+$|A| = n$
+```，则 ```latex
+$A$
+``` 的每个子集可以表示为长度为 ```latex
+$n$
+``` 的二进制串，其中第 ```latex
+$i$
+``` 位为 ```latex
+$1$
+``` 表示第 ```latex
+$i$
+``` 个元素在子集中，为 ```latex
+$0$
+``` 表示不在。
 
-因此，$A$ 的子集数量等于长度为 $n$ 的二进制串的数量，即 $2^n$。
+因此，```latex
+$A$
+``` 的子集数量等于长度为 ```latex
+$n$
+``` 的二进制串的数量，即 ```latex
+$2^n$
+```。
 
+```latex
 $\square$
+```
 
 ### 6.2 证明方法
 

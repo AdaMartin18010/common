@@ -72,26 +72,54 @@
 ### 2.1 工作流模型
 
 **定义 2.1 (工作流)**
-工作流是一个有向图 $W = (N, E, \lambda, \mu)$，其中：
+工作流是一个有向图 ```latex
+$W = (N, E, \lambda, \mu)$
+```，其中：
 
-- $N$ 是节点集合（任务、网关、事件）
-- $E \subseteq N \times N$ 是边集合（控制流）
-- $\lambda: N \rightarrow T$ 是节点类型函数
-- $\mu: E \rightarrow C$ 是边条件函数
+- ```latex
+$N$
+``` 是节点集合（任务、网关、事件）
+- ```latex
+$E \subseteq N \times N$
+``` 是边集合（控制流）
+- ```latex
+$\lambda: N \rightarrow T$
+``` 是节点类型函数
+- ```latex
+$\mu: E \rightarrow C$
+``` 是边条件函数
 
 **定义 2.2 (工作流实例)**
 工作流实例是工作流的一个执行实例：
-$$I = (W, s, v, h)$$
-其中 $s$ 是当前状态，$v$ 是变量集合，$h$ 是执行历史。
+$```latex
+$I = (W, s, v, h)$
+```$
+其中 ```latex
+$s$
+``` 是当前状态，```latex
+$v$
+``` 是变量集合，```latex
+$h$
+``` 是执行历史。
 
 ### 2.2 执行语义
 
 **定义 2.3 (执行步骤)**
-执行步骤是一个三元组 $(n, a, n')$，表示从节点 $n$ 执行动作 $a$ 后到达节点 $n'$。
+执行步骤是一个三元组 ```latex
+$(n, a, n')$
+```，表示从节点 ```latex
+$n$
+``` 执行动作 ```latex
+$a$
+``` 后到达节点 ```latex
+$n'$
+```。
 
 **定义 2.4 (执行路径)**
 执行路径是执行步骤的序列：
-$$\pi = \langle (n_0, a_0, n_1), (n_1, a_1, n_2), ..., (n_{k-1}, a_{k-1}, n_k) \rangle$$
+$```latex
+$\pi = \langle (n_0, a_0, n_1), (n_1, a_1, n_2), ..., (n_{k-1}, a_{k-1}, n_k) \rangle$
+```$
 
 ### 2.3 工作流正确性
 
@@ -113,10 +141,16 @@ $$\pi = \langle (n_0, a_0, n_1), (n_1, a_1, n_2), ..., (n_{k-1}, a_{k-1}, n_k) \
 ### 3.1 图论基础
 
 **定义 3.1 (控制流图)**
-控制流图 $G = (V, E)$ 是一个有向图，其中：
+控制流图 ```latex
+$G = (V, E)$
+``` 是一个有向图，其中：
 
-- $V$ 是基本块集合
-- $E$ 是控制流边集合
+- ```latex
+$V$
+``` 是基本块集合
+- ```latex
+$E$
+``` 是控制流边集合
 
 **定理 3.1 (控制流图性质)**
 工作流的控制流图是强连通的，当且仅当所有任务都是可达的。
@@ -124,20 +158,42 @@ $$\pi = \langle (n_0, a_0, n_1), (n_1, a_1, n_2), ..., (n_{k-1}, a_{k-1}, n_k) \
 ### 3.2 状态转换系统
 
 **定义 3.2 (状态转换系统)**
-状态转换系统是一个三元组 $(S, A, \rightarrow)$，其中：
+状态转换系统是一个三元组 ```latex
+$(S, A, \rightarrow)$
+```，其中：
 
-- $S$ 是状态集合
-- $A$ 是动作集合
-- $\rightarrow \subseteq S \times A \times S$ 是转换关系
+- ```latex
+$S$
+``` 是状态集合
+- ```latex
+$A$
+``` 是动作集合
+- ```latex
+$\rightarrow \subseteq S \times A \times S$
+``` 是转换关系
 
 **定理 3.2 (状态可达性)**
-状态 $s'$ 从状态 $s$ 可达，当且仅当存在动作序列 $\sigma$ 使得 $s \xrightarrow{\sigma} s'$。
+状态 ```latex
+$s'$
+``` 从状态 ```latex
+$s$
+``` 可达，当且仅当存在动作序列 ```latex
+$\sigma$
+``` 使得 ```latex
+$s \xrightarrow{\sigma} s'$
+```。
 
 ### 3.3 并发控制
 
 **定义 3.3 (并发执行)**
-两个任务 $t_1$ 和 $t_2$ 可以并发执行，当且仅当：
-$$\text{not } (t_1 \rightarrow t_2 \lor t_2 \rightarrow t_1)$$
+两个任务 ```latex
+$t_1$
+``` 和 ```latex
+$t_2$
+``` 可以并发执行，当且仅当：
+$```latex
+$\text{not } (t_1 \rightarrow t_2 \lor t_2 \rightarrow t_1)$
+```$
 
 **定理 3.3 (并发安全性)**
 并发执行是安全的，当且仅当所有共享资源的访问都是同步的。
@@ -174,15 +230,21 @@ type Task interface {
 
 **定义 4.1 (排他网关)**
 排他网关只选择一个输出分支：
-$$|\text{out}(g)| = 1$$
+$```latex
+$|\text{out}(g)| = 1$
+```$
 
 **定义 4.2 (并行网关)**
 并行网关激活所有输出分支：
-$$|\text{out}(g)| = |\text{enabled}(g)|$$
+$```latex
+$|\text{out}(g)| = |\text{enabled}(g)|$
+```$
 
 **定义 4.3 (包容网关)**
 包容网关激活满足条件的输出分支：
-$$|\text{out}(g)| \geq 1$$
+$```latex
+$|\text{out}(g)| \geq 1$
+```$
 
 ### 4.3 事件类型
 
@@ -231,15 +293,21 @@ type WorkflowDefinition struct {
 
 **定义 5.1 (顺序执行)**
 任务按预定义顺序依次执行：
-$$\forall i < j: t_i \prec t_j$$
+$```latex
+$\forall i < j: t_i \prec t_j$
+```$
 
 **定义 5.2 (并行执行)**
 满足条件的任务可以并行执行：
-$$t_i \parallel t_j \Leftrightarrow \text{not } (t_i \rightarrow t_j \lor t_j \rightarrow t_i)$$
+$```latex
+$t_i \parallel t_j \Leftrightarrow \text{not } (t_i \rightarrow t_j \lor t_j \rightarrow t_i)$
+```$
 
 **定义 5.3 (条件执行)**
 任务根据条件决定是否执行：
-$$\text{execute}(t) \Leftrightarrow \text{condition}(t, \text{context})$$
+$```latex
+$\text{execute}(t) \Leftrightarrow \text{condition}(t, \text{context})$
+```$
 
 ## 6. Go语言实现
 
@@ -914,21 +982,41 @@ func main() {
 ### 7.1 时间复杂度
 
 **定理 7.1 (工作流执行时间复杂度)**
-工作流执行的时间复杂度为 $O(|N| + |E|)$，其中 $|N|$ 是节点数量，$|E|$ 是边数量。
+工作流执行的时间复杂度为 ```latex
+$O(|N| + |E|)$
+```，其中 ```latex
+$|N|$
+``` 是节点数量，```latex
+$|E|$
+``` 是边数量。
 
 **定理 7.2 (任务调度时间复杂度)**
-任务调度的时间复杂度为 $O(\log n)$，其中 $n$ 是待执行任务数量。
+任务调度的时间复杂度为 ```latex
+$O(\log n)$
+```，其中 ```latex
+$n$
+``` 是待执行任务数量。
 
 ### 7.2 空间复杂度
 
 **定理 7.3 (工作流引擎空间复杂度)**
-工作流引擎的空间复杂度为 $O(|W| \times |I|)$，其中 $|W|$ 是工作流定义数量，$|I|$ 是实例数量。
+工作流引擎的空间复杂度为 ```latex
+$O(|W| \times |I|)$
+```，其中 ```latex
+$|W|$
+``` 是工作流定义数量，```latex
+$|I|$
+``` 是实例数量。
 
 ### 7.3 并发性能
 
 **定理 7.4 (并发执行性能)**
-在 $k$ 个处理器上，并发执行的工作流性能提升为：
-$$\text{Speedup} = \min(k, \text{parallelism})$$
+在 ```latex
+$k$
+``` 个处理器上，并发执行的工作流性能提升为：
+$```latex
+$\text{Speedup} = \min(k, \text{parallelism})$
+```$
 
 ## 8. 应用场景
 

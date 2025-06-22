@@ -8,27 +8,43 @@
 
 ### 1.1.1 量子比特定义
 
-量子比特 $|q\rangle$ 是量子计算的基本单位，可以表示为：
+量子比特 ```latex
+$|q\rangle$
+``` 是量子计算的基本单位，可以表示为：
 
 ```latex
-$$|q\rangle = \alpha|0\rangle + \beta|1\rangle$$
+$```latex
+$|q\rangle = \alpha|0\rangle + \beta|1\rangle$
+```$
 ```
 
 其中：
 
-- $\alpha, \beta \in \mathbb{C}$ 是复数
-- $|\alpha|^2 + |\beta|^2 = 1$ 是归一化条件
-- $|0\rangle, |1\rangle$ 是计算基态
+- ```latex
+$\alpha, \beta \in \mathbb{C}$
+``` 是复数
+- ```latex
+$|\alpha|^2 + |\beta|^2 = 1$
+``` 是归一化条件
+- ```latex
+$|0\rangle, |1\rangle$
+``` 是计算基态
 
 ### 1.1.2 量子态表示
 
 量子态可以用Bloch球表示：
 
 ```latex
-$$|q\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\rangle$$
+$```latex
+$|q\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\rangle$
+```$
 ```
 
-其中 $\theta \in [0, \pi]$ 和 $\phi \in [0, 2\pi]$ 是球坐标。
+其中 ```latex
+$\theta \in [0, \pi]$
+``` 和 ```latex
+$\phi \in [0, 2\pi]$
+``` 是球坐标。
 
 ## 1.2 量子门
 
@@ -39,7 +55,9 @@ $$|q\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\ra
 Hadamard门将计算基态转换为叠加态：
 
 ```latex
-$$H = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$$
+$```latex
+$H = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$
+```$
 ```
 
 #### Pauli门
@@ -47,7 +65,9 @@ $$H = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$$
 Pauli门集合：
 
 ```latex
-$$X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \quad Y = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}, \quad Z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$$
+$```latex
+$X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \quad Y = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}, \quad Z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$
+```$
 ```
 
 ### 1.2.2 多比特门
@@ -57,27 +77,41 @@ $$X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}, \quad Y = \begin{pmatrix} 0 
 CNOT门是两比特受控非门：
 
 ```latex
-$$CNOT = \begin{pmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \end{pmatrix}$$
+$```latex
+$CNOT = \begin{pmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \end{pmatrix}$
+```$
 ```
 
 ## 1.3 量子测量
 
 ### 1.3.1 测量原理
 
-对量子态 $|\psi\rangle$ 在基 $\{|i\rangle\}$ 上的测量：
+对量子态 ```latex
+$|\psi\rangle$
+``` 在基 ```latex
+$\{|i\rangle\}$
+``` 上的测量：
 
 ```latex
-$$P(i) = |\langle i|\psi\rangle|^2$$
+$```latex
+$P(i) = |\langle i|\psi\rangle|^2$
+```$
 ```
 
-测量后量子态坍缩为 $|i\rangle$。
+测量后量子态坍缩为 ```latex
+$|i\rangle$
+```。
 
 ### 1.3.2 期望值
 
-可观测量 $A$ 的期望值：
+可观测量 ```latex
+$A$
+``` 的期望值：
 
 ```latex
-$$\langle A \rangle = \langle\psi|A|\psi\rangle$$
+$```latex
+$\langle A \rangle = \langle\psi|A|\psi\rangle$
+```$
 ```
 
 ## 1.4 量子纠缠
@@ -87,21 +121,35 @@ $$\langle A \rangle = \langle\psi|A|\psi\rangle$$
 Bell态是最简单的纠缠态：
 
 ```latex
-$$|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$$
-$$|\Phi^-\rangle = \frac{1}{\sqrt{2}}(|00\rangle - |11\rangle)$$
-$$|\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)$$
-$$|\Psi^-\rangle = \frac{1}{\sqrt{2}}(|01\rangle - |10\rangle)$$
+$```latex
+$|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$
+```$
+$```latex
+$|\Phi^-\rangle = \frac{1}{\sqrt{2}}(|00\rangle - |11\rangle)$
+```$
+$```latex
+$|\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)$
+```$
+$```latex
+$|\Psi^-\rangle = \frac{1}{\sqrt{2}}(|01\rangle - |10\rangle)$
+```$
 ```
 
 ### 1.4.2 纠缠度量
 
-对于两比特态 $\rho$，纠缠度可以用von Neumann熵度量：
+对于两比特态 ```latex
+$\rho$
+```，纠缠度可以用von Neumann熵度量：
 
 ```latex
-$$E(\rho) = S(\rho_A) = S(\rho_B)$$
+$```latex
+$E(\rho) = S(\rho_A) = S(\rho_B)$
+```$
 ```
 
-其中 $S(\rho) = -\text{Tr}(\rho \log \rho)$ 是von Neumann熵。
+其中 ```latex
+$S(\rho) = -\text{Tr}(\rho \log \rho)$
+``` 是von Neumann熵。
 
 ## 1.5 Go语言实现
 
@@ -249,24 +297,40 @@ func (qsv *QuantumStateVisualizer) BlochSphereCoordinates(qubit *Qubit) (theta, 
 ### 1.7.1 量子叠加原理
 
 **定理 1.1** (量子叠加原理)
-对于任意量子比特 $|q_1\rangle$ 和 $|q_2\rangle$，它们的线性组合也是有效的量子态。
+对于任意量子比特 ```latex
+$|q_1\rangle$
+``` 和 ```latex
+$|q_2\rangle$
+```，它们的线性组合也是有效的量子态。
 
 **证明**：
-设 $|q_1\rangle = \alpha_1|0\rangle + \beta_1|1\rangle$ 和 $|q_2\rangle = \alpha_2|0\rangle + \beta_2|1\rangle$。
+设 ```latex
+$|q_1\rangle = \alpha_1|0\rangle + \beta_1|1\rangle$
+``` 和 ```latex
+$|q_2\rangle = \alpha_2|0\rangle + \beta_2|1\rangle$
+```。
 
-线性组合 $|q\rangle = c_1|q_1\rangle + c_2|q_2\rangle$ 可以表示为：
+线性组合 ```latex
+$|q\rangle = c_1|q_1\rangle + c_2|q_2\rangle$
+``` 可以表示为：
 
 ```latex
-$$|q\rangle = (c_1\alpha_1 + c_2\alpha_2)|0\rangle + (c_1\beta_1 + c_2\beta_2)|1\rangle$$
+$```latex
+$|q\rangle = (c_1\alpha_1 + c_2\alpha_2)|0\rangle + (c_1\beta_1 + c_2\beta_2)|1\rangle$
+```$
 ```
 
 归一化条件：
 
 ```latex
-$$|c_1\alpha_1 + c_2\alpha_2|^2 + |c_1\beta_1 + c_2\beta_2|^2 = 1$$
+$```latex
+$|c_1\alpha_1 + c_2\alpha_2|^2 + |c_1\beta_1 + c_2\beta_2|^2 = 1$
+```$
 ```
 
-因此 $|q\rangle$ 是有效的量子态。
+因此 ```latex
+$|q\rangle$
+``` 是有效的量子态。
 
 ### 1.7.2 不可克隆定理
 
@@ -274,22 +338,44 @@ $$|c_1\alpha_1 + c_2\alpha_2|^2 + |c_1\beta_1 + c_2\beta_2|^2 = 1$$
 不存在能够完美复制任意未知量子态的量子操作。
 
 **证明**：
-假设存在克隆操作 $U$ 使得 $U|\psi\rangle|0\rangle = |\psi\rangle|\psi\rangle$。
+假设存在克隆操作 ```latex
+$U$
+``` 使得 ```latex
+$U|\psi\rangle|0\rangle = |\psi\rangle|\psi\rangle$
+```。
 
-对于两个不同的量子态 $|\psi\rangle$ 和 $|\phi\rangle$：
+对于两个不同的量子态 ```latex
+$|\psi\rangle$
+``` 和 ```latex
+$|\phi\rangle$
+```：
 
 ```latex
-$$U|\psi\rangle|0\rangle = |\psi\rangle|\psi\rangle$$
-$$U|\phi\rangle|0\rangle = |\phi\rangle|\phi\rangle$$
+$```latex
+$U|\psi\rangle|0\rangle = |\psi\rangle|\psi\rangle$
+```$
+$```latex
+$U|\phi\rangle|0\rangle = |\phi\rangle|\phi\rangle$
+```$
 ```
 
 内积保持性要求：
 
 ```latex
-$$\langle\psi|\phi\rangle = \langle\psi|\phi\rangle^2$$
+$```latex
+$\langle\psi|\phi\rangle = \langle\psi|\phi\rangle^2$
+```$
 ```
 
-这意味着 $\langle\psi|\phi\rangle = 0$ 或 $\langle\psi|\phi\rangle = 1$，即 $|\psi\rangle$ 和 $|\phi\rangle$ 要么正交，要么相同。
+这意味着 ```latex
+$\langle\psi|\phi\rangle = 0$
+``` 或 ```latex
+$\langle\psi|\phi\rangle = 1$
+```，即 ```latex
+$|\psi\rangle$
+``` 和 ```latex
+$|\phi\rangle$
+``` 要么正交，要么相同。
 
 这与"任意未知量子态"的假设矛盾。
 

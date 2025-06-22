@@ -70,43 +70,91 @@
 ### 2.1 设备模型
 
 **定义 2.1.1 (设备)**
-设备是一个三元组 $D = (id, state, config)$，其中：
+设备是一个三元组 ```latex
+$D = (id, state, config)$
+```，其中：
 
-- $id \in \Sigma^*$ 是设备的唯一标识符
-- $state \in S$ 是设备状态，$S$ 是状态空间
-- $config \in C$ 是设备配置，$C$ 是配置空间
+- ```latex
+$id \in \Sigma^*$
+``` 是设备的唯一标识符
+- ```latex
+$state \in S$
+``` 是设备状态，```latex
+$S$
+``` 是状态空间
+- ```latex
+$config \in C$
+``` 是设备配置，```latex
+$C$
+``` 是配置空间
 
 **定义 2.1.2 (设备状态)**
-设备状态是一个五元组 $state = (status, health, lastSeen, metrics, alerts)$，其中：
+设备状态是一个五元组 ```latex
+$state = (status, health, lastSeen, metrics, alerts)$
+```，其中：
 
-- $status \in \{online, offline, error, maintenance\}$
-- $health \in [0, 1]$ 是健康度评分
-- $lastSeen \in \mathbb{R}$ 是最后通信时间戳
-- $metrics \in M$ 是性能指标集合
-- $alerts \in A$ 是告警集合
+- ```latex
+$status \in \{online, offline, error, maintenance\}$
+```
+- ```latex
+$health \in [0, 1]$
+``` 是健康度评分
+- ```latex
+$lastSeen \in \mathbb{R}$
+``` 是最后通信时间戳
+- ```latex
+$metrics \in M$
+``` 是性能指标集合
+- ```latex
+$alerts \in A$
+``` 是告警集合
 
 ### 2.2 设备管理平台
 
 **定义 2.2.1 (设备管理平台)**
-设备管理平台是一个七元组 $P = (D, R, C, M, S, A, F)$，其中：
+设备管理平台是一个七元组 ```latex
+$P = (D, R, C, M, S, A, F)$
+```，其中：
 
-- $D = \{d_1, d_2, ..., d_n\}$ 是设备集合
-- $R$ 是注册服务
-- $C$ 是配置管理服务
-- $M$ 是监控服务
-- $S$ 是安全服务
-- $A$ 是告警服务
-- $F$ 是固件管理服务
+- ```latex
+$D = \{d_1, d_2, ..., d_n\}$
+``` 是设备集合
+- ```latex
+$R$
+``` 是注册服务
+- ```latex
+$C$
+``` 是配置管理服务
+- ```latex
+$M$
+``` 是监控服务
+- ```latex
+$S$
+``` 是安全服务
+- ```latex
+$A$
+``` 是告警服务
+- ```latex
+$F$
+``` 是固件管理服务
 
 ### 2.3 操作语义
 
 **定义 2.3.1 (设备注册)**
-注册操作 $register: \Sigma^* \times C \rightarrow D$ 定义为：
-$$register(id, config) = (id, initial\_state, config)$$
+注册操作 ```latex
+$register: \Sigma^* \times C \rightarrow D$
+``` 定义为：
+$```latex
+$register(id, config) = (id, initial\_state, config)$
+```$
 
 **定义 2.3.2 (状态更新)**
-状态更新操作 $update\_state: D \times S \rightarrow D$ 定义为：
-$$update\_state((id, state, config), new\_state) = (id, new\_state, config)$$
+状态更新操作 ```latex
+$update\_state: D \times S \rightarrow D$
+``` 定义为：
+$```latex
+$update\_state((id, state, config), new\_state) = (id, new\_state, config)$
+```$
 
 ---
 
@@ -115,33 +163,83 @@ $$update\_state((id, state, config), new\_state) = (id, new\_state, config)$$
 ### 3.1 图论模型
 
 **定理 3.1.1 (设备网络连通性)**
-设备网络 $G = (V, E)$ 中，如果每个设备 $v \in V$ 的度数 $deg(v) \geq 1$，则网络是连通的。
+设备网络 ```latex
+$G = (V, E)$
+``` 中，如果每个设备 ```latex
+$v \in V$
+``` 的度数 ```latex
+$deg(v) \geq 1$
+```，则网络是连通的。
 
 **证明**:
-假设网络不连通，则存在至少两个连通分量。设 $C_1$ 和 $C_2$ 是两个不同的连通分量。
-对于任意 $v_1 \in C_1$ 和 $v_2 \in C_2$，由于 $deg(v_1) \geq 1$ 和 $deg(v_2) \geq 1$，
-存在边 $(v_1, u_1)$ 和 $(v_2, u_2)$，其中 $u_1 \in C_1$ 和 $u_2 \in C_2$。
-这与 $C_1$ 和 $C_2$ 是连通分量的定义矛盾。因此网络是连通的。
+假设网络不连通，则存在至少两个连通分量。设 ```latex
+$C_1$
+``` 和 ```latex
+$C_2$
+``` 是两个不同的连通分量。
+对于任意 ```latex
+$v_1 \in C_1$
+``` 和 ```latex
+$v_2 \in C_2$
+```，由于 ```latex
+$deg(v_1) \geq 1$
+``` 和 ```latex
+$deg(v_2) \geq 1$
+```，
+存在边 ```latex
+$(v_1, u_1)$
+``` 和 ```latex
+$(v_2, u_2)$
+```，其中 ```latex
+$u_1 \in C_1$
+``` 和 ```latex
+$u_2 \in C_2$
+```。
+这与 ```latex
+$C_1$
+``` 和 ```latex
+$C_2$
+``` 是连通分量的定义矛盾。因此网络是连通的。
 
 ### 3.2 概率模型
 
 **定义 3.2.1 (设备可用性)**
-设备 $d$ 在时间 $t$ 的可用性定义为：
-$$A(d, t) = \frac{MTTF(d)}{MTTF(d) + MTTR(d)}$$
-其中 $MTTF$ 是平均无故障时间，$MTTR$ 是平均修复时间。
+设备 ```latex
+$d$
+``` 在时间 ```latex
+$t$
+``` 的可用性定义为：
+$```latex
+$A(d, t) = \frac{MTTF(d)}{MTTF(d) + MTTR(d)}$
+```$
+其中 ```latex
+$MTTF$
+``` 是平均无故障时间，```latex
+$MTTR$
+``` 是平均修复时间。
 
 **定理 3.2.1 (系统可用性)**
-对于 $n$ 个设备的系统，系统可用性为：
-$$A_{system} = \prod_{i=1}^{n} A(d_i, t)$$
+对于 ```latex
+$n$
+``` 个设备的系统，系统可用性为：
+$```latex
+$A_{system} = \prod_{i=1}^{n} A(d_i, t)$
+```$
 
 ### 3.3 队列理论
 
 **定义 3.3.1 (设备请求队列)**
 设备请求队列是一个 M/M/1 队列，其中：
 
-- 到达率 $\lambda$ 是设备请求到达速率
-- 服务率 $\mu$ 是平台处理速率
-- 队列长度 $L = \frac{\lambda}{\mu - \lambda}$
+- 到达率 ```latex
+$\lambda$
+``` 是设备请求到达速率
+- 服务率 ```latex
+$\mu$
+``` 是平台处理速率
+- 队列长度 ```latex
+$L = \frac{\lambda}{\mu - \lambda}$
+```
 
 ---
 
@@ -1079,18 +1177,36 @@ func (p *DeviceManagementPlatform) GetAlerts(c *gin.Context) {
 
 ### 6.1 时间复杂度分析
 
-**设备注册**: $O(1)$ - 哈希表插入
-**设备查询**: $O(1)$ - 哈希表查找
-**设备列表**: $O(n \log n)$ - 排序
-**状态更新**: $O(1)$ - 哈希表更新
-**指标存储**: $O(1)$ - 数组追加
+**设备注册**: ```latex
+$O(1)$
+``` - 哈希表插入
+**设备查询**: ```latex
+$O(1)$
+``` - 哈希表查找
+**设备列表**: ```latex
+$O(n \log n)$
+``` - 排序
+**状态更新**: ```latex
+$O(1)$
+``` - 哈希表更新
+**指标存储**: ```latex
+$O(1)$
+``` - 数组追加
 
 ### 6.2 空间复杂度分析
 
-**设备存储**: $O(n)$ - n个设备
-**指标存储**: $O(n \times m)$ - n个设备，每个设备m个指标
-**告警存储**: $O(n \times a)$ - n个设备，每个设备a个告警
-**配置缓存**: $O(n)$ - n个设备配置
+**设备存储**: ```latex
+$O(n)$
+``` - n个设备
+**指标存储**: ```latex
+$O(n \times m)$
+``` - n个设备，每个设备m个指标
+**告警存储**: ```latex
+$O(n \times a)$
+``` - n个设备，每个设备a个告警
+**配置缓存**: ```latex
+$O(n)$
+``` - n个设备配置
 
 ### 6.3 并发性能
 

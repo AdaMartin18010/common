@@ -51,12 +51,26 @@ const (
 监督学习的泛化能力取决于训练数据的质量和数量。
 
 **证明**:
-设训练集大小为 $n$，模型复杂度为 $C$，泛化误差为 $E$。
+设训练集大小为 ```latex
+$n$
+```，模型复杂度为 ```latex
+$C$
+```，泛化误差为 ```latex
+$E$
+```。
 则泛化误差上界为：
+
 ```latex
-$$E \leq O\left(\sqrt{\frac{C \log n}{n}}\right)$$
+$```latex
+$E \leq O\left(\sqrt{\frac{C \log n}{n}}\right)$
+```$
 ```
-当 $n$ 增加时，$E$ 减小。
+
+当 ```latex
+$n$
+``` 增加时，```latex
+$E$
+``` 减小。
 
 ### 11.9.1.2.2 线性回归
 
@@ -65,15 +79,26 @@ $$E \leq O\left(\sqrt{\frac{C \log n}{n}}\right)$$
 
 **数学建模**:
 线性回归模型为：
+
 ```latex
-$$y = \mathbf{w}^T \mathbf{x} + b$$
+$```latex
+$y = \mathbf{w}^T \mathbf{x} + b$
+```$
 ```
-其中 $\mathbf{w}$ 是权重向量，$b$ 是偏置项。
+
+其中 ```latex
+$\mathbf{w}$
+``` 是权重向量，```latex
+$b$
+``` 是偏置项。
 
 **损失函数**:
 均方误差损失函数为：
+
 ```latex
-$$L(\mathbf{w}, b) = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i)^2$$
+$```latex
+$L(\mathbf{w}, b) = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i)^2$
+```$
 ```
 
 ### 11.9.1.2.3 Go实现线性回归
@@ -187,15 +212,24 @@ func (lr *LinearRegression) GetBias() float64 {
 
 **数学建模**:
 逻辑回归模型为：
+
 ```latex
-$$P(y=1|\mathbf{x}) = \sigma(\mathbf{w}^T \mathbf{x} + b)$$
+$```latex
+$P(y=1|\mathbf{x}) = \sigma(\mathbf{w}^T \mathbf{x} + b)$
+```$
 ```
-其中 $\sigma(z) = \frac{1}{1 + e^{-z}}$ 是sigmoid函数。
+
+其中 ```latex
+$\sigma(z) = \frac{1}{1 + e^{-z}}$
+``` 是sigmoid函数。
 
 **损失函数**:
 交叉熵损失函数为：
+
 ```latex
-$$L(\mathbf{w}, b) = -\frac{1}{n} \sum_{i=1}^n [y_i \log(\hat{y}_i) + (1-y_i) \log(1-\hat{y}_i)]$$
+$```latex
+$L(\mathbf{w}, b) = -\frac{1}{n} \sum_{i=1}^n [y_i \log(\hat{y}_i) + (1-y_i) \log(1-\hat{y}_i)]$
+```$
 ```
 
 ### 11.9.1.2.5 Go实现逻辑回归
@@ -358,8 +392,11 @@ K均值聚类是将数据点分组到K个簇中的算法，使得同一簇内的
 
 **目标函数**:
 最小化簇内平方误差：
+
 ```latex
-$$J = \sum_{i=1}^k \sum_{x \in C_i} \|\mathbf{x} - \mathbf{\mu}_i\|^2$$
+$```latex
+$J = \sum_{i=1}^k \sum_{x \in C_i} \|\mathbf{x} - \mathbf{\mu}_i\|^2$
+```$
 ```
 
 ### 11.9.1.3.3 Go实现K均值聚类
@@ -618,8 +655,11 @@ func (km *KMeans) computeSilhouetteScore(X [][]float64, pointIndex int) float64 
 Q-learning是一种无模型的强化学习算法，通过更新Q值来学习最优策略。
 
 **Q值更新公式**:
+
 ```latex
-$$Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma \max_{a'} Q(s', a') - Q(s, a)]$$
+$```latex
+$Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma \max_{a'} Q(s', a') - Q(s, a)]$
+```$
 ```
 
 ### 11.9.1.4.3 Go实现Q-learning
@@ -732,10 +772,18 @@ func (qla *QLearningAgent) GetQTable() map[string]map[string]float64 {
 
 **分类指标**:
 
-- 准确率: ```latex $Accuracy = \frac{TP + TN}{TP + TN + FP + FN}$ ```
-- 精确率: ```latex $Precision = \frac{TP}{TP + FP}$ ```
-- 召回率: ```latex $Recall = \frac{TP}{TP + FN}$ ```
-- F1分数: ```latex $F1 = 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}$ ```
+- 准确率: ```latex ```latex
+$Accuracy = \frac{TP + TN}{TP + TN + FP + FN}$
+``````
+- 精确率: ```latex ```latex
+$Precision = \frac{TP}{TP + FP}$
+``````
+- 召回率: ```latex ```latex
+$Recall = \frac{TP}{TP + FN}$
+``````
+- F1分数: ```latex ```latex
+$F1 = 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}$
+``````
 
 ### 11.9.1.5.2 Go实现评估
 

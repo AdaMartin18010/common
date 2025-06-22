@@ -11,27 +11,41 @@
 变分量子本征求解器通过最小化期望值来找到哈密顿量的基态：
 
 ```latex
-$$\min_{\theta} \langle\psi(\theta)|H|\psi(\theta)\rangle$$
+$```latex
+$\min_{\theta} \langle\psi(\theta)|H|\psi(\theta)\rangle$
+```$
 ```
 
-其中 $|\psi(\theta)\rangle$ 是参数化量子态，$H$ 是哈密顿量。
+其中 ```latex
+$|\psi(\theta)\rangle$
+``` 是参数化量子态，```latex
+$H$
+``` 是哈密顿量。
 
 ### 3.1.2 期望值计算
 
 期望值通过量子测量计算：
 
 ```latex
-$$\langle H \rangle = \sum_i c_i \langle\psi(\theta)|P_i|\psi(\theta)\rangle$$
+$```latex
+$\langle H \rangle = \sum_i c_i \langle\psi(\theta)|P_i|\psi(\theta)\rangle$
+```$
 ```
 
-其中 $H = \sum_i c_i P_i$，$P_i$ 是泡利算符。
+其中 ```latex
+$H = \sum_i c_i P_i$
+```，```latex
+$P_i$
+``` 是泡利算符。
 
 ### 3.1.3 参数更新
 
 使用经典优化器更新参数：
 
 ```latex
-$$\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \langle H \rangle$$
+$```latex
+$\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \langle H \rangle$
+```$
 ```
 
 ## 3.2 量子近似优化算法（QAOA）
@@ -41,21 +55,31 @@ $$\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \langle H \rangle$$
 QAOA通过交替应用问题哈密顿量和混合哈密顿量：
 
 ```latex
-$$|\psi(\gamma, \beta)\rangle = e^{-i\beta_p H_M} e^{-i\gamma_p H_P} \cdots e^{-i\beta_1 H_M} e^{-i\gamma_1 H_P}|+\rangle^{\otimes n}$$
+$```latex
+$|\psi(\gamma, \beta)\rangle = e^{-i\beta_p H_M} e^{-i\gamma_p H_P} \cdots e^{-i\beta_1 H_M} e^{-i\gamma_1 H_P}|+\rangle^{\otimes n}$
+```$
 ```
 
 其中：
 
-- $H_P$: 问题哈密顿量
-- $H_M$: 混合哈密顿量
-- $\gamma, \beta$: 优化参数
+- ```latex
+$H_P$
+```: 问题哈密顿量
+- ```latex
+$H_M$
+```: 混合哈密顿量
+- ```latex
+$\gamma, \beta$
+```: 优化参数
 
 ### 3.2.2 期望值优化
 
 优化目标：
 
 ```latex
-$$\min_{\gamma, \beta} \langle\psi(\gamma, \beta)|H_P|\psi(\gamma, \beta)\rangle$$
+$```latex
+$\min_{\gamma, \beta} \langle\psi(\gamma, \beta)|H_P|\psi(\gamma, \beta)\rangle$
+```$
 ```
 
 ### 3.2.3 近似比
@@ -63,17 +87,23 @@ $$\min_{\gamma, \beta} \langle\psi(\gamma, \beta)|H_P|\psi(\gamma, \beta)\rangle
 QAOA的近似比：
 
 ```latex
-$$r = \frac{\langle H_P \rangle_{QAOA}}{\langle H_P \rangle_{optimal}} \geq \frac{1}{2}$$
+$```latex
+$r = \frac{\langle H_P \rangle_{QAOA}}{\langle H_P \rangle_{optimal}} \geq \frac{1}{2}$
+```$
 ```
 
 ## 3.3 量子自然梯度
 
 ### 3.3.1 量子Fisher信息矩阵
 
-量子Fisher信息矩阵 $F$：
+量子Fisher信息矩阵 ```latex
+$F$
+```：
 
 ```latex
-$$F_{ij} = \text{Re}\left[\langle\partial_i\psi|\partial_j\psi\rangle - \langle\partial_i\psi|\psi\rangle\langle\psi|\partial_j\psi\rangle\right]$$
+$```latex
+$F_{ij} = \text{Re}\left[\langle\partial_i\psi|\partial_j\psi\rangle - \langle\partial_i\psi|\psi\rangle\langle\psi|\partial_j\psi\rangle\right]$
+```$
 ```
 
 ### 3.3.2 自然梯度更新
@@ -81,7 +111,9 @@ $$F_{ij} = \text{Re}\left[\langle\partial_i\psi|\partial_j\psi\rangle - \langle\
 自然梯度更新规则：
 
 ```latex
-$$\theta_{t+1} = \theta_t - \eta F^{-1} \nabla_{\theta} L(\theta)$$
+$```latex
+$\theta_{t+1} = \theta_t - \eta F^{-1} \nabla_{\theta} L(\theta)$
+```$
 ```
 
 ## 3.4 Go语言实现
@@ -534,7 +566,9 @@ VQE通过最小化期望值来寻找基态，在参数空间足够丰富的情�
 ### 3.6.2 QAOA近似比
 
 **定理 3.2** (QAOA近似比)
-对于MaxCut问题，QAOA的近似比至少为 $\frac{1}{2}$。
+对于MaxCut问题，QAOA的近似比至少为 ```latex
+$\frac{1}{2}$
+```。
 
 **证明**：
 通过分析QAOA电路的期望值，可以证明其性能下界。

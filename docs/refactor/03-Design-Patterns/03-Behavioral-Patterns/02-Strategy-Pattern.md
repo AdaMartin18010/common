@@ -72,16 +72,32 @@
 
 ### 2.1 模式结构定义
 
-设 $S$ 为策略集合，$C$ 为上下文集合，$A$ 为算法集合，则策略模式可形式化为：
+设 ```latex
+$S$
+``` 为策略集合，```latex
+$C$
+``` 为上下文集合，```latex
+$A$
+``` 为算法集合，则策略模式可形式化为：
 
-$$\text{Strategy Pattern} = (S, C, A, \text{execute})$$
+$```latex
+$\text{Strategy Pattern} = (S, C, A, \text{execute})$
+```$
 
 其中：
 
-- $S = \{s_1, s_2, ..., s_n\}$ 为策略集合
-- $C$ 为上下文类
-- $A = \{a_1, a_2, ..., a_n\}$ 为算法集合
-- $\text{execute}: S \times \text{Input} \rightarrow \text{Output}$ 为执行函数
+- ```latex
+$S = \{s_1, s_2, ..., s_n\}$
+``` 为策略集合
+- ```latex
+$C$
+``` 为上下文类
+- ```latex
+$A = \{a_1, a_2, ..., a_n\}$
+``` 为算法集合
+- ```latex
+$\text{execute}: S \times \text{Input} \rightarrow \text{Output}$
+``` 为执行函数
 
 ### 2.2 策略接口定义
 
@@ -115,23 +131,41 @@ func (c *Context[T, R]) ExecuteStrategy(input T) R {
 
 策略模式基于函数式编程的高阶函数概念：
 
-$$f: A \rightarrow B$$
-$$g: B \rightarrow C$$
-$$h = g \circ f: A \rightarrow C$$
+$```latex
+$f: A \rightarrow B$
+```$
+$```latex
+$g: B \rightarrow C$
+```$
+$```latex
+$h = g \circ f: A \rightarrow C$
+```$
 
 ### 3.2 多态性理论
 
-设 $P$ 为策略接口，$S_1, S_2, ..., S_n$ 为具体策略类：
+设 ```latex
+$P$
+``` 为策略接口，```latex
+$S_1, S_2, ..., S_n$
+``` 为具体策略类：
 
-$$\forall s_i \in \{S_1, S_2, ..., S_n\}: s_i \text{ implements } P$$
+$```latex
+$\forall s_i \in \{S_1, S_2, ..., S_n\}: s_i \text{ implements } P$
+```$
 
 ### 3.3 组合理论
 
 策略模式体现了组合优于继承的原则：
 
-$$\text{Composition}(C, S) = C \circ S$$
+$```latex
+$\text{Composition}(C, S) = C \circ S$
+```$
 
-其中 $C$ 为上下文，$S$ 为策略。
+其中 ```latex
+$C$
+``` 为上下文，```latex
+$S$
+``` 为策略。
 
 ## 4. 模式结构
 
@@ -857,13 +891,33 @@ func (c *Context[T, R]) ExecuteStrategySafe(input T) StrategyResult[R] {
 **定理**：策略模式满足开闭原则
 
 **证明**：
-设 $S$ 为现有策略集合，$S'$ 为新增策略集合，$C$ 为上下文类。
+设 ```latex
+$S$
+``` 为现有策略集合，```latex
+$S'$
+``` 为新增策略集合，```latex
+$C$
+``` 为上下文类。
 
-对于任意 $s \in S'$，由于 $s$ 实现了策略接口 $P$，且 $C$ 依赖于 $P$ 而非具体实现，因此：
+对于任意 ```latex
+$s \in S'$
+```，由于 ```latex
+$s$
+``` 实现了策略接口 ```latex
+$P$
+```，且 ```latex
+$C$
+``` 依赖于 ```latex
+$P$
+``` 而非具体实现，因此：
 
-$$C \circ s \text{ 是有效的}$$
+$```latex
+$C \circ s \text{ 是有效的}$
+```$
 
-且不需要修改 $C$ 的代码，因此满足开闭原则。
+且不需要修改 ```latex
+$C$
+``` 的代码，因此满足开闭原则。
 
 **证毕**。
 

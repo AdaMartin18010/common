@@ -33,58 +33,138 @@
 
 范畴论是研究数学结构之间关系的抽象理论。在软件工程中，范畴论为类型系统、函数式编程和软件架构提供了强大的理论基础。
 
-**定义 1.1**: 范畴 $\mathcal{C}$ 由以下部分组成：
+**定义 1.1**: 范畴 ```latex
+$\mathcal{C}$
+``` 由以下部分组成：
 
-- 对象集合 $\text{Ob}(\mathcal{C})$
-- 态射集合 $\text{Mor}(\mathcal{C})$
-- 对每个态射 $f: A \rightarrow B$，定义域 $\text{dom}(f) = A$ 和陪域 $\text{cod}(f) = B$
-- 组合操作 $\circ: \text{Mor}(B,C) \times \text{Mor}(A,B) \rightarrow \text{Mor}(A,C)$
-- 对每个对象 $A$，恒等态射 $\text{id}_A: A \rightarrow A$
+- 对象集合 ```latex
+$\text{Ob}(\mathcal{C})$
+```
+- 态射集合 ```latex
+$\text{Mor}(\mathcal{C})$
+```
+- 对每个态射 ```latex
+$f: A \rightarrow B$
+```，定义域 ```latex
+$\text{dom}(f) = A$
+``` 和陪域 ```latex
+$\text{cod}(f) = B$
+```
+- 组合操作 ```latex
+$\circ: \text{Mor}(B,C) \times \text{Mor}(A,B) \rightarrow \text{Mor}(A,C)$
+```
+- 对每个对象 ```latex
+$A$
+```，恒等态射 ```latex
+$\text{id}_A: A \rightarrow A$
+```
 
 ### 1.2 态射和组合
 
-**定义 1.2**: 态射 $f: A \rightarrow B$ 和 $g: B \rightarrow C$ 的组合 $g \circ f: A \rightarrow C$ 满足：
+**定义 1.2**: 态射 ```latex
+$f: A \rightarrow B$
+``` 和 ```latex
+$g: B \rightarrow C$
+``` 的组合 ```latex
+$g \circ f: A \rightarrow C$
+``` 满足：
 
-- 结合律：$(h \circ g) \circ f = h \circ (g \circ f)$
-- 单位律：$\text{id}_B \circ f = f = f \circ \text{id}_A$
+- 结合律：```latex
+$(h \circ g) \circ f = h \circ (g \circ f)$
+```
+- 单位律：```latex
+$\text{id}_B \circ f = f = f \circ \text{id}_A$
+```
 
 ### 1.3 恒等态射
 
-**定义 1.3**: 对每个对象 $A$，恒等态射 $\text{id}_A: A \rightarrow A$ 满足：
+**定义 1.3**: 对每个对象 ```latex
+$A$
+```，恒等态射 ```latex
+$\text{id}_A: A \rightarrow A$
+``` 满足：
 
-- 对任意态射 $f: A \rightarrow B$，有 $\text{id}_B \circ f = f$
-- 对任意态射 $g: C \rightarrow A$，有 $g \circ \text{id}_A = g$
+- 对任意态射 ```latex
+$f: A \rightarrow B$
+```，有 ```latex
+$\text{id}_B \circ f = f$
+```
+- 对任意态射 ```latex
+$g: C \rightarrow A$
+```，有 ```latex
+$g \circ \text{id}_A = g$
+```
 
 ## 2. 形式化定义
 
 ### 2.1 范畴公理
 
-**定义 2.1**: 范畴 $\mathcal{C}$ 满足以下公理：
+**定义 2.1**: 范畴 ```latex
+$\mathcal{C}$
+``` 满足以下公理：
 
-1. **结合律**: 对任意态射 $f: A \rightarrow B$, $g: B \rightarrow C$, $h: C \rightarrow D$，
-   $$(h \circ g) \circ f = h \circ (g \circ f)$$
+1. **结合律**: 对任意态射 ```latex
+$f: A \rightarrow B$
+```, ```latex
+$g: B \rightarrow C$
+```, ```latex
+$h: C \rightarrow D$
+```，
+   $```latex
+$(h \circ g) \circ f = h \circ (g \circ f)$
+```$
 
-2. **单位律**: 对任意态射 $f: A \rightarrow B$，
-   $$\text{id}_B \circ f = f = f \circ \text{id}_A$$
+2. **单位律**: 对任意态射 ```latex
+$f: A \rightarrow B$
+```，
+   $```latex
+$\text{id}_B \circ f = f = f \circ \text{id}_A$
+```$
 
-3. **封闭性**: 对任意可组合的态射 $f$ 和 $g$，$g \circ f$ 存在且唯一
+3. **封闭性**: 对任意可组合的态射 ```latex
+$f$
+``` 和 ```latex
+$g$
+```，```latex
+$g \circ f$
+``` 存在且唯一
 
 ### 2.2 函子定义
 
-**定义 2.2**: 函子 $F: \mathcal{C} \rightarrow \mathcal{D}$ 由以下部分组成：
+**定义 2.2**: 函子 ```latex
+$F: \mathcal{C} \rightarrow \mathcal{D}$
+``` 由以下部分组成：
 
-- 对象映射：$F: \text{Ob}(\mathcal{C}) \rightarrow \text{Ob}(\mathcal{D})$
-- 态射映射：$F: \text{Mor}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{D})$
+- 对象映射：```latex
+$F: \text{Ob}(\mathcal{C}) \rightarrow \text{Ob}(\mathcal{D})$
+```
+- 态射映射：```latex
+$F: \text{Mor}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{D})$
+```
 
 满足：
 
-- $F(\text{id}_A) = \text{id}_{F(A)}$
-- $F(g \circ f) = F(g) \circ F(f)$
+- ```latex
+$F(\text{id}_A) = \text{id}_{F(A)}$
+```
+- ```latex
+$F(g \circ f) = F(g) \circ F(f)$
+```
 
 ### 2.3 自然变换
 
-**定义 2.3**: 自然变换 $\alpha: F \Rightarrow G$ 是函子 $F, G: \mathcal{C} \rightarrow \mathcal{D}$ 之间的映射，对每个对象 $A \in \mathcal{C}$，给出态射 $\alpha_A: F(A) \rightarrow G(A)$，满足自然性条件：
-$$G(f) \circ \alpha_A = \alpha_B \circ F(f)$$
+**定义 2.3**: 自然变换 ```latex
+$\alpha: F \Rightarrow G$
+``` 是函子 ```latex
+$F, G: \mathcal{C} \rightarrow \mathcal{D}$
+``` 之间的映射，对每个对象 ```latex
+$A \in \mathcal{C}$
+```，给出态射 ```latex
+$\alpha_A: F(A) \rightarrow G(A)$
+```，满足自然性条件：
+$```latex
+$G(f) \circ \alpha_A = \alpha_B \circ F(f)$
+```$
 
 ## 3. Go语言实现
 
@@ -655,65 +735,155 @@ func (sa *SoftwareArchitecture) AddDependency(from, to Object, depType string) {
 
 ### 5.1 范畴公理证明
 
-**定理 5.1** (结合律): 对任意态射 $f: A \rightarrow B$, $g: B \rightarrow C$, $h: C \rightarrow D$，
-$$(h \circ g) \circ f = h \circ (g \circ f)$$
+**定理 5.1** (结合律): 对任意态射 ```latex
+$f: A \rightarrow B$
+```, ```latex
+$g: B \rightarrow C$
+```, ```latex
+$h: C \rightarrow D$
+```，
+$```latex
+$(h \circ g) \circ f = h \circ (g \circ f)$
+```$
 
 **证明**:
 
-1. 根据组合的定义，$(h \circ g) \circ f$ 和 $h \circ (g \circ f)$ 都是从 $A$ 到 $D$ 的态射
+1. 根据组合的定义，```latex
+$(h \circ g) \circ f$
+``` 和 ```latex
+$h \circ (g \circ f)$
+``` 都是从 ```latex
+$A$
+``` 到 ```latex
+$D$
+``` 的态射
 2. 由于组合的唯一性，这两个态射必须相等
 3. 因此结合律成立
 
-**定理 5.2** (单位律): 对任意态射 $f: A \rightarrow B$，
-$$\text{id}_B \circ f = f = f \circ \text{id}_A$$
+**定理 5.2** (单位律): 对任意态射 ```latex
+$f: A \rightarrow B$
+```，
+$```latex
+$\text{id}_B \circ f = f = f \circ \text{id}_A$
+```$
 
 **证明**:
 
-1. 根据恒等态射的定义，$\text{id}_B \circ f$ 和 $f$ 都是从 $A$ 到 $B$ 的态射
-2. 由于恒等态射的性质，$\text{id}_B \circ f = f$
-3. 类似地，$f \circ \text{id}_A = f$
+1. 根据恒等态射的定义，```latex
+$\text{id}_B \circ f$
+``` 和 ```latex
+$f$
+``` 都是从 ```latex
+$A$
+``` 到 ```latex
+$B$
+``` 的态射
+2. 由于恒等态射的性质，```latex
+$\text{id}_B \circ f = f$
+```
+3. 类似地，```latex
+$f \circ \text{id}_A = f$
+```
 4. 因此单位律成立
 
 ### 5.2 函子性质
 
-**定理 5.3** (函子保持恒等): 对任意函子 $F: \mathcal{C} \rightarrow \mathcal{D}$ 和对象 $A \in \mathcal{C}$，
-$$F(\text{id}_A) = \text{id}_{F(A)}$$
+**定理 5.3** (函子保持恒等): 对任意函子 ```latex
+$F: \mathcal{C} \rightarrow \mathcal{D}$
+``` 和对象 ```latex
+$A \in \mathcal{C}$
+```，
+$```latex
+$F(\text{id}_A) = \text{id}_{F(A)}$
+```$
 
 **证明**:
 
-1. 根据函子定义，$F(\text{id}_A): F(A) \rightarrow F(A)$
-2. 由于 $\text{id}_A \circ \text{id}_A = \text{id}_A$，有 $F(\text{id}_A) \circ F(\text{id}_A) = F(\text{id}_A)$
-3. 根据恒等态射的唯一性，$F(\text{id}_A) = \text{id}_{F(A)}$
+1. 根据函子定义，```latex
+$F(\text{id}_A): F(A) \rightarrow F(A)$
+```
+2. 由于 ```latex
+$\text{id}_A \circ \text{id}_A = \text{id}_A$
+```，有 ```latex
+$F(\text{id}_A) \circ F(\text{id}_A) = F(\text{id}_A)$
+```
+3. 根据恒等态射的唯一性，```latex
+$F(\text{id}_A) = \text{id}_{F(A)}$
+```
 
-**定理 5.4** (函子保持组合): 对任意函子 $F: \mathcal{C} \rightarrow \mathcal{D}$ 和可组合的态射 $f, g$，
-$$F(g \circ f) = F(g) \circ F(f)$$
+**定理 5.4** (函子保持组合): 对任意函子 ```latex
+$F: \mathcal{C} \rightarrow \mathcal{D}$
+``` 和可组合的态射 ```latex
+$f, g$
+```，
+$```latex
+$F(g \circ f) = F(g) \circ F(f)$
+```$
 
 **证明**:
 
-1. 根据函子定义，$F(g \circ f)$ 和 $F(g) \circ F(f)$ 都是从 $F(\text{dom}(f))$ 到 $F(\text{cod}(g))$ 的态射
+1. 根据函子定义，```latex
+$F(g \circ f)$
+``` 和 ```latex
+$F(g) \circ F(f)$
+``` 都是从 ```latex
+$F(\text{dom}(f))$
+``` 到 ```latex
+$F(\text{cod}(g))$
+``` 的态射
 2. 由于函子的定义，这两个态射必须相等
 3. 因此函子保持组合
 
 ### 5.3 自然变换定理
 
-**定理 5.5** (自然变换的自然性): 对任意自然变换 $\alpha: F \Rightarrow G$ 和态射 $f: A \rightarrow B$，
-$$G(f) \circ \alpha_A = \alpha_B \circ F(f)$$
+**定理 5.5** (自然变换的自然性): 对任意自然变换 ```latex
+$\alpha: F \Rightarrow G$
+``` 和态射 ```latex
+$f: A \rightarrow B$
+```，
+$```latex
+$G(f) \circ \alpha_A = \alpha_B \circ F(f)$
+```$
 
 **证明**:
 
-1. 根据自然变换的定义，$\alpha_A: F(A) \rightarrow G(A)$ 和 $\alpha_B: F(B) \rightarrow G(B)$
-2. 根据自然性条件，$G(f) \circ \alpha_A = \alpha_B \circ F(f)$
+1. 根据自然变换的定义，```latex
+$\alpha_A: F(A) \rightarrow G(A)$
+``` 和 ```latex
+$\alpha_B: F(B) \rightarrow G(B)$
+```
+2. 根据自然性条件，```latex
+$G(f) \circ \alpha_A = \alpha_B \circ F(f)$
+```
 3. 这确保了自然变换与函子的兼容性
 
-**定理 5.6** (自然变换的组合): 对自然变换 $\alpha: F \Rightarrow G$ 和 $\beta: G \Rightarrow H$，
-存在自然变换 $\beta \circ \alpha: F \Rightarrow H$，其中 $(\beta \circ \alpha)_A = \beta_A \circ \alpha_A$
+**定理 5.6** (自然变换的组合): 对自然变换 ```latex
+$\alpha: F \Rightarrow G$
+``` 和 ```latex
+$\beta: G \Rightarrow H$
+```，
+存在自然变换 ```latex
+$\beta \circ \alpha: F \Rightarrow H$
+```，其中 ```latex
+$(\beta \circ \alpha)_A = \beta_A \circ \alpha_A$
+```
 
 **证明**:
 
-1. 对每个对象 $A$，$(\beta \circ \alpha)_A = \beta_A \circ \alpha_A: F(A) \rightarrow H(A)$
-2. 对任意态射 $f: A \rightarrow B$，有：
-   $$H(f) \circ (\beta \circ \alpha)_A = H(f) \circ \beta_A \circ \alpha_A = \beta_B \circ G(f) \circ \alpha_A = \beta_B \circ \alpha_B \circ F(f) = (\beta \circ \alpha)_B \circ F(f)$$
-3. 因此 $\beta \circ \alpha$ 是自然变换
+1. 对每个对象 ```latex
+$A$
+```，```latex
+$(\beta \circ \alpha)_A = \beta_A \circ \alpha_A: F(A) \rightarrow H(A)$
+```
+2. 对任意态射 ```latex
+$f: A \rightarrow B$
+```，有：
+   $```latex
+$H(f) \circ (\beta \circ \alpha)_A = H(f) \circ \beta_A \circ \alpha_A = \beta_B \circ G(f) \circ \alpha_A = \beta_B \circ \alpha_B \circ F(f) = (\beta \circ \alpha)_B \circ F(f)$
+```$
+3. 因此 ```latex
+$\beta \circ \alpha$
+``` 是自然变换
 
 ---
 

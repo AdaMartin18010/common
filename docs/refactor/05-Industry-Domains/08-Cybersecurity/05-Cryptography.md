@@ -7,11 +7,25 @@
 密码学是研究信息安全的科学，包括加密、解密、认证、完整性验证等技术。
 
 **形式化定义**：
-设 $M$ 为明文空间，$C$ 为密文空间，$K$ 为密钥空间。
-加密函数 $E: M \times K \rightarrow C$ 定义为：
-$$E(m,k) = c$$
-解密函数 $D: C \times K \rightarrow M$ 定义为：
-$$D(c,k) = m$$
+设 ```latex
+$M$
+``` 为明文空间，```latex
+$C$
+``` 为密文空间，```latex
+$K$
+``` 为密钥空间。
+加密函数 ```latex
+$E: M \times K \rightarrow C$
+``` 定义为：
+$```latex
+$E(m,k) = c$
+```$
+解密函数 ```latex
+$D: C \times K \rightarrow M$
+``` 定义为：
+$```latex
+$D(c,k) = m$
+```$
 
 **密码学分类**：
 

@@ -4,15 +4,29 @@
 
 ### 1.1 数学定义
 
-设 $S$ 为主题接口，$P$ 为代理集合，$R$ 为真实对象集合，代理模式满足以下公理：
+设 ```latex
+$S$
+``` 为主题接口，```latex
+$P$
+``` 为代理集合，```latex
+$R$
+``` 为真实对象集合，代理模式满足以下公理：
 
-$$\forall s \in S, \exists p \in P, \exists r \in R: \text{proxy}(p, r) \rightarrow \text{control}(p, s)$$
+$```latex
+$\forall s \in S, \exists p \in P, \exists r \in R: \text{proxy}(p, r) \rightarrow \text{control}(p, s)$
+```$
 
 **形式化约束**：
 
-- **接口一致性**: $\text{interface}(p) = \text{interface}(s) = \text{interface}(r)$
-- **访问控制**: $\text{access}(p, s) \implies \text{control}(p, \text{operation}(s))$
-- **延迟加载**: $\text{load}(r) \iff \text{first\_access}(p, r)$
+- **接口一致性**: ```latex
+$\text{interface}(p) = \text{interface}(s) = \text{interface}(r)$
+```
+- **访问控制**: ```latex
+$\text{access}(p, s) \implies \text{control}(p, \text{operation}(s))$
+```
+- **延迟加载**: ```latex
+$\text{load}(r) \iff \text{first\_access}(p, r)$
+```
 
 ### 1.2 类型理论定义
 

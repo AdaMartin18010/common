@@ -19,10 +19,18 @@
 #### 1.1.1 时间复杂度分析
 
 **定义 1.1.1** (时间复杂度)
-算法的时间复杂度 $T(n)$ 定义为输入规模 $n$ 的函数，表示算法执行所需的基本操作次数。
+算法的时间复杂度 ```latex
+$T(n)$
+``` 定义为输入规模 ```latex
+$n$
+``` 的函数，表示算法执行所需的基本操作次数。
 
 **定理 1.1.1** (主定理)
-对于递归算法 $T(n) = aT(n/b) + f(n)$，其中 $a \geq 1, b > 1$，则：
+对于递归算法 ```latex
+$T(n) = aT(n/b) + f(n)$
+```，其中 ```latex
+$a \geq 1, b > 1$
+```，则：
 
 ```latex
 $$T(n) = \begin{cases}
@@ -35,32 +43,52 @@ O(f(n)) & \text{if } f(n) = \Omega(n^{\log_b a + \epsilon})
 #### 1.1.2 空间复杂度分析
 
 **定义 1.1.2** (空间复杂度)
-算法的空间复杂度 $S(n)$ 定义为算法执行过程中所需的最大内存空间。
+算法的空间复杂度 ```latex
+$S(n)$
+``` 定义为算法执行过程中所需的最大内存空间。
 
 ```latex
-$$S(n) = \max_{I \in \mathcal{I}_n} S(I)$$
+$```latex
+$S(n) = \max_{I \in \mathcal{I}_n} S(I)$
+```$
 ```
 
-其中 $\mathcal{I}_n$ 是所有规模为 $n$ 的输入集合。
+其中 ```latex
+$\mathcal{I}_n$
+``` 是所有规模为 ```latex
+$n$
+``` 的输入集合。
 
 ### 1.2 数值计算理论
 
 #### 1.2.1 数值稳定性
 
 **定义 1.2.1** (条件数)
-矩阵 $A$ 的条件数 $\kappa(A)$ 定义为：
+矩阵 ```latex
+$A$
+``` 的条件数 ```latex
+$\kappa(A)$
+``` 定义为：
 
 ```latex
-$$\kappa(A) = \|A\| \cdot \|A^{-1}\|$$
+$```latex
+$\kappa(A) = \|A\| \cdot \|A^{-1}\|$
+```$
 ```
 
-其中 $\|\cdot\|$ 是矩阵范数。
+其中 ```latex
+$\|\cdot\|$
+``` 是矩阵范数。
 
 **定理 1.2.1** (误差传播)
-对于线性系统 $Ax = b$，相对误差满足：
+对于线性系统 ```latex
+$Ax = b$
+```，相对误差满足：
 
 ```latex
-$$\frac{\|\Delta x\|}{\|x\|} \leq \kappa(A) \frac{\|\Delta b\|}{\|b\|}$$
+$```latex
+$\frac{\|\Delta x\|}{\|x\|} \leq \kappa(A) \frac{\|\Delta b\|}{\|b\|}$
+```$
 ```
 
 ## 2. 并行计算模型
@@ -70,31 +98,59 @@ $$\frac{\|\Delta x\|}{\|x\|} \leq \kappa(A) \frac{\|\Delta b\|}{\|b\|}$$
 #### 2.1.1 Amdahl定律
 
 **定理 2.1.1** (Amdahl定律)
-对于并行化比例 $p$ 和处理器数量 $n$，加速比 $S(n)$ 为：
+对于并行化比例 ```latex
+$p$
+``` 和处理器数量 ```latex
+$n$
+```，加速比 ```latex
+$S(n)$
+``` 为：
 
 ```latex
-$$S(n) = \frac{1}{(1-p) + \frac{p}{n}}$$
+$```latex
+$S(n) = \frac{1}{(1-p) + \frac{p}{n}}$
+```$
 ```
 
 **证明**:
-设总执行时间为 $T$，可并行化部分为 $pT$，串行部分为 $(1-p)T$。
+设总执行时间为 ```latex
+$T$
+```，可并行化部分为 ```latex
+$pT$
+```，串行部分为 ```latex
+$(1-p)T$
+```。
 
-并行化后，串行部分仍为 $(1-p)T$，并行部分变为 $\frac{pT}{n}$。
+并行化后，串行部分仍为 ```latex
+$(1-p)T$
+```，并行部分变为 ```latex
+$\frac{pT}{n}$
+```。
 
-总执行时间：$T_{parallel} = (1-p)T + \frac{pT}{n}$
+总执行时间：```latex
+$T_{parallel} = (1-p)T + \frac{pT}{n}$
+```
 
-加速比：$S(n) = \frac{T}{T_{parallel}} = \frac{1}{(1-p) + \frac{p}{n}}$
+加速比：```latex
+$S(n) = \frac{T}{T_{parallel}} = \frac{1}{(1-p) + \frac{p}{n}}$
+```
 
 #### 2.1.2 Gustafson定律
 
 **定理 2.1.2** (Gustafson定律)
-对于固定时间并行化，加速比 $S(n)$ 为：
+对于固定时间并行化，加速比 ```latex
+$S(n)$
+``` 为：
 
 ```latex
-$$S(n) = n - (n-1) \cdot s$$
+$```latex
+$S(n) = n - (n-1) \cdot s$
+```$
 ```
 
-其中 $s$ 是串行部分的比例。
+其中 ```latex
+$s$
+``` 是串行部分的比例。
 
 ### 2.2 并行算法设计
 
@@ -160,8 +216,12 @@ func merge(left, right []int) []int {
 **定义 2.2.1** (MapReduce)
 MapReduce是一个编程模型，包含两个主要函数：
 
-- Map: $(k_1, v_1) \to [(k_2, v_2)]$
-- Reduce: $(k_2, [v_2]) \to [(k_3, v_3)]$
+- Map: ```latex
+$(k_1, v_1) \to [(k_2, v_2)]$
+```
+- Reduce: ```latex
+$(k_2, [v_2]) \to [(k_3, v_3)]$
+```
 
 **算法 2.2.2** (Go语言MapReduce实现)
 

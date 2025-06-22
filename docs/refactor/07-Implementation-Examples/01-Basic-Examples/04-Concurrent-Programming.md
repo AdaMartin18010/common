@@ -7,8 +7,12 @@
 **并发编程** 是同时执行多个计算任务的技术，Go语言通过goroutine和channel提供优雅的并发支持。
 
 **形式化定义**：
-设 $T_1, T_2, ..., T_n$ 为任务集合，并发执行函数：
-$$\text{Concurrent}(T_1, T_2, ..., T_n) = \text{parallel}(T_1) \parallel \text{parallel}(T_2) \parallel ... \parallel \text{parallel}(T_n)$$
+设 ```latex
+$T_1, T_2, ..., T_n$
+``` 为任务集合，并发执行函数：
+$```latex
+$\text{Concurrent}(T_1, T_2, ..., T_n) = \text{parallel}(T_1) \parallel \text{parallel}(T_2) \parallel ... \parallel \text{parallel}(T_n)$
+```$
 
 ### 1.2 Go并发模型
 

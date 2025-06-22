@@ -60,49 +60,103 @@
 ### 2.1 网络游戏系统
 
 **定义 2.1.1** (网络游戏系统)
-网络游戏系统是一个七元组 $NGS = (S, C, P, G, N, D, T)$，其中：
+网络游戏系统是一个七元组 ```latex
+$NGS = (S, C, P, G, N, D, T)$
+```，其中：
 
-- $S$ 是服务器集合 (Server Set)
-- $C$ 是客户端集合 (Client Set)
-- $P$ 是玩家集合 (Player Set)
-- $G$ 是游戏状态 (Game State)
-- $N$ 是网络拓扑 (Network Topology)
-- $D$ 是数据流 (Data Flow)
-- $T$ 是时间同步 (Time Synchronization)
+- ```latex
+$S$
+``` 是服务器集合 (Server Set)
+- ```latex
+$C$
+``` 是客户端集合 (Client Set)
+- ```latex
+$P$
+``` 是玩家集合 (Player Set)
+- ```latex
+$G$
+``` 是游戏状态 (Game State)
+- ```latex
+$N$
+``` 是网络拓扑 (Network Topology)
+- ```latex
+$D$
+``` 是数据流 (Data Flow)
+- ```latex
+$T$
+``` 是时间同步 (Time Synchronization)
 
 **定义 2.1.2** (游戏状态同步)
-游戏状态同步函数 $Sync: G \times P \times T \rightarrow G'$ 定义为：
-$$Sync(g, p, t) = g'$$
+游戏状态同步函数 ```latex
+$Sync: G \times P \times T \rightarrow G'$
+``` 定义为：
+$```latex
+$Sync(g, p, t) = g'$
+```$
 
-其中 $g$ 是当前状态，$p$ 是玩家操作，$t$ 是时间戳，$g'$ 是更新后的状态。
+其中 ```latex
+$g$
+``` 是当前状态，```latex
+$p$
+``` 是玩家操作，```latex
+$t$
+``` 是时间戳，```latex
+$g'$
+``` 是更新后的状态。
 
 ### 2.2 网络延迟模型
 
 **定义 2.2.1** (网络延迟)
-网络延迟 $L: S \times C \rightarrow \mathbb{R}^+$ 定义为：
-$$L(s, c) = \frac{d(s, c)}{v} + q(s, c)$$
+网络延迟 ```latex
+$L: S \times C \rightarrow \mathbb{R}^+$
+``` 定义为：
+$```latex
+$L(s, c) = \frac{d(s, c)}{v} + q(s, c)$
+```$
 
-其中 $d(s, c)$ 是距离，$v$ 是传播速度，$q(s, c)$ 是队列延迟。
+其中 ```latex
+$d(s, c)$
+``` 是距离，```latex
+$v$
+``` 是传播速度，```latex
+$q(s, c)$
+``` 是队列延迟。
 
 **定义 2.2.2** (延迟补偿)
-延迟补偿函数 $Comp: G \times L \rightarrow G'$ 定义为：
-$$Comp(g, l) = Predict(g, l)$$
+延迟补偿函数 ```latex
+$Comp: G \times L \rightarrow G'$
+``` 定义为：
+$```latex
+$Comp(g, l) = Predict(g, l)$
+```$
 
-其中 $Predict$ 是状态预测函数。
+其中 ```latex
+$Predict$
+``` 是状态预测函数。
 
 ## 3. 数学基础
 
 ### 3.1 网络理论
 
 **定理 3.1.1** (香农信道容量)
-对于带宽为 $B$ 的信道，信道容量为：
-$$C = B \log_2(1 + \frac{S}{N})$$
+对于带宽为 ```latex
+$B$
+``` 的信道，信道容量为：
+$```latex
+$C = B \log_2(1 + \frac{S}{N})$
+```$
 
-其中 $S$ 是信号功率，$N$ 是噪声功率。
+其中 ```latex
+$S$
+``` 是信号功率，```latex
+$N$
+``` 是噪声功率。
 
 **证明**:
 根据香农定理，信道容量由带宽和信噪比决定。对于加性高斯白噪声信道，容量公式为：
-$$C = B \log_2(1 + \frac{S}{N})$$
+$```latex
+$C = B \log_2(1 + \frac{S}{N})$
+```$
 
 ### 3.2 队列理论
 
@@ -111,18 +165,34 @@ M/M/1队列是一个泊松到达、指数服务时间、单服务器的队列系
 
 **定理 3.2.1** (M/M/1队列性能)
 对于M/M/1队列，平均等待时间为：
-$$W = \frac{\lambda}{\mu(\mu - \lambda)}$$
+$```latex
+$W = \frac{\lambda}{\mu(\mu - \lambda)}$
+```$
 
-其中 $\lambda$ 是到达率，$\mu$ 是服务率。
+其中 ```latex
+$\lambda$
+``` 是到达率，```latex
+$\mu$
+``` 是服务率。
 
 ### 3.3 一致性哈希
 
 **定义 3.3.1** (一致性哈希)
-一致性哈希函数 $H: K \rightarrow [0, 2^n-1]$ 满足：
-$$H(k_1) \neq H(k_2) \text{ for } k_1 \neq k_2$$
+一致性哈希函数 ```latex
+$H: K \rightarrow [0, 2^n-1]$
+``` 满足：
+$```latex
+$H(k_1) \neq H(k_2) \text{ for } k_1 \neq k_2$
+```$
 
 **定理 3.3.1** (一致性哈希平衡性)
-对于 $m$ 个节点和 $n$ 个键，每个节点负载的期望值为 $\frac{n}{m}$。
+对于 ```latex
+$m$
+``` 个节点和 ```latex
+$n$
+``` 个键，每个节点负载的期望值为 ```latex
+$\frac{n}{m}$
+```。
 
 ## 4. 网络架构
 
@@ -642,7 +712,13 @@ func (ga *GeographicAlgorithm) SelectServer(servers []*GameServer, clientInfo *C
 ### 6.1 网络优化
 
 **定理 6.1.1** (带宽优化)
-对于 $n$ 个客户端，使用增量同步可以将带宽使用从 $O(n^2)$ 降低到 $O(n)$。
+对于 ```latex
+$n$
+``` 个客户端，使用增量同步可以将带宽使用从 ```latex
+$O(n^2)$
+``` 降低到 ```latex
+$O(n)$
+```。
 
 **实现**:
 

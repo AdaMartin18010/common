@@ -47,8 +47,16 @@ const (
 边缘计算可以将端到端延迟降低50-80%。
 
 **证明**:
-设云端处理延迟为 $T_{cloud}$，网络传输延迟为 $T_{network}$，边缘处理延迟为 $T_{edge}$，则：
-$$T_{total} = T_{edge} + T_{network\_edge} \ll T_{cloud} + T_{network\_cloud}$$
+设云端处理延迟为 ```latex
+$T_{cloud}$
+```，网络传输延迟为 ```latex
+$T_{network}$
+```，边缘处理延迟为 ```latex
+$T_{edge}$
+```，则：
+$```latex
+$T_{total} = T_{edge} + T_{network\_edge} \ll T_{cloud} + T_{network\_cloud}$
+```$
 
 ### 11.8.3.2.2 Go实现边缘架构
 

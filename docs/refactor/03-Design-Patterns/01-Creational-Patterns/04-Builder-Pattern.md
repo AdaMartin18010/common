@@ -4,15 +4,29 @@
 
 ### 1.1 数学定义
 
-设 $B$ 为建造者集合，$P$ 为产品集合，$S$ 为构建步骤集合，建造者模式满足以下公理：
+设 ```latex
+$B$
+``` 为建造者集合，```latex
+$P$
+``` 为产品集合，```latex
+$S$
+``` 为构建步骤集合，建造者模式满足以下公理：
 
-$$\forall b \in B, \exists f_b: S^* \rightarrow P$$
+$```latex
+$\forall b \in B, \exists f_b: S^* \rightarrow P$
+```$
 
 **形式化约束**：
 
-- **分步构建**: $\forall p \in P: \exists s_1, s_2, ..., s_n \in S: f_b(s_1, s_2, ..., s_n) = p$
-- **构建顺序**: $\text{valid}(s_1, s_2, ..., s_n) \iff \text{order}(s_i) \leq \text{order}(s_{i+1})$
-- **最终产品**: $\text{complete}(p) \iff \forall s \in S: \text{applied}(s, p)$
+- **分步构建**: ```latex
+$\forall p \in P: \exists s_1, s_2, ..., s_n \in S: f_b(s_1, s_2, ..., s_n) = p$
+```
+- **构建顺序**: ```latex
+$\text{valid}(s_1, s_2, ..., s_n) \iff \text{order}(s_i) \leq \text{order}(s_{i+1})$
+```
+- **最终产品**: ```latex
+$\text{complete}(p) \iff \forall s \in S: \text{applied}(s, p)$
+```
 
 ### 1.2 类型理论定义
 

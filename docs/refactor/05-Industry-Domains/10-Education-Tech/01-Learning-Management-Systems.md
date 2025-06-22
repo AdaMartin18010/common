@@ -25,38 +25,64 @@
 
 学习目标可以用形式化语言描述：
 
-$$\mathcal{L} = \langle O, P, C, E \rangle$$
+$```latex
+$\mathcal{L} = \langle O, P, C, E \rangle$
+```$
 
 其中：
 
-- $O$ 是学习目标集合
-- $P$ 是学习路径集合
-- $C$ 是能力评估标准
-- $E$ 是学习效果评估
+- ```latex
+$O$
+``` 是学习目标集合
+- ```latex
+$P$
+``` 是学习路径集合
+- ```latex
+$C$
+``` 是能力评估标准
+- ```latex
+$E$
+``` 是学习效果评估
 
 #### 学习路径建模
 
 学习路径可以用有向图表示：
 
-$$G = (V, E, w)$$
+$```latex
+$G = (V, E, w)$
+```$
 
 其中：
 
-- $V$ 是学习节点集合
-- $E$ 是学习依赖关系
-- $w: E \rightarrow \mathbb{R}^+$ 是权重函数
+- ```latex
+$V$
+``` 是学习节点集合
+- ```latex
+$E$
+``` 是学习依赖关系
+- ```latex
+$w: E \rightarrow \mathbb{R}^+$
+``` 是权重函数
 
 ### 认知负荷理论
 
 认知负荷理论认为学习者的认知资源有限：
 
-$$CL_{total} = CL_{intrinsic} + CL_{extraneous} + CL_{germane}$$
+$```latex
+$CL_{total} = CL_{intrinsic} + CL_{extraneous} + CL_{germane}$
+```$
 
 其中：
 
-- $CL_{intrinsic}$ 是内在认知负荷
-- $CL_{extraneous}$ 是外在认知负荷
-- $CL_{germane}$ 是生成认知负荷
+- ```latex
+$CL_{intrinsic}$
+``` 是内在认知负荷
+- ```latex
+$CL_{extraneous}$
+``` 是外在认知负荷
+- ```latex
+$CL_{germane}$
+``` 是生成认知负荷
 
 ## 系统架构
 
@@ -1029,8 +1055,12 @@ func (r *UserRepository) SearchUsers(ctx context.Context, query string) ([]*User
     // 使用参数化查询防止SQL注入
     filter := bson.M{
         "$or": []bson.M{
-            {"username": bson.M{"$regex": query, "$options": "i"}},
-            {"email": bson.M{"$regex": query, "$options": "i"}},
+            {"username": bson.M{"```latex
+$regex": query, "$
+```options": "i"}},
+            {"email": bson.M{"```latex
+$regex": query, "$
+```options": "i"}},
         },
     }
     

@@ -9,62 +9,138 @@
 ### 1.1 认证组件定义
 
 **定义 1.1** (认证组件)
-认证组件是一个六元组 $C_{auth} = (S, I, B, P, T, R)$，其中：
+认证组件是一个六元组 ```latex
+$C_{auth} = (S, I, B, P, T, R)$
+```，其中：
 
-- $S$ 是组件状态集合 (State Set)
-- $I$ 是组件接口集合 (Interface Set)
-- $B$ 是组件行为集合 (Behavior Set)
-- $P$ 是权限集合 (Permission Set)
-- $T$ 是令牌集合 (Token Set)
-- $R$ 是角色集合 (Role Set)
+- ```latex
+$S$
+``` 是组件状态集合 (State Set)
+- ```latex
+$I$
+``` 是组件接口集合 (Interface Set)
+- ```latex
+$B$
+``` 是组件行为集合 (Behavior Set)
+- ```latex
+$P$
+``` 是权限集合 (Permission Set)
+- ```latex
+$T$
+``` 是令牌集合 (Token Set)
+- ```latex
+$R$
+``` 是角色集合 (Role Set)
 
 **定义 1.2** (用户实体)
-用户实体是一个四元组 $U = (id, credentials, roles, permissions)$，其中：
+用户实体是一个四元组 ```latex
+$U = (id, credentials, roles, permissions)$
+```，其中：
 
-- $id$ 是用户唯一标识符
-- $credentials$ 是认证凭据集合
-- $roles$ 是用户角色集合
-- $permissions$ 是用户权限集合
+- ```latex
+$id$
+``` 是用户唯一标识符
+- ```latex
+$credentials$
+``` 是认证凭据集合
+- ```latex
+$roles$
+``` 是用户角色集合
+- ```latex
+$permissions$
+``` 是用户权限集合
 
 **定义 1.3** (认证会话)
-认证会话是一个五元组 $S_{auth} = (session_id, user_id, token, expires_at, metadata)$，其中：
+认证会话是一个五元组 ```latex
+$S_{auth} = (session_id, user_id, token, expires_at, metadata)$
+```，其中：
 
-- $session_id$ 是会话唯一标识符
-- $user_id$ 是用户标识符
-- $token$ 是认证令牌
-- $expires_at$ 是过期时间
-- $metadata$ 是会话元数据
+- ```latex
+$session_id$
+``` 是会话唯一标识符
+- ```latex
+$user_id$
+``` 是用户标识符
+- ```latex
+$token$
+``` 是认证令牌
+- ```latex
+$expires_at$
+``` 是过期时间
+- ```latex
+$metadata$
+``` 是会话元数据
 
 ### 1.2 权限模型
 
 **定义 1.4** (权限)
-权限是一个三元组 $P = (resource, action, conditions)$，其中：
+权限是一个三元组 ```latex
+$P = (resource, action, conditions)$
+```，其中：
 
-- $resource$ 是资源标识符
-- $action$ 是操作类型 (read, write, delete, execute)
-- $conditions$ 是权限条件集合
+- ```latex
+$resource$
+``` 是资源标识符
+- ```latex
+$action$
+``` 是操作类型 (read, write, delete, execute)
+- ```latex
+$conditions$
+``` 是权限条件集合
 
 **定义 1.5** (角色)
-角色是一个三元组 $R = (role_id, permissions, inheritance)$，其中：
+角色是一个三元组 ```latex
+$R = (role_id, permissions, inheritance)$
+```，其中：
 
-- $role_id$ 是角色标识符
-- $permissions$ 是权限集合
-- $inheritance$ 是继承关系集合
+- ```latex
+$role_id$
+``` 是角色标识符
+- ```latex
+$permissions$
+``` 是权限集合
+- ```latex
+$inheritance$
+``` 是继承关系集合
 
 **定理 1.1** (权限传递性)
-对于任意角色 $R_1, R_2, R_3$，如果 $R_1$ 继承 $R_2$，$R_2$ 继承 $R_3$，则：
-$$R_1.permissions \supseteq R_2.permissions \supseteq R_3.permissions$$
+对于任意角色 ```latex
+$R_1, R_2, R_3$
+```，如果 ```latex
+$R_1$
+``` 继承 ```latex
+$R_2$
+```，```latex
+$R_2$
+``` 继承 ```latex
+$R_3$
+```，则：
+$```latex
+$R_1.permissions \supseteq R_2.permissions \supseteq R_3.permissions$
+```$
 
 ### 1.3 认证流程
 
 **定义 1.6** (认证流程)
-认证流程是一个状态机 $A = (Q, \Sigma, \delta, q_0, F)$，其中：
+认证流程是一个状态机 ```latex
+$A = (Q, \Sigma, \delta, q_0, F)$
+```，其中：
 
-- $Q = \{Unauthenticated, Authenticating, Authenticated, Expired, Revoked\}$ 是状态集合
-- $\Sigma$ 是事件集合
-- $\delta: Q \times \Sigma \rightarrow Q$ 是状态转移函数
-- $q_0 = Unauthenticated$ 是初始状态
-- $F = \{Authenticated\}$ 是接受状态集合
+- ```latex
+$Q = \{Unauthenticated, Authenticating, Authenticated, Expired, Revoked\}$
+``` 是状态集合
+- ```latex
+$\Sigma$
+``` 是事件集合
+- ```latex
+$\delta: Q \times \Sigma \rightarrow Q$
+``` 是状态转移函数
+- ```latex
+$q_0 = Unauthenticated$
+``` 是初始状态
+- ```latex
+$F = \{Authenticated\}$
+``` 是接受状态集合
 
 ## 2. 架构模式
 

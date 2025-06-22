@@ -42,16 +42,32 @@
 
 语义分析是编译过程中的一个重要阶段，它检查程序的语义正确性，包括类型检查、作用域分析、语义约束验证等。
 
-**定义 1.1** (语义分析器): 语义分析器是一个四元组 $(\mathcal{S}, \mathcal{T}, \mathcal{E}, \mathcal{C})$，其中：
+**定义 1.1** (语义分析器): 语义分析器是一个四元组 ```latex
+$(\mathcal{S}, \mathcal{T}, \mathcal{E}, \mathcal{C})$
+```，其中：
 
-- $\mathcal{S}$ 是符号表
-- $\mathcal{T}$ 是类型系统
-- $\mathcal{E}$ 是语义环境
-- $\mathcal{C}$ 是语义检查函数
+- ```latex
+$\mathcal{S}$
+``` 是符号表
+- ```latex
+$\mathcal{T}$
+``` 是类型系统
+- ```latex
+$\mathcal{E}$
+``` 是语义环境
+- ```latex
+$\mathcal{C}$
+``` 是语义检查函数
 
-**定义 1.2** (语义正确性): 程序 $P$ 在语义环境 $\mathcal{E}$ 下是语义正确的，当且仅当：
+**定义 1.2** (语义正确性): 程序 ```latex
+$P$
+``` 在语义环境 ```latex
+$\mathcal{E}$
+``` 下是语义正确的，当且仅当：
 
-$$\forall \sigma \in \mathcal{E}, \mathcal{C}(P, \sigma) = \text{true}$$
+$```latex
+$\forall \sigma \in \mathcal{E}, \mathcal{C}(P, \sigma) = \text{true}$
+```$
 
 ### 1.2 语义检查类型
 
@@ -62,10 +78,16 @@ $$\forall \sigma \in \mathcal{E}, \mathcal{C}(P, \sigma) = \text{true}$$
 
 ### 1.3 符号表管理
 
-**定义 1.3** (符号表): 符号表是一个映射 $\mathcal{S}: \text{Name} \rightarrow \text{Symbol}$，其中：
+**定义 1.3** (符号表): 符号表是一个映射 ```latex
+$\mathcal{S}: \text{Name} \rightarrow \text{Symbol}$
+```，其中：
 
-- $\text{Name}$ 是标识符集合
-- $\text{Symbol}$ 是符号信息集合
+- ```latex
+$\text{Name}$
+``` 是标识符集合
+- ```latex
+$\text{Symbol}$
+``` 是符号信息集合
 
 ---
 
@@ -73,41 +95,79 @@ $$\forall \sigma \in \mathcal{E}, \mathcal{C}(P, \sigma) = \text{true}$$
 
 ### 2.1 语义域
 
-**定义 2.1** (语义域): 语义域 $\mathcal{D}$ 是程序语义值的集合，定义为：
+**定义 2.1** (语义域): 语义域 ```latex
+$\mathcal{D}$
+``` 是程序语义值的集合，定义为：
 
-$$\mathcal{D} = \mathcal{D}_{\text{int}} \cup \mathcal{D}_{\text{bool}} \cup \mathcal{D}_{\text{string}} \cup \mathcal{D}_{\text{func}} \cup \mathcal{D}_{\text{ref}}$$
+$```latex
+$\mathcal{D} = \mathcal{D}_{\text{int}} \cup \mathcal{D}_{\text{bool}} \cup \mathcal{D}_{\text{string}} \cup \mathcal{D}_{\text{func}} \cup \mathcal{D}_{\text{ref}}$
+```$
 
 其中：
 
-- $\mathcal{D}_{\text{int}}$ 是整数域
-- $\mathcal{D}_{\text{bool}}$ 是布尔域
-- $\mathcal{D}_{\text{string}}$ 是字符串域
-- $\mathcal{D}_{\text{func}}$ 是函数域
-- $\mathcal{D}_{\text{ref}}$ 是引用域
+- ```latex
+$\mathcal{D}_{\text{int}}$
+``` 是整数域
+- ```latex
+$\mathcal{D}_{\text{bool}}$
+``` 是布尔域
+- ```latex
+$\mathcal{D}_{\text{string}}$
+``` 是字符串域
+- ```latex
+$\mathcal{D}_{\text{func}}$
+``` 是函数域
+- ```latex
+$\mathcal{D}_{\text{ref}}$
+``` 是引用域
 
-**定义 2.2** (语义环境): 语义环境 $\rho$ 是一个函数：
+**定义 2.2** (语义环境): 语义环境 ```latex
+$\rho$
+``` 是一个函数：
 
-$$\rho: \text{Var} \rightarrow \mathcal{D}$$
+$```latex
+$\rho: \text{Var} \rightarrow \mathcal{D}$
+```$
 
 ### 2.2 语义函数
 
-**定义 2.3** (表达式语义函数): 表达式 $e$ 的语义函数 $\mathcal{E}[\![e]\!]$ 定义为：
+**定义 2.3** (表达式语义函数): 表达式 ```latex
+$e$
+``` 的语义函数 ```latex
+$\mathcal{E}[\![e]\!]$
+``` 定义为：
 
-$$\mathcal{E}[\![e]\!]: \text{Env} \rightarrow \mathcal{D}$$
+$```latex
+$\mathcal{E}[\![e]\!]: \text{Env} \rightarrow \mathcal{D}$
+```$
 
-**定义 2.4** (语句语义函数): 语句 $s$ 的语义函数 $\mathcal{S}[\![s]\!]$ 定义为：
+**定义 2.4** (语句语义函数): 语句 ```latex
+$s$
+``` 的语义函数 ```latex
+$\mathcal{S}[\![s]\!]$
+``` 定义为：
 
-$$\mathcal{S}[\![s]\!]: \text{Env} \rightarrow \text{Env}$$
+$```latex
+$\mathcal{S}[\![s]\!]: \text{Env} \rightarrow \text{Env}$
+```$
 
 ### 2.3 类型系统
 
-**定义 2.5** (类型): 类型 $\tau$ 递归定义为：
+**定义 2.5** (类型): 类型 ```latex
+$\tau$
+``` 递归定义为：
 
-$$\tau ::= \text{int} \mid \text{bool} \mid \text{string} \mid \tau_1 \rightarrow \tau_2 \mid \tau_1 \times \tau_2 \mid \text{ref } \tau$$
+$```latex
+$\tau ::= \text{int} \mid \text{bool} \mid \text{string} \mid \tau_1 \rightarrow \tau_2 \mid \tau_1 \times \tau_2 \mid \text{ref } \tau$
+```$
 
-**定义 2.6** (类型环境): 类型环境 $\Gamma$ 是一个函数：
+**定义 2.6** (类型环境): 类型环境 ```latex
+$\Gamma$
+``` 是一个函数：
 
-$$\Gamma: \text{Var} \rightarrow \text{Type}$$
+$```latex
+$\Gamma: \text{Var} \rightarrow \text{Type}$
+```$
 
 ---
 
@@ -115,21 +175,37 @@ $$\Gamma: \text{Var} \rightarrow \text{Type}$$
 
 ### 3.1 类型推导
 
-**定义 3.1** (类型推导关系): 类型推导关系 $\Gamma \vdash e : \tau$ 表示在类型环境 $\Gamma$ 下，表达式 $e$ 具有类型 $\tau$。
+**定义 3.1** (类型推导关系): 类型推导关系 ```latex
+$\Gamma \vdash e : \tau$
+``` 表示在类型环境 ```latex
+$\Gamma$
+``` 下，表达式 ```latex
+$e$
+``` 具有类型 ```latex
+$\tau$
+```。
 
 **类型推导规则**:
 
 **变量规则**:
-$$\frac{x : \tau \in \Gamma}{\Gamma \vdash x : \tau}$$
+$```latex
+$\frac{x : \tau \in \Gamma}{\Gamma \vdash x : \tau}$
+```$
 
 **常量规则**:
-$$\frac{}{\Gamma \vdash n : \text{int}} \quad \frac{}{\Gamma \vdash \text{true} : \text{bool}} \quad \frac{}{\Gamma \vdash \text{false} : \text{bool}}$$
+$```latex
+$\frac{}{\Gamma \vdash n : \text{int}} \quad \frac{}{\Gamma \vdash \text{true} : \text{bool}} \quad \frac{}{\Gamma \vdash \text{false} : \text{bool}}$
+```$
 
 **函数应用规则**:
-$$\frac{\Gamma \vdash e_1 : \tau_1 \rightarrow \tau_2 \quad \Gamma \vdash e_2 : \tau_1}{\Gamma \vdash e_1(e_2) : \tau_2}$$
+$```latex
+$\frac{\Gamma \vdash e_1 : \tau_1 \rightarrow \tau_2 \quad \Gamma \vdash e_2 : \tau_1}{\Gamma \vdash e_1(e_2) : \tau_2}$
+```$
 
 **条件表达式规则**:
-$$\frac{\Gamma \vdash e_1 : \text{bool} \quad \Gamma \vdash e_2 : \tau \quad \Gamma \vdash e_3 : \tau}{\Gamma \vdash \text{if } e_1 \text{ then } e_2 \text{ else } e_3 : \tau}$$
+$```latex
+$\frac{\Gamma \vdash e_1 : \text{bool} \quad \Gamma \vdash e_2 : \tau \quad \Gamma \vdash e_3 : \tau}{\Gamma \vdash \text{if } e_1 \text{ then } e_2 \text{ else } e_3 : \tau}$
+```$
 
 ### 3.2 类型统一
 
@@ -148,7 +224,11 @@ $$\frac{\Gamma \vdash e_1 : \text{bool} \quad \Gamma \vdash e_2 : \tau \quad \Ga
 
 **定义 3.3** (类型安全): 程序是类型安全的，如果所有表达式都有正确的类型，且类型检查通过。
 
-**定理 3.2** (类型安全定理): 如果程序 $P$ 是类型安全的，则 $P$ 不会产生类型错误。
+**定理 3.2** (类型安全定理): 如果程序 ```latex
+$P$
+``` 是类型安全的，则 ```latex
+$P$
+``` 不会产生类型错误。
 
 ---
 
@@ -1066,7 +1146,11 @@ func (oe *ObjectExpression) Accept(visitor ExpressionVisitor) interface{} {
 
 ### 7.1 类型安全定理
 
-**定理 7.1** (类型安全定理): 如果程序 $P$ 通过类型检查，则 $P$ 在执行时不会产生类型错误。
+**定理 7.1** (类型安全定理): 如果程序 ```latex
+$P$
+``` 通过类型检查，则 ```latex
+$P$
+``` 在执行时不会产生类型错误。
 
 **证明**: 使用结构归纳法证明。
 
@@ -1078,25 +1162,45 @@ func (oe *ObjectExpression) Accept(visitor ExpressionVisitor) interface{} {
 2. 操作符的类型要求满足
 3. 结果类型正确
 
-因此，通过类型检查的程序在执行时不会产生类型错误。$\square$
+因此，通过类型检查的程序在执行时不会产生类型错误。```latex
+$\square$
+```
 
 ### 7.2 类型推导定理
 
-**定理 7.2** (类型推导定理): 如果表达式 $e$ 有类型 $\tau$，则存在类型推导 $\Gamma \vdash e : \tau$。
+**定理 7.2** (类型推导定理): 如果表达式 ```latex
+$e$
+``` 有类型 ```latex
+$\tau$
+```，则存在类型推导 ```latex
+$\Gamma \vdash e : \tau$
+```。
 
 **证明**: 使用结构归纳法。
 
 **基础情况**: 对于基本表达式，类型推导规则直接给出类型。
 
-**归纳步骤**: 对于复合表达式，使用相应的类型推导规则组合子表达式的类型推导。$\square$
+**归纳步骤**: 对于复合表达式，使用相应的类型推导规则组合子表达式的类型推导。```latex
+$\square$
+```
 
 ### 7.3 语义一致性定理
 
-**定理 7.3** (语义一致性定理): 如果两个表达式 $e_1$ 和 $e_2$ 类型相同且语义等价，则它们在所有上下文中可以互换。
+**定理 7.3** (语义一致性定理): 如果两个表达式 ```latex
+$e_1$
+``` 和 ```latex
+$e_2$
+``` 类型相同且语义等价，则它们在所有上下文中可以互换。
 
 **证明**: 使用语义等价的定义和类型安全定理。
 
-由于 $e_1$ 和 $e_2$ 类型相同，它们在类型检查中表现相同。由于语义等价，它们在执行时产生相同的结果。因此，它们可以在所有上下文中互换。$\square$
+由于 ```latex
+$e_1$
+``` 和 ```latex
+$e_2$
+``` 类型相同，它们在类型检查中表现相同。由于语义等价，它们在执行时产生相同的结果。因此，它们可以在所有上下文中互换。```latex
+$\square$
+```
 
 ---
 

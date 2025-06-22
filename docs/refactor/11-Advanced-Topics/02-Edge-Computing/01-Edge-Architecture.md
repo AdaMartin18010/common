@@ -8,32 +8,58 @@
 
 ### 1.1.1 边缘计算定义
 
-边缘计算 $EC$ 是一个三元组 $(N, R, S)$，其中：
+边缘计算 ```latex
+$EC$
+``` 是一个三元组 ```latex
+$(N, R, S)$
+```，其中：
 
 ```latex
-$$EC = (N, R, S)$$
+$```latex
+$EC = (N, R, S)$
+```$
 ```
 
 其中：
 
-- $N$: 边缘节点集合
-- $R$: 资源集合
-- $S$: 服务集合
+- ```latex
+$N$
+```: 边缘节点集合
+- ```latex
+$R$
+```: 资源集合
+- ```latex
+$S$
+```: 服务集合
 
 ### 1.1.2 边缘节点模型
 
-边缘节点 $n \in N$ 是一个四元组 $(c, m, s, b)$，其中：
+边缘节点 ```latex
+$n \in N$
+``` 是一个四元组 ```latex
+$(c, m, s, b)$
+```，其中：
 
 ```latex
-$$n = (c, m, s, b)$$
+$```latex
+$n = (c, m, s, b)$
+```$
 ```
 
 其中：
 
-- $c$: 计算能力 (CPU核心数)
-- $m$: 内存容量 (GB)
-- $s$: 存储容量 (GB)
-- $b$: 带宽 (Mbps)
+- ```latex
+$c$
+```: 计算能力 (CPU核心数)
+- ```latex
+$m$
+```: 内存容量 (GB)
+- ```latex
+$s$
+```: 存储容量 (GB)
+- ```latex
+$b$
+```: 带宽 (Mbps)
 
 ## 1.2 边缘计算架构
 
@@ -42,7 +68,9 @@ $$n = (c, m, s, b)$$
 边缘计算采用三层架构：
 
 ```latex
-$$L = \{Cloud, Edge, Device\}$$
+$```latex
+$L = \{Cloud, Edge, Device\}$
+```$
 ```
 
 **云层 (Cloud Layer)**
@@ -65,21 +93,31 @@ $$L = \{Cloud, Edge, Device\}$$
 
 ### 1.2.2 网络拓扑
 
-边缘计算网络拓扑 $G = (V, E)$ 其中：
+边缘计算网络拓扑 ```latex
+$G = (V, E)$
+``` 其中：
 
 ```latex
-$$V = V_{cloud} \cup V_{edge} \cup V_{device}$$
-$$E = E_{cloud-edge} \cup E_{edge-device} \cup E_{edge-edge}$$
+$```latex
+$V = V_{cloud} \cup V_{edge} \cup V_{device}$
+```$
+$```latex
+$E = E_{cloud-edge} \cup E_{edge-device} \cup E_{edge-edge}$
+```$
 ```
 
 ## 1.3 资源管理
 
 ### 1.3.1 资源分配
 
-资源分配函数 $A: N \times R \rightarrow \mathbb{R}^+$ 定义为：
+资源分配函数 ```latex
+$A: N \times R \rightarrow \mathbb{R}^+$
+``` 定义为：
 
 ```latex
-$$A(n, r) = \frac{\text{allocated}(n, r)}{\text{total}(n, r)}$$
+$```latex
+$A(n, r) = \frac{\text{allocated}(n, r)}{\text{total}(n, r)}$
+```$
 ```
 
 ### 1.3.2 负载均衡
@@ -87,51 +125,83 @@ $$A(n, r) = \frac{\text{allocated}(n, r)}{\text{total}(n, r)}$$
 负载均衡目标函数：
 
 ```latex
-$$\min \sum_{i,j \in N} \frac{|L_i - L_j|}{L_{max}}$$
+$```latex
+$\min \sum_{i,j \in N} \frac{|L_i - L_j|}{L_{max}}$
+```$
 ```
 
-其中 $L_i$ 是节点 $i$ 的负载。
+其中 ```latex
+$L_i$
+``` 是节点 ```latex
+$i$
+``` 的负载。
 
 ### 1.3.3 资源调度
 
 资源调度算法的时间复杂度：
 
 ```latex
-$$T(n) = O(n \log n)$$
+$```latex
+$T(n) = O(n \log n)$
+```$
 ```
 
-其中 $n$ 是边缘节点数量。
+其中 ```latex
+$n$
+``` 是边缘节点数量。
 
 ## 1.4 延迟模型
 
 ### 1.4.1 端到端延迟
 
-端到端延迟 $L_{e2e}$ 定义为：
+端到端延迟 ```latex
+$L_{e2e}$
+``` 定义为：
 
 ```latex
-$$L_{e2e} = L_{prop} + L_{trans} + L_{proc} + L_{queue}$$
+$```latex
+$L_{e2e} = L_{prop} + L_{trans} + L_{proc} + L_{queue}$
+```$
 ```
 
 其中：
 
-- $L_{prop}$: 传播延迟
-- $L_{trans}$: 传输延迟
-- $L_{proc}$: 处理延迟
-- $L_{queue}$: 排队延迟
+- ```latex
+$L_{prop}$
+```: 传播延迟
+- ```latex
+$L_{trans}$
+```: 传输延迟
+- ```latex
+$L_{proc}$
+```: 处理延迟
+- ```latex
+$L_{queue}$
+```: 排队延迟
 
 ### 1.4.2 边缘计算延迟
 
-边缘计算延迟 $L_{edge}$ 为：
+边缘计算延迟 ```latex
+$L_{edge}$
+``` 为：
 
 ```latex
-$$L_{edge} = \frac{d}{c} + T_{process}$$
+$```latex
+$L_{edge} = \frac{d}{c} + T_{process}$
+```$
 ```
 
 其中：
 
-- $d$: 数据传输距离
-- $c$: 光速
-- $T_{process}$: 处理时间
+- ```latex
+$d$
+```: 数据传输距离
+- ```latex
+$c$
+```: 光速
+- ```latex
+$T_{process}$
+```: 处理时间
 
 ## 1.5 Go语言实现
 
@@ -484,42 +554,78 @@ type NodeStatus struct {
 ### 1.7.1 边缘计算延迟优势
 
 **定理 1.1** (边缘计算延迟优势)
-对于距离 $d$ 和数据大小 $s$，边缘计算的延迟 $L_{edge}$ 小于云计算延迟 $L_{cloud}$。
+对于距离 ```latex
+$d$
+``` 和数据大小 ```latex
+$s$
+```，边缘计算的延迟 ```latex
+$L_{edge}$
+``` 小于云计算延迟 ```latex
+$L_{cloud}$
+```。
 
 **证明**：
-设云数据中心距离为 $d_{cloud}$，边缘节点距离为 $d_{edge}$。
+设云数据中心距离为 ```latex
+$d_{cloud}$
+```，边缘节点距离为 ```latex
+$d_{edge}$
+```。
 
 边缘计算延迟：
 
 ```latex
-$$L_{edge} = \frac{d_{edge}}{c} + T_{process}$$
+$```latex
+$L_{edge} = \frac{d_{edge}}{c} + T_{process}$
+```$
 ```
 
 云计算延迟：
 
 ```latex
-$$L_{cloud} = \frac{d_{cloud}}{c} + T_{process}$$
+$```latex
+$L_{cloud} = \frac{d_{cloud}}{c} + T_{process}$
+```$
 ```
 
-由于 $d_{edge} < d_{cloud}$，所以 $L_{edge} < L_{cloud}$。
+由于 ```latex
+$d_{edge} < d_{cloud}$
+```，所以 ```latex
+$L_{edge} < L_{cloud}$
+```。
 
 ### 1.7.2 负载均衡最优性
 
 **定理 1.2** (负载均衡最优性)
-对于 $n$ 个边缘节点，最小化最大负载的贪心算法是 $\frac{2}{3}$ 近似的。
+对于 ```latex
+$n$
+``` 个边缘节点，最小化最大负载的贪心算法是 ```latex
+$\frac{2}{3}$
+``` 近似的。
 
 **证明**：
-设最优解的最大负载为 $OPT$，贪心算法的最大负载为 $GREEDY$。
+设最优解的最大负载为 ```latex
+$OPT$
+```，贪心算法的最大负载为 ```latex
+$GREEDY$
+```。
 
-对于任意任务 $t$，其负载 $l_t \leq OPT$。
+对于任意任务 ```latex
+$t$
+```，其负载 ```latex
+$l_t \leq OPT$
+```。
 
 贪心算法将任务分配给当前负载最小的节点，因此：
 
 ```latex
-$$GREEDY \leq \frac{\sum_{t} l_t}{n} + \max_t l_t \leq \frac{n \cdot OPT}{n} + OPT = 2 \cdot OPT$$
+$```latex
+$GREEDY \leq \frac{\sum_{t} l_t}{n} + \max_t l_t \leq \frac{n \cdot OPT}{n} + OPT = 2 \cdot OPT$
+```$
 ```
 
-实际上，通过更精细的分析可以得到 $\frac{2}{3}$ 近似比。
+实际上，通过更精细的分析可以得到 ```latex
+$\frac{2}{3}$
+``` 近似比。
 
 ## 1.8 总结
 

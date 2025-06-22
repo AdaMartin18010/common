@@ -78,14 +78,24 @@
 形式化表示：
 
 ```latex
-- 并发：$\forall t_1, t_2 \in T, \exists t \in T: t_1 \cap t_2 \neq \emptyset$
-- 并行：$\forall t_1, t_2 \in T, t_1 \parallel t_2 \Rightarrow t_1 \cap t_2 = t_1 = t_2$
+- 并发：```latex
+$\forall t_1, t_2 \in T, \exists t \in T: t_1 \cap t_2 \neq \emptyset$
+```
+- 并行：```latex
+$\forall t_1, t_2 \in T, t_1 \parallel t_2 \Rightarrow t_1 \cap t_2 = t_1 = t_2$
+```
 
 其中：
 
-- $T$ 是任务集合
-- $t_1, t_2$ 是任务执行时间区间
-- $\parallel$ 表示并行关系
+- ```latex
+$T$
+``` 是任务集合
+- ```latex
+$t_1, t_2$
+``` 是任务执行时间区间
+- ```latex
+$\parallel$
+``` 表示并行关系
 ```
 
 #### 并发模型分类
@@ -105,14 +115,24 @@ Go采用CSP（Communicating Sequential Processes）模型，核心思想是：
 
 CSP模型可以形式化表示为：
 
+```latex
 $P = (S, \Sigma, \rightarrow, s_0)$
+```
 
 其中：
 
-- $S$ 是状态集合
-- $\Sigma$ 是事件集合
-- $\rightarrow \subseteq S \times \Sigma \times S$ 是转移关系
-- $s_0 \in S$ 是初始状态
+- ```latex
+$S$
+``` 是状态集合
+- ```latex
+$\Sigma$
+``` 是事件集合
+- ```latex
+$\rightarrow \subseteq S \times \Sigma \times S$
+``` 是转移关系
+- ```latex
+$s_0 \in S$
+``` 是初始状态
 
 #### Go并发原语
 
@@ -135,15 +155,27 @@ value := <-ch   // 接收
 **定义**：当两个或多个goroutine同时访问同一内存位置，且至少有一个是写操作时发生。
 
 **形式化定义**：
+```latex
 $\exists g_1, g_2 \in G, \exists m \in M: (g_1, m, w) \land (g_2, m, r/w) \land (t_1 \cap t_2 \neq \emptyset)$
+```
 
 其中：
 
-- $G$ 是goroutine集合
-- $M$ 是内存位置集合
-- $w$ 表示写操作
-- $r$ 表示读操作
-- $t_1, t_2$ 是操作时间
+- ```latex
+$G$
+``` 是goroutine集合
+- ```latex
+$M$
+``` 是内存位置集合
+- ```latex
+$w$
+``` 表示写操作
+- ```latex
+$r$
+``` 表示读操作
+- ```latex
+$t_1, t_2$
+``` 是操作时间
 
 #### 2. 死锁（Deadlock）
 
@@ -355,11 +387,21 @@ func channelOperations() {
 
 #### Channel形式化语义
 
-对于channel $c$ 和值 $v$：
+对于channel ```latex
+$c$
+``` 和值 ```latex
+$v$
+```：
 
-- **发送操作**：$c \leftarrow v$
-- **接收操作**：$v \leftarrow c$
-- **关闭操作**：$close(c)$
+- **发送操作**：```latex
+$c \leftarrow v$
+```
+- **接收操作**：```latex
+$v \leftarrow c$
+```
+- **关闭操作**：```latex
+$close(c)$
+```
 
 **阻塞语义**：
 

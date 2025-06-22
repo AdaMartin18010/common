@@ -126,7 +126,13 @@ func (s *EMRService) CreateEMR(patientID string, demographics *Demographics) (*E
     // 存储到数据库
     query := `
         INSERT INTO emr (id, patient_id, demographics, created_at, updated_at, status)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        VALUES (```latex
+$1, $
+```2, ```latex
+$3, $
+```4, ```latex
+$5, $
+```6)
     `
     
     demographicsJSON, _ := json.Marshal(demographics)
@@ -225,7 +231,13 @@ func (s *EMRService) AddClinicalNote(emrID string, note *ClinicalNote) error {
     
     query := `
         INSERT INTO clinical_notes (id, emr_id, type, author, content, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        VALUES (```latex
+$1, $
+```2, ```latex
+$3, $
+```4, ```latex
+$5, $
+```6, $7)
     `
     
     _, err := s.db.Exec(query, note.ID, emrID, note.Type, note.Author, note.Content, note.CreatedAt, note.UpdatedAt)
@@ -504,7 +516,11 @@ func (dic *DrugInteractionChecker) getInteraction(drug1, drug2 string) (*DrugInt
     query := `
         SELECT id, drug1, drug2, severity, description, mechanism, management, evidence, references
         FROM drug_interactions 
-        WHERE (drug1 = $1 AND drug2 = $2) OR (drug1 = $2 AND drug2 = $1)
+        WHERE (drug1 = ```latex
+$1 AND drug2 = $
+```2) OR (drug1 = ```latex
+$2 AND drug2 = $
+```1)
     `
     
     var interaction DrugInteraction

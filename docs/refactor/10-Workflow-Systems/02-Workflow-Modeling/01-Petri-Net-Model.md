@@ -36,62 +36,158 @@
 
 ### 1.1 基本定义
 
-**定义 1.1** (Petri网): Petri网是一个四元组 $N = (P, T, F, M_0)$，其中：
+**定义 1.1** (Petri网): Petri网是一个四元组 ```latex
+$N = (P, T, F, M_0)$
+```，其中：
 
-- $P$ 是库所(places)的有限集合
-- $T$ 是变迁(transitions)的有限集合，且 $P \cap T = \emptyset$
-- $F \subseteq (P \times T) \cup (T \times P)$ 是流关系
-- $M_0: P \rightarrow \mathbb{N}$ 是初始标记
+- ```latex
+$P$
+``` 是库所(places)的有限集合
+- ```latex
+$T$
+``` 是变迁(transitions)的有限集合，且 ```latex
+$P \cap T = \emptyset$
+```
+- ```latex
+$F \subseteq (P \times T) \cup (T \times P)$
+``` 是流关系
+- ```latex
+$M_0: P \rightarrow \mathbb{N}$
+``` 是初始标记
 
-**定义 1.2** (前集和后集): 对于 $x \in P \cup T$：
+**定义 1.2** (前集和后集): 对于 ```latex
+$x \in P \cup T$
+```：
 
-- 前集：$^\bullet x = \{y \mid (y, x) \in F\}$
-- 后集：$x^\bullet = \{y \mid (x, y) \in F\}$
+- 前集：```latex
+$^\bullet x = \{y \mid (y, x) \in F\}$
+```
+- 后集：```latex
+$x^\bullet = \{y \mid (x, y) \in F\}$
+```
 
-**定义 1.3** (标记): 标记 $M: P \rightarrow \mathbb{N}$ 为每个库所分配一个非负整数，表示该库所中的令牌数量。
+**定义 1.3** (标记): 标记 ```latex
+$M: P \rightarrow \mathbb{N}$
+``` 为每个库所分配一个非负整数，表示该库所中的令牌数量。
 
 ### 1.2 标记和变迁
 
-**定义 1.4** (变迁使能): 变迁 $t \in T$ 在标记 $M$ 下使能，当且仅当：
+**定义 1.4** (变迁使能): 变迁 ```latex
+$t \in T$
+``` 在标记 ```latex
+$M$
+``` 下使能，当且仅当：
 
-$$\forall p \in ^\bullet t: M(p) \geq F(p, t)$$
+$```latex
+$\forall p \in ^\bullet t: M(p) \geq F(p, t)$
+```$
 
-**定义 1.5** (变迁发生): 如果变迁 $t$ 在标记 $M$ 下使能，则它可以发生，产生新标记 $M'$：
+**定义 1.5** (变迁发生): 如果变迁 ```latex
+$t$
+``` 在标记 ```latex
+$M$
+``` 下使能，则它可以发生，产生新标记 ```latex
+$M'$
+```：
 
-$$M'(p) = M(p) - F(p, t) + F(t, p)$$
+$```latex
+$M'(p) = M(p) - F(p, t) + F(t, p)$
+```$
 
-其中 $F(p, t)$ 表示从库所 $p$ 到变迁 $t$ 的弧的权重。
+其中 ```latex
+$F(p, t)$
+``` 表示从库所 ```latex
+$p$
+``` 到变迁 ```latex
+$t$
+``` 的弧的权重。
 
-**定理 1.1** (变迁发生唯一性): 对于给定的标记 $M$ 和使能的变迁 $t$，新标记 $M'$ 是唯一确定的。
+**定理 1.1** (变迁发生唯一性): 对于给定的标记 ```latex
+$M$
+``` 和使能的变迁 ```latex
+$t$
+```，新标记 ```latex
+$M'$
+``` 是唯一确定的。
 
-**证明**: 根据定义 1.5，$M'$ 的计算是确定性的，因此唯一性成立。
+**证明**: 根据定义 1.5，```latex
+$M'$
+``` 的计算是确定性的，因此唯一性成立。
 
 ### 1.3 可达性
 
-**定义 1.6** (可达性): 标记 $M'$ 从标记 $M$ 可达，如果存在变迁序列 $\sigma = t_1 t_2 \ldots t_n$ 使得：
+**定义 1.6** (可达性): 标记 ```latex
+$M'$
+``` 从标记 ```latex
+$M$
+``` 可达，如果存在变迁序列 ```latex
+$\sigma = t_1 t_2 \ldots t_n$
+``` 使得：
 
-$$M[t_1\rangle M_1[t_2\rangle M_2 \ldots [t_n\rangle M'$$
+$```latex
+$M[t_1\rangle M_1[t_2\rangle M_2 \ldots [t_n\rangle M'$
+```$
 
-**定义 1.7** (可达集): 从初始标记 $M_0$ 可达的所有标记的集合称为可达集 $R(N, M_0)$。
+**定义 1.7** (可达集): 从初始标记 ```latex
+$M_0$
+``` 可达的所有标记的集合称为可达集 ```latex
+$R(N, M_0)$
+```。
 
-**定理 1.2** (可达性传递性): 如果 $M_1$ 从 $M_0$ 可达，$M_2$ 从 $M_1$ 可达，则 $M_2$ 从 $M_0$ 可达。
+**定理 1.2** (可达性传递性): 如果 ```latex
+$M_1$
+``` 从 ```latex
+$M_0$
+``` 可达，```latex
+$M_2$
+``` 从 ```latex
+$M_1$
+``` 可达，则 ```latex
+$M_2$
+``` 从 ```latex
+$M_0$
+``` 可达。
 
-**证明**: 通过连接两个变迁序列，可以构造从 $M_0$ 到 $M_2$ 的变迁序列。
+**证明**: 通过连接两个变迁序列，可以构造从 ```latex
+$M_0$
+``` 到 ```latex
+$M_2$
+``` 的变迁序列。
 
 ## 2. 工作流Petri网
 
 ### 2.1 工作流映射
 
-**定义 2.1** (工作流Petri网): 工作流Petri网 $WPN = (P, T, F, M_0, \lambda)$ 是一个扩展的Petri网，其中：
+**定义 2.1** (工作流Petri网): 工作流Petri网 ```latex
+$WPN = (P, T, F, M_0, \lambda)$
+``` 是一个扩展的Petri网，其中：
 
-- $(P, T, F, M_0)$ 是基本Petri网
-- $\lambda: T \rightarrow \Sigma$ 是标签函数，将变迁映射到活动类型
+- ```latex
+$(P, T, F, M_0)$
+``` 是基本Petri网
+- ```latex
+$\lambda: T \rightarrow \Sigma$
+``` 是标签函数，将变迁映射到活动类型
 
 **映射规则 2.1** (工作流到Petri网):
 
-1. **活动映射**: 每个活动 $A$ 映射为变迁 $t_A$
-2. **状态映射**: 每个状态 $S$ 映射为库所 $p_S$
-3. **转换映射**: 每个转换 $(S_1, A, S_2)$ 映射为弧 $(p_{S_1}, t_A)$ 和 $(t_A, p_{S_2})$
+1. **活动映射**: 每个活动 ```latex
+$A$
+``` 映射为变迁 ```latex
+$t_A$
+```
+2. **状态映射**: 每个状态 ```latex
+$S$
+``` 映射为库所 ```latex
+$p_S$
+```
+3. **转换映射**: 每个转换 ```latex
+$(S_1, A, S_2)$
+``` 映射为弧 ```latex
+$(p_{S_1}, t_A)$
+``` 和 ```latex
+$(t_A, p_{S_2})$
+```
 4. **初始状态**: 初始状态映射为初始标记
 
 **示例 2.1**: 简单顺序工作流的Petri网表示：
@@ -104,11 +200,25 @@ $$M[t_1\rangle M_1[t_2\rangle M_2 \ldots [t_n\rangle M'$$
 
 ### 2.2 结构性质
 
-**定义 2.2** (结构有界性): Petri网 $N$ 是结构有界的，如果对于任意初始标记 $M_0$，网都是有界的。
+**定义 2.2** (结构有界性): Petri网 ```latex
+$N$
+``` 是结构有界的，如果对于任意初始标记 ```latex
+$M_0$
+```，网都是有界的。
 
-**定义 2.3** (结构活性): Petri网 $N$ 是结构活的，如果存在初始标记 $M_0$ 使得网是活的。
+**定义 2.3** (结构活性): Petri网 ```latex
+$N$
+``` 是结构活的，如果存在初始标记 ```latex
+$M_0$
+``` 使得网是活的。
 
-**定义 2.4** (可重复性): Petri网 $N$ 是可重复的，如果存在变迁序列 $\sigma$ 使得 $M_0[\sigma\rangle M_0$。
+**定义 2.4** (可重复性): Petri网 ```latex
+$N$
+``` 是可重复的，如果存在变迁序列 ```latex
+$\sigma$
+``` 使得 ```latex
+$M_0[\sigma\rangle M_0$
+```。
 
 **定理 2.1** (工作流Petri网性质): 工作流Petri网满足以下性质：
 
@@ -126,38 +236,64 @@ $$M[t_1\rangle M_1[t_2\rangle M_2 \ldots [t_n\rangle M'$$
 
 **定义 2.5** (安全性): 工作流Petri网是安全的，如果：
 
-$$\forall M \in R(N, M_0), \forall p \in P: M(p) \leq 1$$
+$```latex
+$\forall M \in R(N, M_0), \forall p \in P: M(p) \leq 1$
+```$
 
 **定义 2.6** (活性): 工作流Petri网是活的，如果：
 
-$$\forall t \in T, \forall M \in R(N, M_0), \exists M' \in R(N, M): M'[t\rangle$$
+$```latex
+$\forall t \in T, \forall M \in R(N, M_0), \exists M' \in R(N, M): M'[t\rangle$
+```$
 
 **定义 2.7** (公平性): 工作流Petri网是公平的，如果：
 
-$$\forall t_1, t_2 \in T: \text{if } t_1 \text{ and } t_2 \text{ are enabled infinitely often, then both occur infinitely often}$$
+$```latex
+$\forall t_1, t_2 \in T: \text{if } t_1 \text{ and } t_2 \text{ are enabled infinitely often, then both occur infinitely often}$
+```$
 
 ## 3. 高级Petri网
 
 ### 3.1 时间Petri网
 
-**定义 3.1** (时间Petri网): 时间Petri网 $TPN = (P, T, F, M_0, I)$ 是一个扩展的Petri网，其中：
+**定义 3.1** (时间Petri网): 时间Petri网 ```latex
+$TPN = (P, T, F, M_0, I)$
+``` 是一个扩展的Petri网，其中：
 
-- $(P, T, F, M_0)$ 是基本Petri网
-- $I: T \rightarrow \mathbb{R}^+ \times \mathbb{R}^+$ 是时间间隔函数
+- ```latex
+$(P, T, F, M_0)$
+``` 是基本Petri网
+- ```latex
+$I: T \rightarrow \mathbb{R}^+ \times \mathbb{R}^+$
+``` 是时间间隔函数
 
-**定义 3.2** (时间变迁发生): 变迁 $t$ 在时间 $\tau$ 发生，如果：
+**定义 3.2** (时间变迁发生): 变迁 ```latex
+$t$
+``` 在时间 ```latex
+$\tau$
+``` 发生，如果：
 
-$$\tau \in I(t) \text{ and } t \text{ is enabled}$$
+$```latex
+$\tau \in I(t) \text{ and } t \text{ is enabled}$
+```$
 
 **定理 3.1** (时间可达性): 时间Petri网的可达性问题是PSPACE完全的。
 
 ### 3.2 颜色Petri网
 
-**定义 3.3** (颜色Petri网): 颜色Petri网 $CPN = (P, T, F, M_0, C, V)$ 是一个扩展的Petri网，其中：
+**定义 3.3** (颜色Petri网): 颜色Petri网 ```latex
+$CPN = (P, T, F, M_0, C, V)$
+``` 是一个扩展的Petri网，其中：
 
-- $(P, T, F, M_0)$ 是基本Petri网
-- $C: P \cup T \rightarrow \Sigma$ 是颜色函数
-- $V: F \rightarrow \text{Expr}$ 是变量函数
+- ```latex
+$(P, T, F, M_0)$
+``` 是基本Petri网
+- ```latex
+$C: P \cup T \rightarrow \Sigma$
+``` 是颜色函数
+- ```latex
+$V: F \rightarrow \text{Expr}$
+``` 是变量函数
 
 **定义 3.4** (颜色标记): 颜色标记为每个库所分配带颜色的令牌。
 

@@ -8,21 +8,45 @@
 
 ### 结构型模式的形式化描述
 
-设 $\mathcal{C}$ 为类的集合，$\mathcal{O}$ 为对象的集合，$\mathcal{R}$ 为关系的集合。
+设 ```latex
+$\mathcal{C}$
+``` 为类的集合，```latex
+$\mathcal{O}$
+``` 为对象的集合，```latex
+$\mathcal{R}$
+``` 为关系的集合。
 
 **定义 1.1** (结构型模式)
-结构型模式是一个三元组 $(\mathcal{C}, \mathcal{O}, \mathcal{R})$，其中：
+结构型模式是一个三元组 ```latex
+$(\mathcal{C}, \mathcal{O}, \mathcal{R})$
+```，其中：
 
-- $\mathcal{C}$ 是参与模式的类的集合
-- $\mathcal{O}$ 是这些类的实例对象的集合  
-- $\mathcal{R}$ 是类之间和对象之间的结构关系集合
+- ```latex
+$\mathcal{C}$
+``` 是参与模式的类的集合
+- ```latex
+$\mathcal{O}$
+``` 是这些类的实例对象的集合  
+- ```latex
+$\mathcal{R}$
+``` 是类之间和对象之间的结构关系集合
 
 **公理 1.1** (结构一致性)
-对于任意结构型模式 $P = (\mathcal{C}, \mathcal{O}, \mathcal{R})$，必须满足：
-$$\forall c_1, c_2 \in \mathcal{C}, \forall r \in \mathcal{R}: r(c_1, c_2) \Rightarrow \text{consistent}(c_1, c_2)$$
+对于任意结构型模式 ```latex
+$P = (\mathcal{C}, \mathcal{O}, \mathcal{R})$
+```，必须满足：
+$```latex
+$\forall c_1, c_2 \in \mathcal{C}, \forall r \in \mathcal{R}: r(c_1, c_2) \Rightarrow \text{consistent}(c_1, c_2)$
+```$
 
 **定理 1.1** (结构可组合性)
-如果 $P_1 = (\mathcal{C}_1, \mathcal{O}_1, \mathcal{R}_1)$ 和 $P_2 = (\mathcal{C}_2, \mathcal{O}_2, \mathcal{R}_2)$ 都是有效的结构型模式，那么它们的组合 $P_1 \circ P_2$ 也是有效的结构型模式。
+如果 ```latex
+$P_1 = (\mathcal{C}_1, \mathcal{O}_1, \mathcal{R}_1)$
+``` 和 ```latex
+$P_2 = (\mathcal{C}_2, \mathcal{O}_2, \mathcal{R}_2)$
+``` 都是有效的结构型模式，那么它们的组合 ```latex
+$P_1 \circ P_2$
+``` 也是有效的结构型模式。
 
 ## 模式分类
 
@@ -63,16 +87,30 @@ graph TD
 ### 1.1 形式化定义
 
 **定义 1.2** (适配器模式)
-适配器模式是一个四元组 $(\text{Target}, \text{Adaptee}, \text{Adapter}, \text{Client})$，其中：
+适配器模式是一个四元组 ```latex
+$(\text{Target}, \text{Adaptee}, \text{Adapter}, \text{Client})$
+```，其中：
 
-- $\text{Target}$: 目标接口，定义客户端期望的接口
-- $\text{Adaptee}$: 被适配的类，具有不兼容的接口
-- $\text{Adapter}$: 适配器类，将 Adaptee 的接口转换为 Target 接口
-- $\text{Client}$: 客户端，使用 Target 接口
+- ```latex
+$\text{Target}$
+```: 目标接口，定义客户端期望的接口
+- ```latex
+$\text{Adaptee}$
+```: 被适配的类，具有不兼容的接口
+- ```latex
+$\text{Adapter}$
+```: 适配器类，将 Adaptee 的接口转换为 Target 接口
+- ```latex
+$\text{Client}$
+```: 客户端，使用 Target 接口
 
 **公理 1.2** (适配器正确性)
-对于任意适配器 $A$，必须满足：
-$$\forall a \in \text{Adaptee}, \forall t \in \text{Target}: A(a) = t \Rightarrow \text{behavior}(a) \equiv \text{behavior}(t)$$
+对于任意适配器 ```latex
+$A$
+```，必须满足：
+$```latex
+$\forall a \in \text{Adaptee}, \forall t \in \text{Target}: A(a) = t \Rightarrow \text{behavior}(a) \equiv \text{behavior}(t)$
+```$
 
 ### 1.2 Go语言实现
 
@@ -179,26 +217,46 @@ func (p *ThreadSafePaymentAdapter) GetPaymentStatus() string {
 
 ### 1.3 性能分析
 
-**时间复杂度**: $O(1)$ - 适配器操作是常数时间
-**空间复杂度**: $O(1)$ - 只存储一个引用
-**并发复杂度**: $O(1)$ - 使用channel实现互斥锁
+**时间复杂度**: ```latex
+$O(1)$
+``` - 适配器操作是常数时间
+**空间复杂度**: ```latex
+$O(1)$
+``` - 只存储一个引用
+**并发复杂度**: ```latex
+$O(1)$
+``` - 使用channel实现互斥锁
 
 ## 2. 桥接模式 (Bridge Pattern)
 
 ### 2.1 形式化定义
 
 **定义 1.3** (桥接模式)
-桥接模式是一个五元组 $(\text{Abstraction}, \text{RefinedAbstraction}, \text{Implementor}, \text{ConcreteImplementor}, \text{Client})$，其中：
+桥接模式是一个五元组 ```latex
+$(\text{Abstraction}, \text{RefinedAbstraction}, \text{Implementor}, \text{ConcreteImplementor}, \text{Client})$
+```，其中：
 
-- $\text{Abstraction}$: 抽象类，定义抽象接口
-- $\text{RefinedAbstraction}$: 扩充抽象类，扩展抽象接口
-- $\text{Implementor}$: 实现者接口，定义实现接口
-- $\text{ConcreteImplementor}$: 具体实现者，实现实现者接口
-- $\text{Client}$: 客户端，使用抽象接口
+- ```latex
+$\text{Abstraction}$
+```: 抽象类，定义抽象接口
+- ```latex
+$\text{RefinedAbstraction}$
+```: 扩充抽象类，扩展抽象接口
+- ```latex
+$\text{Implementor}$
+```: 实现者接口，定义实现接口
+- ```latex
+$\text{ConcreteImplementor}$
+```: 具体实现者，实现实现者接口
+- ```latex
+$\text{Client}$
+```: 客户端，使用抽象接口
 
 **定理 1.2** (桥接模式独立性)
 在桥接模式中，抽象和实现可以独立变化：
-$$\text{Abstraction} \perp \text{Implementor}$$
+$```latex
+$\text{Abstraction} \perp \text{Implementor}$
+```$
 
 ### 2.2 Go语言实现
 
@@ -314,15 +372,25 @@ func (t *ThreadSafeShape) ResizeByPercentage(pct int) {
 ### 3.1 形式化定义
 
 **定义 1.4** (装饰器模式)
-装饰器模式是一个三元组 $(\text{Component}, \text{Decorator}, \text{ConcreteDecorator})$，其中：
+装饰器模式是一个三元组 ```latex
+$(\text{Component}, \text{Decorator}, \text{ConcreteDecorator})$
+```，其中：
 
-- $\text{Component}$: 组件接口，定义被装饰对象的接口
-- $\text{Decorator}$: 装饰器抽象类，维护对Component的引用
-- $\text{ConcreteDecorator}$: 具体装饰器，添加具体的行为
+- ```latex
+$\text{Component}$
+```: 组件接口，定义被装饰对象的接口
+- ```latex
+$\text{Decorator}$
+```: 装饰器抽象类，维护对Component的引用
+- ```latex
+$\text{ConcreteDecorator}$
+```: 具体装饰器，添加具体的行为
 
 **公理 1.3** (装饰器组合性)
 装饰器满足组合律：
-$$\forall d_1, d_2, d_3 \in \text{Decorator}: (d_1 \circ d_2) \circ d_3 = d_1 \circ (d_2 \circ d_3)$$
+$```latex
+$\forall d_1, d_2, d_3 \in \text{Decorator}: (d_1 \circ d_2) \circ d_3 = d_1 \circ (d_2 \circ d_3)$
+```$
 
 ### 3.2 Go语言实现
 
@@ -425,15 +493,25 @@ func (t *ThreadSafeCoffeeDecorator) Description() string {
 ### 4.1 形式化定义
 
 **定义 1.5** (外观模式)
-外观模式是一个三元组 $(\text{Facade}, \text{Subsystem}, \text{Client})$，其中：
+外观模式是一个三元组 ```latex
+$(\text{Facade}, \text{Subsystem}, \text{Client})$
+```，其中：
 
-- $\text{Facade}$: 外观类，为子系统提供一个统一的接口
-- $\text{Subsystem}$: 子系统类集合，实现子系统的功能
-- $\text{Client}$: 客户端，通过外观与子系统交互
+- ```latex
+$\text{Facade}$
+```: 外观类，为子系统提供一个统一的接口
+- ```latex
+$\text{Subsystem}$
+```: 子系统类集合，实现子系统的功能
+- ```latex
+$\text{Client}$
+```: 客户端，通过外观与子系统交互
 
 **定理 1.3** (外观简化性)
 外观模式简化了客户端与子系统的交互：
-$$\text{complexity}(\text{Client} \leftrightarrow \text{Facade}) < \text{complexity}(\text{Client} \leftrightarrow \text{Subsystem})$$
+$```latex
+$\text{complexity}(\text{Client} \leftrightarrow \text{Facade}) < \text{complexity}(\text{Client} \leftrightarrow \text{Subsystem})$
+```$
 
 ### 4.2 Go语言实现
 
@@ -530,16 +608,28 @@ func (c *ThreadSafeComputerFacade) Start() {
 ### 5.1 形式化定义
 
 **定义 1.6** (享元模式)
-享元模式是一个四元组 $(\text{Flyweight}, \text{ConcreteFlyweight}, \text{FlyweightFactory}, \text{Client})$，其中：
+享元模式是一个四元组 ```latex
+$(\text{Flyweight}, \text{ConcreteFlyweight}, \text{FlyweightFactory}, \text{Client})$
+```，其中：
 
-- $\text{Flyweight}$: 享元接口，定义共享对象的接口
-- $\text{ConcreteFlyweight}$: 具体享元，实现共享对象
-- $\text{FlyweightFactory}$: 享元工厂，创建和管理享元对象
-- $\text{Client}$: 客户端，使用享元对象
+- ```latex
+$\text{Flyweight}$
+```: 享元接口，定义共享对象的接口
+- ```latex
+$\text{ConcreteFlyweight}$
+```: 具体享元，实现共享对象
+- ```latex
+$\text{FlyweightFactory}$
+```: 享元工厂，创建和管理享元对象
+- ```latex
+$\text{Client}$
+```: 客户端，使用享元对象
 
 **公理 1.4** (享元共享性)
 享元对象在系统中是共享的：
-$$\forall f_1, f_2 \in \text{Flyweight}: \text{identical}(f_1, f_2) \Rightarrow f_1 = f_2$$
+$```latex
+$\forall f_1, f_2 \in \text{Flyweight}: \text{identical}(f_1, f_2) \Rightarrow f_1 = f_2$
+```$
 
 ### 5.2 Go语言实现
 
@@ -622,16 +712,28 @@ func (t *TextEditor) Display() {
 ### 6.1 形式化定义
 
 **定义 1.7** (代理模式)
-代理模式是一个四元组 $(\text{Subject}, \text{RealSubject}, \text{Proxy}, \text{Client})$，其中：
+代理模式是一个四元组 ```latex
+$(\text{Subject}, \text{RealSubject}, \text{Proxy}, \text{Client})$
+```，其中：
 
-- $\text{Subject}$: 主题接口，定义RealSubject和Proxy的公共接口
-- $\text{RealSubject}$: 真实主题，定义代理所代表的真实对象
-- $\text{Proxy}$: 代理，维护对RealSubject的引用
-- $\text{Client}$: 客户端，通过Proxy访问RealSubject
+- ```latex
+$\text{Subject}$
+```: 主题接口，定义RealSubject和Proxy的公共接口
+- ```latex
+$\text{RealSubject}$
+```: 真实主题，定义代理所代表的真实对象
+- ```latex
+$\text{Proxy}$
+```: 代理，维护对RealSubject的引用
+- ```latex
+$\text{Client}$
+```: 客户端，通过Proxy访问RealSubject
 
 **定理 1.4** (代理透明性)
 代理对客户端是透明的：
-$$\forall c \in \text{Client}: \text{behavior}(c \leftrightarrow \text{Proxy}) \equiv \text{behavior}(c \leftrightarrow \text{RealSubject})$$
+$```latex
+$\forall c \in \text{Client}: \text{behavior}(c \leftrightarrow \text{Proxy}) \equiv \text{behavior}(c \leftrightarrow \text{RealSubject})$
+```$
 
 ### 6.2 Go语言实现
 
@@ -733,12 +835,48 @@ func (p *ProtectedImage) Authenticate(password string) bool {
 
 | 模式 | 时间复杂度 | 空间复杂度 | 并发复杂度 |
 |------|------------|------------|------------|
-| 适配器 | $O(1)$ | $O(1)$ | $O(1)$ |
-| 桥接 | $O(1)$ | $O(1)$ | $O(1)$ |
-| 装饰器 | $O(n)$ | $O(n)$ | $O(1)$ |
-| 外观 | $O(1)$ | $O(1)$ | $O(1)$ |
-| 享元 | $O(1)$ | $O(1)$ | $O(1)$ |
-| 代理 | $O(1)$ | $O(1)$ | $O(1)$ |
+| 适配器 | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` |
+| 桥接 | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` |
+| 装饰器 | ```latex
+$O(n)$
+``` | ```latex
+$O(n)$
+``` | ```latex
+$O(1)$
+``` |
+| 外观 | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` |
+| 享元 | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` |
+| 代理 | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` | ```latex
+$O(1)$
+``` |
 
 ## 应用场景
 
@@ -785,9 +923,15 @@ func (p *ProtectedImage) Authenticate(password string) bool {
 **定理 1.5** (结构型模式正确性)
 所有结构型模式都满足以下性质：
 
-1. **类型安全**: $\forall p \in \text{Pattern}: \text{type-safe}(p)$
-2. **行为一致性**: $\forall p \in \text{Pattern}: \text{behavior-consistent}(p)$
-3. **可组合性**: $\forall p_1, p_2 \in \text{Pattern}: \text{composable}(p_1, p_2)$
+1. **类型安全**: ```latex
+$\forall p \in \text{Pattern}: \text{type-safe}(p)$
+```
+2. **行为一致性**: ```latex
+$\forall p \in \text{Pattern}: \text{behavior-consistent}(p)$
+```
+3. **可组合性**: ```latex
+$\forall p_1, p_2 \in \text{Pattern}: \text{composable}(p_1, p_2)$
+```
 
 **证明**:
 通过结构归纳法，每个模式都经过形式化验证，确保满足上述性质。

@@ -9,29 +9,57 @@
 ### 1. 并发模式的形式化框架
 
 **定义 1.1** (并发模式)
-并发模式是一个四元组 $\mathcal{CP} = (T, S, R, \phi)$，其中：
+并发模式是一个四元组 ```latex
+$\mathcal{CP} = (T, S, R, \phi)$
+```，其中：
 
-- $T$ 是线程/协程集合
-- $S$ 是共享状态集合
-- $R$ 是同步关系集合
-- $\phi: T \times S \rightarrow R$ 是线程到同步关系的映射
+- ```latex
+$T$
+``` 是线程/协程集合
+- ```latex
+$S$
+``` 是共享状态集合
+- ```latex
+$R$
+``` 是同步关系集合
+- ```latex
+$\phi: T \times S \rightarrow R$
+``` 是线程到同步关系的映射
 
 **公理 1.1** (并发模式公理)
-对于任意并发模式 $\mathcal{CP} = (T, S, R, \phi)$：
+对于任意并发模式 ```latex
+$\mathcal{CP} = (T, S, R, \phi)$
+```：
 
-1. **安全性**: $\forall t_1, t_2 \in T: \text{race\_free}(t_1, t_2)$
-2. **活性**: $\forall t \in T: \text{eventually\_progress}(t)$
-3. **公平性**: $\forall t_1, t_2 \in T: \text{fair\_scheduling}(t_1, t_2)$
+1. **安全性**: ```latex
+$\forall t_1, t_2 \in T: \text{race\_free}(t_1, t_2)$
+```
+2. **活性**: ```latex
+$\forall t \in T: \text{eventually\_progress}(t)$
+```
+3. **公平性**: ```latex
+$\forall t_1, t_2 \in T: \text{fair\_scheduling}(t_1, t_2)$
+```
 
 ### 2. 并发安全性的形式化
 
 **定义 1.2** (数据竞争)
-对于线程 $t_1, t_2$ 和共享状态 $s$，存在数据竞争当且仅当：
-$$\exists t_1, t_2 \in T, s \in S: \text{concurrent\_access}(t_1, t_2, s) \land \text{one\_write}(t_1, t_2, s)$$
+对于线程 ```latex
+$t_1, t_2$
+``` 和共享状态 ```latex
+$s$
+```，存在数据竞争当且仅当：
+$```latex
+$\exists t_1, t_2 \in T, s \in S: \text{concurrent\_access}(t_1, t_2, s) \land \text{one\_write}(t_1, t_2, s)$
+```$
 
 **定义 1.3** (死锁)
-死锁是线程集合 $T' \subseteq T$ 的状态，满足：
-$$\forall t \in T': \text{waiting\_for}(t) \in T' \land \text{circular\_wait}(T')$$
+死锁是线程集合 ```latex
+$T' \subseteq T$
+``` 的状态，满足：
+$```latex
+$\forall t \in T': \text{waiting\_for}(t) \in T' \land \text{circular\_wait}(T')$
+```$
 
 ## 核心模式
 
@@ -41,8 +69,14 @@ $$\forall t \in T': \text{waiting\_for}(t) \in T' \land \text{circular\_wait}(T'
 线程池模式预先创建一组线程，用于执行任务，避免频繁创建和销毁线程的开销。
 
 **形式化定义**:
-设 $W$ 为工作线程集合，$Q$ 为任务队列，线程池模式定义为：
-$$\text{ThreadPool}: Q \rightarrow W \times \text{Result}$$
+设 ```latex
+$W$
+``` 为工作线程集合，```latex
+$Q$
+``` 为任务队列，线程池模式定义为：
+$```latex
+$\text{ThreadPool}: Q \rightarrow W \times \text{Result}$
+```$
 
 **Go 语言实现**:
 
@@ -347,7 +381,9 @@ func ExampleThreadPool() {
 
 **定理 1.5** (线程池的安全性)
 线程池模式保证任务执行的线程安全：
-$$\forall t_1, t_2 \in T, \forall s \in S: \text{no\_race\_condition}(t_1, t_2, s)$$
+$```latex
+$\forall t_1, t_2 \in T, \forall s \in S: \text{no\_race\_condition}(t_1, t_2, s)$
+```$
 
 **证明**:
 
@@ -362,9 +398,15 @@ $$\forall t_1, t_2 \in T, \forall s \in S: \text{no\_race\_condition}(t_1, t_2, 
 Future 表示一个尚未完成的异步计算的结果，Promise 用于设置异步操作的最终结果。
 
 **形式化定义**:
-设 $T$ 为结果类型，Future/Promise 模式定义为：
-$$\text{Future}[T]: \text{Unit} \rightarrow T \times \text{Status}$$
-$$\text{Promise}[T]: T \rightarrow \text{Unit}$$
+设 ```latex
+$T$
+``` 为结果类型，Future/Promise 模式定义为：
+$```latex
+$\text{Future}[T]: \text{Unit} \rightarrow T \times \text{Status}$
+```$
+$```latex
+$\text{Promise}[T]: T \rightarrow \text{Unit}$
+```$
 
 **Go 语言实现**:
 
@@ -578,8 +620,14 @@ func ExampleFuturePromise() {
 Actor 模式中，每个 Actor 是一个并发执行的实体，拥有自己的状态和行为，通过消息传递与其他 Actor 通信。
 
 **形式化定义**:
-设 $A$ 为 Actor 集合，$M$ 为消息集合，Actor 模式定义为：
-$$\text{Actor}: A \times M \rightarrow A \times \text{Response}$$
+设 ```latex
+$A$
+``` 为 Actor 集合，```latex
+$M$
+``` 为消息集合，Actor 模式定义为：
+$```latex
+$\text{Actor}: A \times M \rightarrow A \times \text{Response}$
+```$
 
 **Go 语言实现**:
 
@@ -859,8 +907,16 @@ func ExampleActor() {
 生产者-消费者模式通过队列协调生产者和消费者之间的数据流，实现解耦和缓冲。
 
 **形式化定义**:
-设 $P$ 为生产者集合，$C$ 为消费者集合，$Q$ 为队列，模式定义为：
-$$P \times Q \rightarrow Q \times C \rightarrow \text{Result}$$
+设 ```latex
+$P$
+``` 为生产者集合，```latex
+$C$
+``` 为消费者集合，```latex
+$Q$
+``` 为队列，模式定义为：
+$```latex
+$P \times Q \rightarrow Q \times C \rightarrow \text{Result}$
+```$
 
 **Go 语言实现**:
 
@@ -1211,11 +1267,19 @@ func ExampleProducerConsumer() {
 ### 1. 并发模式间的数学关系
 
 **定义 1.8** (并发模式组合)
-设 $\mathcal{CP}_1, \mathcal{CP}_2$ 为两个并发模式，其组合定义为：
-$$\mathcal{CP}_1 \circ \mathcal{CP}_2 = (T_1 \cup T_2, S_1 \cup S_2, R_1 \cup R_2, \phi_1 \cup \phi_2)$$
+设 ```latex
+$\mathcal{CP}_1, \mathcal{CP}_2$
+``` 为两个并发模式，其组合定义为：
+$```latex
+$\mathcal{CP}_1 \circ \mathcal{CP}_2 = (T_1 \cup T_2, S_1 \cup S_2, R_1 \cup R_2, \phi_1 \cup \phi_2)$
+```$
 
 **定理 1.6** (组合的安全性)
-如果 $\mathcal{CP}_1, \mathcal{CP}_2$ 都是安全的，则其组合 $\mathcal{CP}_1 \circ \mathcal{CP}_2$ 也是安全的。
+如果 ```latex
+$\mathcal{CP}_1, \mathcal{CP}_2$
+``` 都是安全的，则其组合 ```latex
+$\mathcal{CP}_1 \circ \mathcal{CP}_2$
+``` 也是安全的。
 
 ### 2. 性能分析
 

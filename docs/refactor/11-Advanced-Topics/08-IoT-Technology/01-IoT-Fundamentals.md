@@ -52,9 +52,17 @@ IoT系统采用三层架构：
 在IoT三层架构中，每层的独立性和标准化程度决定了系统的可扩展性。
 
 **证明**:
-设系统复杂度为 $C$，层数为 $n$，每层标准化程度为 $s_i$。
+设系统复杂度为 ```latex
+$C$
+```，层数为 ```latex
+$n$
+```，每层标准化程度为 ```latex
+$s_i$
+```。
 则系统可扩展性为：
-$$S = \prod_{i=1}^n s_i \cdot \frac{1}{C}$$
+$```latex
+$S = \prod_{i=1}^n s_i \cdot \frac{1}{C}$
+```$
 
 ### 11.8.1.2.2 Go实现架构框架
 
@@ -395,9 +403,17 @@ func (dm *DeviceManager) UpdateDeviceStatus(deviceID string, status DeviceStatus
 数据采集的效率取决于采样频率和传输带宽的平衡。
 
 **证明**:
-设采样频率为 $f$，传输带宽为 $B$，数据大小为 $S$。
+设采样频率为 ```latex
+$f$
+```，传输带宽为 ```latex
+$B$
+```，数据大小为 ```latex
+$S$
+```。
 则效率为：
-$$E = \min\left(\frac{B}{S \cdot f}, 1\right)$$
+$```latex
+$E = \min\left(\frac{B}{S \cdot f}, 1\right)$
+```$
 
 ### 11.8.1.5.2 Go实现数据处理
 

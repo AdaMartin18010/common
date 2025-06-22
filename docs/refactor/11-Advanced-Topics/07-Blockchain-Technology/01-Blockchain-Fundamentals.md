@@ -11,74 +11,132 @@
 区块链是一个有序的区块链表，每个区块包含：
 
 ```latex
-$$Block_i = (Header_i, Transactions_i, Hash_i)$$
+$```latex
+$Block_i = (Header_i, Transactions_i, Hash_i)$
+```$
 ```
 
 其中：
 
-- $Header_i$: 区块头
-- $Transactions_i$: 交易列表
-- $Hash_i$: 区块哈希
+- ```latex
+$Header_i$
+```: 区块头
+- ```latex
+$Transactions_i$
+```: 交易列表
+- ```latex
+$Hash_i$
+```: 区块哈希
 
 ### 1.1.2 区块头结构
 
 区块头包含：
 
 ```latex
-$$Header = (Version, PrevHash, MerkleRoot, Timestamp, Difficulty, Nonce)$$
+$```latex
+$Header = (Version, PrevHash, MerkleRoot, Timestamp, Difficulty, Nonce)$
+```$
 ```
 
 其中：
 
-- $Version$: 版本号
-- $PrevHash$: 前一个区块的哈希
-- $MerkleRoot$: 默克尔根
-- $Timestamp$: 时间戳
-- $Difficulty$: 难度值
-- $Nonce$: 随机数
+- ```latex
+$Version$
+```: 版本号
+- ```latex
+$PrevHash$
+```: 前一个区块的哈希
+- ```latex
+$MerkleRoot$
+```: 默克尔根
+- ```latex
+$Timestamp$
+```: 时间戳
+- ```latex
+$Difficulty$
+```: 难度值
+- ```latex
+$Nonce$
+```: 随机数
 
 ## 1.2 密码学基础
 
 ### 1.2.1 哈希函数
 
-哈希函数 $H$ 满足：
+哈希函数 ```latex
+$H$
+``` 满足：
 
 ```latex
-$$H: \{0,1\}^* \rightarrow \{0,1\}^n$$
+$```latex
+$H: \{0,1\}^* \rightarrow \{0,1\}^n$
+```$
 ```
 
 性质：
 
-- 确定性：$H(x) = H(x)$
-- 快速计算：$H(x)$ 计算高效
-- 单向性：从 $H(x)$ 难以计算 $x$
-- 抗碰撞性：难以找到 $x \neq y$ 使得 $H(x) = H(y)$
+- 确定性：```latex
+$H(x) = H(x)$
+```
+- 快速计算：```latex
+$H(x)$
+``` 计算高效
+- 单向性：从 ```latex
+$H(x)$
+``` 难以计算 ```latex
+$x$
+```
+- 抗碰撞性：难以找到 ```latex
+$x \neq y$
+``` 使得 ```latex
+$H(x) = H(y)$
+```
 
 ### 1.2.2 数字签名
 
 数字签名算法：
 
 ```latex
-$$(sk, pk) = \text{KeyGen}(1^\lambda)$$
-$$σ = \text{Sign}(sk, m)$$
-$$b = \text{Verify}(pk, m, σ)$$
+$```latex
+$(sk, pk) = \text{KeyGen}(1^\lambda)$
+```$
+$```latex
+$σ = \text{Sign}(sk, m)$
+```$
+$```latex
+$b = \text{Verify}(pk, m, σ)$
+```$
 ```
 
 其中：
 
-- $sk$: 私钥
-- $pk$: 公钥
-- $σ$: 签名
-- $m$: 消息
+- ```latex
+$sk$
+```: 私钥
+- ```latex
+$pk$
+```: 公钥
+- ```latex
+$σ$
+```: 签名
+- ```latex
+$m$
+```: 消息
 
 ### 1.2.3 默克尔树
 
 默克尔树构建：
 
 ```latex
-$$h_i = H(tx_i)$$
-$$h_{i,j} = H(h_i || h_j)$$
-$$Root = H(h_{1,2} || h_{3,4} || ... || h_{n-1,n})$$
+$```latex
+$h_i = H(tx_i)$
+```$
+$```latex
+$h_{i,j} = H(h_i || h_j)$
+```$
+$```latex
+$Root = H(h_{1,2} || h_{3,4} || ... || h_{n-1,n})$
+```$
 ```
 
 ## 1.3 共识机制
@@ -88,17 +146,23 @@ $$Root = H(h_{1,2} || h_{3,4} || ... || h_{n-1,n})$$
 PoW要求找到满足条件的随机数：
 
 ```latex
-$$H(Header || Nonce) < Target$$
+$```latex
+$H(Header || Nonce) < Target$
+```$
 ```
 
-其中 $Target$ 是目标值，与难度相关。
+其中 ```latex
+$Target$
+``` 是目标值，与难度相关。
 
 ### 1.3.2 权益证明（PoS）
 
 PoS根据权益选择验证者：
 
 ```latex
-$$P(Validator_i) = \frac{Stake_i}{\sum_{j=1}^n Stake_j}$$
+$```latex
+$P(Validator_i) = \frac{Stake_i}{\sum_{j=1}^n Stake_j}$
+```$
 ```
 
 ### 1.3.3 拜占庭容错（BFT）
@@ -106,10 +170,14 @@ $$P(Validator_i) = \frac{Stake_i}{\sum_{j=1}^n Stake_j}$$
 BFT要求：
 
 ```latex
-$$n \geq 3f + 1$$
+$```latex
+$n \geq 3f + 1$
+```$
 ```
 
-其中 $f$ 是拜占庭节点数量。
+其中 ```latex
+$f$
+``` 是拜占庭节点数量。
 
 ## 1.4 网络模型
 
@@ -118,13 +186,17 @@ $$n \geq 3f + 1$$
 节点连接度：
 
 ```latex
-$$Degree_i = |Neighbors_i|$$
+$```latex
+$Degree_i = |Neighbors_i|$
+```$
 ```
 
 网络直径：
 
 ```latex
-$$Diameter = \max_{i,j} d(i,j)$$
+$```latex
+$Diameter = \max_{i,j} d(i,j)$
+```$
 ```
 
 ### 1.4.2 消息传播
@@ -132,10 +204,14 @@ $$Diameter = \max_{i,j} d(i,j)$$
 消息传播时间：
 
 ```latex
-$$T_{propagation} = O(\log n)$$
+$```latex
+$T_{propagation} = O(\log n)$
+```$
 ```
 
-其中 $n$ 是网络节点数。
+其中 ```latex
+$n$
+``` 是网络节点数。
 
 ## 1.5 Go语言实现
 

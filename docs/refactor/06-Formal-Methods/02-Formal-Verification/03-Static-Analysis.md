@@ -7,8 +7,16 @@
 **静态分析**是在不执行程序的情况下，通过分析源代码来发现潜在错误、安全漏洞和代码质量问题的方法。
 
 **形式化定义**：
-设 $P$ 为程序，$S$ 为程序状态空间，静态分析函数 $A: P \rightarrow 2^S$ 满足：
-$$A(P) = \{s \in S | \exists \text{ execution path } \pi: s \in \pi\}$$
+设 ```latex
+$P$
+``` 为程序，```latex
+$S$
+``` 为程序状态空间，静态分析函数 ```latex
+$A: P \rightarrow 2^S$
+``` 满足：
+$```latex
+$A(P) = \{s \in S | \exists \text{ execution path } \pi: s \in \pi\}$
+```$
 
 ### 1.2 理论基础
 
@@ -16,16 +24,32 @@ $$A(P) = \{s \in S | \exists \text{ execution path } \pi: s \in \pi\}$$
 
 抽象解释是静态分析的理论基础，通过抽象域来近似程序行为：
 
-**定义**：抽象域 $(D, \sqsubseteq, \sqcup, \sqcap)$ 是一个完全格，其中：
+**定义**：抽象域 ```latex
+$(D, \sqsubseteq, \sqcup, \sqcap)$
+``` 是一个完全格，其中：
 
-- $D$ 是抽象值的集合
-- $\sqsubseteq$ 是偏序关系
-- $\sqcup$ 是上确界操作
-- $\sqcap$ 是下确界操作
+- ```latex
+$D$
+``` 是抽象值的集合
+- ```latex
+$\sqsubseteq$
+``` 是偏序关系
+- ```latex
+$\sqcup$
+``` 是上确界操作
+- ```latex
+$\sqcap$
+``` 是下确界操作
 
 **Galois连接**：
-$$(\alpha, \gamma): \mathcal{P}(S) \leftrightarrow D$$
-其中 $\alpha$ 是抽象函数，$\gamma$ 是具体化函数。
+$```latex
+$(\alpha, \gamma): \mathcal{P}(S) \leftrightarrow D$
+```$
+其中 ```latex
+$\alpha$
+``` 是抽象函数，```latex
+$\gamma$
+``` 是具体化函数。
 
 ## 2. 数据流分析
 
@@ -33,17 +57,47 @@ $$(\alpha, \gamma): \mathcal{P}(S) \leftrightarrow D$$
 
 #### 2.1.1 理论基础
 
-**定义**：变量 $v$ 在程序点 $p$ 处的定义 $d$ 可达，当且仅当存在从 $d$ 到 $p$ 的路径，且该路径上 $v$ 没有被重新定义。
+**定义**：变量 ```latex
+$v$
+``` 在程序点 ```latex
+$p$
+``` 处的定义 ```latex
+$d$
+``` 可达，当且仅当存在从 ```latex
+$d$
+``` 到 ```latex
+$p$
+``` 的路径，且该路径上 ```latex
+$v$
+``` 没有被重新定义。
 
 **形式化定义**：
-$$RD(p) = \bigcup_{q \in pred(p)} (RD(q) \setminus kill(q) \cup gen(q))$$
+$```latex
+$RD(p) = \bigcup_{q \in pred(p)} (RD(q) \setminus kill(q) \cup gen(q))$
+```$
 
 其中：
 
-- $RD(p)$ 是程序点 $p$ 处的可达定义集合
-- $pred(p)$ 是 $p$ 的前驱节点集合
-- $kill(q)$ 是在 $q$ 处被杀死（覆盖）的定义
-- $gen(q)$ 是在 $q$ 处生成的新定义
+- ```latex
+$RD(p)$
+``` 是程序点 ```latex
+$p$
+``` 处的可达定义集合
+- ```latex
+$pred(p)$
+``` 是 ```latex
+$p$
+``` 的前驱节点集合
+- ```latex
+$kill(q)$
+``` 是在 ```latex
+$q$
+``` 处被杀死（覆盖）的定义
+- ```latex
+$gen(q)$
+``` 是在 ```latex
+$q$
+``` 处生成的新定义
 
 #### 2.1.2 Go语言实现
 
@@ -218,17 +272,45 @@ func (g *GenericStaticAnalyzer[T]) Analyze(node ast.Node) {
 
 #### 2.2.1 理论基础
 
-**定义**：变量 $v$ 在程序点 $p$ 处活跃，当且仅当存在从 $p$ 开始的路径，在该路径上 $v$ 被使用且在此之前 $v$ 没有被重新定义。
+**定义**：变量 ```latex
+$v$
+``` 在程序点 ```latex
+$p$
+``` 处活跃，当且仅当存在从 ```latex
+$p$
+``` 开始的路径，在该路径上 ```latex
+$v$
+``` 被使用且在此之前 ```latex
+$v$
+``` 没有被重新定义。
 
 **形式化定义**：
-$$LV(p) = \bigcup_{q \in succ(p)} (LV(q) \setminus def(q) \cup use(q))$$
+$```latex
+$LV(p) = \bigcup_{q \in succ(p)} (LV(q) \setminus def(q) \cup use(q))$
+```$
 
 其中：
 
-- $LV(p)$ 是程序点 $p$ 处的活跃变量集合
-- $succ(p)$ 是 $p$ 的后继节点集合
-- $def(q)$ 是在 $q$ 处定义的变量
-- $use(q)$ 是在 $q$ 处使用的变量
+- ```latex
+$LV(p)$
+``` 是程序点 ```latex
+$p$
+``` 处的活跃变量集合
+- ```latex
+$succ(p)$
+``` 是 ```latex
+$p$
+``` 的后继节点集合
+- ```latex
+$def(q)$
+``` 是在 ```latex
+$q$
+``` 处定义的变量
+- ```latex
+$use(q)$
+``` 是在 ```latex
+$q$
+``` 处使用的变量
 
 #### 2.2.2 Go语言实现
 
@@ -374,10 +456,16 @@ func (lva *LiveVariableAnalysis) IsVariableLive(variable string, line int) bool 
 
 #### 3.1.1 理论基础
 
-**控制流图 (CFG)** 是一个有向图 $G = (V, E)$，其中：
+**控制流图 (CFG)** 是一个有向图 ```latex
+$G = (V, E)$
+```，其中：
 
-- $V$ 是基本块的集合
-- $E$ 是基本块之间的控制流边
+- ```latex
+$V$
+``` 是基本块的集合
+- ```latex
+$E$
+``` 是基本块之间的控制流边
 
 **基本块** 是程序中的线性指令序列，只有一个入口点和一个出口点。
 
@@ -619,7 +707,9 @@ func (da *DominanceAnalysis) Dominates(block1, block2 *BasicBlock) bool {
 **类型系统** 是一组规则，用于验证程序中的类型使用是否正确。
 
 **类型推导** 是从表达式中推断类型的过程：
-$$\frac{\Gamma \vdash e_1 : \tau_1 \quad \Gamma \vdash e_2 : \tau_2}{\Gamma \vdash e_1 + e_2 : \tau_1 \sqcup \tau_2}$$
+$```latex
+$\frac{\Gamma \vdash e_1 : \tau_1 \quad \Gamma \vdash e_2 : \tau_2}{\Gamma \vdash e_1 + e_2 : \tau_1 \sqcup \tau_2}$
+```$
 
 #### 4.1.2 Go语言实现
 
@@ -841,8 +931,18 @@ func (tc *TypeChecker) unifyNumericTypes(t1, t2 Type) Type {
 **缓冲区溢出** 是当程序试图在预分配的固定长度缓冲区边界之外写入数据时发生的安全漏洞。
 
 **形式化定义**：
-设 $B$ 为缓冲区，$size(B)$ 为缓冲区大小，$access(B, i)$ 为对位置 $i$ 的访问，则：
-$$\forall i: access(B, i) \Rightarrow 0 \leq i < size(B)$$
+设 ```latex
+$B$
+``` 为缓冲区，```latex
+$size(B)$
+``` 为缓冲区大小，```latex
+$access(B, i)$
+``` 为对位置 ```latex
+$i$
+``` 的访问，则：
+$```latex
+$\forall i: access(B, i) \Rightarrow 0 \leq i < size(B)$
+```$
 
 #### 5.1.2 Go语言实现
 
@@ -975,8 +1075,14 @@ func (bod *BufferOverflowDetector) isIndexSafe(index ast.Expr, size int) bool {
 **空指针解引用** 是当程序试图访问空指针指向的内存时发生的错误。
 
 **形式化定义**：
-设 $p$ 为指针，$*p$ 为解引用操作，则：
-$$*p \Rightarrow p \neq null$$
+设 ```latex
+$p$
+``` 为指针，```latex
+$*p$
+``` 为解引用操作，则：
+$```latex
+$*p \Rightarrow p \neq null$
+```$
 
 #### 5.2.2 Go语言实现
 
@@ -1090,7 +1196,9 @@ func (npd *NullPointerDetector) checkNullDereferences() {
 **算法复杂度** 描述了算法执行时间或空间需求随输入规模增长的变化规律。
 
 **大O记号**：
-$$f(n) = O(g(n)) \Leftrightarrow \exists c, n_0: \forall n \geq n_0, f(n) \leq c \cdot g(n)$$
+$```latex
+$f(n) = O(g(n)) \Leftrightarrow \exists c, n_0: \forall n \geq n_0, f(n) \leq c \cdot g(n)$
+```$
 
 #### 6.1.2 Go语言实现
 

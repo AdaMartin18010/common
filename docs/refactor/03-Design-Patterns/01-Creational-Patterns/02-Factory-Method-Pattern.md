@@ -61,25 +61,45 @@
 
 ### 2.1 集合论定义
 
-设 $P$ 为产品集合，$F$ 为工厂集合，$C$ 为创建者集合，则工厂方法模式满足：
+设 ```latex
+$P$
+``` 为产品集合，```latex
+$F$
+``` 为工厂集合，```latex
+$C$
+``` 为创建者集合，则工厂方法模式满足：
 
-$$\forall f \in F, \exists c \in C : f = \text{createProduct}(c)$$
+$```latex
+$\forall f \in F, \exists c \in C : f = \text{createProduct}(c)$
+```$
 
-其中 $\text{createProduct}: C \rightarrow P$ 为工厂方法。
+其中 ```latex
+$\text{createProduct}: C \rightarrow P$
+``` 为工厂方法。
 
 ### 2.2 函数式定义
 
-定义工厂方法函数族 $\mathcal{F} = \{f_c : \emptyset \rightarrow P \mid c \in C\}$，满足：
+定义工厂方法函数族 ```latex
+$\mathcal{F} = \{f_c : \emptyset \rightarrow P \mid c \in C\}$
+```，满足：
 
-$$f_c() = \text{createProduct}(c)$$
+$```latex
+$f_c() = \text{createProduct}(c)$
+```$
 
 ### 2.3 类型论定义
 
 在类型论中，工厂方法模式可以表示为：
 
-$$\text{Factory} = \Pi_{c:C} \Sigma_{p:P} \text{Product}(p)$$
+$```latex
+$\text{Factory} = \Pi_{c:C} \Sigma_{p:P} \text{Product}(p)$
+```$
 
-其中 $\text{Product}(p)$ 表示产品 $p$ 的类型。
+其中 ```latex
+$\text{Product}(p)$
+``` 表示产品 ```latex
+$p$
+``` 的类型。
 
 ---
 
@@ -91,10 +111,22 @@ $$\text{Factory} = \Pi_{c:C} \Sigma_{p:P} \text{Product}(p)$$
 
 **证明**:
 
-1. 设 $P_1, P_2$ 为两个不同的产品类型
-2. 存在工厂方法 $f_1, f_2$ 分别创建 $P_1, P_2$
-3. 通过接口 $I$，$f_1, f_2$ 都实现相同的签名
-4. 因此支持多态调用：$\text{create}(f_1) \neq \text{create}(f_2)$
+1. 设 ```latex
+$P_1, P_2$
+``` 为两个不同的产品类型
+2. 存在工厂方法 ```latex
+$f_1, f_2$
+``` 分别创建 ```latex
+$P_1, P_2$
+```
+3. 通过接口 ```latex
+$I$
+```，```latex
+$f_1, f_2$
+``` 都实现相同的签名
+4. 因此支持多态调用：```latex
+$\text{create}(f_1) \neq \text{create}(f_2)$
+```
 5. 多态性得证
 
 ### 3.2 扩展性证明
@@ -103,8 +135,12 @@ $$\text{Factory} = \Pi_{c:C} \Sigma_{p:P} \text{Product}(p)$$
 
 **证明**:
 
-1. 设现有工厂集合 $F = \{f_1, f_2, \ldots, f_n\}$
-2. 添加新工厂 $f_{n+1}$ 时，只需实现相同的接口
+1. 设现有工厂集合 ```latex
+$F = \{f_1, f_2, \ldots, f_n\}$
+```
+2. 添加新工厂 ```latex
+$f_{n+1}$
+``` 时，只需实现相同的接口
 3. 不需要修改现有代码
 4. 因此满足开闭原则
 
@@ -490,14 +526,24 @@ func BenchmarkFactoryMethod(b *testing.B) {
 
 ### 5.1 时间复杂度
 
-- **创建产品**: $O(1)$
-- **工厂注册**: $O(1)$
-- **产品查找**: $O(1)$ (使用map)
+- **创建产品**: ```latex
+$O(1)$
+```
+- **工厂注册**: ```latex
+$O(1)$
+```
+- **产品查找**: ```latex
+$O(1)$
+``` (使用map)
 
 ### 5.2 空间复杂度
 
-- **工厂存储**: $O(n)$ (n为工厂数量)
-- **产品实例**: $O(1)$ 每个产品
+- **工厂存储**: ```latex
+$O(n)$
+``` (n为工厂数量)
+- **产品实例**: ```latex
+$O(1)$
+``` 每个产品
 
 ### 5.3 性能优化
 

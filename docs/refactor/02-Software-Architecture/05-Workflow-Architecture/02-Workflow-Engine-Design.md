@@ -4,18 +4,36 @@
 
 ### 2.1.1 工作流引擎形式化定义
 
-**定义 2.1** (工作流引擎): 工作流引擎是一个六元组 $\mathcal{E} = (S, T, \delta, \lambda, \sigma_0, F)$，其中：
+**定义 2.1** (工作流引擎): 工作流引擎是一个六元组 ```latex
+$\mathcal{E} = (S, T, \delta, \lambda, \sigma_0, F)$
+```，其中：
 
-- $S$ 是状态集合
-- $T$ 是任务集合  
-- $\delta: S \times T \rightarrow S$ 是状态转移函数
-- $\lambda: T \rightarrow \mathcal{P}(A)$ 是任务到动作的映射
-- $\sigma_0 \in S$ 是初始状态
-- $F \subseteq S$ 是终止状态集合
+- ```latex
+$S$
+``` 是状态集合
+- ```latex
+$T$
+``` 是任务集合  
+- ```latex
+$\delta: S \times T \rightarrow S$
+``` 是状态转移函数
+- ```latex
+$\lambda: T \rightarrow \mathcal{P}(A)$
+``` 是任务到动作的映射
+- ```latex
+$\sigma_0 \in S$
+``` 是初始状态
+- ```latex
+$F \subseteq S$
+``` 是终止状态集合
 
-**定义 2.2** (工作流执行): 工作流执行是一个状态序列 $\sigma_0, \sigma_1, \ldots, \sigma_n$，满足：
+**定义 2.2** (工作流执行): 工作流执行是一个状态序列 ```latex
+$\sigma_0, \sigma_1, \ldots, \sigma_n$
+```，满足：
 
-$$\forall i \in [0, n-1], \exists t \in T : \sigma_{i+1} = \delta(\sigma_i, t)$$
+$```latex
+$\forall i \in [0, n-1], \exists t \in T : \sigma_{i+1} = \delta(\sigma_i, t)$
+```$
 
 ### 2.1.2 工作流引擎核心组件
 

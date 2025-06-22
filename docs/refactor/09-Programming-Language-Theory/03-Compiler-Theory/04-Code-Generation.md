@@ -44,12 +44,18 @@
 
 **定义 1.1** (代码生成器): 代码生成器是一个函数：
 
-$$\mathcal{G}: \text{AST} \rightarrow \text{TargetCode}$$
+$```latex
+$\mathcal{G}: \text{AST} \rightarrow \text{TargetCode}$
+```$
 
 其中：
 
-- $\text{AST}$ 是抽象语法树
-- $\text{TargetCode}$ 是目标代码
+- ```latex
+$\text{AST}$
+``` 是抽象语法树
+- ```latex
+$\text{TargetCode}$
+``` 是目标代码
 
 ### 1.2 目标代码类型
 
@@ -69,23 +75,33 @@ $$\mathcal{G}: \text{AST} \rightarrow \text{TargetCode}$$
 
 ### 2.1 代码生成函数
 
-**定义 2.1** (代码生成函数): 对于表达式 $e$，代码生成函数定义为：
+**定义 2.1** (代码生成函数): 对于表达式 ```latex
+$e$
+```，代码生成函数定义为：
 
-$$\mathcal{G}[\![e]\!]: \text{Env} \rightarrow \text{Code} \times \text{Reg}$$
+$```latex
+$\mathcal{G}[\![e]\!]: \text{Env} \rightarrow \text{Code} \times \text{Reg}$
+```$
 
-其中 $\text{Reg}$ 是寄存器集合。
+其中 ```latex
+$\text{Reg}$
+``` 是寄存器集合。
 
 ### 2.2 指令选择
 
 **定义 2.2** (指令选择): 指令选择函数：
 
-$$\mathcal{I}: \text{IR} \rightarrow \text{Instructions}$$
+$```latex
+$\mathcal{I}: \text{IR} \rightarrow \text{Instructions}$
+```$
 
 ### 2.3 寄存器分配
 
 **定义 2.3** (寄存器分配): 寄存器分配函数：
 
-$$\mathcal{R}: \text{Vars} \rightarrow \text{Regs}$$
+$```latex
+$\mathcal{R}: \text{Vars} \rightarrow \text{Regs}$
+```$
 
 ---
 
@@ -1271,25 +1287,41 @@ func ExampleFunctionCall() {
 
 ### 7.1 代码生成正确性
 
-**定理 7.1** (代码生成正确性): 如果代码生成器 $\mathcal{G}$ 正确实现，则对于任意AST $T$，生成的代码 $C = \mathcal{G}(T)$ 与 $T$ 语义等价。
+**定理 7.1** (代码生成正确性): 如果代码生成器 ```latex
+$\mathcal{G}$
+``` 正确实现，则对于任意AST ```latex
+$T$
+```，生成的代码 ```latex
+$C = \mathcal{G}(T)$
+``` 与 ```latex
+$T$
+``` 语义等价。
 
 **证明**: 使用结构归纳法。
 
 **基础情况**: 对于基本表达式（字面量、变量），代码生成直接对应。
 
-**归纳步骤**: 对于复合表达式，代码生成保持语义等价性。$\square$
+**归纳步骤**: 对于复合表达式，代码生成保持语义等价性。```latex
+$\square$
+```
 
 ### 7.2 优化定理
 
-**定理 7.2** (优化正确性): 如果优化变换 $\mathcal{O}$ 保持语义等价，则优化后的代码与原始代码语义等价。
+**定理 7.2** (优化正确性): 如果优化变换 ```latex
+$\mathcal{O}$
+``` 保持语义等价，则优化后的代码与原始代码语义等价。
 
-**证明**: 每个优化遍都保持语义等价性，因此组合后的优化也保持语义等价。$\square$
+**证明**: 每个优化遍都保持语义等价性，因此组合后的优化也保持语义等价。```latex
+$\square$
+```
 
 ### 7.3 性能分析
 
 **定理 7.3** (性能改进): 指令调度可以改善程序的执行性能。
 
-**证明**: 通过减少流水线停顿和资源冲突，指令调度可以提高指令级并行性。$\square$
+**证明**: 通过减少流水线停顿和资源冲突，指令调度可以提高指令级并行性。```latex
+$\square$
+```
 
 ---
 

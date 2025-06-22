@@ -32,25 +32,83 @@
 
 **形式化表达**:
 
-- 原子命题：$p, q, r, \ldots$
+- 原子命题：```latex
+$p, q, r, \ldots$
+```
 - 复合命题：由原子命题通过逻辑运算符构成
-- 真值：$\text{true}$ 或 $\text{false}$
+- 真值：```latex
+$\text{true}$
+``` 或 ```latex
+$\text{false}$
+```
 
 ### 1.2 逻辑运算符
 
 **定义 1.2**: 基本逻辑运算符
 
-1. **否定** ($\neg$): $\neg p$ 表示"非 $p$"
-2. **合取** ($\land$): $p \land q$ 表示"$p$ 且 $q$"
-3. **析取** ($\lor$): $p \lor q$ 表示"$p$ 或 $q$"
-4. **蕴含** ($\rightarrow$): $p \rightarrow q$ 表示"如果 $p$ 则 $q$"
-5. **等价** ($\leftrightarrow$): $p \leftrightarrow q$ 表示"$p$ 当且仅当 $q$"
+1. **否定** (```latex
+$\neg$
+```): ```latex
+$\neg p$
+``` 表示"非 ```latex
+$p$
+```"
+2. **合取** (```latex
+$\land$
+```): ```latex
+$p \land q$
+``` 表示"```latex
+$p$
+``` 且 ```latex
+$q$
+```"
+3. **析取** (```latex
+$\lor$
+```): ```latex
+$p \lor q$
+``` 表示"```latex
+$p$
+``` 或 ```latex
+$q$
+```"
+4. **蕴含** (```latex
+$\rightarrow$
+```): ```latex
+$p \rightarrow q$
+``` 表示"如果 ```latex
+$p$
+``` 则 ```latex
+$q$
+```"
+5. **等价** (```latex
+$\leftrightarrow$
+```): ```latex
+$p \leftrightarrow q$
+``` 表示"```latex
+$p$
+``` 当且仅当 ```latex
+$q$
+```"
 
 ### 1.3 真值表
 
 **定义 1.3**: 逻辑运算符的真值表
 
-| $p$ | $q$ | $\neg p$ | $p \land q$ | $p \lor q$ | $p \rightarrow q$ | $p \leftrightarrow q$ |
+| ```latex
+$p$
+``` | ```latex
+$q$
+``` | ```latex
+$\neg p$
+``` | ```latex
+$p \land q$
+``` | ```latex
+$p \lor q$
+``` | ```latex
+$p \rightarrow q$
+``` | ```latex
+$p \leftrightarrow q$
+``` |
 |-----|-----|----------|-------------|------------|-------------------|----------------------|
 | T   | T   | F        | T           | T          | T                 | T                    |
 | T   | F   | F        | F           | T          | F                 | F                    |
@@ -63,14 +121,32 @@
 
 **定义 2.1**: 量词
 
-1. **全称量词** ($\forall$): $\forall x P(x)$ 表示"对所有 $x$，$P(x)$ 成立"
-2. **存在量词** ($\exists$): $\exists x P(x)$ 表示"存在 $x$，使得 $P(x)$ 成立"
+1. **全称量词** (```latex
+$\forall$
+```): ```latex
+$\forall x P(x)$
+``` 表示"对所有 ```latex
+$x$
+```，```latex
+$P(x)$
+``` 成立"
+2. **存在量词** (```latex
+$\exists$
+```): ```latex
+$\exists x P(x)$
+``` 表示"存在 ```latex
+$x$
+```，使得 ```latex
+$P(x)$
+``` 成立"
 
 ### 2.2 谓词公式
 
 **定义 2.2**: 谓词公式的构成
 
-- 原子公式：$P(x), Q(x,y), \ldots$
+- 原子公式：```latex
+$P(x), Q(x,y), \ldots$
+```
 - 复合公式：由原子公式通过逻辑运算符和量词构成
 - 自由变量：不被量词约束的变量
 - 约束变量：被量词约束的变量
@@ -79,27 +155,55 @@
 
 ### 3.1 逻辑公理
 
-**公理 3.1** (同一律): $p \rightarrow p$
+**公理 3.1** (同一律): ```latex
+$p \rightarrow p$
+```
 
-**公理 3.2** (排中律): $p \lor \neg p$
+**公理 3.2** (排中律): ```latex
+$p \lor \neg p$
+```
 
-**公理 3.3** (矛盾律): $\neg(p \land \neg p)$
+**公理 3.3** (矛盾律): ```latex
+$\neg(p \land \neg p)$
+```
 
-**公理 3.4** (双重否定): $\neg\neg p \leftrightarrow p$
+**公理 3.4** (双重否定): ```latex
+$\neg\neg p \leftrightarrow p$
+```
 
 ### 3.2 推理规则
 
-**规则 3.1** (假言推理): 从 $p \rightarrow q$ 和 $p$ 可以推出 $q$
+**规则 3.1** (假言推理): 从 ```latex
+$p \rightarrow q$
+``` 和 ```latex
+$p$
+``` 可以推出 ```latex
+$q$
+```
 
-$$\frac{p \rightarrow q \quad p}{q}$$
+$```latex
+$\frac{p \rightarrow q \quad p}{q}$
+```$
 
-**规则 3.2** (全称实例化): 从 $\forall x P(x)$ 可以推出 $P(a)$
+**规则 3.2** (全称实例化): 从 ```latex
+$\forall x P(x)$
+``` 可以推出 ```latex
+$P(a)$
+```
 
-$$\frac{\forall x P(x)}{P(a)}$$
+$```latex
+$\frac{\forall x P(x)}{P(a)}$
+```$
 
-**规则 3.3** (存在概括): 从 $P(a)$ 可以推出 $\exists x P(x)$
+**规则 3.3** (存在概括): 从 ```latex
+$P(a)$
+``` 可以推出 ```latex
+$\exists x P(x)$
+```
 
-$$\frac{P(a)}{\exists x P(x)}$$
+$```latex
+$\frac{P(a)}{\exists x P(x)}$
+```$
 
 ## 4. Go语言实现
 

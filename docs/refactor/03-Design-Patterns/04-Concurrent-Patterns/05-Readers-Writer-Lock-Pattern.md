@@ -72,37 +72,77 @@
 
 ### 2.1 基本概念
 
-设 $R$ 为读者集合，$W$ 为写者集合，$S$ 为共享资源集合，$L$ 为读写锁集合。
+设 ```latex
+$R$
+``` 为读者集合，```latex
+$W$
+``` 为写者集合，```latex
+$S$
+``` 为共享资源集合，```latex
+$L$
+``` 为读写锁集合。
 
 **定义 2.1** (读写锁)
-读写锁是一个五元组 $(l, readers, writers, mutex, condition)$，其中：
+读写锁是一个五元组 ```latex
+$(l, readers, writers, mutex, condition)$
+```，其中：
 
-- $l \in L$ 是读写锁实例
-- $readers \subseteq R$ 是当前读者集合
-- $writers \subseteq W$ 是当前写者集合
-- $mutex$ 是互斥锁
-- $condition$ 是条件变量
+- ```latex
+$l \in L$
+``` 是读写锁实例
+- ```latex
+$readers \subseteq R$
+``` 是当前读者集合
+- ```latex
+$writers \subseteq W$
+``` 是当前写者集合
+- ```latex
+$mutex$
+``` 是互斥锁
+- ```latex
+$condition$
+``` 是条件变量
 
 **定义 2.2** (读者)
-读者是一个三元组 $(r, lock, state)$，其中：
+读者是一个三元组 ```latex
+$(r, lock, state)$
+```，其中：
 
-- $r \in R$ 是读者实例
-- $lock \in L$ 是关联的读写锁
-- $state \in \{waiting, reading, finished\}$ 是读者状态
+- ```latex
+$r \in R$
+``` 是读者实例
+- ```latex
+$lock \in L$
+``` 是关联的读写锁
+- ```latex
+$state \in \{waiting, reading, finished\}$
+``` 是读者状态
 
 **定义 2.3** (写者)
-写者是一个三元组 $(w, lock, state)$，其中：
+写者是一个三元组 ```latex
+$(w, lock, state)$
+```，其中：
 
-- $w \in W$ 是写者实例
-- $lock \in L$ 是关联的读写锁
-- $state \in \{waiting, writing, finished\}$ 是写者状态
+- ```latex
+$w \in W$
+``` 是写者实例
+- ```latex
+$lock \in L$
+``` 是关联的读写锁
+- ```latex
+$state \in \{waiting, writing, finished\}$
+``` 是写者状态
 
 ### 2.2 操作语义
 
 **公理 2.1** (读锁获取)
 
 ```latex
-对于读者 $r$ 和读写锁 $l$：
+对于读者 ```latex
+$r$
+``` 和读写锁 ```latex
+$l$
+```：
 $$read\_lock(l, r) = \begin{cases}
 acquire(mutex) \land add(readers, r) \land release(mutex) & \text{if } |writers| = 0 \\
 block(r) & \text{otherwise}
@@ -112,14 +152,24 @@ block(r) & \text{otherwise}
 **公理 2.2** (读锁释放)
 
 ```latex
-对于读者 $r$ 和读写锁 $l$：
-$$read\_unlock(l, r) = acquire(mutex) \land remove(readers, r) \land signal(writers) \land release(mutex)$$
+对于读者 ```latex
+$r$
+``` 和读写锁 ```latex
+$l$
+```：
+$```latex
+$read\_unlock(l, r) = acquire(mutex) \land remove(readers, r) \land signal(writers) \land release(mutex)$
+```$
 ```
 
 **公理 2.3** (写锁获取)
 
 ```latex
-对于写者 $w$ 和读写锁 $l$：
+对于写者 ```latex
+$w$
+``` 和读写锁 ```latex
+$l$
+```：
 $$write\_lock(l, w) = \begin{cases}
 acquire(mutex) \land add(writers, w) \land release(mutex) & \text{if } |readers| = 0 \land |writers| = 0 \\
 block(w) & \text{otherwise}
@@ -129,28 +179,44 @@ block(w) & \text{otherwise}
 **公理 2.4** (写锁释放)
 
 ```latex
-对于写者 $w$ 和读写锁 $l$：
-$$write\_unlock(l, w) = acquire(mutex) \land remove(writers, w) \land broadcast(readers) \land release(mutex)$$
+对于写者 ```latex
+$w$
+``` 和读写锁 ```latex
+$l$
+```：
+$```latex
+$write\_unlock(l, w) = acquire(mutex) \land remove(writers, w) \land broadcast(readers) \land release(mutex)$
+```$
 ```
 
 ### 2.3 一致性约束
 
 **定义 2.4** (读一致性)
 读一致性要求：
-$$\forall r_1, r_2 \in readers: \text{可以并发执行}$$
+$```latex
+$\forall r_1, r_2 \in readers: \text{可以并发执行}$
+```$
 
 **定义 2.5** (写一致性)
 写一致性要求：
-$$\forall w \in writers: \text{独占访问，排斥所有其他操作}$$
+$```latex
+$\forall w \in writers: \text{独占访问，排斥所有其他操作}$
+```$
 
 **定理 2.1** (安全性)
 读写锁模式保证安全性，当且仅当：
-$$\text{写者执行时，没有读者或其他写者同时执行}$$
+$```latex
+$\text{写者执行时，没有读者或其他写者同时执行}$
+```$
 
 **证明**:
 
-1. 写锁获取时检查 $|readers| = 0 \land |writers| = 0$
-2. 读锁获取时检查 $|writers| = 0$
+1. 写锁获取时检查 ```latex
+$|readers| = 0 \land |writers| = 0$
+```
+2. 读锁获取时检查 ```latex
+$|writers| = 0$
+```
 3. 因此保证了安全性
 
 ---
@@ -161,29 +227,41 @@ $$\text{写者执行时，没有读者或其他写者同时执行}$$
 
 **定义 3.1** (并发度)
 并发度是同时执行的读者数量：
-$$concurrency = |readers|$$
+$```latex
+$concurrency = |readers|$
+```$
 
 **定义 3.2** (吞吐量)
 系统吞吐量：
-$$throughput = \frac{read\_operations + write\_operations}{time}$$
+$```latex
+$throughput = \frac{read\_operations + write\_operations}{time}$
+```$
 
 **定理 3.1** (最优并发度)
 在读者优先策略下，最优并发度：
-$$optimal\_concurrency = \min(|R|, \text{system\_capacity})$$
+$```latex
+$optimal\_concurrency = \min(|R|, \text{system\_capacity})$
+```$
 
 ### 3.2 饥饿分析
 
 **定义 3.3** (读者饥饿)
 读者饥饿是指写者长时间无法获得锁：
-$$reader\_starvation = \text{写者等待时间超过阈值}$$
+$```latex
+$reader\_starvation = \text{写者等待时间超过阈值}$
+```$
 
 **定义 3.4** (写者饥饿)
 写者饥饿是指读者长时间无法获得锁：
-$$writer\_starvation = \text{读者等待时间超过阈值}$$
+$```latex
+$writer\_starvation = \text{读者等待时间超过阈值}$
+```$
 
 **定理 3.2** (公平性)
 读写锁模式保证公平性，当且仅当：
-$$\text{不存在无限等待的读者或写者}$$
+$```latex
+$\text{不存在无限等待的读者或写者}$
+```$
 
 ---
 
@@ -949,16 +1027,32 @@ func main() {
 
 ### 6.1 时间复杂度
 
-- **读锁获取**: $O(1)$
-- **读锁释放**: $O(1)$
-- **写锁获取**: $O(1)$
-- **写锁释放**: $O(1)$
+- **读锁获取**: ```latex
+$O(1)$
+```
+- **读锁释放**: ```latex
+$O(1)$
+```
+- **写锁获取**: ```latex
+$O(1)$
+```
+- **写锁释放**: ```latex
+$O(1)$
+```
 
 ### 6.2 空间复杂度
 
-- **读写锁**: $O(1)$
-- **条件变量**: $O(1)$
-- **等待队列**: $O(n)$，其中 $n$ 是等待的线程数
+- **读写锁**: ```latex
+$O(1)$
+```
+- **条件变量**: ```latex
+$O(1)$
+```
+- **等待队列**: ```latex
+$O(n)$
+```，其中 ```latex
+$n$
+``` 是等待的线程数
 
 ### 6.3 性能优化建议
 

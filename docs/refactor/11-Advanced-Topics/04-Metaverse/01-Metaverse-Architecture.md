@@ -8,25 +8,45 @@
 
 ### 1.1.1 元宇宙模型
 
-元宇宙 $MV$ 是一个六元组 $(U, S, E, T, A, C)$，其中：
+元宇宙 ```latex
+$MV$
+``` 是一个六元组 ```latex
+$(U, S, E, T, A, C)$
+```，其中：
 
 ```latex
-$$MV = (U, S, E, T, A, C)$$
+$```latex
+$MV = (U, S, E, T, A, C)$
+```$
 ```
 
-- $U$: 用户集合
-- $S$: 虚拟空间集合
-- $E$: 经济系统
-- $T$: 技术基础设施
-- $A$: 智能代理
-- $C$: 内容生态
+- ```latex
+$U$
+```: 用户集合
+- ```latex
+$S$
+```: 虚拟空间集合
+- ```latex
+$E$
+```: 经济系统
+- ```latex
+$T$
+```: 技术基础设施
+- ```latex
+$A$
+```: 智能代理
+- ```latex
+$C$
+```: 内容生态
 
 ### 1.1.2 层次结构
 
 元宇宙分为五层：
 
 ```latex
-$$L = \{Infrastructure, Platform, Content, Economy, Social\}$$
+$```latex
+$L = \{Infrastructure, Platform, Content, Economy, Social\}$
+```$
 ```
 
 - **基础设施层 (Infrastructure)**：网络、算力、存储、区块链
@@ -39,83 +59,159 @@ $$L = \{Infrastructure, Platform, Content, Economy, Social\}$$
 
 ### 1.2.1 技术架构
 
-元宇宙技术架构 $TA$ 定义为：
+元宇宙技术架构 ```latex
+$TA$
+``` 定义为：
 
 ```latex
-$$TA = (VR, AR, BC, AI, Cloud, IoT)$$
+$```latex
+$TA = (VR, AR, BC, AI, Cloud, IoT)$
+```$
 ```
 
-- $VR$: 虚拟现实
-- $AR$: 增强现实
-- $BC$: 区块链
-- $AI$: 人工智能
-- $Cloud$: 云计算
-- $IoT$: 物联网
+- ```latex
+$VR$
+```: 虚拟现实
+- ```latex
+$AR$
+```: 增强现实
+- ```latex
+$BC$
+```: 区块链
+- ```latex
+$AI$
+```: 人工智能
+- ```latex
+$Cloud$
+```: 云计算
+- ```latex
+$IoT$
+```: 物联网
 
 ### 1.2.2 网络拓扑
 
-元宇宙网络拓扑 $G = (V, E)$，其中：
+元宇宙网络拓扑 ```latex
+$G = (V, E)$
+```，其中：
 
 ```latex
-$$V = V_{user} \cup V_{server} \cup V_{device}$$
-$$E = E_{user-server} \cup E_{server-server} \cup E_{device-server}$$
+$```latex
+$V = V_{user} \cup V_{server} \cup V_{device}$
+```$
+$```latex
+$E = E_{user-server} \cup E_{server-server} \cup E_{device-server}$
+```$
 ```
 
 ## 1.3 经济系统
 
 ### 1.3.1 经济模型
 
-元宇宙经济系统 $E$ 是一个三元组 $(C, M, T)$，其中：
+元宇宙经济系统 ```latex
+$E$
+``` 是一个三元组 ```latex
+$(C, M, T)$
+```，其中：
 
 ```latex
-$$E = (C, M, T)$$
+$```latex
+$E = (C, M, T)$
+```$
 ```
 
-- $C$: 数字货币集合
-- $M$: 市场机制
-- $T$: 交易记录
+- ```latex
+$C$
+```: 数字货币集合
+- ```latex
+$M$
+```: 市场机制
+- ```latex
+$T$
+```: 交易记录
 
 ### 1.3.2 NFT资产
 
-NFT资产 $NFT$ 定义为：
+NFT资产 ```latex
+$NFT$
+``` 定义为：
 
 ```latex
-$$NFT = (id, owner, meta, value)$$
+$```latex
+$NFT = (id, owner, meta, value)$
+```$
 ```
 
-- $id$: 唯一标识
-- $owner$: 所有者
-- $meta$: 元数据
-- $value$: 价值
+- ```latex
+$id$
+```: 唯一标识
+- ```latex
+$owner$
+```: 所有者
+- ```latex
+$meta$
+```: 元数据
+- ```latex
+$value$
+```: 价值
 
 ## 1.4 社交系统
 
 ### 1.4.1 身份与关系
 
-用户身份 $ID$ 和社交关系 $R$：
+用户身份 ```latex
+$ID$
+``` 和社交关系 ```latex
+$R$
+```：
 
 ```latex
-$$ID = (uid, profile, reputation)$$
-$$R = \{(u_i, u_j, type)\}$$
+$```latex
+$ID = (uid, profile, reputation)$
+```$
+$```latex
+$R = \{(u_i, u_j, type)\}$
+```$
 ```
 
-- $uid$: 用户唯一标识
-- $profile$: 个人资料
-- $reputation$: 声誉分数
-- $type$: 关系类型（好友、关注、组等）
+- ```latex
+$uid$
+```: 用户唯一标识
+- ```latex
+$profile$
+```: 个人资料
+- ```latex
+$reputation$
+```: 声誉分数
+- ```latex
+$type$
+```: 关系类型（好友、关注、组等）
 
 ### 1.4.2 社区治理
 
-社区治理 $GOV$ 是一个四元组 $(M, V, R, D)$，其中：
+社区治理 ```latex
+$GOV$
+``` 是一个四元组 ```latex
+$(M, V, R, D)$
+```，其中：
 
 ```latex
-$$GOV = (M, V, R, D)$$
+$```latex
+$GOV = (M, V, R, D)$
+```$
 ```
 
-- $M$: 治理机制
-- $V$: 投票系统
-- $R$: 规则集合
-- $D$: 决策过程
+- ```latex
+$M$
+```: 治理机制
+- ```latex
+$V$
+```: 投票系统
+- ```latex
+$R$
+```: 规则集合
+- ```latex
+$D$
+```: 决策过程
 
 ## 1.5 Go语言实现
 
@@ -217,7 +313,9 @@ func (g *Governance) Vote(proposalID string, approve bool) {
 ### 1.6.2 社区治理有效性
 
 **定理 1.2** (社区治理有效性)
-若治理机制 $M$ 满足多数投票原则，则社区决策收敛于成员意愿。
+若治理机制 ```latex
+$M$
+``` 满足多数投票原则，则社区决策收敛于成员意愿。
 
 **证明**：
 多数投票原则保证了大多数成员的意愿能够主导决策过程，减少了极端决策的概率。

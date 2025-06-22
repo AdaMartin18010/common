@@ -75,37 +75,69 @@
 
 ### 2.1 消息队列模型
 
-设消息队列系统 $Q = (P, C, M, F)$ 包含：
+设消息队列系统 ```latex
+$Q = (P, C, M, F)$
+``` 包含：
 
-- $P = \{p_1, p_2, ..., p_n\}$: 生产者集合
-- $C = \{c_1, c_2, ..., c_m\}$: 消费者集合
-- $M = \{m_1, m_2, ..., m_k\}$: 消息集合
-- $F: P \times M \rightarrow Q$: 消息路由函数
+- ```latex
+$P = \{p_1, p_2, ..., p_n\}$
+```: 生产者集合
+- ```latex
+$C = \{c_1, c_2, ..., c_m\}$
+```: 消费者集合
+- ```latex
+$M = \{m_1, m_2, ..., m_k\}$
+```: 消息集合
+- ```latex
+$F: P \times M \rightarrow Q$
+```: 消息路由函数
 
 **定义 2.1 (消息队列)**
 消息队列是一个有序的消息序列：
-$$Q = [m_1, m_2, ..., m_n]$$
+$```latex
+$Q = [m_1, m_2, ..., m_n]$
+```$
 
 **定义 2.2 (队列操作)**
 队列支持以下操作：
 
-- $\text{enqueue}(Q, m)$: 将消息 $m$ 添加到队列尾部
-- $\text{dequeue}(Q)$: 从队列头部移除并返回消息
-- $\text{peek}(Q)$: 查看队列头部消息但不移除
+- ```latex
+$\text{enqueue}(Q, m)$
+```: 将消息 ```latex
+$m$
+``` 添加到队列尾部
+- ```latex
+$\text{dequeue}(Q)$
+```: 从队列头部移除并返回消息
+- ```latex
+$\text{peek}(Q)$
+```: 查看队列头部消息但不移除
 
 ### 2.2 消息传递语义
 
 **定义 2.3 (至少一次传递)**
-消息 $m$ 被至少一次传递，当且仅当：
-$$\exists c \in C: \text{receive}(c, m) \land \text{process}(c, m)$$
+消息 ```latex
+$m$
+``` 被至少一次传递，当且仅当：
+$```latex
+$\exists c \in C: \text{receive}(c, m) \land \text{process}(c, m)$
+```$
 
 **定义 2.4 (最多一次传递)**
-消息 $m$ 被最多一次传递，当且仅当：
-$$\forall c_1, c_2 \in C: \text{receive}(c_1, m) \land \text{receive}(c_2, m) \Rightarrow c_1 = c_2$$
+消息 ```latex
+$m$
+``` 被最多一次传递，当且仅当：
+$```latex
+$\forall c_1, c_2 \in C: \text{receive}(c_1, m) \land \text{receive}(c_2, m) \Rightarrow c_1 = c_2$
+```$
 
 **定义 2.5 (恰好一次传递)**
-消息 $m$ 被恰好一次传递，当且仅当：
-$$\exists! c \in C: \text{receive}(c, m) \land \text{process}(c, m)$$
+消息 ```latex
+$m$
+``` 被恰好一次传递，当且仅当：
+$```latex
+$\exists! c \in C: \text{receive}(c, m) \land \text{process}(c, m)$
+```$
 
 ### 2.3 队列正确性
 
@@ -130,33 +162,57 @@ $$\exists! c \in C: \text{receive}(c, m) \land \text{process}(c, m)$$
 M/M/1队列是具有泊松到达、指数服务时间和单服务器的队列模型。
 
 **定理 3.1 (Little公式)**
-在稳态下，队列中的平均消息数 $L$ 满足：
-$$L = \lambda W$$
-其中 $\lambda$ 是到达率，$W$ 是平均等待时间。
+在稳态下，队列中的平均消息数 ```latex
+$L$
+``` 满足：
+$```latex
+$L = \lambda W$
+```$
+其中 ```latex
+$\lambda$
+``` 是到达率，```latex
+$W$
+``` 是平均等待时间。
 
 **定理 3.2 (队列长度分布)**
 M/M/1队列中消息数的稳态分布为：
-$$P(N = n) = \rho^n(1-\rho)$$
-其中 $\rho = \frac{\lambda}{\mu}$ 是利用率，$\mu$ 是服务率。
+$```latex
+$P(N = n) = \rho^n(1-\rho)$
+```$
+其中 ```latex
+$\rho = \frac{\lambda}{\mu}$
+``` 是利用率，```latex
+$\mu$
+``` 是服务率。
 
 ### 3.2 延迟分析
 
 **定理 3.3 (平均延迟)**
 M/M/1队列的平均延迟为：
-$$W = \frac{1}{\mu - \lambda}$$
+$```latex
+$W = \frac{1}{\mu - \lambda}$
+```$
 
 **定理 3.4 (延迟分布)**
 M/M/1队列的延迟分布为：
-$$P(W > t) = e^{-(\mu-\lambda)t}$$
+$```latex
+$P(W > t) = e^{-(\mu-\lambda)t}$
+```$
 
 ### 3.3 吞吐量分析
 
 **定理 3.5 (最大吞吐量)**
-队列的最大吞吐量为服务率 $\mu$。
+队列的最大吞吐量为服务率 ```latex
+$\mu$
+```。
 
 **定理 3.6 (有效吞吐量)**
-在负载 $\rho$ 下的有效吞吐量为：
-$$\text{Throughput} = \lambda = \rho\mu$$
+在负载 ```latex
+$\rho$
+``` 下的有效吞吐量为：
+$```latex
+$\text{Throughput} = \lambda = \rho\mu$
+```$
 
 ## 4. 消息模型
 
@@ -180,17 +236,23 @@ type Message struct {
 
 **定义 4.1 (点对点消息)**
 点对点消息被单个消费者处理：
-$$\forall m \in M: |\{c \in C: \text{receive}(c, m)\}| = 1$$
+$```latex
+$\forall m \in M: |\{c \in C: \text{receive}(c, m)\}| = 1$
+```$
 
 **定义 4.2 (发布订阅消息)**
 发布订阅消息被多个消费者处理：
-$$\forall m \in M: |\{c \in C: \text{receive}(c, m)\}| \geq 1$$
+$```latex
+$\forall m \in M: |\{c \in C: \text{receive}(c, m)\}| \geq 1$
+```$
 
 ### 4.3 消息优先级
 
 **定义 4.3 (优先级队列)**
 优先级队列根据消息优先级排序：
-$$\forall m_1, m_2 \in Q: \text{priority}(m_1) > \text{priority}(m_2) \Rightarrow m_1 \prec m_2$$
+$```latex
+$\forall m_1, m_2 \in Q: \text{priority}(m_1) > \text{priority}(m_2) \Rightarrow m_1 \prec m_2$
+```$
 
 ## 5. 队列类型
 
@@ -960,22 +1022,32 @@ func main() {
 
 **定理 7.1 (内存队列延迟)**
 内存队列的延迟为：
-$$T_{memory} = O(1)$$
+$```latex
+$T_{memory} = O(1)$
+```$
 
 **定理 7.2 (持久化队列延迟)**
 持久化队列的延迟为：
-$$T_{persistent} = O(\log n) + T_{disk}$$
+$```latex
+$T_{persistent} = O(\log n) + T_{disk}$
+```$
 
 **定理 7.3 (分布式队列延迟)**
 分布式队列的延迟为：
-$$T_{distributed} = O(\log m) + T_{network}$$
-其中 $m$ 是节点数量。
+$```latex
+$T_{distributed} = O(\log m) + T_{network}$
+```$
+其中 ```latex
+$m$
+``` 是节点数量。
 
 ### 7.3 吞吐量分析
 
 **定理 7.4 (队列吞吐量)**
 队列的吞吐量受限于：
-$$\text{Throughput} = \min(\text{producer rate}, \text{consumer rate}, \text{queue capacity})$$
+$```latex
+$\text{Throughput} = \min(\text{producer rate}, \text{consumer rate}, \text{queue capacity})$
+```$
 
 ## 8. 应用场景
 

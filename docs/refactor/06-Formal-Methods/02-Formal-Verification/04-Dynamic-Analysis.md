@@ -7,17 +7,31 @@
 **动态分析**是在程序运行时收集和分析程序行为信息的方法，用于性能优化、错误检测和程序理解。
 
 **形式化定义**：
-设 $P$ 为程序，$T$ 为执行轨迹，动态分析函数 $D: P \times T \rightarrow R$ 满足：
-$$D(P, T) = \{r \in R | r = \text{analyze}(t), t \in T\}$$
+设 ```latex
+$P$
+``` 为程序，```latex
+$T$
+``` 为执行轨迹，动态分析函数 ```latex
+$D: P \times T \rightarrow R$
+``` 满足：
+$```latex
+$D(P, T) = \{r \in R | r = \text{analyze}(t), t \in T\}$
+```$
 
 ### 1.2 理论基础
 
 #### 1.2.1 程序轨迹理论
 
 **执行轨迹** 是程序执行过程中状态变化的序列：
-$$T = \langle s_0, s_1, ..., s_n \rangle$$
+$```latex
+$T = \langle s_0, s_1, ..., s_n \rangle$
+```$
 
-其中 $s_i$ 是程序在时刻 $i$ 的状态。
+其中 ```latex
+$s_i$
+``` 是程序在时刻 ```latex
+$i$
+``` 的状态。
 
 ## 2. 性能分析
 
@@ -28,8 +42,18 @@ $$T = \langle s_0, s_1, ..., s_n \rangle$$
 **性能计数器** 是硬件或软件提供的用于测量程序执行特征的机制。
 
 **形式化定义**：
-设 $C$ 为计数器集合，$V(c, t)$ 为计数器 $c$ 在时刻 $t$ 的值，则：
-$$\text{Performance}(P) = \sum_{c \in C} w_c \cdot V(c, t_{end})$$
+设 ```latex
+$C$
+``` 为计数器集合，```latex
+$V(c, t)$
+``` 为计数器 ```latex
+$c$
+``` 在时刻 ```latex
+$t$
+``` 的值，则：
+$```latex
+$\text{Performance}(P) = \sum_{c \in C} w_c \cdot V(c, t_{end})$
+```$
 
 #### 2.1.2 Go语言实现
 
@@ -131,8 +155,14 @@ func (p *Profiler) GetResults() map[string]interface{} {
 **内存泄漏** 是程序分配内存后无法释放的现象。
 
 **形式化定义**：
-设 $M(t)$ 为时刻 $t$ 的内存使用量，内存泄漏检测函数：
-$$\text{Leak}(t_1, t_2) = M(t_2) - M(t_1) - \text{ExpectedGrowth}(t_1, t_2)$$
+设 ```latex
+$M(t)$
+``` 为时刻 ```latex
+$t$
+``` 的内存使用量，内存泄漏检测函数：
+$```latex
+$\text{Leak}(t_1, t_2) = M(t_2) - M(t_1) - \text{ExpectedGrowth}(t_1, t_2)$
+```$
 
 #### 3.1.2 Go语言实现
 
@@ -209,8 +239,14 @@ func (mld *MemoryLeakDetector) GetMemoryGrowth() uint64 {
 **死锁** 是多个goroutine相互等待对方释放资源的状态。
 
 **形式化定义**：
-设 $G$ 为goroutine集合，$R$ 为资源集合，死锁检测函数：
-$$\text{Deadlock}(G, R) = \exists C \subseteq G: \text{CircularWait}(C, R)$$
+设 ```latex
+$G$
+``` 为goroutine集合，```latex
+$R$
+``` 为资源集合，死锁检测函数：
+$```latex
+$\text{Deadlock}(G, R) = \exists C \subseteq G: \text{CircularWait}(C, R)$
+```$
 
 #### 4.1.2 Go语言实现
 

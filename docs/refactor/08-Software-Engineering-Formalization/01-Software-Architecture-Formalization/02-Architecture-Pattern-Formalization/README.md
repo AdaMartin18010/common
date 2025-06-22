@@ -37,21 +37,41 @@
 ### 1.1 模式定义
 
 **定义 1.1**: 架构模式
-架构模式是一个三元组 $\mathcal{P} = (S, C, R)$，其中：
+架构模式是一个三元组 ```latex
+$\mathcal{P} = (S, C, R)$
+```，其中：
 
-- $S$ 是结构集合（Structure Set）
-- $C$ 是约束集合（Constraint Set）
-- $R$ 是关系集合（Relation Set）
+- ```latex
+$S$
+``` 是结构集合（Structure Set）
+- ```latex
+$C$
+``` 是约束集合（Constraint Set）
+- ```latex
+$R$
+``` 是关系集合（Relation Set）
 
 **定义 1.2**: 模式实例
-模式实例是一个四元组 $\mathcal{I} = (S, C, R, M)$，其中：
+模式实例是一个四元组 ```latex
+$\mathcal{I} = (S, C, R, M)$
+```，其中：
 
-- $(S, C, R)$ 是模式定义
-- $M$ 是映射函数，将抽象模式映射到具体实现
+- ```latex
+$(S, C, R)$
+``` 是模式定义
+- ```latex
+$M$
+``` 是映射函数，将抽象模式映射到具体实现
 
 **定义 1.3**: 模式有效性
-模式 $\mathcal{P}$ 是有效的，如果对于所有实例 $\mathcal{I}$，满足：
-$$\forall c \in C: M(c) \text{ is satisfiable}$$
+模式 ```latex
+$\mathcal{P}$
+``` 是有效的，如果对于所有实例 ```latex
+$\mathcal{I}$
+```，满足：
+$```latex
+$\forall c \in C: M(c) \text{ is satisfiable}$
+```$
 
 ### 1.2 模式分类
 
@@ -65,51 +85,109 @@ $$\forall c \in C: M(c) \text{ is satisfiable}$$
 
 **定义 1.5**: 模式层次
 模式层次结构定义为：
-$$\mathcal{H} = \{\mathcal{P}_1, \mathcal{P}_2, \ldots, \mathcal{P}_n\}$$
-其中 $\mathcal{P}_i \preceq \mathcal{P}_{i+1}$ 表示 $\mathcal{P}_i$ 是 $\mathcal{P}_{i+1}$ 的基础模式。
+$```latex
+$\mathcal{H} = \{\mathcal{P}_1, \mathcal{P}_2, \ldots, \mathcal{P}_n\}$
+```$
+其中 ```latex
+$\mathcal{P}_i \preceq \mathcal{P}_{i+1}$
+``` 表示 ```latex
+$\mathcal{P}_i$
+``` 是 ```latex
+$\mathcal{P}_{i+1}$
+``` 的基础模式。
 
 ### 1.3 形式化框架
 
 **定义 1.6**: 模式代数
-模式代数是一个五元组 $(\mathcal{P}, \oplus, \otimes, \mathbf{0}, \mathbf{1})$，其中：
+模式代数是一个五元组 ```latex
+$(\mathcal{P}, \oplus, \otimes, \mathbf{0}, \mathbf{1})$
+```，其中：
 
-- $\mathcal{P}$ 是模式集合
-- $\oplus$ 是模式组合操作
-- $\otimes$ 是模式变换操作
-- $\mathbf{0}$ 是空模式
-- $\mathbf{1}$ 是单位模式
+- ```latex
+$\mathcal{P}$
+``` 是模式集合
+- ```latex
+$\oplus$
+``` 是模式组合操作
+- ```latex
+$\otimes$
+``` 是模式变换操作
+- ```latex
+$\mathbf{0}$
+``` 是空模式
+- ```latex
+$\mathbf{1}$
+``` 是单位模式
 
 **定理 1.1**: 模式组合的交换律
-对于任意模式 $\mathcal{P}_1, \mathcal{P}_2$：
-$$\mathcal{P}_1 \oplus \mathcal{P}_2 = \mathcal{P}_2 \oplus \mathcal{P}_1$$
+对于任意模式 ```latex
+$\mathcal{P}_1, \mathcal{P}_2$
+```：
+$```latex
+$\mathcal{P}_1 \oplus \mathcal{P}_2 = \mathcal{P}_2 \oplus \mathcal{P}_1$
+```$
 
 **定理 1.2**: 模式组合的结合律
-对于任意模式 $\mathcal{P}_1, \mathcal{P}_2, \mathcal{P}_3$：
-$$(\mathcal{P}_1 \oplus \mathcal{P}_2) \oplus \mathcal{P}_3 = \mathcal{P}_1 \oplus (\mathcal{P}_2 \oplus \mathcal{P}_3)$$
+对于任意模式 ```latex
+$\mathcal{P}_1, \mathcal{P}_2, \mathcal{P}_3$
+```：
+$```latex
+$(\mathcal{P}_1 \oplus \mathcal{P}_2) \oplus \mathcal{P}_3 = \mathcal{P}_1 \oplus (\mathcal{P}_2 \oplus \mathcal{P}_3)$
+```$
 
 ## 2. 分层架构模式
 
 ### 2.1 形式化定义
 
 **定义 2.1**: 分层架构
-分层架构是一个四元组 $\mathcal{L} = (L, \prec, \phi, \psi)$，其中：
+分层架构是一个四元组 ```latex
+$\mathcal{L} = (L, \prec, \phi, \psi)$
+```，其中：
 
-- $L = \{L_1, L_2, \ldots, L_n\}$ 是层集合
-- $\prec$ 是层的偏序关系，$L_i \prec L_j$ 表示 $L_i$ 在 $L_j$ 之下
-- $\phi: L \rightarrow \mathcal{F}$ 是层到功能的映射
-- $\psi: L \times L \rightarrow \mathcal{I}$ 是层间接口映射
+- ```latex
+$L = \{L_1, L_2, \ldots, L_n\}$
+``` 是层集合
+- ```latex
+$\prec$
+``` 是层的偏序关系，```latex
+$L_i \prec L_j$
+``` 表示 ```latex
+$L_i$
+``` 在 ```latex
+$L_j$
+``` 之下
+- ```latex
+$\phi: L \rightarrow \mathcal{F}$
+``` 是层到功能的映射
+- ```latex
+$\psi: L \times L \rightarrow \mathcal{I}$
+``` 是层间接口映射
 
 **定义 2.2**: 分层约束
 分层架构必须满足以下约束：
 
-1. **层次性**: $\forall L_i, L_j \in L: L_i \prec L_j \Rightarrow L_i \neq L_j$
-2. **传递性**: $\forall L_i, L_j, L_k \in L: L_i \prec L_j \wedge L_j \prec L_k \Rightarrow L_i \prec L_k$
-3. **反自反性**: $\forall L_i \in L: \neg(L_i \prec L_i)$
-4. **依赖单向性**: $\forall L_i, L_j \in L: L_i \prec L_j \Rightarrow \neg(L_j \prec L_i)$
+1. **层次性**: ```latex
+$\forall L_i, L_j \in L: L_i \prec L_j \Rightarrow L_i \neq L_j$
+```
+2. **传递性**: ```latex
+$\forall L_i, L_j, L_k \in L: L_i \prec L_j \wedge L_j \prec L_k \Rightarrow L_i \prec L_k$
+```
+3. **反自反性**: ```latex
+$\forall L_i \in L: \neg(L_i \prec L_i)$
+```
+4. **依赖单向性**: ```latex
+$\forall L_i, L_j \in L: L_i \prec L_j \Rightarrow \neg(L_j \prec L_i)$
+```
 
 **定义 2.3**: 分层接口
-层 $L_i$ 到层 $L_j$ 的接口定义为：
-$$I_{i,j} = \{(f, g) \in \phi(L_i) \times \phi(L_j) : f \text{ can call } g\}$$
+层 ```latex
+$L_i$
+``` 到层 ```latex
+$L_j$
+``` 的接口定义为：
+$```latex
+$I_{i,j} = \{(f, g) \in \phi(L_i) \times \phi(L_j) : f \text{ can call } g\}$
+```$
 
 ### 2.2 数学性质
 
@@ -118,9 +196,15 @@ $$I_{i,j} = \{(f, g) \in \phi(L_i) \times \phi(L_j) : f \text{ can call } g\}$$
 
 **证明**:
 
-1. 反自反性：$\neg(L_i \prec L_i)$ 确保无自环
-2. 传递性：$L_i \prec L_j \wedge L_j \prec L_k \Rightarrow L_i \prec L_k$ 确保传递性
-3. 依赖单向性：$L_i \prec L_j \Rightarrow \neg(L_j \prec L_i)$ 确保无环
+1. 反自反性：```latex
+$\neg(L_i \prec L_i)$
+``` 确保无自环
+2. 传递性：```latex
+$L_i \prec L_j \wedge L_j \prec L_k \Rightarrow L_i \prec L_k$
+``` 确保传递性
+3. 依赖单向性：```latex
+$L_i \prec L_j \Rightarrow \neg(L_j \prec L_i)$
+``` 确保无环
 
 **定理 2.2**: 分层架构的稳定性
 如果分层架构满足所有约束，则系统是稳定的。
@@ -331,35 +415,85 @@ func (la *LayeredArchitecture) CanCall(fromLayer, toLayer string) bool {
 ### 3.1 形式化定义
 
 **定义 3.1**: 微服务架构
-微服务架构是一个五元组 $\mathcal{M} = (S, N, C, D, P)$，其中：
+微服务架构是一个五元组 ```latex
+$\mathcal{M} = (S, N, C, D, P)$
+```，其中：
 
-- $S = \{s_1, s_2, \ldots, s_n\}$ 是服务集合
-- $N$ 是网络拓扑
-- $C$ 是通信协议集合
-- $D$ 是数据存储集合
-- $P$ 是部署策略
+- ```latex
+$S = \{s_1, s_2, \ldots, s_n\}$
+``` 是服务集合
+- ```latex
+$N$
+``` 是网络拓扑
+- ```latex
+$C$
+``` 是通信协议集合
+- ```latex
+$D$
+``` 是数据存储集合
+- ```latex
+$P$
+``` 是部署策略
 
 **定义 3.2**: 服务定义
-服务 $s_i$ 是一个四元组 $(I_i, O_i, F_i, Q_i)$，其中：
+服务 ```latex
+$s_i$
+``` 是一个四元组 ```latex
+$(I_i, O_i, F_i, Q_i)$
+```，其中：
 
-- $I_i$ 是输入接口集合
-- $O_i$ 是输出接口集合
-- $F_i$ 是功能集合
-- $Q_i$ 是服务质量属性
+- ```latex
+$I_i$
+``` 是输入接口集合
+- ```latex
+$O_i$
+``` 是输出接口集合
+- ```latex
+$F_i$
+``` 是功能集合
+- ```latex
+$Q_i$
+``` 是服务质量属性
 
 **定义 3.3**: 服务通信
-服务 $s_i$ 和 $s_j$ 之间的通信定义为：
-$$Comm_{i,j} = \{(m, p, t) : m \in M, p \in P, t \in T\}$$
-其中 $M$ 是消息集合，$P$ 是协议集合，$T$ 是时间戳集合。
+服务 ```latex
+$s_i$
+``` 和 ```latex
+$s_j$
+``` 之间的通信定义为：
+$```latex
+$Comm_{i,j} = \{(m, p, t) : m \in M, p \in P, t \in T\}$
+```$
+其中 ```latex
+$M$
+``` 是消息集合，```latex
+$P$
+``` 是协议集合，```latex
+$T$
+``` 是时间戳集合。
 
 ### 3.2 服务发现
 
 **定义 3.4**: 服务注册表
-服务注册表是一个三元组 $\mathcal{R} = (S, L, T)$，其中：
+服务注册表是一个三元组 ```latex
+$\mathcal{R} = (S, L, T)$
+```，其中：
 
-- $S$ 是服务集合
-- $L$ 是位置映射 $L: S \rightarrow \mathcal{P}(A)$，其中 $A$ 是地址集合
-- $T$ 是时间戳映射 $T: S \rightarrow \mathbb{R}$
+- ```latex
+$S$
+``` 是服务集合
+- ```latex
+$L$
+``` 是位置映射 ```latex
+$L: S \rightarrow \mathcal{P}(A)$
+```，其中 ```latex
+$A$
+``` 是地址集合
+- ```latex
+$T$
+``` 是时间戳映射 ```latex
+$T: S \rightarrow \mathbb{R}$
+```
 
 **算法 3.1**: 服务发现算法
 
@@ -440,12 +574,26 @@ func (sr *ServiceRegistry) HealthCheck() {
 ### 3.3 负载均衡
 
 **定义 3.5**: 负载均衡器
-负载均衡器是一个四元组 $\mathcal{L} = (S, A, W, F)$，其中：
+负载均衡器是一个四元组 ```latex
+$\mathcal{L} = (S, A, W, F)$
+```，其中：
 
-- $S$ 是服务实例集合
-- $A$ 是算法集合
-- $W$ 是权重函数 $W: S \rightarrow \mathbb{R}^+$
-- $F$ 是选择函数 $F: S \times A \rightarrow S$
+- ```latex
+$S$
+``` 是服务实例集合
+- ```latex
+$A$
+``` 是算法集合
+- ```latex
+$W$
+``` 是权重函数 ```latex
+$W: S \rightarrow \mathbb{R}^+$
+```
+- ```latex
+$F$
+``` 是选择函数 ```latex
+$F: S \times A \rightarrow S$
+```
 
 **算法 3.2**: 负载均衡算法
 
@@ -558,31 +706,63 @@ func (lb *LoadBalancer) random() (*ServiceInstance, error) {
 ### 4.1 形式化定义
 
 **定义 4.1**: 事件驱动架构
-事件驱动架构是一个六元组 $\mathcal{E} = (E, P, C, B, H, T)$，其中：
+事件驱动架构是一个六元组 ```latex
+$\mathcal{E} = (E, P, C, B, H, T)$
+```，其中：
 
-- $E$ 是事件集合
-- $P$ 是生产者集合
-- $C$ 是消费者集合
-- $B$ 是事件总线
-- $H$ 是事件处理器集合
-- $T$ 是时间戳集合
+- ```latex
+$E$
+``` 是事件集合
+- ```latex
+$P$
+``` 是生产者集合
+- ```latex
+$C$
+``` 是消费者集合
+- ```latex
+$B$
+``` 是事件总线
+- ```latex
+$H$
+``` 是事件处理器集合
+- ```latex
+$T$
+``` 是时间戳集合
 
 **定义 4.2**: 事件
-事件 $e$ 是一个四元组 $(id, type, data, timestamp)$，其中：
+事件 ```latex
+$e$
+``` 是一个四元组 ```latex
+$(id, type, data, timestamp)$
+```，其中：
 
-- $id$ 是事件唯一标识符
-- $type$ 是事件类型
-- $data$ 是事件数据
-- $timestamp$ 是事件时间戳
+- ```latex
+$id$
+``` 是事件唯一标识符
+- ```latex
+$type$
+``` 是事件类型
+- ```latex
+$data$
+``` 是事件数据
+- ```latex
+$timestamp$
+``` 是事件时间戳
 
 **定义 4.3**: 事件流
-事件流是一个序列 $\sigma = e_1, e_2, \ldots, e_n$，满足：
-$$\forall i < j: e_i.timestamp \leq e_j.timestamp$$
+事件流是一个序列 ```latex
+$\sigma = e_1, e_2, \ldots, e_n$
+```，满足：
+$```latex
+$\forall i < j: e_i.timestamp \leq e_j.timestamp$
+```$
 
 ### 4.2 事件流
 
 **定义 4.4**: 事件处理器
-事件处理器是一个函数 $h: E \rightarrow \mathcal{P}(E)$，将输入事件映射到输出事件集合。
+事件处理器是一个函数 ```latex
+$h: E \rightarrow \mathcal{P}(E)$
+```，将输入事件映射到输出事件集合。
 
 **算法 4.1**: 事件流处理
 
@@ -659,12 +839,20 @@ func (eb *EventBus) Stop() {
 ### 4.3 一致性保证
 
 **定义 4.5**: 事件顺序一致性
-事件流 $\sigma$ 满足顺序一致性，如果：
-$$\forall e_i, e_j \in \sigma: e_i.timestamp < e_j.timestamp \Rightarrow e_i \text{ processed before } e_j$$
+事件流 ```latex
+$\sigma$
+``` 满足顺序一致性，如果：
+$```latex
+$\forall e_i, e_j \in \sigma: e_i.timestamp < e_j.timestamp \Rightarrow e_i \text{ processed before } e_j$
+```$
 
 **定义 4.6**: 因果一致性
-事件流 $\sigma$ 满足因果一致性，如果：
-$$\forall e_i, e_j \in \sigma: e_i \text{ causes } e_j \Rightarrow e_i \text{ processed before } e_j$$
+事件流 ```latex
+$\sigma$
+``` 满足因果一致性，如果：
+$```latex
+$\forall e_i, e_j \in \sigma: e_i \text{ causes } e_j \Rightarrow e_i \text{ processed before } e_j$
+```$
 
 **算法 4.2**: 因果一致性实现
 
@@ -766,36 +954,76 @@ func (ceb *CausalEventBus) updateVectorClock(otherClock map[string]int) {
 ### 5.1 形式化定义
 
 **定义 5.1**: 领域驱动设计
-领域驱动设计是一个五元组 $\mathcal{D} = (D, E, A, S, R)$，其中：
+领域驱动设计是一个五元组 ```latex
+$\mathcal{D} = (D, E, A, S, R)$
+```，其中：
 
-- $D$ 是领域集合
-- $E$ 是实体集合
-- $A$ 是聚合根集合
-- $S$ 是服务集合
-- $R$ 是仓储集合
+- ```latex
+$D$
+``` 是领域集合
+- ```latex
+$E$
+``` 是实体集合
+- ```latex
+$A$
+``` 是聚合根集合
+- ```latex
+$S$
+``` 是服务集合
+- ```latex
+$R$
+``` 是仓储集合
 
 **定义 5.2**: 实体
-实体 $e$ 是一个三元组 $(id, state, behavior)$，其中：
+实体 ```latex
+$e$
+``` 是一个三元组 ```latex
+$(id, state, behavior)$
+```，其中：
 
-- $id$ 是实体标识符
-- $state$ 是实体状态
-- $behavior$ 是实体行为集合
+- ```latex
+$id$
+``` 是实体标识符
+- ```latex
+$state$
+``` 是实体状态
+- ```latex
+$behavior$
+``` 是实体行为集合
 
 **定义 5.3**: 值对象
-值对象 $v$ 是一个二元组 $(value, equality)$，其中：
+值对象 ```latex
+$v$
+``` 是一个二元组 ```latex
+$(value, equality)$
+```，其中：
 
-- $value$ 是值的内容
-- $equality$ 是相等性判断函数
+- ```latex
+$value$
+``` 是值的内容
+- ```latex
+$equality$
+``` 是相等性判断函数
 
 ### 5.2 聚合根
 
 **定义 5.4**: 聚合根
-聚合根是一个四元组 $\mathcal{A} = (root, entities, invariants, commands)$，其中：
+聚合根是一个四元组 ```latex
+$\mathcal{A} = (root, entities, invariants, commands)$
+```，其中：
 
-- $root$ 是根实体
-- $entities$ 是聚合内的实体集合
-- $invariants$ 是不变式集合
-- $commands$ 是命令集合
+- ```latex
+$root$
+``` 是根实体
+- ```latex
+$entities$
+``` 是聚合内的实体集合
+- ```latex
+$invariants$
+``` 是不变式集合
+- ```latex
+$commands$
+``` 是命令集合
 
 **算法 5.1**: 聚合根实现
 
@@ -941,12 +1169,22 @@ func (o *Order) Confirm() error {
 ### 5.3 领域事件
 
 **定义 5.5**: 领域事件
-领域事件是一个四元组 $\mathcal{E} = (id, type, data, metadata)$，其中：
+领域事件是一个四元组 ```latex
+$\mathcal{E} = (id, type, data, metadata)$
+```，其中：
 
-- $id$ 是事件标识符
-- $type$ 是事件类型
-- $data$ 是事件数据
-- $metadata$ 是事件元数据
+- ```latex
+$id$
+``` 是事件标识符
+- ```latex
+$type$
+``` 是事件类型
+- ```latex
+$data$
+``` 是事件数据
+- ```latex
+$metadata$
+``` 是事件元数据
 
 **算法 5.2**: 事件溯源实现
 
@@ -1060,33 +1298,59 @@ func (imes *InMemoryEventStore) GetEventsByType(eventType string) ([]DomainEvent
 ### 6.1 模式组合
 
 **定义 6.1**: 模式组合
-模式组合是一个函数 $\oplus: \mathcal{P} \times \mathcal{P} \rightarrow \mathcal{P}$，满足：
-$$\mathcal{P}_1 \oplus \mathcal{P}_2 = (S_1 \cup S_2, C_1 \cap C_2, R_1 \cup R_2)$$
+模式组合是一个函数 ```latex
+$\oplus: \mathcal{P} \times \mathcal{P} \rightarrow \mathcal{P}$
+```，满足：
+$```latex
+$\mathcal{P}_1 \oplus \mathcal{P}_2 = (S_1 \cup S_2, C_1 \cap C_2, R_1 \cup R_2)$
+```$
 
 **定理 6.1**: 组合的交换律
-对于任意模式 $\mathcal{P}_1, \mathcal{P}_2$：
-$$\mathcal{P}_1 \oplus \mathcal{P}_2 = \mathcal{P}_2 \oplus \mathcal{P}_1$$
+对于任意模式 ```latex
+$\mathcal{P}_1, \mathcal{P}_2$
+```：
+$```latex
+$\mathcal{P}_1 \oplus \mathcal{P}_2 = \mathcal{P}_2 \oplus \mathcal{P}_1$
+```$
 
 **定理 6.2**: 组合的结合律
-对于任意模式 $\mathcal{P}_1, \mathcal{P}_2, \mathcal{P}_3$：
-$$(\mathcal{P}_1 \oplus \mathcal{P}_2) \oplus \mathcal{P}_3 = \mathcal{P}_1 \oplus (\mathcal{P}_2 \oplus \mathcal{P}_3)$$
+对于任意模式 ```latex
+$\mathcal{P}_1, \mathcal{P}_2, \mathcal{P}_3$
+```：
+$```latex
+$(\mathcal{P}_1 \oplus \mathcal{P}_2) \oplus \mathcal{P}_3 = \mathcal{P}_1 \oplus (\mathcal{P}_2 \oplus \mathcal{P}_3)$
+```$
 
 ### 6.2 模式演化
 
 **定义 6.2**: 模式演化
-模式演化是一个函数 $\mathcal{E}: \mathcal{P} \times T \rightarrow \mathcal{P}$，其中 $T$ 是时间集合。
+模式演化是一个函数 ```latex
+$\mathcal{E}: \mathcal{P} \times T \rightarrow \mathcal{P}$
+```，其中 ```latex
+$T$
+``` 是时间集合。
 
 **定义 6.3**: 演化规则
-演化规则是一个三元组 $(condition, transformation, constraint)$，其中：
+演化规则是一个三元组 ```latex
+$(condition, transformation, constraint)$
+```，其中：
 
-- $condition$ 是演化条件
-- $transformation$ 是变换函数
-- $constraint$ 是约束条件
+- ```latex
+$condition$
+``` 是演化条件
+- ```latex
+$transformation$
+``` 是变换函数
+- ```latex
+$constraint$
+``` 是约束条件
 
 ### 6.3 形式化验证
 
 **定义 6.4**: 模式验证
-模式验证是一个函数 $V: \mathcal{P} \rightarrow \{true, false\}$，检查模式是否满足所有约束。
+模式验证是一个函数 ```latex
+$V: \mathcal{P} \rightarrow \{true, false\}$
+```，检查模式是否满足所有约束。
 
 **算法 6.1**: 模式验证算法
 

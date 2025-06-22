@@ -72,32 +72,68 @@
 
 ### 2.1 基本概念
 
-设 $P$ 为线程池集合，$T$ 为线程集合，$Q$ 为任务队列集合，$J$ 为任务集合。
+设 ```latex
+$P$
+``` 为线程池集合，```latex
+$T$
+``` 为线程集合，```latex
+$Q$
+``` 为任务队列集合，```latex
+$J$
+``` 为任务集合。
 
 **定义 2.1** (线程池)
-线程池是一个五元组 $(p, workers, queue, min\_size, max\_size)$，其中：
+线程池是一个五元组 ```latex
+$(p, workers, queue, min\_size, max\_size)$
+```，其中：
 
-- $p \in P$ 是线程池实例
-- $workers \subseteq T$ 是工作线程集合
-- $queue \in Q$ 是任务队列
-- $min\_size$ 是最小线程数
-- $max\_size$ 是最大线程数
+- ```latex
+$p \in P$
+``` 是线程池实例
+- ```latex
+$workers \subseteq T$
+``` 是工作线程集合
+- ```latex
+$queue \in Q$
+``` 是任务队列
+- ```latex
+$min\_size$
+``` 是最小线程数
+- ```latex
+$max\_size$
+``` 是最大线程数
 
 **定义 2.2** (任务)
-任务是一个三元组 $(id, function, args)$，其中：
+任务是一个三元组 ```latex
+$(id, function, args)$
+```，其中：
 
-- $id$ 是任务唯一标识符
-- $function$ 是要执行的函数
-- $args$ 是函数参数
+- ```latex
+$id$
+``` 是任务唯一标识符
+- ```latex
+$function$
+``` 是要执行的函数
+- ```latex
+$args$
+``` 是函数参数
 
 **定义 2.3** (工作线程)
 
 ```latex
-工作线程是一个三元组 $(t, pool, state)$，其中：
+工作线程是一个三元组 ```latex
+$(t, pool, state)$
+```，其中：
 
-- $t \in T$ 是线程实例
-- $pool \in P$ 是所属线程池
-- $state \in \{idle, busy, terminated\}$ 是线程状态
+- ```latex
+$t \in T$
+``` 是线程实例
+- ```latex
+$pool \in P$
+``` 是所属线程池
+- ```latex
+$state \in \{idle, busy, terminated\}$
+``` 是线程状态
 ```
 
 ### 2.2 操作语义
@@ -105,14 +141,24 @@
 **公理 2.1** (任务提交)
 
 ```latex
-对于线程池 $p$ 和任务 $j$：
-$$submit(p, j) = enqueue(queue, j)$$
+对于线程池 ```latex
+$p$
+``` 和任务 ```latex
+$j$
+```：
+$```latex
+$submit(p, j) = enqueue(queue, j)$
+```$
 ```
 
 **公理 2.2** (任务执行)
 
 ```latex
-对于工作线程 $t$ 和任务 $j$：
+对于工作线程 ```latex
+$t$
+``` 和任务 ```latex
+$j$
+```：
 $$execute(t, j) = \begin{cases}
 function(args) & \text{if } state(t) = idle \\
 block(t) & \text{otherwise}
@@ -122,7 +168,9 @@ block(t) & \text{otherwise}
 **公理 2.3** (线程创建)
 
 ```latex
-对于线程池 $p$：
+对于线程池 ```latex
+$p$
+```：
 $$create\_worker(p) = \begin{cases}
 new\_thread() & \text{if } |workers| < max\_size \\
 null & \text{otherwise}
@@ -132,7 +180,9 @@ null & \text{otherwise}
 **公理 2.4** (线程销毁)
 
 ```latex
-对于工作线程 $t$：
+对于工作线程 ```latex
+$t$
+```：
 $$destroy\_worker(t) = \begin{cases}
 terminate(t) & \text{if } |workers| > min\_size \\
 null & \text{otherwise}
@@ -143,15 +193,21 @@ null & \text{otherwise}
 
 **定义 2.4** (核心线程数)
 核心线程数是线程池中始终保持活跃的线程数量：
-$$core\_size = min\_size$$
+$```latex
+$core\_size = min\_size$
+```$
 
 **定义 2.5** (最大线程数)
 最大线程数是线程池允许的最大线程数量：
-$$max\_workers = max\_size$$
+$```latex
+$max\_workers = max\_size$
+```$
 
 **定义 2.6** (队列容量)
 队列容量是任务队列的最大长度：
-$$queue\_capacity = |queue|$$
+$```latex
+$queue\_capacity = |queue|$
+```$
 
 ---
 
@@ -163,43 +219,63 @@ $$queue\_capacity = |queue|$$
 
 **定义 3.1** (M/M/c队列)
 
-- 任务到达服从泊松分布，到达率为 $\lambda$
-- 服务时间服从指数分布，服务率为 $\mu$
-- 有 $c$ 个服务窗口（线程）
+- 任务到达服从泊松分布，到达率为 ```latex
+$\lambda$
+```
+- 服务时间服从指数分布，服务率为 ```latex
+$\mu$
+```
+- 有 ```latex
+$c$
+``` 个服务窗口（线程）
 
 **定理 3.1** (系统利用率)
 
 系统利用率定义为：
-$$\rho = \frac{\lambda}{c\mu}$$
+$```latex
+$\rho = \frac{\lambda}{c\mu}$
+```$
 
 **定理 3.2** (平均等待时间)
 
 对于M/M/c队列，平均等待时间：
-$$W_q = \frac{P_0(\lambda/\mu)^c\rho}{c!(1-\rho)^2\lambda}$$
+$```latex
+$W_q = \frac{P_0(\lambda/\mu)^c\rho}{c!(1-\rho)^2\lambda}$
+```$
 
-其中 $P_0$ 是系统空闲概率。
+其中 ```latex
+$P_0$
+``` 是系统空闲概率。
 
 ### 3.2 性能分析
 
 **定义 3.2** (吞吐量)
 
 吞吐量是单位时间内处理的任务数：
-$$Throughput = \frac{completed\_tasks}{time}$$
+$```latex
+$Throughput = \frac{completed\_tasks}{time}$
+```$
 
 **定义 3.3** (响应时间)
 
 响应时间是任务从提交到完成的时间：
-$$Response\_Time = Queue\_Time + Service\_Time$$
+$```latex
+$Response\_Time = Queue\_Time + Service\_Time$
+```$
 
 **定理 3.3** (最优线程数)
 
 在CPU密集型任务下，最优线程数近似等于CPU核心数：
-$$optimal\_threads \approx CPU\_cores$$
+$```latex
+$optimal\_threads \approx CPU\_cores$
+```$
 
 **定理 3.4** (I/O密集型任务)
 
 在I/O密集型任务下，最优线程数可以大于CPU核心数：
-$$optimal\_threads > CPU\_cores$$
+$```latex
+$optimal\_threads > CPU\_cores$
+```$
 
 ---
 
@@ -1244,16 +1320,28 @@ func main() {
 
 ### 6.1 时间复杂度
 
-- **任务提交**: $O(1)$
+- **任务提交**: ```latex
+$O(1)$
+```
 - **任务执行**: 取决于具体任务复杂度
-- **线程创建**: $O(1)$
-- **线程销毁**: $O(1)$
+- **线程创建**: ```latex
+$O(1)$
+```
+- **线程销毁**: ```latex
+$O(1)$
+```
 
 ### 6.2 空间复杂度
 
-- **线程池**: $O(max\_size)$
-- **任务队列**: $O(queue\_capacity)$
-- **每个线程**: $O(1)$
+- **线程池**: ```latex
+$O(max\_size)$
+```
+- **任务队列**: ```latex
+$O(queue\_capacity)$
+```
+- **每个线程**: ```latex
+$O(1)$
+```
 
 ### 6.3 性能优化建议
 

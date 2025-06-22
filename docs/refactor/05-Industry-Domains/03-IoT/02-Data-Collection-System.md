@@ -65,73 +65,157 @@
 ### 2.1 数据采集系统定义
 
 **定义 2.1.1** (数据采集系统)
-数据采集系统是一个五元组 $DCS = (S, P, T, Q, M)$，其中：
+数据采集系统是一个五元组 ```latex
+$DCS = (S, P, T, Q, M)$
+```，其中：
 
-- $S = \{s_1, s_2, ..., s_n\}$ 是传感器集合
-- $P = \{p_1, p_2, ..., p_m\}$ 是处理器集合
-- $T = \{t_1, t_2, ..., t_k\}$ 是传输通道集合
-- $Q = \{q_1, q_2, ..., q_l\}$ 是队列集合
-- $M = \{m_1, m_2, ..., m_p\}$ 是存储介质集合
+- ```latex
+$S = \{s_1, s_2, ..., s_n\}$
+``` 是传感器集合
+- ```latex
+$P = \{p_1, p_2, ..., p_m\}$
+``` 是处理器集合
+- ```latex
+$T = \{t_1, t_2, ..., t_k\}$
+``` 是传输通道集合
+- ```latex
+$Q = \{q_1, q_2, ..., q_l\}$
+``` 是队列集合
+- ```latex
+$M = \{m_1, m_2, ..., m_p\}$
+``` 是存储介质集合
 
 ### 2.2 数据流定义
 
 **定义 2.1.2** (数据流)
-数据流是一个三元组 $DF = (D, R, F)$，其中：
+数据流是一个三元组 ```latex
+$DF = (D, R, F)$
+```，其中：
 
-- $D = \{d_1, d_2, ..., d_n\}$ 是数据点集合
-- $R: D \rightarrow \mathbb{R}^m$ 是数据映射函数
-- $F: \mathbb{R}^m \rightarrow \mathbb{R}^k$ 是处理函数
+- ```latex
+$D = \{d_1, d_2, ..., d_n\}$
+``` 是数据点集合
+- ```latex
+$R: D \rightarrow \mathbb{R}^m$
+``` 是数据映射函数
+- ```latex
+$F: \mathbb{R}^m \rightarrow \mathbb{R}^k$
+``` 是处理函数
 
 ### 2.3 性能指标定义
 
 **定义 2.1.3** (吞吐量)
 系统吞吐量定义为：
-$$\Theta = \lim_{T \to \infty} \frac{N(T)}{T}$$
-其中 $N(T)$ 是在时间 $T$ 内处理的数据点数量。
+$```latex
+$\Theta = \lim_{T \to \infty} \frac{N(T)}{T}$
+```$
+其中 ```latex
+$N(T)$
+``` 是在时间 ```latex
+$T$
+``` 内处理的数据点数量。
 
 **定义 2.1.4** (延迟)
 系统延迟定义为：
-$$L = \frac{1}{N} \sum_{i=1}^{N} (t_{i,out} - t_{i,in})$$
-其中 $t_{i,in}$ 和 $t_{i,out}$ 分别是数据点 $i$ 的输入和输出时间。
+$```latex
+$L = \frac{1}{N} \sum_{i=1}^{N} (t_{i,out} - t_{i,in})$
+```$
+其中 ```latex
+$t_{i,in}$
+``` 和 ```latex
+$t_{i,out}$
+``` 分别是数据点 ```latex
+$i$
+``` 的输入和输出时间。
 
 ## 3. 数学基础
 
 ### 3.1 队列理论
 
 **定理 3.1.1** (Little's Law)
-在稳态条件下，队列中的平均等待时间 $W$、平均队列长度 $L$ 和平均到达率 $\lambda$ 满足：
-$$L = \lambda W$$
+在稳态条件下，队列中的平均等待时间 ```latex
+$W$
+```、平均队列长度 ```latex
+$L$
+``` 和平均到达率 ```latex
+$\lambda$
+``` 满足：
+$```latex
+$L = \lambda W$
+```$
 
 **证明**:
-设 $N(t)$ 为时刻 $t$ 队列中的顾客数，$A(t)$ 为到时刻 $t$ 为止到达的顾客总数，$D(t)$ 为到时刻 $t$ 为止离开的顾客总数。
+设 ```latex
+$N(t)$
+``` 为时刻 ```latex
+$t$
+``` 队列中的顾客数，```latex
+$A(t)$
+``` 为到时刻 ```latex
+$t$
+``` 为止到达的顾客总数，```latex
+$D(t)$
+``` 为到时刻 ```latex
+$t$
+``` 为止离开的顾客总数。
 
 在稳态条件下：
-$$\lim_{t \to \infty} \frac{A(t)}{t} = \lambda$$
-$$\lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = L$$
+$```latex
+$\lim_{t \to \infty} \frac{A(t)}{t} = \lambda$
+```$
+$```latex
+$\lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = L$
+```$
 
-对于每个顾客 $i$，其等待时间为 $W_i$，则：
-$$\sum_{i=1}^{A(t)} W_i = \int_0^t N(\tau) d\tau$$
+对于每个顾客 ```latex
+$i$
+```，其等待时间为 ```latex
+$W_i$
+```，则：
+$```latex
+$\sum_{i=1}^{A(t)} W_i = \int_0^t N(\tau) d\tau$
+```$
 
 因此：
-$$L = \lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = \lim_{t \to \infty} \frac{1}{t} \sum_{i=1}^{A(t)} W_i = \lambda W$$
+$```latex
+$L = \lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = \lim_{t \to \infty} \frac{1}{t} \sum_{i=1}^{A(t)} W_i = \lambda W$
+```$
 
 ### 3.2 数据压缩理论
 
 **定理 3.1.2** (香农信息论)
 对于离散无记忆信源，其熵定义为：
-$$H(X) = -\sum_{i=1}^{n} p_i \log_2 p_i$$
+$```latex
+$H(X) = -\sum_{i=1}^{n} p_i \log_2 p_i$
+```$
 
-其中 $p_i$ 是符号 $x_i$ 出现的概率。
+其中 ```latex
+$p_i$
+``` 是符号 ```latex
+$x_i$
+``` 出现的概率。
 
 **推论 3.1.1** (数据压缩下界)
-任何无损压缩算法的平均码长 $L$ 满足：
-$$L \geq H(X)$$
+任何无损压缩算法的平均码长 ```latex
+$L$
+``` 满足：
+$```latex
+$L \geq H(X)$
+```$
 
 ### 3.3 采样理论
 
 **定理 3.1.3** (奈奎斯特采样定理)
-如果信号 $x(t)$ 的频谱限制在 $[-f_m, f_m]$ 范围内，则采样频率 $f_s$ 必须满足：
-$$f_s > 2f_m$$
+如果信号 ```latex
+$x(t)$
+``` 的频谱限制在 ```latex
+$[-f_m, f_m]$
+``` 范围内，则采样频率 ```latex
+$f_s$
+``` 必须满足：
+$```latex
+$f_s > 2f_m$
+```$
 
 才能完全重构原信号。
 
@@ -195,11 +279,19 @@ sequenceDiagram
 ### 5.1 数据采集器
 
 **定义 5.1.1** (数据采集器)
-数据采集器是一个函数 $C: S \times T \rightarrow D$，其中：
+数据采集器是一个函数 ```latex
+$C: S \times T \rightarrow D$
+```，其中：
 
-- $S$ 是传感器集合
-- $T$ 是时间域
-- $D$ 是数据域
+- ```latex
+$S$
+``` 是传感器集合
+- ```latex
+$T$
+``` 是时间域
+- ```latex
+$D$
+``` 是数据域
 
 **算法 5.1.1** (数据采集算法)
 
@@ -219,20 +311,36 @@ sequenceDiagram
 ### 5.2 数据处理器
 
 **定义 5.1.2** (数据处理器)
-数据处理器是一个函数 $P: D \times F \rightarrow D'$，其中：
+数据处理器是一个函数 ```latex
+$P: D \times F \rightarrow D'$
+```，其中：
 
-- $D$ 是输入数据集合
-- $F$ 是处理函数集合
-- $D'$ 是输出数据集合
+- ```latex
+$D$
+``` 是输入数据集合
+- ```latex
+$F$
+``` 是处理函数集合
+- ```latex
+$D'$
+``` 是输出数据集合
 
 ### 5.3 数据存储管理器
 
 **定义 5.1.3** (数据存储管理器)
-数据存储管理器是一个函数 $M: D \times S \rightarrow B$，其中：
+数据存储管理器是一个函数 ```latex
+$M: D \times S \rightarrow B$
+```，其中：
 
-- $D$ 是数据集合
-- $S$ 是存储策略
-- $B$ 是存储结果
+- ```latex
+$D$
+``` 是数据集合
+- ```latex
+$S$
+``` 是存储策略
+- ```latex
+$B$
+``` 是存储结果
 
 ## 6. Go语言实现
 
@@ -827,21 +935,43 @@ func main() {
 ### 7.1 并发优化
 
 **定理 7.1.1** (Amdahl定律)
-系统加速比 $S$ 定义为：
-$$S = \frac{1}{(1-p) + \frac{p}{n}}$$
+系统加速比 ```latex
+$S$
+``` 定义为：
+$```latex
+$S = \frac{1}{(1-p) + \frac{p}{n}}$
+```$
 
-其中 $p$ 是可并行化的部分比例，$n$ 是处理器数量。
+其中 ```latex
+$p$
+``` 是可并行化的部分比例，```latex
+$n$
+``` 是处理器数量。
 
 **证明**:
-设 $T_1$ 是串行执行时间，$T_n$ 是并行执行时间。
-$$T_1 = T_{serial} + T_{parallel}$$
-$$T_n = T_{serial} + \frac{T_{parallel}}{n}$$
+设 ```latex
+$T_1$
+``` 是串行执行时间，```latex
+$T_n$
+``` 是并行执行时间。
+$```latex
+$T_1 = T_{serial} + T_{parallel}$
+```$
+$```latex
+$T_n = T_{serial} + \frac{T_{parallel}}{n}$
+```$
 
 因此：
-$$S = \frac{T_1}{T_n} = \frac{T_{serial} + T_{parallel}}{T_{serial} + \frac{T_{parallel}}{n}}$$
+$```latex
+$S = \frac{T_1}{T_n} = \frac{T_{serial} + T_{parallel}}{T_{serial} + \frac{T_{parallel}}{n}}$
+```$
 
-设 $p = \frac{T_{parallel}}{T_1}$，则：
-$$S = \frac{1}{(1-p) + \frac{p}{n}}$$
+设 ```latex
+$p = \frac{T_{parallel}}{T_1}$
+```，则：
+$```latex
+$S = \frac{1}{(1-p) + \frac{p}{n}}$
+```$
 
 ### 7.2 内存优化
 
@@ -866,24 +996,48 @@ $$S = \frac{1}{(1-p) + \frac{p}{n}}$$
 ### 7.3 网络优化
 
 **定理 7.1.2** (网络延迟优化)
-对于 $n$ 个节点的网络，最小延迟为：
-$$L_{min} = \max_{i,j} \frac{d_{ij}}{c_{ij}}$$
+对于 ```latex
+$n$
+``` 个节点的网络，最小延迟为：
+$```latex
+$L_{min} = \max_{i,j} \frac{d_{ij}}{c_{ij}}$
+```$
 
-其中 $d_{ij}$ 是节点 $i$ 和 $j$ 之间的距离，$c_{ij}$ 是传输速度。
+其中 ```latex
+$d_{ij}$
+``` 是节点 ```latex
+$i$
+``` 和 ```latex
+$j$
+``` 之间的距离，```latex
+$c_{ij}$
+``` 是传输速度。
 
 ## 8. 安全机制
 
 ### 8.1 数据加密
 
 **定义 8.1.1** (数据加密)
-数据加密函数 $E: M \times K \rightarrow C$ 满足：
-$$E(m, k) = c$$
+数据加密函数 ```latex
+$E: M \times K \rightarrow C$
+``` 满足：
+$```latex
+$E(m, k) = c$
+```$
 
-其中 $M$ 是明文空间，$K$ 是密钥空间，$C$ 是密文空间。
+其中 ```latex
+$M$
+``` 是明文空间，```latex
+$K$
+``` 是密钥空间，```latex
+$C$
+``` 是密文空间。
 
 **定理 8.1.1** (AES加密安全性)
 AES加密算法在已知明文攻击下的安全性为：
-$$P[攻击成功] \leq \frac{1}{2^{128}}$$
+$```latex
+$P[攻击成功] \leq \frac{1}{2^{128}}$
+```$
 
 ### 8.2 身份认证
 
@@ -910,11 +1064,17 @@ $$P[攻击成功] \leq \frac{1}{2^{128}}$$
 ### 8.3 访问控制
 
 **定义 8.1.2** (访问控制矩阵)
-访问控制矩阵 $A$ 是一个 $m \times n$ 矩阵，其中：
+访问控制矩阵 ```latex
+$A$
+``` 是一个 ```latex
+$m \times n$
+``` 矩阵，其中：
+```latex
 $$A[i,j] = \begin{cases}
 1 & \text{如果主体 } i \text{ 对对象 } j \text{ 有访问权限} \\
 0 & \text{否则}
 \end{cases}$$
+```
 
 ## 9. 总结
 

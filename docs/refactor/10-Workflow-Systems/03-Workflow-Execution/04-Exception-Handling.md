@@ -20,44 +20,74 @@
 #### 1.1.1 异常基本概念
 
 **定义 1.1.1** (工作流异常)
-工作流异常 $E$ 是一个三元组 $(t, \tau, \sigma)$，其中：
+工作流异常 ```latex
+$E$
+``` 是一个三元组 ```latex
+$(t, \tau, \sigma)$
+```，其中：
 
-- $t$: 异常发生的时间点
-- $\tau$: 异常类型
-- $\sigma$: 异常状态信息
+- ```latex
+$t$
+```: 异常发生的时间点
+- ```latex
+$\tau$
+```: 异常类型
+- ```latex
+$\sigma$
+```: 异常状态信息
 
 **定义 1.1.2** (异常空间)
-异常空间 $\mathcal{E}$ 是所有可能异常的集合：
+异常空间 ```latex
+$\mathcal{E}$
+``` 是所有可能异常的集合：
 
 ```latex
-$$\mathcal{E} = \mathcal{T} \times \mathcal{T} \times \mathcal{S}$$
+$```latex
+$\mathcal{E} = \mathcal{T} \times \mathcal{T} \times \mathcal{S}$
+```$
 ```
 
 其中：
 
-- $\mathcal{T}$: 异常类型集合
-- $\mathcal{S}$: 异常状态集合
+- ```latex
+$\mathcal{T}$
+```: 异常类型集合
+- ```latex
+$\mathcal{S}$
+```: 异常状态集合
 
 #### 1.1.2 异常传播模型
 
 **定义 1.1.3** (异常传播)
-异常传播函数 $P: \mathcal{E} \times \mathcal{W} \to \mathcal{E}^*$ 定义异常在工作流中的传播：
+异常传播函数 ```latex
+$P: \mathcal{E} \times \mathcal{W} \to \mathcal{E}^*$
+``` 定义异常在工作流中的传播：
 
 ```latex
-$$P(E, W) = \{E_1, E_2, ..., E_n\}$$
+$```latex
+$P(E, W) = \{E_1, E_2, ..., E_n\}$
+```$
 ```
 
 其中：
 
-- $W$: 工作流实例
-- $E_i$: 传播的异常
+- ```latex
+$W$
+```: 工作流实例
+- ```latex
+$E_i$
+```: 传播的异常
 
 **定理 1.1.1** (异常传播单调性)
 
-对于异常 $E_1 \subseteq E_2$，其传播满足单调性：
+对于异常 ```latex
+$E_1 \subseteq E_2$
+```，其传播满足单调性：
 
 ```latex
-$$P(E_1, W) \subseteq P(E_2, W)$$
+$```latex
+$P(E_1, W) \subseteq P(E_2, W)$
+```$
 ```
 
 ### 1.2 异常处理语义
@@ -66,16 +96,30 @@ $$P(E_1, W) \subseteq P(E_2, W)$$
 
 **定义 1.2.1** (异常处理操作)
 
-异常处理操作 $H$ 是一个四元组 $(D, R, C, F)$，其中：
+异常处理操作 ```latex
+$H$
+``` 是一个四元组 ```latex
+$(D, R, C, F)$
+```，其中：
 
-- $D$: 异常检测函数
-- $R$: 异常恢复函数
-- $C$: 异常补偿函数
-- $F$: 异常失败处理函数
+- ```latex
+$D$
+```: 异常检测函数
+- ```latex
+$R$
+```: 异常恢复函数
+- ```latex
+$C$
+```: 异常补偿函数
+- ```latex
+$F$
+```: 异常失败处理函数
 
 **定义 1.2.2** (异常处理语义)
 
-异常处理语义 $\llbracket H \rrbracket$ 定义为：
+异常处理语义 ```latex
+$\llbracket H \rrbracket$
+``` 定义为：
 
 ```latex
 $$\llbracket H \rrbracket = \lambda E. \begin{cases}
@@ -92,30 +136,44 @@ F(E) & \text{if } D(E) = \text{fatal}
 #### 2.1.1 按异常来源分类
 
 **定义 2.1.1** (系统异常)
-系统异常 $E_{sys}$ 是由系统资源或环境问题引起的异常：
+系统异常 ```latex
+$E_{sys}$
+``` 是由系统资源或环境问题引起的异常：
 
 ```latex
-$$E_{sys} \in \{E_{cpu}, E_{memory}, E_{network}, E_{disk}\}$$
+$```latex
+$E_{sys} \in \{E_{cpu}, E_{memory}, E_{network}, E_{disk}\}$
+```$
 ```
 
 **定义 2.1.2** (业务异常)
-业务异常 $E_{biz}$ 是由业务逻辑或数据问题引起的异常：
+业务异常 ```latex
+$E_{biz}$
+``` 是由业务逻辑或数据问题引起的异常：
 
 ```latex
-$$E_{biz} \in \{E_{validation}, E_{authorization}, E_{data}, E_{logic}\}$$
+$```latex
+$E_{biz} \in \{E_{validation}, E_{authorization}, E_{data}, E_{logic}\}$
+```$
 ```
 
 **定义 2.1.3** (外部异常)
-外部异常 $E_{ext}$ 是由外部服务或系统引起的异常：
+外部异常 ```latex
+$E_{ext}$
+``` 是由外部服务或系统引起的异常：
 
 ```latex
-$$E_{ext} \in \{E_{timeout}, E_{unavailable}, E_{invalid}, E_{rate\_limit}\}$$
+$```latex
+$E_{ext} \in \{E_{timeout}, E_{unavailable}, E_{invalid}, E_{rate\_limit}\}$
+```$
 ```
 
 #### 2.1.2 按异常严重程度分类
 
 **定义 2.1.4** (异常严重程度)
-异常严重程度 $S(E)$ 定义为：
+异常严重程度 ```latex
+$S(E)$
+``` 定义为：
 
 ```latex
 $$S(E) = \begin{cases}
@@ -131,37 +189,69 @@ $$S(E) = \begin{cases}
 #### 2.2.1 异常状态机
 
 **定义 2.2.1** (异常状态机)
-异常状态机 $ASM = (Q, \Sigma, \delta, q_0, F)$ 其中：
+异常状态机 ```latex
+$ASM = (Q, \Sigma, \delta, q_0, F)$
+``` 其中：
 
-- $Q$: 状态集合 $\{normal, detected, recovering, compensated, failed\}$
-- $\Sigma$: 输入字母表（异常事件）
-- $\delta: Q \times \Sigma \to Q$: 状态转移函数
-- $q_0$: 初始状态（normal）
-- $F$: 接受状态集合
+- ```latex
+$Q$
+```: 状态集合 ```latex
+$\{normal, detected, recovering, compensated, failed\}$
+```
+- ```latex
+$\Sigma$
+```: 输入字母表（异常事件）
+- ```latex
+$\delta: Q \times \Sigma \to Q$
+```: 状态转移函数
+- ```latex
+$q_0$
+```: 初始状态（normal）
+- ```latex
+$F$
+```: 接受状态集合
 
 **定理 2.2.1** (异常状态可达性)
 对于异常状态机，从正常状态到任何异常状态都是可达的。
 
 **证明**:
-通过构造性证明，对于任意异常状态 $q \in Q$，存在输入序列 $\sigma_1, \sigma_2, ..., \sigma_n$ 使得：
+通过构造性证明，对于任意异常状态 ```latex
+$q \in Q$
+```，存在输入序列 ```latex
+$\sigma_1, \sigma_2, ..., \sigma_n$
+``` 使得：
 
 ```latex
-$$\delta^*(q_0, \sigma_1\sigma_2...\sigma_n) = q$$
+$```latex
+$\delta^*(q_0, \sigma_1\sigma_2...\sigma_n) = q$
+```$
 ```
 
 #### 2.2.2 异常概率模型
 
 **定义 2.2.2** (异常概率)
-异常概率 $P(E|W)$ 定义为在工作流 $W$ 执行过程中发生异常 $E$ 的概率。
+异常概率 ```latex
+$P(E|W)$
+``` 定义为在工作流 ```latex
+$W$
+``` 执行过程中发生异常 ```latex
+$E$
+``` 的概率。
 
 **定义 2.2.3** (异常分布)
-异常分布 $D_E$ 定义为异常发生时间的概率分布：
+异常分布 ```latex
+$D_E$
+``` 定义为异常发生时间的概率分布：
 
 ```latex
-$$D_E(t) = P(T_E \leq t)$$
+$```latex
+$D_E(t) = P(T_E \leq t)$
+```$
 ```
 
-其中 $T_E$ 是异常发生时间。
+其中 ```latex
+$T_E$
+``` 是异常发生时间。
 
 ## 3. 异常检测算法
 

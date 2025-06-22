@@ -16,8 +16,12 @@
 ### 1.2 微服务架构模式
 
 **形式化定义**：
-设 $S = \{s_1, s_2, ..., s_n\}$ 为服务集合，微服务系统：
-$$\text{MicroserviceSystem}(S) = \bigcup_{i=1}^{n} \text{Service}(s_i) \cup \text{Communication}(S)$$
+设 ```latex
+$S = \{s_1, s_2, ..., s_n\}$
+``` 为服务集合，微服务系统：
+$```latex
+$\text{MicroserviceSystem}(S) = \bigcup_{i=1}^{n} \text{Service}(s_i) \cup \text{Communication}(S)$
+```$
 
 ## 2. 服务发现
 

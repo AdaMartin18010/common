@@ -9,31 +9,69 @@
 ### 1.1 验证理论框架
 
 **定义 1.1** (工作流验证)
-工作流验证是一个四元组 $\mathcal{V} = (W, \Phi, \mathcal{M}, \mathcal{P})$，其中：
+工作流验证是一个四元组 ```latex
+$\mathcal{V} = (W, \Phi, \mathcal{M}, \mathcal{P})$
+```，其中：
 
-- $W$ 是工作流模型
-- $\Phi$ 是属性集合
-- $\mathcal{M}$ 是验证方法
-- $\mathcal{P}$ 是证明系统
+- ```latex
+$W$
+``` 是工作流模型
+- ```latex
+$\Phi$
+``` 是属性集合
+- ```latex
+$\mathcal{M}$
+``` 是验证方法
+- ```latex
+$\mathcal{P}$
+``` 是证明系统
 
 **定理 1.1** (验证完备性)
-对于任意工作流 $W$ 和属性 $\phi$，存在验证方法 $\mathcal{M}$ 使得：
+对于任意工作流 ```latex
+$W$
+``` 和属性 ```latex
+$\phi$
+```，存在验证方法 ```latex
+$\mathcal{M}$
+``` 使得：
+```latex
 $$\mathcal{M}(W, \phi) = \begin{cases}
 \text{true} & \text{if } W \models \phi \\
 \text{false} & \text{if } W \not\models \phi
 \end{cases}$$
+```
 
 ### 1.2 时态逻辑
 
 **定义 1.2** (线性时态逻辑 LTL)
 线性时态逻辑的语法定义为：
-$$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \phi \rightarrow \psi \mid \mathbf{X}\phi \mid \mathbf{F}\phi \mid \mathbf{G}\phi \mid \phi \mathbf{U}\psi$$
+$```latex
+$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \phi \rightarrow \psi \mid \mathbf{X}\phi \mid \mathbf{F}\phi \mid \mathbf{G}\phi \mid \phi \mathbf{U}\psi$
+```$
 
 其中：
-- $\mathbf{X}\phi$: 下一个状态满足 $\phi$
-- $\mathbf{F}\phi$: 将来某个状态满足 $\phi$
-- $\mathbf{G}\phi$: 所有将来状态都满足 $\phi$
-- $\phi \mathbf{U}\psi$: $\phi$ 一直为真直到 $\psi$ 为真
+- ```latex
+$\mathbf{X}\phi$
+```: 下一个状态满足 ```latex
+$\phi$
+```
+- ```latex
+$\mathbf{F}\phi$
+```: 将来某个状态满足 ```latex
+$\phi$
+```
+- ```latex
+$\mathbf{G}\phi$
+```: 所有将来状态都满足 ```latex
+$\phi$
+```
+- ```latex
+$\phi \mathbf{U}\psi$
+```: ```latex
+$\phi$
+``` 一直为真直到 ```latex
+$\psi$
+``` 为真
 
 ```go
 // 时态逻辑表达式
@@ -128,9 +166,17 @@ func (uo *UntilOperator) Evaluate(trace []State) bool {
 ### 2.1 状态空间探索
 
 **定义 2.1** (状态空间)
-工作流 $W$ 的状态空间是一个有向图 $G = (V, E)$，其中：
-- $V$ 是状态集合
-- $E$ 是转移关系
+工作流 ```latex
+$W$
+``` 的状态空间是一个有向图 ```latex
+$G = (V, E)$
+```，其中：
+- ```latex
+$V$
+``` 是状态集合
+- ```latex
+$E$
+``` 是转移关系
 
 **算法 2.1** (深度优先搜索)
 ```go
@@ -299,13 +345,27 @@ func (cmc *CTLModelChecker) checkEG(satisfied map[string]bool, stateID string) b
 ### 3.1 工作流性质证明
 
 **定理 3.1** (工作流终止性)
-如果工作流 $W$ 是有限的且无循环，则 $W$ 总是终止。
+如果工作流 ```latex
+$W$
+``` 是有限的且无循环，则 ```latex
+$W$
+``` 总是终止。
 
 **证明**:
-1. 由于 $W$ 是有限的，状态空间 $S$ 是有限集
-2. 由于 $W$ 无循环，从任何状态出发的路径长度不超过 $|S|$
+1. 由于 ```latex
+$W$
+``` 是有限的，状态空间 ```latex
+$S$
+``` 是有限集
+2. 由于 ```latex
+$W$
+``` 无循环，从任何状态出发的路径长度不超过 ```latex
+$|S|$
+```
 3. 因此，任何执行路径都会在有限步内到达终止状态
-4. 故 $W$ 总是终止
+4. 故 ```latex
+$W$
+``` 总是终止
 
 ```go
 // 工作流性质证明器
@@ -373,10 +433,24 @@ func (pc *PropertyChecker) CheckLiveness() (bool, error) {
 ### 3.2 不变式证明
 
 **定义 3.1** (工作流不变式)
-工作流不变式是一个谓词 $I(s)$，对于所有可达状态 $s$ 都成立。
+工作流不变式是一个谓词 ```latex
+$I(s)$
+```，对于所有可达状态 ```latex
+$s$
+``` 都成立。
 
 **定理 3.2** (不变式保持)
-如果 $I$ 是工作流 $W$ 的不变式，且对于所有转移 $(s, s')$ 都有 $I(s) \land T(s, s') \rightarrow I(s')$，则 $I$ 在所有可达状态中都成立。
+如果 ```latex
+$I$
+``` 是工作流 ```latex
+$W$
+``` 的不变式，且对于所有转移 ```latex
+$(s, s')$
+``` 都有 ```latex
+$I(s) \land T(s, s') \rightarrow I(s')$
+```，则 ```latex
+$I$
+``` 在所有可达状态中都成立。
 
 ```go
 // 不变式证明器
@@ -524,10 +598,18 @@ func (dfa *DataFlowAnalyzer) computeReachingDefinitions(nodeID string,
 ### 4.2 类型检查
 
 **定义 4.2** (工作流类型系统)
-工作流类型系统是一个三元组 $\mathcal{T} = (T, \Gamma, \vdash)$，其中：
-- $T$ 是类型集合
-- $\Gamma$ 是类型环境
-- $\vdash$ 是类型推导关系
+工作流类型系统是一个三元组 ```latex
+$\mathcal{T} = (T, \Gamma, \vdash)$
+```，其中：
+- ```latex
+$T$
+``` 是类型集合
+- ```latex
+$\Gamma$
+``` 是类型环境
+- ```latex
+$\vdash$
+``` 是类型推导关系
 
 ```go
 // 类型检查器

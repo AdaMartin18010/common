@@ -32,13 +32,25 @@
 
 ### 1.1 核心组件
 
-**定义 1.1** (执行引擎): 工作流执行引擎是一个五元组 $EE = (S, E, D, C, M)$，其中：
+**定义 1.1** (执行引擎): 工作流执行引擎是一个五元组 ```latex
+$EE = (S, E, D, C, M)$
+```，其中：
 
-- $S$ 是调度器(Scheduler)
-- $E$ 是执行器(Executor)
-- $D$ 是数据管理器(Data Manager)
-- $C$ 是控制器(Controller)
-- $M$ 是监控器(Monitor)
+- ```latex
+$S$
+``` 是调度器(Scheduler)
+- ```latex
+$E$
+``` 是执行器(Executor)
+- ```latex
+$D$
+``` 是数据管理器(Data Manager)
+- ```latex
+$C$
+``` 是控制器(Controller)
+- ```latex
+$M$
+``` 是监控器(Monitor)
 
 **组件职责**:
 
@@ -52,7 +64,9 @@
 
 **定义 1.2** (执行模型): 工作流执行模型定义了任务执行的规则和约束：
 
-$$\text{ExecutionModel} = (\text{Task}, \text{Dependency}, \text{Resource}, \text{Constraint})$$
+$```latex
+$\text{ExecutionModel} = (\text{Task}, \text{Dependency}, \text{Resource}, \text{Constraint})$
+```$
 
 **执行阶段**:
 
@@ -65,14 +79,24 @@ $$\text{ExecutionModel} = (\text{Task}, \text{Dependency}, \text{Resource}, \tex
 
 **定义 1.3** (执行状态): 工作流执行状态包括：
 
-$$\text{ExecutionState} = \{\text{Ready}, \text{Running}, \text{Completed}, \text{Failed}, \text{Suspended}\}$$
+$```latex
+$\text{ExecutionState} = \{\text{Ready}, \text{Running}, \text{Completed}, \text{Failed}, \text{Suspended}\}$
+```$
 
 **状态转换规则**:
 
-- $\text{Ready} \rightarrow \text{Running}$: 任务开始执行
-- $\text{Running} \rightarrow \text{Completed}$: 任务成功完成
-- $\text{Running} \rightarrow \text{Failed}$: 任务执行失败
-- $\text{Running} \rightarrow \text{Suspended}$: 任务被挂起
+- ```latex
+$\text{Ready} \rightarrow \text{Running}$
+```: 任务开始执行
+- ```latex
+$\text{Running} \rightarrow \text{Completed}$
+```: 任务成功完成
+- ```latex
+$\text{Running} \rightarrow \text{Failed}$
+```: 任务执行失败
+- ```latex
+$\text{Running} \rightarrow \text{Suspended}$
+```: 任务被挂起
 
 ## 2. 调度算法
 
@@ -121,9 +145,13 @@ func TopologicalSort(workflow Workflow) []string {
 
 **定义 2.1** (优先级): 任务优先级定义为：
 
-$$\text{Priority}(T) = \alpha \cdot \text{Urgency}(T) + \beta \cdot \text{Importance}(T) + \gamma \cdot \text{Resource}(T)$$
+$```latex
+$\text{Priority}(T) = \alpha \cdot \text{Urgency}(T) + \beta \cdot \text{Importance}(T) + \gamma \cdot \text{Resource}(T)$
+```$
 
-其中 $\alpha, \beta, \gamma$ 是权重系数。
+其中 ```latex
+$\alpha, \beta, \gamma$
+``` 是权重系数。
 
 **算法 2.2** (优先级调度):
 
@@ -182,12 +210,14 @@ func LoadBalancing(tasks []Task, resources []Resource) map[string][]Task {
 
 **定义 3.1** (资源锁): 资源锁用于防止资源冲突：
 
+```latex
 $$
 \text{Lock}(R, T) = \begin{cases}
 \text{true} & \text{if } R \text{ is available} \\
 \text{false} & \text{otherwise}
 \end{cases}
 $$
+```
 
 **实现**:
 
@@ -227,7 +257,9 @@ func (rl *ResourceLock) Unlock(taskID string) bool {
 
 **定义 3.2** (工作流事务): 工作流事务确保数据一致性：
 
-$$\text{Transaction} = (\text{Begin}, \text{Execute}, \text{Commit}, \text{Rollback})$$
+$```latex
+$\text{Transaction} = (\text{Begin}, \text{Execute}, \text{Commit}, \text{Rollback})$
+```$
 
 **实现**:
 
@@ -313,7 +345,9 @@ func hasCycle(graph map[string][]string, node string, visited, recStack map[stri
 
 **定义 4.1** (异常类型): 工作流异常类型包括：
 
-$$\text{ExceptionType} = \{\text{TaskError}, \text{ResourceError}, \text{TimeoutError}, \text{DataError}\}$$
+$```latex
+$\text{ExceptionType} = \{\text{TaskError}, \text{ResourceError}, \text{TimeoutError}, \text{DataError}\}$
+```$
 
 **实现**:
 
@@ -346,7 +380,9 @@ func (we *WorkflowException) Handle() error {
 
 **定义 4.2** (重试策略): 重试策略定义重试行为：
 
-$$\text{RetryPolicy} = (\text{MaxRetries}, \text{BackoffStrategy}, \text{RetryCondition})$$
+$```latex
+$\text{RetryPolicy} = (\text{MaxRetries}, \text{BackoffStrategy}, \text{RetryCondition})$
+```$
 
 **实现**:
 
@@ -400,7 +436,9 @@ func (rp *RetryPolicy) Execute(task func() error) error {
 
 **定义 4.3** (补偿操作): 补偿操作用于撤销已执行的操作：
 
-$$\text{Compensation}(T) = \text{Inverse}(T)$$
+$```latex
+$\text{Compensation}(T) = \text{Inverse}(T)$
+```$
 
 **实现**:
 

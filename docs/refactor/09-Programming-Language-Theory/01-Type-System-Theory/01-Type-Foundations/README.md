@@ -41,23 +41,69 @@
 
 ### 类型定义
 
-**定义 1 (类型)**: 类型 $T$ 是值的集合，定义了值的结构和操作。
+**定义 1 (类型)**: 类型 ```latex
+$T$
+``` 是值的集合，定义了值的结构和操作。
 
-**定义 2 (类型环境)**: 类型环境 $\Gamma$ 是从变量到类型的映射：
-$$\Gamma: \text{Var} \rightarrow \text{Type}$$
+**定义 2 (类型环境)**: 类型环境 ```latex
+$\Gamma$
+``` 是从变量到类型的映射：
+$```latex
+$\Gamma: \text{Var} \rightarrow \text{Type}$
+```$
 
-**定义 3 (类型判断)**: 类型判断 $\Gamma \vdash e: T$ 表示在环境 $\Gamma$ 下，表达式 $e$ 具有类型 $T$。
+**定义 3 (类型判断)**: 类型判断 ```latex
+$\Gamma \vdash e: T$
+``` 表示在环境 ```latex
+$\Gamma$
+``` 下，表达式 ```latex
+$e$
+``` 具有类型 ```latex
+$T$
+```。
 
 **定义 4 (类型上下文)**: 类型上下文包含类型变量和约束：
-$$\Delta = \{\alpha_1, \alpha_2, \ldots, \alpha_n\}$$
+$```latex
+$\Delta = \{\alpha_1, \alpha_2, \ldots, \alpha_n\}$
+```$
 
 ### 类型关系
 
-**定义 5 (子类型关系)**: 类型 $S$ 是类型 $T$ 的子类型，记为 $S \leq T$，如果 $S$ 的值可以安全地用在期望 $T$ 的地方。
+**定义 5 (子类型关系)**: 类型 ```latex
+$S$
+``` 是类型 ```latex
+$T$
+``` 的子类型，记为 ```latex
+$S \leq T$
+```，如果 ```latex
+$S$
+``` 的值可以安全地用在期望 ```latex
+$T$
+``` 的地方。
 
-**定义 6 (类型等价)**: 类型 $S$ 和 $T$ 等价，记为 $S \equiv T$，如果 $S \leq T$ 且 $T \leq S$。
+**定义 6 (类型等价)**: 类型 ```latex
+$S$
+``` 和 ```latex
+$T$
+``` 等价，记为 ```latex
+$S \equiv T$
+```，如果 ```latex
+$S \leq T$
+``` 且 ```latex
+$T \leq S$
+```。
 
-**定义 7 (类型包含)**: 类型 $S$ 包含类型 $T$，记为 $S \supseteq T$，如果 $T$ 的所有值都是 $S$ 的值。
+**定义 7 (类型包含)**: 类型 ```latex
+$S$
+``` 包含类型 ```latex
+$T$
+```，记为 ```latex
+$S \supseteq T$
+```，如果 ```latex
+$T$
+``` 的所有值都是 ```latex
+$S$
+``` 的值。
 
 ### 类型安全
 
@@ -71,36 +117,94 @@ $$\Delta = \{\alpha_1, \alpha_2, \ldots, \alpha_n\}$$
 
 ### 类型系统公理
 
-**公理 1 (变量规则)**: 如果 $x: T \in \Gamma$，则 $\Gamma \vdash x: T$
+**公理 1 (变量规则)**: 如果 ```latex
+$x: T \in \Gamma$
+```，则 ```latex
+$\Gamma \vdash x: T$
+```
 
-**公理 2 (函数应用)**: 如果 $\Gamma \vdash f: T_1 \rightarrow T_2$ 且 $\Gamma \vdash x: T_1$，则 $\Gamma \vdash f(x): T_2$
+**公理 2 (函数应用)**: 如果 ```latex
+$\Gamma \vdash f: T_1 \rightarrow T_2$
+``` 且 ```latex
+$\Gamma \vdash x: T_1$
+```，则 ```latex
+$\Gamma \vdash f(x): T_2$
+```
 
-**公理 3 (函数抽象)**: 如果 $\Gamma, x: T_1 \vdash e: T_2$，则 $\Gamma \vdash \lambda x: T_1.e: T_1 \rightarrow T_2$
+**公理 3 (函数抽象)**: 如果 ```latex
+$\Gamma, x: T_1 \vdash e: T_2$
+```，则 ```latex
+$\Gamma \vdash \lambda x: T_1.e: T_1 \rightarrow T_2$
+```
 
-**公理 4 (子类型)**: 如果 $\Gamma \vdash e: S$ 且 $S \leq T$，则 $\Gamma \vdash e: T$
+**公理 4 (子类型)**: 如果 ```latex
+$\Gamma \vdash e: S$
+``` 且 ```latex
+$S \leq T$
+```，则 ```latex
+$\Gamma \vdash e: T$
+```
 
 ### 类型推导规则
 
-**规则 1 (类型推导)**: 类型推导算法 $\mathcal{W}$ 计算表达式 $e$ 的类型：
-$$\mathcal{W}(\Gamma, e) = (S, \theta)$$
-其中 $S$ 是类型，$\theta$ 是替换。
+**规则 1 (类型推导)**: 类型推导算法 ```latex
+$\mathcal{W}$
+``` 计算表达式 ```latex
+$e$
+``` 的类型：
+$```latex
+$\mathcal{W}(\Gamma, e) = (S, \theta)$
+```$
+其中 ```latex
+$S$
+``` 是类型，```latex
+$\theta$
+``` 是替换。
 
-**规则 2 (统一)**: 类型统一算法 $\mathcal{U}$ 求解类型方程：
-$$\mathcal{U}(T_1, T_2) = \theta$$
-其中 $\theta$ 是最一般统一子。
+**规则 2 (统一)**: 类型统一算法 ```latex
+$\mathcal{U}$
+``` 求解类型方程：
+$```latex
+$\mathcal{U}(T_1, T_2) = \theta$
+```$
+其中 ```latex
+$\theta$
+``` 是最一般统一子。
 
-**规则 3 (泛化)**: 泛化算法 $\mathcal{G}$ 计算多态类型：
-$$\mathcal{G}(\Gamma, T) = \forall \alpha_1, \alpha_2, \ldots, \alpha_n.T$$
+**规则 3 (泛化)**: 泛化算法 ```latex
+$\mathcal{G}$
+``` 计算多态类型：
+$```latex
+$\mathcal{G}(\Gamma, T) = \forall \alpha_1, \alpha_2, \ldots, \alpha_n.T$
+```$
 
 ### 类型等价性
 
-**定理 1 (类型等价的自反性)**: $\forall T: T \equiv T$
+**定理 1 (类型等价的自反性)**: ```latex
+$\forall T: T \equiv T$
+```
 
-**定理 2 (类型等价的对称性)**: 如果 $S \equiv T$，则 $T \equiv S$
+**定理 2 (类型等价的对称性)**: 如果 ```latex
+$S \equiv T$
+```，则 ```latex
+$T \equiv S$
+```
 
-**定理 3 (类型等价的传递性)**: 如果 $S \equiv T$ 且 $T \equiv U$，则 $S \equiv U$
+**定理 3 (类型等价的传递性)**: 如果 ```latex
+$S \equiv T$
+``` 且 ```latex
+$T \equiv U$
+```，则 ```latex
+$S \equiv U$
+```
 
-**定理 4 (函数类型等价)**: $(S_1 \rightarrow T_1) \equiv (S_2 \rightarrow T_2)$ 当且仅当 $S_1 \equiv S_2$ 且 $T_1 \equiv T_2$
+**定理 4 (函数类型等价)**: ```latex
+$(S_1 \rightarrow T_1) \equiv (S_2 \rightarrow T_2)$
+``` 当且仅当 ```latex
+$S_1 \equiv S_2$
+``` 且 ```latex
+$T_1 \equiv T_2$
+```
 
 ## Go语言类型系统
 
@@ -920,19 +1024,43 @@ func (cs *ConstraintSolver) combineSubstitutions(sub1, sub2 *TypeSubstitution) *
 
 ### 进展定理
 
-**定理 5 (进展定理)**: 如果 $\Gamma \vdash e: T$ 且 $e$ 是封闭的，则要么 $e$ 是值，要么存在 $e'$ 使得 $e \rightarrow e'$。
+**定理 5 (进展定理)**: 如果 ```latex
+$\Gamma \vdash e: T$
+``` 且 ```latex
+$e$
+``` 是封闭的，则要么 ```latex
+$e$
+``` 是值，要么存在 ```latex
+$e'$
+``` 使得 ```latex
+$e \rightarrow e'$
+```。
 
-**证明**: 通过对表达式 $e$ 的结构进行归纳。
+**证明**: 通过对表达式 ```latex
+$e$
+``` 的结构进行归纳。
 
 ### 保持定理
 
-**定理 6 (保持定理)**: 如果 $\Gamma \vdash e: T$ 且 $e \rightarrow e'$，则 $\Gamma \vdash e': T$。
+**定理 6 (保持定理)**: 如果 ```latex
+$\Gamma \vdash e: T$
+``` 且 ```latex
+$e \rightarrow e'$
+```，则 ```latex
+$\Gamma \vdash e': T$
+```。
 
 **证明**: 通过对归约规则进行案例分析。
 
 ### 类型健全性
 
-**定理 7 (类型健全性)**: 如果 $\Gamma \vdash e: T$ 且 $e$ 是封闭的，则 $e$ 不会产生类型错误。
+**定理 7 (类型健全性)**: 如果 ```latex
+$\Gamma \vdash e: T$
+``` 且 ```latex
+$e$
+``` 是封闭的，则 ```latex
+$e$
+``` 不会产生类型错误。
 
 **证明**: 结合进展定理和保持定理。
 

@@ -8,29 +8,55 @@
 
 ### 4.1.1 比特翻转错误
 
-比特翻转错误 $X$ 将 $|0\rangle$ 变为 $|1\rangle$，$|1\rangle$ 变为 $|0\rangle$：
+比特翻转错误 ```latex
+$X$
+``` 将 ```latex
+$|0\rangle$
+``` 变为 ```latex
+$|1\rangle$
+```，```latex
+$|1\rangle$
+``` 变为 ```latex
+$|0\rangle$
+```：
 
 ```latex
-$$X|0\rangle = |1\rangle$$
-$$X|1\rangle = |0\rangle$$
+$```latex
+$X|0\rangle = |1\rangle$
+```$
+$```latex
+$X|1\rangle = |0\rangle$
+```$
 ```
 
 ### 4.1.2 相位翻转错误
 
-相位翻转错误 $Z$ 改变量子态的相位：
+相位翻转错误 ```latex
+$Z$
+``` 改变量子态的相位：
 
 ```latex
-$$Z|0\rangle = |0\rangle$$
-$$Z|1\rangle = -|1\rangle$$
+$```latex
+$Z|0\rangle = |0\rangle$
+```$
+$```latex
+$Z|1\rangle = -|1\rangle$
+```$
 ```
 
 ### 4.1.3 组合错误
 
-组合错误 $Y = iXZ$：
+组合错误 ```latex
+$Y = iXZ$
+```：
 
 ```latex
-$$Y|0\rangle = i|1\rangle$$
-$$Y|1\rangle = -i|0\rangle$$
+$```latex
+$Y|0\rangle = i|1\rangle$
+```$
+$```latex
+$Y|1\rangle = -i|0\rangle$
+```$
 ```
 
 ## 4.2 三量子比特重复码
@@ -40,8 +66,12 @@ $$Y|1\rangle = -i|0\rangle$$
 将单个逻辑量子比特编码为三个物理量子比特：
 
 ```latex
-$$|0_L\rangle = |000\rangle$$
-$$|1_L\rangle = |111\rangle$$
+$```latex
+$|0_L\rangle = |000\rangle$
+```$
+$```latex
+$|1_L\rangle = |111\rangle$
+```$
 ```
 
 ### 4.2.2 错误检测
@@ -49,8 +79,12 @@ $$|1_L\rangle = |111\rangle$$
 通过测量稳定子算符检测错误：
 
 ```latex
-$$Z_1Z_2 = \begin{cases} +1 & \text{无错误或偶数个比特翻转} \\ -1 & \text{奇数个比特翻转} \end{cases}$$
-$$Z_2Z_3 = \begin{cases} +1 & \text{无错误或偶数个比特翻转} \\ -1 & \text{奇数个比特翻转} \end{cases}$$
+$```latex
+$Z_1Z_2 = \begin{cases} +1 & \text{无错误或偶数个比特翻转} \\ -1 & \text{奇数个比特翻转} \end{cases}$
+```$
+$```latex
+$Z_2Z_3 = \begin{cases} +1 & \text{无错误或偶数个比特翻转} \\ -1 & \text{奇数个比特翻转} \end{cases}$
+```$
 ```
 
 ### 4.2.3 错误纠正
@@ -58,9 +92,15 @@ $$Z_2Z_3 = \begin{cases} +1 & \text{无错误或偶数个比特翻转} \\ -1 & \
 根据测量结果进行错误纠正：
 
 ```latex
-$$\text{如果 } Z_1Z_2 = -1, Z_2Z_3 = +1 \Rightarrow \text{在比特1上应用X}$$
-$$\text{如果 } Z_1Z_2 = +1, Z_2Z_3 = -1 \Rightarrow \text{在比特3上应用X}$$
-$$\text{如果 } Z_1Z_2 = -1, Z_2Z_3 = -1 \Rightarrow \text{在比特2上应用X}$$
+$```latex
+$\text{如果 } Z_1Z_2 = -1, Z_2Z_3 = +1 \Rightarrow \text{在比特1上应用X}$
+```$
+$```latex
+$\text{如果 } Z_1Z_2 = +1, Z_2Z_3 = -1 \Rightarrow \text{在比特3上应用X}$
+```$
+$```latex
+$\text{如果 } Z_1Z_2 = -1, Z_2Z_3 = -1 \Rightarrow \text{在比特2上应用X}$
+```$
 ```
 
 ## 4.3 表面码
@@ -74,40 +114,78 @@ $$\text{如果 } Z_1Z_2 = -1, Z_2Z_3 = -1 \Rightarrow \text{在比特2上应用X
 表面码的稳定子生成元：
 
 ```latex
-$$A_v = \prod_{e \in \delta(v)} X_e$$
-$$B_p = \prod_{e \in \partial(p)} Z_e$$
+$```latex
+$A_v = \prod_{e \in \delta(v)} X_e$
+```$
+$```latex
+$B_p = \prod_{e \in \partial(p)} Z_e$
+```$
 ```
 
 其中：
 
-- $A_v$: 顶点 $v$ 的 $X$ 型稳定子
-- $B_p$: 面 $p$ 的 $Z$ 型稳定子
-- $\delta(v)$: 与顶点 $v$ 相邻的边
-- $\partial(p)$: 面 $p$ 的边界
+- ```latex
+$A_v$
+```: 顶点 ```latex
+$v$
+``` 的 ```latex
+$X$
+``` 型稳定子
+- ```latex
+$B_p$
+```: 面 ```latex
+$p$
+``` 的 ```latex
+$Z$
+``` 型稳定子
+- ```latex
+$\delta(v)$
+```: 与顶点 ```latex
+$v$
+``` 相邻的边
+- ```latex
+$\partial(p)$
+```: 面 ```latex
+$p$
+``` 的边界
 
 ### 4.3.3 逻辑算符
 
 表面码的逻辑算符：
 
 ```latex
-$$X_L = \prod_{e \in C_1} X_e$$
-$$Z_L = \prod_{e \in C_2} Z_e$$
+$```latex
+$X_L = \prod_{e \in C_1} X_e$
+```$
+$```latex
+$Z_L = \prod_{e \in C_2} Z_e$
+```$
 ```
 
-其中 $C_1$ 和 $C_2$ 是跨越整个表面的路径。
+其中 ```latex
+$C_1$
+``` 和 ```latex
+$C_2$
+``` 是跨越整个表面的路径。
 
 ## 4.4 量子错误纠正阈值
 
 ### 4.4.1 错误阈值定义
 
-错误阈值 $p_{th}$ 是物理错误率的上界，当 $p < p_{th}$ 时，逻辑错误率可以任意小。
+错误阈值 ```latex
+$p_{th}$
+``` 是物理错误率的上界，当 ```latex
+$p < p_{th}$
+``` 时，逻辑错误率可以任意小。
 
 ### 4.4.2 表面码阈值
 
 表面码的错误阈值约为：
 
 ```latex
-$$p_{th} \approx 1\%$$
+$```latex
+$p_{th} \approx 1\%$
+```$
 ```
 
 ### 4.4.3 容错量子计算
@@ -115,10 +193,14 @@ $$p_{th} \approx 1\%$$
 容错量子计算要求：
 
 ```latex
-$$p < p_{th}$$
+$```latex
+$p < p_{th}$
+```$
 ```
 
-其中 $p$ 是物理错误率。
+其中 ```latex
+$p$
+``` 是物理错误率。
 
 ## 4.5 Go语言实现
 
@@ -563,12 +645,18 @@ func TestErrorCorrection() {
 三量子比特重复码可以纠正单个比特翻转错误。
 
 **证明**：
-通过测量稳定子算符 $Z_1Z_2$ 和 $Z_2Z_3$，可以唯一确定错误位置并纠正。
+通过测量稳定子算符 ```latex
+$Z_1Z_2$
+``` 和 ```latex
+$Z_2Z_3$
+```，可以唯一确定错误位置并纠正。
 
 ### 4.6.2 表面码阈值
 
 **定理 4.2** (表面码阈值)
-表面码的错误阈值约为 $1\%$。
+表面码的错误阈值约为 ```latex
+$1\%$
+```。
 
 **证明**：
 通过分析表面码的错误传播和纠正能力，可以证明其阈值。
