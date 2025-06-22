@@ -8,23 +8,23 @@
 
 **形式化定义**：
 设 ```latex
-$A$
+A
 ``` 为算法，```latex
-$I$
+I
 ``` 为输入集合，```latex
-$O$
+O
 ``` 为输出集合，则：
 $```latex
-$A: I \rightarrow O$
+A: I \rightarrow O
 ```$
 
 ### 1.2 复杂度分析
 
 **时间复杂度**：```latex
-$T(n) = O(f(n))$
+T(n) = O(f(n))
 ```
 **空间复杂度**：```latex
-$S(n) = O(g(n))$
+S(n) = O(g(n))
 ```
 
 ## 2. 排序算法
@@ -34,7 +34,7 @@ $S(n) = O(g(n))$
 #### 2.1.1 理论基础
 
 **快速排序** 是一种分治算法，平均时间复杂度为 ```latex
-$O(n \log n)$
+O(n \log n)
 ```。
 
 **分治策略**：
@@ -44,19 +44,17 @@ $O(n \log n)$
 3. **合并**：无需合并，原地排序
 
 **形式化定义**：
-```latex
-$$\text{QuickSort}(A) = \begin{cases}
+$\text{QuickSort}(A) = \begin{cases}
 A & \text{if } |A| \leq 1 \\
 \text{QuickSort}(L) \oplus [p] \oplus \text{QuickSort}(R) & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}$
 
 其中 ```latex
-$L = \{x \in A | x < p\}$
+L = \{x \in A | x < p\}
 ```，```latex
-$R = \{x \in A | x > p\}$
+R = \{x \in A | x > p\}
 ```，```latex
-$p$
+p
 ``` 为基准元素。
 
 #### 2.1.2 Go语言实现
@@ -185,7 +183,7 @@ func ComposeSort[T any](sorts ...SortFunc[T]) SortFunc[T] {
 #### 2.2.1 理论基础
 
 **归并排序** 是一种稳定的分治排序算法，时间复杂度为 ```latex
-$O(n \log n)$
+O(n \log n)
 ```。
 
 **分治策略**：
@@ -194,12 +192,10 @@ $O(n \log n)$
 3. **合并**：合并两个有序子数组
 
 **形式化定义**：
-```latex
-$$\text{MergeSort}(A) = \begin{cases}
+$\text{MergeSort}(A) = \begin{cases}
 A & \text{if } |A| \leq 1 \\
 \text{Merge}(\text{MergeSort}(L), \text{MergeSort}(R)) & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}$
 
 #### 2.2.2 Go语言实现
 
@@ -273,18 +269,16 @@ func MergeSortConcurrent[T comparable](arr []T, less func(T, T) bool) []T {
 #### 3.1.1 理论基础
 
 **二分搜索** 在有序数组中查找目标值，时间复杂度为 ```latex
-$O(\log n)$
+O(\log n)
 ```。
 
 **形式化定义**：
-```latex
-$$\text{BinarySearch}(A, target) = \begin{cases}
+$\text{BinarySearch}(A, target) = \begin{cases}
 \text{mid} & \text{if } A[\text{mid}] = target \\
 \text{BinarySearch}(A[\text{left}:\text{mid}], target) & \text{if } A[\text{mid}] > target \\
 \text{BinarySearch}(A[\text{mid}+1:\text{right}], target) & \text{if } A[\text{mid}] < target \\
 -1 & \text{if } \text{left} > \text{right}
-\end{cases}$$
-```
+\end{cases}$
 
 #### 3.1.2 Go语言实现
 
@@ -358,12 +352,10 @@ func BinarySearchLast[T comparable](arr []T, target T, less func(T, T) bool) int
 **深度优先搜索 (DFS)** 是一种图遍历算法，优先访问深层节点。
 
 **形式化定义**：
-```latex
-$$\text{DFS}(G, v) = \begin{cases}
+$\text{DFS}(G, v) = \begin{cases}
 \text{visit}(v) & \text{if } v \text{ is unvisited} \\
 \text{DFS}(G, u) & \text{for each unvisited neighbor } u \text{ of } v
-\end{cases}$$
-```
+\end{cases}$
 
 #### 3.2.2 Go语言实现
 
@@ -446,13 +438,13 @@ func (g *Graph[T]) DFSIterative(start T) []T {
 
 **形式化定义**：
 $```latex
-$\text{BFS}(G, v) = \text{visit}(v) \cup \bigcup_{u \in N(v)} \text{BFS}(G, u)$
+\text{BFS}(G, v) = \text{visit}(v) \cup \bigcup_{u \in N(v)} \text{BFS}(G, u)
 ```$
 
 其中 ```latex
-$N(v)$
+N(v)
 ``` 是节点 ```latex
-$v$
+v
 ``` 的邻居集合。
 
 #### 3.3.2 Go语言实现
@@ -515,13 +507,11 @@ func (g *Graph[T]) BFSWithLevel(start T) map[T]int {
 #### 4.1.1 理论基础
 
 **斐波那契数列** 是一个经典的动态规划问题：
-```latex
-$$F(n) = \begin{cases}
+$F(n) = \begin{cases}
 0 & \text{if } n = 0 \\
 1 & \text{if } n = 1 \\
 F(n-1) + F(n-2) & \text{if } n > 1
-\end{cases}$$
-```
+\end{cases}$
 
 #### 4.1.2 Go语言实现
 
@@ -610,19 +600,17 @@ func matrixMultiply(a, b [2][2]int) [2][2]int {
 
 **最长公共子序列 (LCS)** 问题：
 给定两个序列 ```latex
-$X$
+X
 ``` 和 ```latex
-$Y$
+Y
 ```，找到它们的最长公共子序列。
 
 **动态规划方程**：
-```latex
-$$LCS[i][j] = \begin{cases}
+$LCS[i][j] = \begin{cases}
 0 & \text{if } i = 0 \text{ or } j = 0 \\
 LCS[i-1][j-1] + 1 & \text{if } X[i-1] = Y[j-1] \\
 \max(LCS[i-1][j], LCS[i][j-1]) & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}$
 
 #### 4.2.2 Go语言实现
 
@@ -777,29 +765,29 @@ func ActivitySelectionGeneric[T Selectable](activities []T) []T {
 | 算法 | 时间复杂度 | 空间复杂度 | 稳定性 |
 |------|------------|------------|--------|
 | 快速排序 | ```latex
-$O(n \log n)$
+O(n \log n)
 ``` | ```latex
-$O(\log n)$
+O(\log n)
 ``` | 不稳定 |
 | 归并排序 | ```latex
-$O(n \log n)$
+O(n \log n)
 ``` | ```latex
-$O(n)$
+O(n)
 ``` | 稳定 |
 | 二分搜索 | ```latex
-$O(\log n)$
+O(\log n)
 ``` | ```latex
-$O(1)$
+O(1)
 ``` | - |
 | DFS | ```latex
-$O(V + E)$
+O(V + E)
 ``` | ```latex
-$O(V)$
+O(V)
 ``` | - |
 | BFS | ```latex
-$O(V + E)$
+O(V + E)
 ``` | ```latex
-$O(V)$
+O(V)
 ``` | - |
 
 ### 6.2 最佳实践

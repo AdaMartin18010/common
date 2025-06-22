@@ -40,23 +40,23 @@
 **形式化表达**:
 
 - 设 ```latex
-$A$
+A
 ``` 是一个集合，```latex
-$a \in A$
+a \in A
 ``` 表示 ```latex
-$a$
+a
 ``` 是 ```latex
-$A$
+A
 ``` 的元素
 - 集合的表示：```latex
-$A = \{a_1, a_2, \ldots, a_n\}$
+A = \{a_1, a_2, \ldots, a_n\}
 ```
 - 空集：```latex
-$\emptyset = \{\}$
+\emptyset = \{\}
 ```
 
 **定义 1.2**: 集合的基数（大小）是集合中元素的个数，记作 ```latex
-$|A|$
+|A|
 ```。
 
 ### 1.2 集合表示
@@ -64,19 +64,19 @@ $|A|$
 **定义 1.3**: 集合的表示方法
 
 1. **列举法**: ```latex
-$A = \{1, 2, 3, 4, 5\}$
+A = \{1, 2, 3, 4, 5\}
 ```
 2. **描述法**: ```latex
-$A = \{x \mid x \text{ 是正整数且 } x \leq 5\}$
+A = \{x \mid x \text{ 是正整数且 } x \leq 5\}
 ```
 3. **递归定义**:
    - 基础：```latex
-$\emptyset \in S$
+\emptyset \in S
 ```
    - 归纳：如果 ```latex
-$x \in S$
+x \in S
 ```，则 ```latex
-$\{x\} \in S$
+\{x\} \in S
 ```
 
 ### 1.3 集合关系
@@ -84,25 +84,25 @@ $\{x\} \in S$
 **定义 1.4**: 集合关系
 
 1. **包含关系**: ```latex
-$A \subseteq B$
+A \subseteq B
 ``` 表示 ```latex
-$A$
+A
 ``` 是 ```latex
-$B$
+B
 ``` 的子集
 2. **真包含关系**: ```latex
-$A \subset B$
+A \subset B
 ``` 表示 ```latex
-$A$
+A
 ``` 是 ```latex
-$B$
+B
 ``` 的真子集
 3. **相等关系**: ```latex
-$A = B$
+A = B
 ``` 表示 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ``` 包含相同的元素
 
 ## 2. 形式化定义
@@ -112,49 +112,49 @@ $B$
 **公理 2.1** (外延公理): 两个集合相等当且仅当它们包含相同的元素。
 
 $```latex
-$\forall A \forall B [\forall x(x \in A \leftrightarrow x \in B) \rightarrow A = B]$
+\forall A \forall B [\forall x(x \in A \leftrightarrow x \in B) \rightarrow A = B]
 ```$
 
 **公理 2.2** (空集公理): 存在一个不包含任何元素的集合。
 
 $```latex
-$\exists A \forall x(x \notin A)$
+\exists A \forall x(x \notin A)
 ```$
 
 **公理 2.3** (配对公理): 对于任意两个集合，存在一个包含它们的集合。
 
 $```latex
-$\forall A \forall B \exists C \forall x(x \in C \leftrightarrow x = A \text{ 或 } x = B)$
+\forall A \forall B \exists C \forall x(x \in C \leftrightarrow x = A \text{ 或 } x = B)
 ```$
 
 **公理 2.4** (并集公理): 对于任意集合族，存在一个包含所有成员元素的集合。
 
 $```latex
-$\forall F \exists A \forall x(x \in A \leftrightarrow \exists B(B \in F \land x \in B))$
+\forall F \exists A \forall x(x \in A \leftrightarrow \exists B(B \in F \land x \in B))
 ```$
 
 ### 2.2 基本定理
 
 **定理 2.1** (集合相等性): 对于任意集合 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ```，```latex
-$A = B$
+A = B
 ``` 当且仅当 ```latex
-$A \subseteq B$
+A \subseteq B
 ``` 且 ```latex
-$B \subseteq A$
+B \subseteq A
 ```。
 
 **定理 2.2** (空集唯一性): 空集是唯一的。
 
 **证明**: 假设存在两个空集 ```latex
-$\emptyset_1$
+\emptyset_1
 ``` 和 ```latex
-$\emptyset_2$
+\emptyset_2
 ```。根据外延公理，```latex
-$\emptyset_1 = \emptyset_2$
+\emptyset_1 = \emptyset_2
 ```。
 
 ### 2.3 集合运算
@@ -162,19 +162,19 @@ $\emptyset_1 = \emptyset_2$
 **定义 2.1**: 基本集合运算
 
 1. **并集**: ```latex
-$A \cup B = \{x \mid x \in A \text{ 或 } x \in B\}$
+A \cup B = \{x \mid x \in A \text{ 或 } x \in B\}
 ```
 2. **交集**: ```latex
-$A \cap B = \{x \mid x \in A \text{ 且 } x \in B\}$
+A \cap B = \{x \mid x \in A \text{ 且 } x \in B\}
 ```
 3. **差集**: ```latex
-$A \setminus B = \{x \mid x \in A \text{ 且 } x \notin B\}$
+A \setminus B = \{x \mid x \in A \text{ 且 } x \notin B\}
 ```
 4. **对称差**: ```latex
-$A \triangle B = (A \setminus B) \cup (B \setminus A)$
+A \triangle B = (A \setminus B) \cup (B \setminus A)
 ```
 5. **幂集**: ```latex
-$\mathcal{P}(A) = \{B \mid B \subseteq A\}$
+\mathcal{P}(A) = \{B \mid B \subseteq A\}
 ```
 
 ## 3. 定理证明
@@ -182,133 +182,133 @@ $\mathcal{P}(A) = \{B \mid B \subseteq A\}$
 ### 3.1 德摩根律
 
 **定理 3.1** (德摩根律): 对于任意集合 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ```：
 
 $```latex
-$(A \cup B)^c = A^c \cap B^c$
+(A \cup B)^c = A^c \cap B^c
 ```$
 $```latex
-$(A \cap B)^c = A^c \cup B^c$
+(A \cap B)^c = A^c \cup B^c
 ```$
 
 **证明**:
 
 设 ```latex
-$x \in (A \cup B)^c$
+x \in (A \cup B)^c
 ```，则：
 
 1. ```latex
-$x \notin (A \cup B)$
+x \notin (A \cup B)
 ```
 2. ```latex
-$x \notin A$
+x \notin A
 ``` 且 ```latex
-$x \notin B$
+x \notin B
 ```
 3. ```latex
-$x \in A^c$
+x \in A^c
 ``` 且 ```latex
-$x \in B^c$
+x \in B^c
 ```
 4. ```latex
-$x \in A^c \cap B^c$
+x \in A^c \cap B^c
 ```
 
 因此 ```latex
-$(A \cup B)^c \subseteq A^c \cap B^c$
+(A \cup B)^c \subseteq A^c \cap B^c
 ```。
 
 反之，设 ```latex
-$x \in A^c \cap B^c$
+x \in A^c \cap B^c
 ```，则：
 
 1. ```latex
-$x \in A^c$
+x \in A^c
 ``` 且 ```latex
-$x \in B^c$
+x \in B^c
 ```
 2. ```latex
-$x \notin A$
+x \notin A
 ``` 且 ```latex
-$x \notin B$
+x \notin B
 ```
 3. ```latex
-$x \notin (A \cup B)$
+x \notin (A \cup B)
 ```
 4. ```latex
-$x \in (A \cup B)^c$
+x \in (A \cup B)^c
 ```
 
 因此 ```latex
-$A^c \cap B^c \subseteq (A \cup B)^c$
+A^c \cap B^c \subseteq (A \cup B)^c
 ```。
 
 由外延公理，```latex
-$(A \cup B)^c = A^c \cap B^c$
+(A \cup B)^c = A^c \cap B^c
 ```。
 
 ### 3.2 分配律
 
 **定理 3.2** (分配律): 对于任意集合 ```latex
-$A$
+A
 ```, ```latex
-$B$
+B
 ```, ```latex
-$C$
+C
 ```：
 
 $```latex
-$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$
+A \cap (B \cup C) = (A \cap B) \cup (A \cap C)
 ```$
 $```latex
-$A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$
+A \cup (B \cap C) = (A \cup B) \cap (A \cup C)
 ```$
 
 **证明**:
 
 设 ```latex
-$x \in A \cap (B \cup C)$
+x \in A \cap (B \cup C)
 ```，则：
 
 1. ```latex
-$x \in A$
+x \in A
 ``` 且 ```latex
-$x \in (B \cup C)$
+x \in (B \cup C)
 ```
 2. ```latex
-$x \in A$
+x \in A
 ``` 且 (```latex
-$x \in B$
+x \in B
 ``` 或 ```latex
-$x \in C$
+x \in C
 ```)
 3. (```latex
-$x \in A$
+x \in A
 ``` 且 ```latex
-$x \in B$
+x \in B
 ```) 或 (```latex
-$x \in A$
+x \in A
 ``` 且 ```latex
-$x \in C$
+x \in C
 ```)
 4. ```latex
-$x \in (A \cap B)$
+x \in (A \cap B)
 ``` 或 ```latex
-$x \in (A \cap C)$
+x \in (A \cap C)
 ```
 5. ```latex
-$x \in (A \cap B) \cup (A \cap C)$
+x \in (A \cap B) \cup (A \cap C)
 ```
 
 ### 3.3 幂集性质
 
 **定理 3.3**: 对于任意集合 ```latex
-$A$
+A
 ```，```latex
-$|\mathcal{P}(A)| = 2^{|A|}$
+|\mathcal{P}(A)| = 2^{|A|}
 ```。
 
 **证明**: 使用数学归纳法。

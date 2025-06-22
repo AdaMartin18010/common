@@ -54,18 +54,18 @@ Web组件是一个自包含的、可重用的软件单元，具有以下特性�
 **定义 1.1.2 (组件接口)**
 组件接口定义了组件与外部系统的交互契约：
 $```latex
-$I = (M, E, S)$
+I = (M, E, S)
 ```$
 其中：
 
 - ```latex
-$M$
+M
 ``` 是方法集合
 - ```latex
-$E$
+E
 ``` 是事件集合  
 - ```latex
-$S$
+S
 ``` 是状态集合
 
 ### 1.2 架构层次
@@ -94,96 +94,96 @@ graph TB
 
 **定义 1.1** (Web组件)
 Web组件是一个三元组 ```latex
-$C = (S, I, B)$
+C = (S, I, B)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是组件的状态集合 (State Set)
 - ```latex
-$I$
+I
 ``` 是组件的接口集合 (Interface Set)  
 - ```latex
-$B$
+B
 ``` 是组件的行为集合 (Behavior Set)
 
 **定义 1.2** (组件状态)
 组件状态是一个映射 ```latex
-$s: V \rightarrow D$
+s: V \rightarrow D
 ```，其中：
 
 - ```latex
-$V$
+V
 ``` 是状态变量集合
 - ```latex
-$D$
+D
 ``` 是数据域集合
 
 **定义 1.3** (组件接口)
 组件接口是一个四元组 ```latex
-$i = (name, type, direction, contract)$
+i = (name, type, direction, contract)
 ```，其中：
 
 - ```latex
-$name$
+name
 ``` 是接口名称
 - ```latex
-$type$
+type
 ``` 是数据类型
 - ```latex
-$direction$
+direction
 ``` 是数据流向 (in/out/bidirectional)
 - ```latex
-$contract$
+contract
 ``` 是接口契约
 
 ### 2.2 组件组合
 
 **定义 1.4** (组件组合)
 给定组件集合 ```latex
-$C_1, C_2, ..., C_n$
+C_1, C_2, ..., C_n
 ```，其组合 ```latex
-$C_{composite} = \oplus(C_1, C_2, ..., C_n)$
+C_{composite} = \oplus(C_1, C_2, ..., C_n)
 ``` 满足：
 
 $```latex
-$C_{composite} = (\bigcup_{i=1}^n S_i, \bigcup_{i=1}^n I_i, \bigcup_{i=1}^n B_i)$
+C_{composite} = (\bigcup_{i=1}^n S_i, \bigcup_{i=1}^n I_i, \bigcup_{i=1}^n B_i)
 ```$
 
 **定理 1.1** (组合可交换性)
 对于任意组件 ```latex
-$C_1, C_2$
+C_1, C_2
 ```，有：
 $```latex
-$\oplus(C_1, C_2) = \oplus(C_2, C_1)$
+\oplus(C_1, C_2) = \oplus(C_2, C_1)
 ```$
 
 **证明**：
 由集合运算的可交换性，```latex
-$\bigcup$
+\bigcup
 ``` 运算满足交换律，因此组件组合满足可交换性。
 
 ### 2.3 组件生命周期
 
 **定义 1.5** (组件生命周期)
 组件生命周期是一个状态机 ```latex
-$L = (Q, \Sigma, \delta, q_0, F)$
+L = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$Q = \{Initialized, Mounted, Updated, Unmounted\}$
+Q = \{Initialized, Mounted, Updated, Unmounted\}
 ``` 是状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是事件集合
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ``` 是状态转移函数
 - ```latex
-$q_0 = Initialized$
+q_0 = Initialized
 ``` 是初始状态
 - ```latex
-$F = \{Unmounted\}$
+F = \{Unmounted\}
 ``` 是终止状态集合
 
 ---

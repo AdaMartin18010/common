@@ -90,87 +90,87 @@ graph TB
 ### 2.1 基本定义
 
 设 ```latex
-$\mathcal{S}$
+\mathcal{S}
 ``` 为服务集合，```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 为通信通道集合，```latex
-$\mathcal{D}$
+\mathcal{D}
 ``` 为数据存储集合。
 
 **定义 2.1** (微服务)
 微服务是一个五元组 ```latex
-$(\mathcal{I}, \mathcal{O}, \mathcal{S}, \mathcal{D}, \mathcal{B})$
+(\mathcal{I}, \mathcal{O}, \mathcal{S}, \mathcal{D}, \mathcal{B})
 ```，其中：
 
 - ```latex
-$\mathcal{I} = \{I_1, I_2, \ldots, I_n\}$
+\mathcal{I} = \{I_1, I_2, \ldots, I_n\}
 ``` 是输入接口集合
 - ```latex
-$\mathcal{O} = \{O_1, O_2, \ldots, O_m\}$
+\mathcal{O} = \{O_1, O_2, \ldots, O_m\}
 ``` 是输出接口集合
 - ```latex
-$\mathcal{S}$
+\mathcal{S}
 ``` 是服务状态
 - ```latex
-$\mathcal{D}$
+\mathcal{D}
 ``` 是数据存储
 - ```latex
-$\mathcal{B}$
+\mathcal{B}
 ``` 是业务逻辑
 
 **定义 2.2** (微服务架构)
 微服务架构是一个四元组 ```latex
-$(\mathcal{S}, \mathcal{C}, \mathcal{G}, \mathcal{R})$
+(\mathcal{S}, \mathcal{C}, \mathcal{G}, \mathcal{R})
 ```，其中：
 
 - ```latex
-$\mathcal{S} = \{S_1, S_2, \ldots, S_n\}$
+\mathcal{S} = \{S_1, S_2, \ldots, S_n\}
 ``` 是服务集合
 - ```latex
-$\mathcal{C} \subseteq \mathcal{S} \times \mathcal{S}$
+\mathcal{C} \subseteq \mathcal{S} \times \mathcal{S}
 ``` 是通信关系
 - ```latex
-$\mathcal{G}: \mathcal{S} \rightarrow \mathcal{S}^*$
+\mathcal{G}: \mathcal{S} \rightarrow \mathcal{S}^*
 ``` 是网关路由函数
 - ```latex
-$\mathcal{R}: \mathcal{S} \times \mathcal{S} \rightarrow \mathcal{C}$
+\mathcal{R}: \mathcal{S} \times \mathcal{S} \rightarrow \mathcal{C}
 ``` 是注册发现函数
 
 ### 2.2 形式化规范
 
 **公理 2.1** (服务独立性)
 对于任意服务 ```latex
-$S_i, S_j \in \mathcal{S}$
+S_i, S_j \in \mathcal{S}
 ```：
 
 $```latex
-$\text{independent}(S_i, S_j) \Leftrightarrow \mathcal{C}(S_i, S_j) = \emptyset$
+\text{independent}(S_i, S_j) \Leftrightarrow \mathcal{C}(S_i, S_j) = \emptyset
 ```$
 
 **公理 2.2** (数据自治)
 对于任意服务 ```latex
-$S \in \mathcal{S}$
+S \in \mathcal{S}
 ```：
 
 $```latex
-$\text{autonomous}(S) \Leftrightarrow \mathcal{D}(S) \cap \bigcup_{S' \in \mathcal{S} \setminus \{S\}} \mathcal{D}(S') = \emptyset$
+\text{autonomous}(S) \Leftrightarrow \mathcal{D}(S) \cap \bigcup_{S' \in \mathcal{S} \setminus \{S\}} \mathcal{D}(S') = \emptyset
 ```$
 
 ### 2.3 通信模式定义
 
 **定义 2.3** (通信模式)
 通信模式是一个三元组 ```latex
-$(\mathcal{M}, \mathcal{P}, \mathcal{Q})$
+(\mathcal{M}, \mathcal{P}, \mathcal{Q})
 ```，其中：
 
 - ```latex
-$\mathcal{M} = \{\text{sync}, \text{async}, \text{event}\}$
+\mathcal{M} = \{\text{sync}, \text{async}, \text{event}\}
 ``` 是消息类型集合
 - ```latex
-$\mathcal{P}: \mathcal{S} \times \mathcal{S} \rightarrow \mathcal{M}$
+\mathcal{P}: \mathcal{S} \times \mathcal{S} \rightarrow \mathcal{M}
 ``` 是协议映射函数
 - ```latex
-$\mathcal{Q}: \mathcal{M} \rightarrow \mathbb{R}^+$
+\mathcal{Q}: \mathcal{M} \rightarrow \mathbb{R}^+
 ``` 是服务质量函数
 
 ## 3. 数学基础
@@ -179,15 +179,15 @@ $\mathcal{Q}: \mathcal{M} \rightarrow \mathbb{R}^+$
 
 **定理 3.1** (服务依赖图)
 设 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 为服务依赖图，其中 ```latex
-$V = \mathcal{S}$
+V = \mathcal{S}
 ``` 是服务集合，```latex
-$E = \mathcal{C}$
+E = \mathcal{C}
 ``` 是通信关系，则：
 
 $```latex
-$\text{complexity}(G) = \frac{|E|}{|V|}$
+\text{complexity}(G) = \frac{|E|}{|V|}
 ```$
 
 **证明**:
@@ -200,13 +200,13 @@ $\text{complexity}(G) = \frac{|E|}{|V|}$
 
 **定理 3.2** (服务网络容量)
 设 ```latex
-$N$
+N
 ``` 为服务网络，```latex
-$C$
+C
 ``` 为网络容量，则：
 
 $```latex
-$C = \min_{S \in \mathcal{S}} \text{capacity}(S)$
+C = \min_{S \in \mathcal{S}} \text{capacity}(S)
 ```$
 
 **证明**:
@@ -219,13 +219,13 @@ $C = \min_{S \in \mathcal{S}} \text{capacity}(S)$
 
 **定理 3.3** (服务响应时间)
 设 ```latex
-$\lambda$
+\lambda
 ``` 为请求到达率，```latex
-$\mu$
+\mu
 ``` 为服务处理率，则平均响应时间为：
 
 $```latex
-$T = \frac{1}{\mu - \lambda}$
+T = \frac{1}{\mu - \lambda}
 ```$
 
 **证明**:
@@ -233,7 +233,7 @@ $T = \frac{1}{\mu - \lambda}$
 1. 基于M/M/1队列模型
 2. 响应时间随负载增加而增加
 3. 当 ```latex
-$\lambda \rightarrow \mu$
+\lambda \rightarrow \mu
 ``` 时，响应时间趋向无穷
 
 ## 4. 设计原则
@@ -1327,20 +1327,20 @@ func (b *BlueGreenDeployment) Deploy(service Service) error {
 ### 10.4 数学总结
 
 微服务架构通过形式化定义 ```latex
-$(\mathcal{S}, \mathcal{C}, \mathcal{G}, \mathcal{R})$
+(\mathcal{S}, \mathcal{C}, \mathcal{G}, \mathcal{R})
 ``` 实现了系统的分布式化，其中：
 
 - **服务独立性**: ```latex
-$\text{independent}(S_i, S_j) \Leftrightarrow \mathcal{C}(S_i, S_j) = \emptyset$
+\text{independent}(S_i, S_j) \Leftrightarrow \mathcal{C}(S_i, S_j) = \emptyset
 ```
 - **数据自治**: ```latex
-$\text{autonomous}(S) \Leftrightarrow \mathcal{D}(S) \cap \bigcup_{S' \in \mathcal{S} \setminus \{S\}} \mathcal{D}(S') = \emptyset$
+\text{autonomous}(S) \Leftrightarrow \mathcal{D}(S) \cap \bigcup_{S' \in \mathcal{S} \setminus \{S\}} \mathcal{D}(S') = \emptyset
 ```
 - **网络容量**: ```latex
-$C = \min_{S \in \mathcal{S}} \text{capacity}(S)$
+C = \min_{S \in \mathcal{S}} \text{capacity}(S)
 ```
 - **响应时间**: ```latex
-$T = \frac{1}{\mu - \lambda}$
+T = \frac{1}{\mu - \lambda}
 ```
 
 这种架构在Go语言中通过接口、泛型和并发编程得到了优雅的实现，既保持了类型安全，又提供了良好的扩展性。

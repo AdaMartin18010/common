@@ -36,41 +36,41 @@
 
 **定义 1.1 (概率空间)**
 概率空间 ```latex
-$(\Omega, \mathcal{F}, P)$
+(\Omega, \mathcal{F}, P)
 ``` 由以下三个部分组成：
 
 - ```latex
-$\Omega$
+\Omega
 ```：样本空间，包含所有可能的结果
 - ```latex
-$\mathcal{F}$
+\mathcal{F}
 ```：事件域，是 ```latex
-$\Omega$
+\Omega
 ``` 的子集的 ```latex
-$\sigma$
+\sigma
 ```-代数
 - ```latex
-$P$
+P
 ```：概率测度，满足：
   1. ```latex
-$P(\Omega) = 1$
+P(\Omega) = 1
 ```
   2. ```latex
-$P(A) \geq 0$
+P(A) \geq 0
 ``` 对所有 ```latex
-$A \in \mathcal{F}$
+A \in \mathcal{F}
 ```
   3. 可列可加性：对于互不相交的事件序列 ```latex
-$\{A_i\}$
+\{A_i\}
 ```，```latex
-$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
+P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)
 ```
 
 **定义 1.2 (事件)**
 事件是样本空间 ```latex
-$\Omega$
+\Omega
 ``` 的子集，属于事件域 ```latex
-$\mathcal{F}$
+\mathcal{F}
 ```。
 
 **定义 1.3 (基本事件)**
@@ -80,59 +80,59 @@ $\mathcal{F}$
 
 **定义 1.4 (随机变量)**
 随机变量 ```latex
-$X$
+X
 ``` 是从概率空间 ```latex
-$(\Omega, \mathcal{F}, P)$
+(\Omega, \mathcal{F}, P)
 ``` 到实数集 ```latex
-$\mathbb{R}$
+\mathbb{R}
 ``` 的可测函数，即对于任意 ```latex
-$a \in \mathbb{R}$
+a \in \mathbb{R}
 ```，```latex
-$\{\omega \in \Omega : X(\omega) \leq a\} \in \mathcal{F}$
+\{\omega \in \Omega : X(\omega) \leq a\} \in \mathcal{F}
 ```。
 
 **定义 1.5 (离散随机变量)**
 如果随机变量 ```latex
-$X$
+X
 ``` 只取有限或可列个值，则称 ```latex
-$X$
+X
 ``` 为离散随机变量。
 
 **定义 1.6 (连续随机变量)**
 如果随机变量 ```latex
-$X$
+X
 ``` 的分布函数 ```latex
-$F_X(x) = P(X \leq x)$
+F_X(x) = P(X \leq x)
 ``` 是连续函数，则称 ```latex
-$X$
+X
 ``` 为连续随机变量。
 
 ### 1.3 概率分布
 
 **定义 1.7 (分布函数)**
 随机变量 ```latex
-$X$
+X
 ``` 的分布函数定义为：
 $```latex
-$F_X(x) = P(X \leq x), \quad x \in \mathbb{R}$
+F_X(x) = P(X \leq x), \quad x \in \mathbb{R}
 ```$
 
 **定义 1.8 (概率质量函数)**
 离散随机变量 ```latex
-$X$
+X
 ``` 的概率质量函数定义为：
 $```latex
-$p_X(x) = P(X = x), \quad x \in \mathbb{R}$
+p_X(x) = P(X = x), \quad x \in \mathbb{R}
 ```$
 
 **定义 1.9 (概率密度函数)**
 连续随机变量 ```latex
-$X$
+X
 ``` 的概率密度函数 ```latex
-$f_X(x)$
+f_X(x)
 ``` 满足：
 $```latex
-$F_X(x) = \int_{-\infty}^x f_X(t) dt, \quad x \in \mathbb{R}$
+F_X(x) = \int_{-\infty}^x f_X(t) dt, \quad x \in \mathbb{R}
 ```$
 
 ## 2. 概率性质
@@ -141,38 +141,38 @@ $F_X(x) = \int_{-\infty}^x f_X(t) dt, \quad x \in \mathbb{R}$
 
 **定义 2.1 (条件概率)**
 对于事件 ```latex
-$A, B$
+A, B
 ```，且 ```latex
-$P(B) > 0$
+P(B) > 0
 ```，```latex
-$A$
+A
 ``` 在 ```latex
-$B$
+B
 ``` 条件下的条件概率定义为：
 $```latex
-$P(A|B) = \frac{P(A \cap B)}{P(B)}$
+P(A|B) = \frac{P(A \cap B)}{P(B)}
 ```$
 
 **定理 2.1 (乘法公式)**
 对于事件 ```latex
-$A_1, A_2, \ldots, A_n$
+A_1, A_2, \ldots, A_n
 ```，且 ```latex
-$P(A_1 \cap A_2 \cap \cdots \cap A_{n-1}) > 0$
+P(A_1 \cap A_2 \cap \cdots \cap A_{n-1}) > 0
 ```：
 $```latex
-$P(A_1 \cap A_2 \cap \cdots \cap A_n) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2) \cdots P(A_n|A_1 \cap A_2 \cap \cdots \cap A_{n-1})$
+P(A_1 \cap A_2 \cap \cdots \cap A_n) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2) \cdots P(A_n|A_1 \cap A_2 \cap \cdots \cap A_{n-1})
 ```$
 
 **证明**：
 使用数学归纳法。对于 ```latex
-$n=2$
+n=2
 ```，结论显然成立。假设对于 ```latex
-$n=k$
+n=k
 ``` 成立，考虑 ```latex
-$n=k+1$
+n=k+1
 ```：
 $```latex
-$P(A_1 \cap A_2 \cap \cdots \cap A_{k+1}) = P(A_1 \cap A_2 \cap \cdots \cap A_k) \cdot P(A_{k+1}|A_1 \cap A_2 \cap \cdots \cap A_k)$
+P(A_1 \cap A_2 \cap \cdots \cap A_{k+1}) = P(A_1 \cap A_2 \cap \cdots \cap A_k) \cdot P(A_{k+1}|A_1 \cap A_2 \cap \cdots \cap A_k)
 ```$
 根据归纳假设，结论成立。
 
@@ -180,96 +180,96 @@ $P(A_1 \cap A_2 \cap \cdots \cap A_{k+1}) = P(A_1 \cap A_2 \cap \cdots \cap A_k)
 
 **定义 2.2 (事件独立性)**
 事件 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ``` 是独立的，当且仅当：
 $```latex
-$P(A \cap B) = P(A) \cdot P(B)$
+P(A \cap B) = P(A) \cdot P(B)
 ```$
 
 **定义 2.3 (条件独立性)**
 事件 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ``` 在事件 ```latex
-$C$
+C
 ``` 条件下是独立的，当且仅当：
 $```latex
-$P(A \cap B|C) = P(A|C) \cdot P(B|C)$
+P(A \cap B|C) = P(A|C) \cdot P(B|C)
 ```$
 
 **定理 2.2 (独立性的等价条件)**
 事件 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ``` 是独立的，当且仅当 ```latex
-$P(A|B) = P(A)$
+P(A|B) = P(A)
 ``` 或 ```latex
-$P(B|A) = P(B)$
+P(B|A) = P(B)
 ```。
 
 **证明**：
 如果 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ``` 独立，则：
 $```latex
-$P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{P(A) \cdot P(B)}{P(B)} = P(A)$
+P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{P(A) \cdot P(B)}{P(B)} = P(A)
 ```$
 反之，如果 ```latex
-$P(A|B) = P(A)$
+P(A|B) = P(A)
 ```，则：
 $```latex
-$P(A \cap B) = P(A|B) \cdot P(B) = P(A) \cdot P(B)$
+P(A \cap B) = P(A|B) \cdot P(B) = P(A) \cdot P(B)
 ```$
 
 ### 2.3 贝叶斯定理
 
 **定理 2.3 (贝叶斯定理)**
 对于事件 ```latex
-$A, B$
+A, B
 ```，且 ```latex
-$P(B) > 0$
+P(B) > 0
 ```：
 $```latex
-$P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}$
+P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}
 ```$
 
 **证明**：
 根据条件概率定义：
 $```latex
-$P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{P(B|A) \cdot P(A)}{P(B)}$
+P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{P(B|A) \cdot P(A)}{P(B)}
 ```$
 
 **定理 2.4 (全概率公式)**
 如果事件 ```latex
-$B_1, B_2, \ldots, B_n$
+B_1, B_2, \ldots, B_n
 ``` 构成样本空间的一个划分，且 ```latex
-$P(B_i) > 0$
+P(B_i) > 0
 ``` 对所有 ```latex
-$i$
+i
 ```，则：
 $```latex
-$P(A) = \sum_{i=1}^n P(A|B_i) \cdot P(B_i)$
+P(A) = \sum_{i=1}^n P(A|B_i) \cdot P(B_i)
 ```$
 
 **证明**：
 由于 ```latex
-$\{B_i\}$
+\{B_i\}
 ``` 构成划分，```latex
-$A = A \cap \Omega = A \cap (\bigcup_{i=1}^n B_i) = \bigcup_{i=1}^n (A \cap B_i)$
+A = A \cap \Omega = A \cap (\bigcup_{i=1}^n B_i) = \bigcup_{i=1}^n (A \cap B_i)
 ```
 由于 ```latex
-$B_i$
+B_i
 ``` 互不相交，```latex
-$A \cap B_i$
+A \cap B_i
 ``` 也互不相交，因此：
 $```latex
-$P(A) = \sum_{i=1}^n P(A \cap B_i) = \sum_{i=1}^n P(A|B_i) \cdot P(B_i)$
+P(A) = \sum_{i=1}^n P(A \cap B_i) = \sum_{i=1}^n P(A|B_i) \cdot P(B_i)
 ```$
 
 ## 3. 随机过程
@@ -278,82 +278,82 @@ $P(A) = \sum_{i=1}^n P(A \cap B_i) = \sum_{i=1}^n P(A|B_i) \cdot P(B_i)$
 
 **定义 3.1 (马尔可夫链)**
 随机过程 ```latex
-$\{X_n\}_{n=0}^{\infty}$
+\{X_n\}_{n=0}^{\infty}
 ``` 是马尔可夫链，如果对于任意 ```latex
-$n \geq 0$
+n \geq 0
 ``` 和状态 ```latex
-$i_0, i_1, \ldots, i_{n-1}, i, j$
+i_0, i_1, \ldots, i_{n-1}, i, j
 ```：
 $```latex
-$P(X_{n+1} = j|X_0 = i_0, X_1 = i_1, \ldots, X_{n-1} = i_{n-1}, X_n = i) = P(X_{n+1} = j|X_n = i)$
+P(X_{n+1} = j|X_0 = i_0, X_1 = i_1, \ldots, X_{n-1} = i_{n-1}, X_n = i) = P(X_{n+1} = j|X_n = i)
 ```$
 
 **定义 3.2 (转移概率)**
 马尔可夫链的转移概率定义为：
 $```latex
-$P_{ij}(n) = P(X_{n+1} = j|X_n = i)$
+P_{ij}(n) = P(X_{n+1} = j|X_n = i)
 ```$
 
 **定义 3.3 (转移矩阵)**
 转移矩阵 ```latex
-$P = [P_{ij}]$
+P = [P_{ij}]
 ``` 满足：
 
 1. ```latex
-$P_{ij} \geq 0$
+P_{ij} \geq 0
 ``` 对所有 ```latex
-$i, j$
+i, j
 ```
 2. ```latex
-$\sum_j P_{ij} = 1$
+\sum_j P_{ij} = 1
 ``` 对所有 ```latex
-$i$
+i
 ```
 
 **定理 3.1 (Chapman-Kolmogorov方程)**
 对于马尔可夫链，```latex
-$P_{ij}^{(n+m)} = \sum_k P_{ik}^{(n)} P_{kj}^{(m)}$
+P_{ij}^{(n+m)} = \sum_k P_{ik}^{(n)} P_{kj}^{(m)}
 ```。
 
 **证明**：
 $```latex
-$P_{ij}^{(n+m)} = P(X_{n+m} = j|X_0 = i) = \sum_k P(X_{n+m} = j, X_n = k|X_0 = i)$
+P_{ij}^{(n+m)} = P(X_{n+m} = j|X_0 = i) = \sum_k P(X_{n+m} = j, X_n = k|X_0 = i)
 ```$
 $```latex
-$= \sum_k P(X_n = k|X_0 = i) \cdot P(X_{n+m} = j|X_n = k) = \sum_k P_{ik}^{(n)} P_{kj}^{(m)}$
+= \sum_k P(X_n = k|X_0 = i) \cdot P(X_{n+m} = j|X_n = k) = \sum_k P_{ik}^{(n)} P_{kj}^{(m)}
 ```$
 
 ### 3.2 泊松过程
 
 **定义 3.4 (泊松过程)**
 计数过程 ```latex
-$\{N(t)\}_{t \geq 0}$
+\{N(t)\}_{t \geq 0}
 ``` 是强度为 ```latex
-$\lambda$
+\lambda
 ``` 的泊松过程，如果：
 
 1. ```latex
-$N(0) = 0$
+N(0) = 0
 ```
 2. 具有独立增量
 3. 具有平稳增量
 4. ```latex
-$P(N(t+h) - N(t) = 1) = \lambda h + o(h)$
+P(N(t+h) - N(t) = 1) = \lambda h + o(h)
 ```
 5. ```latex
-$P(N(t+h) - N(t) \geq 2) = o(h)$
+P(N(t+h) - N(t) \geq 2) = o(h)
 ```
 
 **定理 3.2 (泊松分布)**
 对于泊松过程 ```latex
-$\{N(t)\}$
+\{N(t)\}
 ```，```latex
-$N(t)$
+N(t)
 ``` 服从参数为 ```latex
-$\lambda t$
+\lambda t
 ``` 的泊松分布：
 $```latex
-$P(N(t) = k) = \frac{(\lambda t)^k}{k!} e^{-\lambda t}, \quad k = 0, 1, 2, \ldots$
+P(N(t) = k) = \frac{(\lambda t)^k}{k!} e^{-\lambda t}, \quad k = 0, 1, 2, \ldots
 ```$
 
 **证明**：
@@ -363,31 +363,31 @@ $P(N(t) = k) = \frac{(\lambda t)^k}{k!} e^{-\lambda t}, \quad k = 0, 1, 2, \ldot
 
 **定义 3.5 (布朗运动)**
 随机过程 ```latex
-$\{B(t)\}_{t \geq 0}$
+\{B(t)\}_{t \geq 0}
 ``` 是标准布朗运动，如果：
 
 1. ```latex
-$B(0) = 0$
+B(0) = 0
 ```
 2. 具有独立增量
 3. 具有平稳增量
 4. ```latex
-$B(t) - B(s) \sim N(0, t-s)$
+B(t) - B(s) \sim N(0, t-s)
 ``` 对所有 ```latex
-$0 \leq s < t$
+0 \leq s < t
 ```
 
 **定理 3.3 (布朗运动性质)**
 布朗运动具有以下性质：
 
 1. ```latex
-$E[B(t)] = 0$
+E[B(t)] = 0
 ```
 2. ```latex
-$Var[B(t)] = t$
+Var[B(t)] = t
 ```
 3. ```latex
-$Cov[B(s), B(t)] = \min(s, t)$
+Cov[B(s), B(t)] = \min(s, t)
 ```
 
 ## 4. 形式化定义
@@ -396,156 +396,156 @@ $Cov[B(s), B(t)] = \min(s, t)$
 
 **定义 4.1 (概率测度的连续性)**
 概率测度 ```latex
-$P$
+P
 ``` 是连续的，即对于递减的事件序列 ```latex
-$\{A_n\}$
+\{A_n\}
 ```：
 $```latex
-$P(\bigcap_{n=1}^{\infty} A_n) = \lim_{n \to \infty} P(A_n)$
+P(\bigcap_{n=1}^{\infty} A_n) = \lim_{n \to \infty} P(A_n)
 ```$
 
 **定理 4.1 (概率测度的性质)**
 概率测度 ```latex
-$P$
+P
 ``` 满足：
 
 1. ```latex
-$P(\emptyset) = 0$
+P(\emptyset) = 0
 ```
 2. ```latex
-$P(A^c) = 1 - P(A)$
+P(A^c) = 1 - P(A)
 ```
 3. ```latex
-$P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+P(A \cup B) = P(A) + P(B) - P(A \cap B)
 ```
 4. 如果 ```latex
-$A \subseteq B$
+A \subseteq B
 ```，则 ```latex
-$P(A) \leq P(B)$
+P(A) \leq P(B)
 ```
 
 **证明**：
 
 1. 由于 ```latex
-$\emptyset = \emptyset \cup \emptyset$
+\emptyset = \emptyset \cup \emptyset
 ``` 且 ```latex
-$\emptyset \cap \emptyset = \emptyset$
+\emptyset \cap \emptyset = \emptyset
 ```，```latex
-$P(\emptyset) = P(\emptyset) + P(\emptyset)$
+P(\emptyset) = P(\emptyset) + P(\emptyset)
 ```，因此 ```latex
-$P(\emptyset) = 0$
+P(\emptyset) = 0
 ```
 2. ```latex
-$1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)$
+1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)
 ```，因此 ```latex
-$P(A^c) = 1 - P(A)$
+P(A^c) = 1 - P(A)
 ```
 3. ```latex
-$P(A \cup B) = P(A \cup (B \setminus A)) = P(A) + P(B \setminus A) = P(A) + P(B) - P(A \cap B)$
+P(A \cup B) = P(A \cup (B \setminus A)) = P(A) + P(B \setminus A) = P(A) + P(B) - P(A \cap B)
 ```
 4. ```latex
-$B = A \cup (B \setminus A)$
+B = A \cup (B \setminus A)
 ```，因此 ```latex
-$P(B) = P(A) + P(B \setminus A) \geq P(A)$
+P(B) = P(A) + P(B \setminus A) \geq P(A)
 ```
 
 ### 4.2 期望和方差
 
 **定义 4.2 (期望)**
 离散随机变量 ```latex
-$X$
+X
 ``` 的期望定义为：
 $```latex
-$E[X] = \sum_x x \cdot P(X = x)$
+E[X] = \sum_x x \cdot P(X = x)
 ```$
 
 连续随机变量 ```latex
-$X$
+X
 ``` 的期望定义为：
 $```latex
-$E[X] = \int_{-\infty}^{\infty} x \cdot f_X(x) dx$
+E[X] = \int_{-\infty}^{\infty} x \cdot f_X(x) dx
 ```$
 
 **定义 4.3 (方差)**
 随机变量 ```latex
-$X$
+X
 ``` 的方差定义为：
 $```latex
-$Var[X] = E[(X - E[X])^2] = E[X^2] - (E[X])^2$
+Var[X] = E[(X - E[X])^2] = E[X^2] - (E[X])^2
 ```$
 
 **定理 4.2 (期望的线性性)**
 对于随机变量 ```latex
-$X, Y$
+X, Y
 ``` 和常数 ```latex
-$a, b$
+a, b
 ```：
 $```latex
-$E[aX + bY] = aE[X] + bE[Y]$
+E[aX + bY] = aE[X] + bE[Y]
 ```$
 
 **证明**：
 对于离散情况：
 $```latex
-$E[aX + bY] = \sum_{x,y} (ax + by) \cdot P(X = x, Y = y)$
+E[aX + bY] = \sum_{x,y} (ax + by) \cdot P(X = x, Y = y)
 ```$
 $```latex
-$= a\sum_{x,y} x \cdot P(X = x, Y = y) + b\sum_{x,y} y \cdot P(X = x, Y = y)$
+= a\sum_{x,y} x \cdot P(X = x, Y = y) + b\sum_{x,y} y \cdot P(X = x, Y = y)
 ```$
 $```latex
-$= aE[X] + bE[Y]$
+= aE[X] + bE[Y]
 ```$
 
 **定理 4.3 (方差的线性变换)**
 对于随机变量 ```latex
-$X$
+X
 ``` 和常数 ```latex
-$a, b$
+a, b
 ```：
 $```latex
-$Var[aX + b] = a^2 Var[X]$
+Var[aX + b] = a^2 Var[X]
 ```$
 
 **证明**：
 $```latex
-$Var[aX + b] = E[(aX + b - E[aX + b])^2] = E[(aX + b - aE[X] - b)^2]$
+Var[aX + b] = E[(aX + b - E[aX + b])^2] = E[(aX + b - aE[X] - b)^2]
 ```$
 $```latex
-$= E[(aX - aE[X])^2] = E[a^2(X - E[X])^2] = a^2 Var[X]$
+= E[(aX - aE[X])^2] = E[a^2(X - E[X])^2] = a^2 Var[X]
 ```$
 
 ### 4.3 大数定律和中心极限定理
 
 **定理 4.4 (弱大数定律)**
 设 ```latex
-$\{X_n\}$
+\{X_n\}
 ``` 是独立同分布的随机变量序列，```latex
-$E[X_1] = \mu$
+E[X_1] = \mu
 ```，则：
 $```latex
-$\frac{1}{n} \sum_{i=1}^n X_i \xrightarrow{P} \mu$
+\frac{1}{n} \sum_{i=1}^n X_i \xrightarrow{P} \mu
 ```$
 
 **定理 4.5 (强大数定律)**
 设 ```latex
-$\{X_n\}$
+\{X_n\}
 ``` 是独立同分布的随机变量序列，```latex
-$E[X_1] = \mu$
+E[X_1] = \mu
 ```，则：
 $```latex
-$\frac{1}{n} \sum_{i=1}^n X_i \xrightarrow{a.s.} \mu$
+\frac{1}{n} \sum_{i=1}^n X_i \xrightarrow{a.s.} \mu
 ```$
 
 **定理 4.6 (中心极限定理)**
 设 ```latex
-$\{X_n\}$
+\{X_n\}
 ``` 是独立同分布的随机变量序列，```latex
-$E[X_1] = \mu$
+E[X_1] = \mu
 ```，```latex
-$Var[X_1] = \sigma^2$
+Var[X_1] = \sigma^2
 ```，则：
 $```latex
-$\frac{\sum_{i=1}^n X_i - n\mu}{\sqrt{n}\sigma} \xrightarrow{d} N(0, 1)$
+\frac{\sum_{i=1}^n X_i - n\mu}{\sqrt{n}\sigma} \xrightarrow{d} N(0, 1)
 ```$
 
 ## 5. Go语言实现

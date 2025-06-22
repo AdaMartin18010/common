@@ -46,39 +46,39 @@
 ### 1.2 形式化定义
 
 设 ```latex
-$O$
+O
 ``` 为对象集合，```latex
-$M$
+M
 ``` 为方法集合，```latex
-$Q$
+Q
 ``` 为消息队列，则活动对象模式可形式化为：
 
 $```latex
-$\text{ActiveObject} = (O, M, Q, \text{execute}, \text{schedule})$
+\text{ActiveObject} = (O, M, Q, \text{execute}, \text{schedule})
 ```$
 
 其中：
 
 - ```latex
-$\text{execute}: Q \times M \rightarrow \text{Future}[T]$
+\text{execute}: Q \times M \rightarrow \text{Future}[T]
 ``` 为执行函数
 - ```latex
-$\text{schedule}: M \times \text{Args} \rightarrow \text{Message}$
+\text{schedule}: M \times \text{Args} \rightarrow \text{Message}
 ``` 为调度函数
 
 ### 1.3 数学性质
 
 **定理1.1**: 活动对象模式保证方法调用的顺序性
 **证明**: 设 ```latex
-$m_1, m_2 \in M$
+m_1, m_2 \in M
 ```，若 ```latex
-$m_1$
+m_1
 ``` 先于 ```latex
-$m_2$
+m_2
 ``` 被调度，则 ```latex
-$\text{schedule}(m_1) < \text{schedule}(m_2)$
+\text{schedule}(m_1) < \text{schedule}(m_2)
 ```，由于队列的FIFO性质，```latex
-$\text{execute}(m_1) < \text{execute}(m_2)$
+\text{execute}(m_1) < \text{execute}(m_2)
 ```。
 
 **定理1.2**: 活动对象模式提供线程安全保证

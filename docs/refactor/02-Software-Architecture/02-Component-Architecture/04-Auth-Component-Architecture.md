@@ -10,136 +10,136 @@
 
 **定义 1.1** (认证组件)
 认证组件是一个六元组 ```latex
-$C_{auth} = (S, I, B, P, T, R)$
+C_{auth} = (S, I, B, P, T, R)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是组件状态集合 (State Set)
 - ```latex
-$I$
+I
 ``` 是组件接口集合 (Interface Set)
 - ```latex
-$B$
+B
 ``` 是组件行为集合 (Behavior Set)
 - ```latex
-$P$
+P
 ``` 是权限集合 (Permission Set)
 - ```latex
-$T$
+T
 ``` 是令牌集合 (Token Set)
 - ```latex
-$R$
+R
 ``` 是角色集合 (Role Set)
 
 **定义 1.2** (用户实体)
 用户实体是一个四元组 ```latex
-$U = (id, credentials, roles, permissions)$
+U = (id, credentials, roles, permissions)
 ```，其中：
 
 - ```latex
-$id$
+id
 ``` 是用户唯一标识符
 - ```latex
-$credentials$
+credentials
 ``` 是认证凭据集合
 - ```latex
-$roles$
+roles
 ``` 是用户角色集合
 - ```latex
-$permissions$
+permissions
 ``` 是用户权限集合
 
 **定义 1.3** (认证会话)
 认证会话是一个五元组 ```latex
-$S_{auth} = (session_id, user_id, token, expires_at, metadata)$
+S_{auth} = (session_id, user_id, token, expires_at, metadata)
 ```，其中：
 
 - ```latex
-$session_id$
+session_id
 ``` 是会话唯一标识符
 - ```latex
-$user_id$
+user_id
 ``` 是用户标识符
 - ```latex
-$token$
+token
 ``` 是认证令牌
 - ```latex
-$expires_at$
+expires_at
 ``` 是过期时间
 - ```latex
-$metadata$
+metadata
 ``` 是会话元数据
 
 ### 1.2 权限模型
 
 **定义 1.4** (权限)
 权限是一个三元组 ```latex
-$P = (resource, action, conditions)$
+P = (resource, action, conditions)
 ```，其中：
 
 - ```latex
-$resource$
+resource
 ``` 是资源标识符
 - ```latex
-$action$
+action
 ``` 是操作类型 (read, write, delete, execute)
 - ```latex
-$conditions$
+conditions
 ``` 是权限条件集合
 
 **定义 1.5** (角色)
 角色是一个三元组 ```latex
-$R = (role_id, permissions, inheritance)$
+R = (role_id, permissions, inheritance)
 ```，其中：
 
 - ```latex
-$role_id$
+role_id
 ``` 是角色标识符
 - ```latex
-$permissions$
+permissions
 ``` 是权限集合
 - ```latex
-$inheritance$
+inheritance
 ``` 是继承关系集合
 
 **定理 1.1** (权限传递性)
 对于任意角色 ```latex
-$R_1, R_2, R_3$
+R_1, R_2, R_3
 ```，如果 ```latex
-$R_1$
+R_1
 ``` 继承 ```latex
-$R_2$
+R_2
 ```，```latex
-$R_2$
+R_2
 ``` 继承 ```latex
-$R_3$
+R_3
 ```，则：
 $```latex
-$R_1.permissions \supseteq R_2.permissions \supseteq R_3.permissions$
+R_1.permissions \supseteq R_2.permissions \supseteq R_3.permissions
 ```$
 
 ### 1.3 认证流程
 
 **定义 1.6** (认证流程)
 认证流程是一个状态机 ```latex
-$A = (Q, \Sigma, \delta, q_0, F)$
+A = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$Q = \{Unauthenticated, Authenticating, Authenticated, Expired, Revoked\}$
+Q = \{Unauthenticated, Authenticating, Authenticated, Expired, Revoked\}
 ``` 是状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是事件集合
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ``` 是状态转移函数
 - ```latex
-$q_0 = Unauthenticated$
+q_0 = Unauthenticated
 ``` 是初始状态
 - ```latex
-$F = \{Authenticated\}$
+F = \{Authenticated\}
 ``` 是接受状态集合
 
 ## 2. 架构模式

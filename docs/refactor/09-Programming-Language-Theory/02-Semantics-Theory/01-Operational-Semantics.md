@@ -36,17 +36,17 @@
 操作语义通过描述程序执行的具体步骤来定义编程语言的语义。它关注程序如何从初始状态转换到最终状态。
 
 **定义 1.1**: 操作语义是一个三元组 ```latex
-$(\Sigma, \rightarrow, \Sigma_f)$
+(\Sigma, \rightarrow, \Sigma_f)
 ```，其中：
 
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是配置集合
 - ```latex
-$\rightarrow \subseteq \Sigma \times \Sigma$
+\rightarrow \subseteq \Sigma \times \Sigma
 ``` 是转换关系
 - ```latex
-$\Sigma_f \subseteq \Sigma$
+\Sigma_f \subseteq \Sigma
 ``` 是最终配置集合
 
 ### 1.2 小步语义
@@ -54,22 +54,22 @@ $\Sigma_f \subseteq \Sigma$
 小步语义描述程序执行的每个小步骤，通过一系列转换达到最终状态。
 
 **定义 1.2**: 小步语义的转换关系 ```latex
-$\rightarrow$
+\rightarrow
 ``` 满足：
 
 - 如果 ```latex
-$\sigma \rightarrow \sigma'$
+\sigma \rightarrow \sigma'
 ```，则 ```latex
-$\sigma'$
+\sigma'
 ``` 是 ```latex
-$\sigma$
+\sigma
 ``` 的一步转换
 - 如果 ```latex
-$\sigma \rightarrow^* \sigma'$
+\sigma \rightarrow^* \sigma'
 ```，则 ```latex
-$\sigma'$
+\sigma'
 ``` 是 ```latex
-$\sigma$
+\sigma
 ``` 的多步转换
 
 ### 1.3 大步语义
@@ -77,15 +77,15 @@ $\sigma$
 大步语义直接描述程序从初始状态到最终状态的完整执行过程。
 
 **定义 1.3**: 大步语义的求值关系 ```latex
-$\Downarrow$
+\Downarrow
 ``` 满足：
 
 - ```latex
-$\sigma \Downarrow \sigma'$
+\sigma \Downarrow \sigma'
 ``` 表示从配置 ```latex
-$\sigma$
+\sigma
 ``` 求值到配置 ```latex
-$\sigma'$
+\sigma'
 ```
 
 ## 2. 形式化定义
@@ -94,28 +94,26 @@ $\sigma'$
 
 **定义 2.1**: 简单编程语言的语法：
 
-```latex
-$$
+$
 \begin{align}
 e &::= n \mid x \mid e_1 + e_2 \mid e_1 - e_2 \mid e_1 \times e_2 \\
 s &::= \text{skip} \mid x := e \mid s_1; s_2 \mid \text{if } e \text{ then } s_1 \text{ else } s_2 \mid \text{while } e \text{ do } s
 \end{align}
-$$
-```
+$
 
 其中：
 
 - ```latex
-$n$
+n
 ``` 是数字
 - ```latex
-$x$
+x
 ``` 是变量
 - ```latex
-$e$
+e
 ``` 是表达式
 - ```latex
-$s$
+s
 ``` 是语句
 
 ### 2.2 语义规则
@@ -124,32 +122,32 @@ $s$
 
 **表达式求值**:
 $```latex
-$\frac{n_1 + n_2 = n_3}{n_1 + n_2 \rightarrow n_3}$
+\frac{n_1 + n_2 = n_3}{n_1 + n_2 \rightarrow n_3}
 ```$
 
 $```latex
-$\frac{e_1 \rightarrow e_1'}{e_1 + e_2 \rightarrow e_1' + e_2}$
+\frac{e_1 \rightarrow e_1'}{e_1 + e_2 \rightarrow e_1' + e_2}
 ```$
 
 $```latex
-$\frac{e_2 \rightarrow e_2'}{n_1 + e_2 \rightarrow n_1 + e_2'}$
+\frac{e_2 \rightarrow e_2'}{n_1 + e_2 \rightarrow n_1 + e_2'}
 ```$
 
 **语句执行**:
 $```latex
-$\frac{e \rightarrow e'}{x := e \rightarrow x := e'}$
+\frac{e \rightarrow e'}{x := e \rightarrow x := e'}
 ```$
 
 $```latex
-$\frac{}{x := n \rightarrow \text{skip}}$
+\frac{}{x := n \rightarrow \text{skip}}
 ```$
 
 $```latex
-$\frac{s_1 \rightarrow s_1'}{s_1; s_2 \rightarrow s_1'; s_2}$
+\frac{s_1 \rightarrow s_1'}{s_1; s_2 \rightarrow s_1'; s_2}
 ```$
 
 $```latex
-$\frac{}{\text{skip}; s \rightarrow s}$
+\frac{}{\text{skip}; s \rightarrow s}
 ```$
 
 ### 2.3 求值关系
@@ -158,16 +156,16 @@ $\frac{}{\text{skip}; s \rightarrow s}$
 
 **表达式求值**:
 $```latex
-$\frac{e_1 \Downarrow n_1 \quad e_2 \Downarrow n_2 \quad n_1 + n_2 = n_3}{e_1 + e_2 \Downarrow n_3}$
+\frac{e_1 \Downarrow n_1 \quad e_2 \Downarrow n_2 \quad n_1 + n_2 = n_3}{e_1 + e_2 \Downarrow n_3}
 ```$
 
 **语句执行**:
 $```latex
-$\frac{e \Downarrow n}{x := e \Downarrow [x \mapsto n]}$
+\frac{e \Downarrow n}{x := e \Downarrow [x \mapsto n]}
 ```$
 
 $```latex
-$\frac{s_1 \Downarrow \sigma_1 \quad s_2 \Downarrow \sigma_2}{s_1; s_2 \Downarrow \sigma_2 \circ \sigma_1}$
+\frac{s_1 \Downarrow \sigma_1 \quad s_2 \Downarrow \sigma_2}{s_1; s_2 \Downarrow \sigma_2 \circ \sigma_1}
 ```$
 
 ## 3. Go语言实现
@@ -1109,15 +1107,15 @@ func (c *Compiler) generateExpressionBytecode(expr Expression, bytecode *[]byte)
 ### 5.1 确定性定理
 
 **定理 5.1** (求值确定性): 对于任意表达式 ```latex
-$e$
+e
 ``` 和环境 ```latex
-$\sigma$
+\sigma
 ```，如果 ```latex
-$e \rightarrow e_1$
+e \rightarrow e_1
 ``` 且 ```latex
-$e \rightarrow e_2$
+e \rightarrow e_2
 ```，则 ```latex
-$e_1 = e_2$
+e_1 = e_2
 ```。
 
 **证明**:
@@ -1127,15 +1125,15 @@ $e_1 = e_2$
 3. 由于规则是语法导向的，每个表达式最多匹配一个规则
 
 **定理 5.2** (执行确定性): 对于任意语句 ```latex
-$s$
+s
 ``` 和环境 ```latex
-$\sigma$
+\sigma
 ```，如果 ```latex
-$s \rightarrow s_1$
+s \rightarrow s_1
 ``` 且 ```latex
-$s \rightarrow s_2$
+s \rightarrow s_2
 ```，则 ```latex
-$s_1 = s_2$
+s_1 = s_2
 ```。
 
 **证明**:
@@ -1147,11 +1145,11 @@ $s_1 = s_2$
 ### 5.2 终止性定理
 
 **定理 5.3** (表达式终止性): 对于任意表达式 ```latex
-$e$
+e
 ```，存在有限步求值序列 ```latex
-$e \rightarrow^* v$
+e \rightarrow^* v
 ```，其中 ```latex
-$v$
+v
 ``` 是值。
 
 **证明**:
@@ -1161,11 +1159,11 @@ $v$
 3. 由于大小有限，求值必然终止
 
 **定理 5.4** (语句终止性): 对于任意语句 ```latex
-$s$
+s
 ```，如果 ```latex
-$s$
+s
 ``` 不包含无限循环，则存在有限步执行序列 ```latex
-$s \rightarrow^* \text{skip}$
+s \rightarrow^* \text{skip}
 ```。
 
 **证明**:
@@ -1177,13 +1175,13 @@ $s \rightarrow^* \text{skip}$
 ### 5.3 等价性定理
 
 **定理 5.5** (小步与大步等价性): 对于任意表达式 ```latex
-$e$
+e
 ``` 和值 ```latex
-$v$
+v
 ```，```latex
-$e \rightarrow^* v$
+e \rightarrow^* v
 ``` 当且仅当 ```latex
-$e \Downarrow v$
+e \Downarrow v
 ```。
 
 **证明**:
@@ -1193,13 +1191,13 @@ $e \Downarrow v$
 3. 通过结构归纳法完成证明
 
 **定理 5.6** (上下文等价性): 对于任意表达式 ```latex
-$e_1, e_2$
+e_1, e_2
 ```，如果 ```latex
-$e_1 \rightarrow e_2$
+e_1 \rightarrow e_2
 ```，则对任意上下文 ```latex
-$C$
+C
 ```，```latex
-$C[e_1] \rightarrow C[e_2]$
+C[e_1] \rightarrow C[e_2]
 ```。
 
 **证明**:

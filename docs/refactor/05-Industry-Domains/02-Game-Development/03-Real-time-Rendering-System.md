@@ -59,30 +59,30 @@
 
 **定义 2.1.1** (渲染系统)
 渲染系统是一个五元组 ```latex
-$R = (G, M, L, S, P)$
+R = (G, M, L, S, P)
 ```，其中：
 
 - ```latex
-$G$
+G
 ``` 是几何数据 (Geometry Data)
 - ```latex
-$M$
+M
 ``` 是材质系统 (Material System)
 - ```latex
-$L$
+L
 ``` 是光照系统 (Lighting System)
 - ```latex
-$S$
+S
 ``` 是着色器系统 (Shader System)
 - ```latex
-$P$
+P
 ``` 是后处理系统 (Post-processing System)
 
 **定义 2.1.2** (渲染管线)
 渲染管线是一个函数序列 ```latex
-$P = (f_1, f_2, ..., f_n)$
+P = (f_1, f_2, ..., f_n)
 ```，其中每个 ```latex
-$f_i: V_i \rightarrow V_{i+1}$
+f_i: V_i \rightarrow V_{i+1}
 ``` 是渲染阶段函数。
 
 ### 2.2 光照模型
@@ -90,33 +90,33 @@ $f_i: V_i \rightarrow V_{i+1}$
 **定义 2.2.1** (Phong光照模型)
 Phong光照模型定义为：
 $```latex
-$I = I_a + I_d + I_s$
+I = I_a + I_d + I_s
 ```$
 
 其中：
 
 - ```latex
-$I_a = k_a \cdot A$
+I_a = k_a \cdot A
 ``` 是环境光
 - ```latex
-$I_d = k_d \cdot (L \cdot N) \cdot D$
+I_d = k_d \cdot (L \cdot N) \cdot D
 ``` 是漫反射
 - ```latex
-$I_s = k_s \cdot (R \cdot V)^n \cdot S$
+I_s = k_s \cdot (R \cdot V)^n \cdot S
 ``` 是镜面反射
 
 **定义 2.2.2** (PBR光照模型)
 基于物理的渲染模型定义为：
 $```latex
-$f_r = \frac{DFG}{4(N \cdot L)(N \cdot V)}$
+f_r = \frac{DFG}{4(N \cdot L)(N \cdot V)}
 ```$
 
 其中 ```latex
-$D$
+D
 ``` 是法线分布函数，```latex
-$F$
+F
 ``` 是菲涅尔函数，```latex
-$G$
+G
 ``` 是几何函数。
 
 ## 3. 数学基础
@@ -125,54 +125,52 @@ $G$
 
 **定理 3.1.1** (矩阵变换的可逆性)
 对于非奇异矩阵 ```latex
-$M$
+M
 ```，存在逆矩阵 ```latex
-$M^{-1}$
+M^{-1}
 ``` 使得 ```latex
-$M \cdot M^{-1} = I$
+M \cdot M^{-1} = I
 ```。
 
 **证明**:
 设 ```latex
-$M$
+M
 ``` 是 ```latex
-$n \times n$
+n \times n
 ``` 非奇异矩阵，则 ```latex
-$\det(M) \neq 0$
+\det(M) \neq 0
 ```。
 根据矩阵求逆公式：
 $```latex
-$M^{-1} = \frac{1}{\det(M)} \cdot \text{adj}(M)$
+M^{-1} = \frac{1}{\det(M)} \cdot \text{adj}(M)
 ```$
 
 其中 ```latex
-$\text{adj}(M)$
+\text{adj}(M)
 ``` 是 ```latex
-$M$
+M
 ``` 的伴随矩阵。
 
 ### 3.2 投影变换
 
 **定义 3.2.1** (透视投影)
 透视投影矩阵 ```latex
-$P$
+P
 ``` 定义为：
 
-```latex
-$$
+$
 P = \begin{bmatrix}
 \frac{2n}{r-l} & 0 & \frac{r+l}{r-l} & 0 \\
 0 & \frac{2n}{t-b} & \frac{t+b}{t-b} & 0 \\
 0 & 0 & -\frac{f+n}{f-n} & -\frac{2fn}{f-n} \\
 0 & 0 & -1 & 0
 \end{bmatrix}
-$$
-```
+$
 
 其中 ```latex
-$n, f$
+n, f
 ``` 是近远平面，```latex
-$l, r, t, b$
+l, r, t, b
 ``` 是视锥体边界。
 
 **定理 3.2.1** (投影变换保持直线)
@@ -183,21 +181,21 @@ $l, r, t, b$
 **定义 3.3.1** (法线分布函数)
 GGX法线分布函数定义为：
 $```latex
-$D(h) = \frac{\alpha^2}{\pi((N \cdot H)^2(\alpha^2-1)+1)^2}$
+D(h) = \frac{\alpha^2}{\pi((N \cdot H)^2(\alpha^2-1)+1)^2}
 ```$
 
 其中 ```latex
-$\alpha$
+\alpha
 ``` 是粗糙度参数。
 
 **定义 3.3.2** (菲涅尔函数)
 Schlick近似菲涅尔函数定义为：
 $```latex
-$F(v, h) = F_0 + (1-F_0)(1-(v \cdot h))^5$
+F(v, h) = F_0 + (1-F_0)(1-(v \cdot h))^5
 ```$
 
 其中 ```latex
-$F_0$
+F_0
 ``` 是基础反射率。
 
 ## 4. 渲染管线
@@ -866,13 +864,13 @@ func (ss *ShadowSystem) renderShadowObject(obj *GameObject) {
 
 **定理 6.1.1** (视锥体剔除)
 对于视锥体 ```latex
-$F$
+F
 ``` 和包围盒 ```latex
-$B$
+B
 ```，如果 ```latex
-$B \cap F = \emptyset$
+B \cap F = \emptyset
 ```，则 ```latex
-$B$
+B
 ``` 中的对象不需要渲染。
 
 **实现**:

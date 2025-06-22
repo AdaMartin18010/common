@@ -9,30 +9,28 @@
 ### 1.1.1 联邦学习系统
 
 联邦学习系统 ```latex
-$FL$
+FL
 ``` 是一个四元组 ```latex
-$(C, S, A, P)$
+(C, S, A, P)
 ```，其中：
 
 ```latex
-$```latex
-$FL = (C, S, A, P)$
+$FL = (C, S, A, P)
 ```$
-```
 
 其中：
 
 - ```latex
-$C$
+C
 ```: 客户端集合
 - ```latex
-$S$
+S
 ```: 服务器
 - ```latex
-$A$
+A
 ```: 聚合算法
 - ```latex
-$P$
+P
 ```: 隐私保护机制
 
 ### 1.1.2 联邦学习目标
@@ -40,28 +38,26 @@ $P$
 联邦学习的目标是最小化全局损失函数：
 
 ```latex
-$```latex
-$\min_w \sum_{i=1}^N \frac{|D_i|}{|D|} L_i(w)$
+$\min_w \sum_{i=1}^N \frac{|D_i|}{|D|} L_i(w)
 ```$
-```
 
 其中：
 
 - ```latex
-$w$
+w
 ```: 全局模型参数
 - ```latex
-$D_i$
+D_i
 ```: 客户端 ```latex
-$i$
+i
 ``` 的数据集
 - ```latex
-$L_i(w)$
+L_i(w)
 ```: 客户端 ```latex
-$i$
+i
 ``` 的损失函数
 - ```latex
-$N$
+N
 ```: 客户端数量
 
 ## 1.2 联邦学习类型
@@ -71,15 +67,13 @@ $N$
 水平联邦学习适用于具有相同特征空间但不同样本的客户端：
 
 ```latex
-$```latex
-$D_i \cap D_j = \emptyset, \quad \text{但} \quad \mathcal{F}_i = \mathcal{F}_j$
+$D_i \cap D_j = \emptyset, \quad \text{但} \quad \mathcal{F}_i = \mathcal{F}_j
 ```$
-```
 
 其中 ```latex
-$\mathcal{F}_i$
+\mathcal{F}_i
 ``` 是客户端 ```latex
-$i$
+i
 ``` 的特征空间。
 
 ### 1.2.2 垂直联邦学习
@@ -87,20 +81,16 @@ $i$
 垂直联邦学习适用于具有相同样本但不同特征的客户端：
 
 ```latex
-$```latex
-$D_i \cap D_j \neq \emptyset, \quad \text{但} \quad \mathcal{F}_i \neq \mathcal{F}_j$
+$D_i \cap D_j \neq \emptyset, \quad \text{但} \quad \mathcal{F}_i \neq \mathcal{F}_j
 ```$
-```
 
 ### 1.2.3 联邦迁移学习
 
 联邦迁移学习适用于特征空间和样本都不同的客户端：
 
 ```latex
-$```latex
-$D_i \cap D_j = \emptyset, \quad \text{且} \quad \mathcal{F}_i \neq \mathcal{F}_j$
+$D_i \cap D_j = \emptyset, \quad \text{且} \quad \mathcal{F}_i \neq \mathcal{F}_j
 ```$
-```
 
 ## 1.3 联邦平均算法（FedAvg）
 
@@ -109,33 +99,29 @@ $D_i \cap D_j = \emptyset, \quad \text{且} \quad \mathcal{F}_i \neq \mathcal{F}
 联邦平均算法的更新规则：
 
 ```latex
-$```latex
-$w_{t+1} = \sum_{i=1}^N \frac{|D_i|}{|D|} w_{t+1}^i$
+$w_{t+1} = \sum_{i=1}^N \frac{|D_i|}{|D|} w_{t+1}^i
 ```$
-```
 
 其中 ```latex
-$w_{t+1}^i$
+w_{t+1}^i
 ``` 是客户端 ```latex
-$i$
+i
 ``` 在第 ```latex
-$t$
+t
 ``` 轮训练后的模型参数。
 
 ### 1.3.2 客户端更新
 
 客户端 ```latex
-$i$
+i
 ``` 的本地更新：
 
 ```latex
-$```latex
-$w_{t+1}^i = w_t - \eta \nabla L_i(w_t)$
+$w_{t+1}^i = w_t - \eta \nabla L_i(w_t)
 ```$
-```
 
 其中 ```latex
-$\eta$
+\eta
 ``` 是学习率。
 
 ### 1.3.3 收敛性分析
@@ -143,15 +129,13 @@ $\eta$
 FedAvg的收敛性：
 
 ```latex
-$```latex
-$\mathbb{E}[L(w_T)] - L(w^*) \leq O\left(\frac{1}{\sqrt{T}} + \frac{\sigma^2}{T}\right)$
+$\mathbb{E}[L(w_T)] - L(w^*) \leq O\left(\frac{1}{\sqrt{T}} + \frac{\sigma^2}{T}\right)
 ```$
-```
 
 其中 ```latex
-$T$
+T
 ``` 是通信轮数，```latex
-$\sigma^2$
+\sigma^2
 ``` 是数据异质性方差。
 
 ## 1.4 通信效率
@@ -161,24 +145,22 @@ $\sigma^2$
 联邦学习的通信成本：
 
 ```latex
-$```latex
-$C_{comm} = T \times N \times d \times b$
+$C_{comm} = T \times N \times d \times b
 ```$
-```
 
 其中：
 
 - ```latex
-$T$
+T
 ```: 通信轮数
 - ```latex
-$N$
+N
 ```: 客户端数量
 - ```latex
-$d$
+d
 ```: 模型参数维度
 - ```latex
-$b$
+b
 ```: 每个参数的比特数
 
 ### 1.4.2 压缩技术
@@ -186,13 +168,11 @@ $b$
 模型压缩可以减少通信成本：
 
 ```latex
-$```latex
-$C_{compressed} = C_{comm} \times \rho$
+$C_{compressed} = C_{comm} \times \rho
 ```$
-```
 
 其中 ```latex
-$\rho$
+\rho
 ``` 是压缩率。
 
 ## 1.5 Go语言实现
@@ -676,7 +656,7 @@ func FederatedLearningExample() {
 
 **定理 1.2** (差分隐私保护)
 差分隐私机制提供 ```latex
-$\epsilon$
+\epsilon
 ```-差分隐私保护。
 
 **证明**：

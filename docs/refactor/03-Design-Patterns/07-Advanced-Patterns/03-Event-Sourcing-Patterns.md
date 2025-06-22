@@ -30,20 +30,20 @@ S_t = S_0 \oplus e_1 \oplus e_2 \oplus \cdots \oplus e_t
 其中：
 
 - ```latex
-$S_t$
+S_t
 ``` 是时间 ```latex
-$t$
+t
 ``` 的状态
 - ```latex
-$S_0$
+S_0
 ``` 是初始状态
 - ```latex
-$e_i$
+e_i
 ``` 是第 ```latex
-$i$
+i
 ``` 个事件
 - ```latex
-$\oplus$
+\oplus
 ``` 是状态转换操作
 
 ### 事件序列的不可变性
@@ -375,11 +375,11 @@ func (es *PostgresEventStore) SaveEvents(aggregateID string, events []Event, exp
     stmt, err := tx.Prepare(`
         INSERT INTO events (id, aggregate_id, event_type, event_data, version, timestamp)
         VALUES (```latex
-$1, $
+1,
 ```2, ```latex
-$3, $
+3,
 ```4, ```latex
-$5, $
+5,
 ```6)
     `)
     if err != nil {

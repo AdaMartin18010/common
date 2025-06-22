@@ -42,67 +42,67 @@
 ### 类型定义
 
 **定义 1 (类型)**: 类型 ```latex
-$T$
+T
 ``` 是值的集合，定义了值的结构和操作。
 
 **定义 2 (类型环境)**: 类型环境 ```latex
-$\Gamma$
+\Gamma
 ``` 是从变量到类型的映射：
 $```latex
-$\Gamma: \text{Var} \rightarrow \text{Type}$
+\Gamma: \text{Var} \rightarrow \text{Type}
 ```$
 
 **定义 3 (类型判断)**: 类型判断 ```latex
-$\Gamma \vdash e: T$
+\Gamma \vdash e: T
 ``` 表示在环境 ```latex
-$\Gamma$
+\Gamma
 ``` 下，表达式 ```latex
-$e$
+e
 ``` 具有类型 ```latex
-$T$
+T
 ```。
 
 **定义 4 (类型上下文)**: 类型上下文包含类型变量和约束：
 $```latex
-$\Delta = \{\alpha_1, \alpha_2, \ldots, \alpha_n\}$
+\Delta = \{\alpha_1, \alpha_2, \ldots, \alpha_n\}
 ```$
 
 ### 类型关系
 
 **定义 5 (子类型关系)**: 类型 ```latex
-$S$
+S
 ``` 是类型 ```latex
-$T$
+T
 ``` 的子类型，记为 ```latex
-$S \leq T$
+S \leq T
 ```，如果 ```latex
-$S$
+S
 ``` 的值可以安全地用在期望 ```latex
-$T$
+T
 ``` 的地方。
 
 **定义 6 (类型等价)**: 类型 ```latex
-$S$
+S
 ``` 和 ```latex
-$T$
+T
 ``` 等价，记为 ```latex
-$S \equiv T$
+S \equiv T
 ```，如果 ```latex
-$S \leq T$
+S \leq T
 ``` 且 ```latex
-$T \leq S$
+T \leq S
 ```。
 
 **定义 7 (类型包含)**: 类型 ```latex
-$S$
+S
 ``` 包含类型 ```latex
-$T$
+T
 ```，记为 ```latex
-$S \supseteq T$
+S \supseteq T
 ```，如果 ```latex
-$T$
+T
 ``` 的所有值都是 ```latex
-$S$
+S
 ``` 的值。
 
 ### 类型安全
@@ -118,92 +118,92 @@ $S$
 ### 类型系统公理
 
 **公理 1 (变量规则)**: 如果 ```latex
-$x: T \in \Gamma$
+x: T \in \Gamma
 ```，则 ```latex
-$\Gamma \vdash x: T$
+\Gamma \vdash x: T
 ```
 
 **公理 2 (函数应用)**: 如果 ```latex
-$\Gamma \vdash f: T_1 \rightarrow T_2$
+\Gamma \vdash f: T_1 \rightarrow T_2
 ``` 且 ```latex
-$\Gamma \vdash x: T_1$
+\Gamma \vdash x: T_1
 ```，则 ```latex
-$\Gamma \vdash f(x): T_2$
+\Gamma \vdash f(x): T_2
 ```
 
 **公理 3 (函数抽象)**: 如果 ```latex
-$\Gamma, x: T_1 \vdash e: T_2$
+\Gamma, x: T_1 \vdash e: T_2
 ```，则 ```latex
-$\Gamma \vdash \lambda x: T_1.e: T_1 \rightarrow T_2$
+\Gamma \vdash \lambda x: T_1.e: T_1 \rightarrow T_2
 ```
 
 **公理 4 (子类型)**: 如果 ```latex
-$\Gamma \vdash e: S$
+\Gamma \vdash e: S
 ``` 且 ```latex
-$S \leq T$
+S \leq T
 ```，则 ```latex
-$\Gamma \vdash e: T$
+\Gamma \vdash e: T
 ```
 
 ### 类型推导规则
 
 **规则 1 (类型推导)**: 类型推导算法 ```latex
-$\mathcal{W}$
+\mathcal{W}
 ``` 计算表达式 ```latex
-$e$
+e
 ``` 的类型：
 $```latex
-$\mathcal{W}(\Gamma, e) = (S, \theta)$
+\mathcal{W}(\Gamma, e) = (S, \theta)
 ```$
 其中 ```latex
-$S$
+S
 ``` 是类型，```latex
-$\theta$
+\theta
 ``` 是替换。
 
 **规则 2 (统一)**: 类型统一算法 ```latex
-$\mathcal{U}$
+\mathcal{U}
 ``` 求解类型方程：
 $```latex
-$\mathcal{U}(T_1, T_2) = \theta$
+\mathcal{U}(T_1, T_2) = \theta
 ```$
 其中 ```latex
-$\theta$
+\theta
 ``` 是最一般统一子。
 
 **规则 3 (泛化)**: 泛化算法 ```latex
-$\mathcal{G}$
+\mathcal{G}
 ``` 计算多态类型：
 $```latex
-$\mathcal{G}(\Gamma, T) = \forall \alpha_1, \alpha_2, \ldots, \alpha_n.T$
+\mathcal{G}(\Gamma, T) = \forall \alpha_1, \alpha_2, \ldots, \alpha_n.T
 ```$
 
 ### 类型等价性
 
 **定理 1 (类型等价的自反性)**: ```latex
-$\forall T: T \equiv T$
+\forall T: T \equiv T
 ```
 
 **定理 2 (类型等价的对称性)**: 如果 ```latex
-$S \equiv T$
+S \equiv T
 ```，则 ```latex
-$T \equiv S$
+T \equiv S
 ```
 
 **定理 3 (类型等价的传递性)**: 如果 ```latex
-$S \equiv T$
+S \equiv T
 ``` 且 ```latex
-$T \equiv U$
+T \equiv U
 ```，则 ```latex
-$S \equiv U$
+S \equiv U
 ```
 
 **定理 4 (函数类型等价)**: ```latex
-$(S_1 \rightarrow T_1) \equiv (S_2 \rightarrow T_2)$
+(S_1 \rightarrow T_1) \equiv (S_2 \rightarrow T_2)
 ``` 当且仅当 ```latex
-$S_1 \equiv S_2$
+S_1 \equiv S_2
 ``` 且 ```latex
-$T_1 \equiv T_2$
+T_1 \equiv T_2
 ```
 
 ## Go语言类型系统
@@ -1025,29 +1025,29 @@ func (cs *ConstraintSolver) combineSubstitutions(sub1, sub2 *TypeSubstitution) *
 ### 进展定理
 
 **定理 5 (进展定理)**: 如果 ```latex
-$\Gamma \vdash e: T$
+\Gamma \vdash e: T
 ``` 且 ```latex
-$e$
+e
 ``` 是封闭的，则要么 ```latex
-$e$
+e
 ``` 是值，要么存在 ```latex
-$e'$
+e'
 ``` 使得 ```latex
-$e \rightarrow e'$
+e \rightarrow e'
 ```。
 
 **证明**: 通过对表达式 ```latex
-$e$
+e
 ``` 的结构进行归纳。
 
 ### 保持定理
 
 **定理 6 (保持定理)**: 如果 ```latex
-$\Gamma \vdash e: T$
+\Gamma \vdash e: T
 ``` 且 ```latex
-$e \rightarrow e'$
+e \rightarrow e'
 ```，则 ```latex
-$\Gamma \vdash e': T$
+\Gamma \vdash e': T
 ```。
 
 **证明**: 通过对归约规则进行案例分析。
@@ -1055,11 +1055,11 @@ $\Gamma \vdash e': T$
 ### 类型健全性
 
 **定理 7 (类型健全性)**: 如果 ```latex
-$\Gamma \vdash e: T$
+\Gamma \vdash e: T
 ``` 且 ```latex
-$e$
+e
 ``` 是封闭的，则 ```latex
-$e$
+e
 ``` 不会产生类型错误。
 
 **证明**: 结合进展定理和保持定理。

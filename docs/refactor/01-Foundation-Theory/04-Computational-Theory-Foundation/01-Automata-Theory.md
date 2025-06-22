@@ -36,23 +36,23 @@
 有限状态自动机是计算理论的基础模型，用于描述具有有限内存的计算过程。
 
 **定义 1.1**: 确定性有限自动机 (DFA) 是一个五元组 ```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$Q$
+Q
 ``` 是有限状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是有限输入字母表
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ``` 是转移函数
 - ```latex
-$q_0 \in Q$
+q_0 \in Q
 ``` 是初始状态
 - ```latex
-$F \subseteq Q$
+F \subseteq Q
 ``` 是接受状态集合
 
 ### 1.2 下推自动机
@@ -60,29 +60,29 @@ $F \subseteq Q$
 下推自动机扩展了有限自动机，增加了栈作为辅助存储。
 
 **定义 1.2**: 下推自动机 (PDA) 是一个七元组 ```latex
-$M = (Q, \Sigma, \Gamma, \delta, q_0, Z_0, F)$
+M = (Q, \Sigma, \Gamma, \delta, q_0, Z_0, F)
 ```，其中：
 
 - ```latex
-$Q$
+Q
 ``` 是有限状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是输入字母表
 - ```latex
-$\Gamma$
+\Gamma
 ``` 是栈字母表
 - ```latex
-$\delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \rightarrow 2^{Q \times \Gamma^*}$
+\delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \rightarrow 2^{Q \times \Gamma^*}
 ``` 是转移函数
 - ```latex
-$q_0 \in Q$
+q_0 \in Q
 ``` 是初始状态
 - ```latex
-$Z_0 \in \Gamma$
+Z_0 \in \Gamma
 ``` 是初始栈符号
 - ```latex
-$F \subseteq Q$
+F \subseteq Q
 ``` 是接受状态集合
 
 ### 1.3 图灵机
@@ -90,31 +90,31 @@ $F \subseteq Q$
 图灵机是最通用的计算模型，能够模拟任何可计算函数。
 
 **定义 1.3**: 图灵机是一个七元组 ```latex
-$M = (Q, \Sigma, \Gamma, \delta, q_0, B, F)$
+M = (Q, \Sigma, \Gamma, \delta, q_0, B, F)
 ```，其中：
 
 - ```latex
-$Q$
+Q
 ``` 是有限状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是输入字母表
 - ```latex
-$\Gamma$
+\Gamma
 ``` 是磁带字母表，```latex
-$\Sigma \subseteq \Gamma$
+\Sigma \subseteq \Gamma
 ```
 - ```latex
-$\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{L, R\}$
+\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{L, R\}
 ``` 是转移函数
 - ```latex
-$q_0 \in Q$
+q_0 \in Q
 ``` 是初始状态
 - ```latex
-$B \in \Gamma \setminus \Sigma$
+B \in \Gamma \setminus \Sigma
 ``` 是空白符号
 - ```latex
-$F \subseteq Q$
+F \subseteq Q
 ``` 是接受状态集合
 
 ## 2. 形式化定义
@@ -122,74 +122,70 @@ $F \subseteq Q$
 ### 2.1 DFA定义
 
 **定义 2.1**: DFA的扩展转移函数 ```latex
-$\hat{\delta}: Q \times \Sigma^* \rightarrow Q$
+\hat{\delta}: Q \times \Sigma^* \rightarrow Q
 ``` 定义为：
 
-```latex
-$$
+$
 \begin{align}
 \hat{\delta}(q, \epsilon) &= q \\
 \hat{\delta}(q, wa) &= \delta(\hat{\delta}(q, w), a)
 \end{align}
-$$
-```
+$
 
 其中 ```latex
-$w \in \Sigma^*$
+w \in \Sigma^*
 ```, ```latex
-$a \in \Sigma$
+a \in \Sigma
 ```。
 
 **定义 2.2**: DFA接受的语言 ```latex
-$L(M) = \{w \in \Sigma^* \mid \hat{\delta}(q_0, w) \in F\}$
+L(M) = \{w \in \Sigma^* \mid \hat{\delta}(q_0, w) \in F\}
 ```。
 
 ### 2.2 NFA定义
 
 **定义 2.3**: 非确定性有限自动机 (NFA) 是一个五元组 ```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$\delta: Q \times (\Sigma \cup \{\epsilon\}) \rightarrow 2^Q$
+\delta: Q \times (\Sigma \cup \{\epsilon\}) \rightarrow 2^Q
 ``` 是转移函数
 
 **定义 2.4**: NFA的扩展转移函数 ```latex
-$\hat{\delta}: 2^Q \times \Sigma^* \rightarrow 2^Q$
+\hat{\delta}: 2^Q \times \Sigma^* \rightarrow 2^Q
 ``` 定义为：
 
-```latex
-$$
+$
 \begin{align}
 \hat{\delta}(S, \epsilon) &= S \\
 \hat{\delta}(S, wa) &= \bigcup_{q \in \hat{\delta}(S, w)} \delta(q, a)
 \end{align}
-$$
-```
+$
 
 ### 2.3 PDA定义
 
 **定义 2.5**: PDA的配置是一个三元组 ```latex
-$(q, w, \gamma)$
+(q, w, \gamma)
 ```，其中：
 
 - ```latex
-$q \in Q$
+q \in Q
 ``` 是当前状态
 - ```latex
-$w \in \Sigma^*$
+w \in \Sigma^*
 ``` 是剩余输入
 - ```latex
-$\gamma \in \Gamma^*$
+\gamma \in \Gamma^*
 ``` 是栈内容
 
 **定义 2.6**: PDA的转移关系 ```latex
-$\vdash$
+\vdash
 ``` 定义为：
 ```latex
-$(q, aw, Z\gamma) \vdash (p, w, \beta\gamma)$
+(q, aw, Z\gamma) \vdash (p, w, \beta\gamma)
 ``` 当且仅当 ```latex
-$(p, \beta) \in \delta(q, a, Z)$
+(p, \beta) \in \delta(q, a, Z)
 ```。
 
 ## 3. Go语言实现
@@ -1061,55 +1057,55 @@ func (pv *ProtocolVerifier) GenerateTestCases() []string {
 ### 5.1 等价性定理
 
 **定理 5.1** (NFA与DFA等价性): 对任意NFA ```latex
-$M$
+M
 ```，存在等价的DFA ```latex
-$M'$
+M'
 ```，使得 ```latex
-$L(M) = L(M')$
+L(M) = L(M')
 ```。
 
 **证明**:
 1. 构造DFA ```latex
-$M'$
+M'
 ```，其状态是NFA ```latex
-$M$
+M
 ``` 的状态集合的幂集
 2. 初始状态是NFA初始状态的ε闭包
 3. 转移函数定义为：```latex
-$\delta'(S, a) = \bigcup_{q \in S} \delta(q, a)$
+\delta'(S, a) = \bigcup_{q \in S} \delta(q, a)
 ``` 的ε闭包
 4. 接受状态是包含NFA接受状态的状态集合
 5. 证明 ```latex
-$L(M) = L(M')$
+L(M) = L(M')
 ```
 
 **定理 5.2** (PDA与上下文无关文法等价性): 对任意PDA ```latex
-$M$
+M
 ```，存在等价的上下文无关文法 ```latex
-$G$
+G
 ```，使得 ```latex
-$L(M) = L(G)$
+L(M) = L(G)
 ```。
 
 **证明**:
 1. 构造文法 ```latex
-$G$
+G
 ```，其变元表示PDA的配置
 2. 产生式对应PDA的转移
 3. 证明 ```latex
-$L(M) = L(G)$
+L(M) = L(G)
 ```
 
 ### 5.2 最小化算法
 
 **定理 5.3** (DFA最小化): 对任意DFA ```latex
-$M$
+M
 ```，存在唯一的最小DFA ```latex
-$M'$
+M'
 ```，使得 ```latex
-$L(M) = L(M')$
+L(M) = L(M')
 ``` 且 ```latex
-$M'$
+M'
 ``` 的状态数最少。
 
 **证明**:
@@ -1122,10 +1118,10 @@ $M'$
 
 **定理 5.4**:
 - DFA最小化的时间复杂度为 ```latex
-$O(n \log n)$
+O(n \log n)
 ```
 - NFA到DFA转换的最坏情况时间复杂度为 ```latex
-$O(2^n)$
+O(2^n)
 ```
 - PDA接受性问题是可判定的
 

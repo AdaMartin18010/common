@@ -35,28 +35,28 @@
 **形式化表达**:
 
 - 谓词符号：```latex
-$P, Q, R, \ldots$
+P, Q, R, \ldots
 ```
 - 个体常元：```latex
-$a, b, c, \ldots$
+a, b, c, \ldots
 ```
 - 个体变元：```latex
-$x, y, z, \ldots$
+x, y, z, \ldots
 ```
 - 函数符号：```latex
-$f, g, h, \ldots$
+f, g, h, \ldots
 ```
 
 **示例**:
 
 - ```latex
-$P(x)$
+P(x)
 ```: "x是学生"
 - ```latex
-$Q(x, y)$
+Q(x, y)
 ```: "x喜欢y"
 - ```latex
-$R(x, y, z)$
+R(x, y, z)
 ```: "x在y和z之间"
 
 ### 1.2 量词
@@ -64,22 +64,22 @@ $R(x, y, z)$
 **定义 1.2**: 量词用于表示"所有"和"存在"的概念。
 
 1. **全称量词** (```latex
-$\forall$
+\forall
 ```): "对所有x"
 2. **存在量词** (```latex
-$\exists$
+\exists
 ```): "存在x使得"
 
 **示例**:
 
 - ```latex
-$\forall x P(x)$
+\forall x P(x)
 ```: "对所有x，x是学生"
 - ```latex
-$\exists x Q(x, y)$
+\exists x Q(x, y)
 ```: "存在x使得x喜欢y"
 - ```latex
-$\forall x \exists y R(x, y)$
+\forall x \exists y R(x, y)
 ```: "对所有x，存在y使得R(x,y)"
 
 ### 1.3 项和公式
@@ -88,54 +88,54 @@ $\forall x \exists y R(x, y)$
 
 1. **基础**: 个体常元和个体变元是项
 2. **归纳**: 如果 ```latex
-$t_1, t_2, \ldots, t_n$
+t_1, t_2, \ldots, t_n
 ``` 是项，```latex
-$f$
+f
 ``` 是n元函数符号，则 ```latex
-$f(t_1, t_2, \ldots, t_n)$
+f(t_1, t_2, \ldots, t_n)
 ``` 是项
 3. **闭包**: 只有通过有限次应用上述规则得到的才是项
 
 **定义 1.4**: 原子公式
 
 如果 ```latex
-$P$
+P
 ``` 是n元谓词符号，```latex
-$t_1, t_2, \ldots, t_n$
+t_1, t_2, \ldots, t_n
 ``` 是项，则 ```latex
-$P(t_1, t_2, \ldots, t_n)$
+P(t_1, t_2, \ldots, t_n)
 ``` 是原子公式。
 
 **定义 1.5**: 公式的递归定义
 
 1. **基础**: 原子公式是公式
 2. **归纳**: 如果 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 是公式，```latex
-$x$
+x
 ``` 是变元，则：
    - ```latex
-$\neg \phi$
+\neg \phi
 ``` 是公式
    - ```latex
-$(\phi \land \psi)$
+(\phi \land \psi)
 ``` 是公式
    - ```latex
-$(\phi \lor \psi)$
+(\phi \lor \psi)
 ``` 是公式
    - ```latex
-$(\phi \rightarrow \psi)$
+(\phi \rightarrow \psi)
 ``` 是公式
    - ```latex
-$(\phi \leftrightarrow \psi)$
+(\phi \leftrightarrow \psi)
 ``` 是公式
    - ```latex
-$\forall x \phi$
+\forall x \phi
 ``` 是公式
    - ```latex
-$\exists x \phi$
+\exists x \phi
 ``` 是公式
 3. **闭包**: 只有通过有限次应用上述规则得到的才是公式
 
@@ -144,53 +144,53 @@ $\exists x \phi$
 ### 2.1 一阶逻辑语言
 
 **定义 2.1**: 一阶逻辑语言 ```latex
-$\mathcal{L}$
+\mathcal{L}
 ``` 由以下部分组成：
 
 1. **逻辑符号**:
    - 连接词：```latex
-$\neg, \land, \lor, \rightarrow, \leftrightarrow$
+\neg, \land, \lor, \rightarrow, \leftrightarrow
 ```
    - 量词：```latex
-$\forall, \exists$
+\forall, \exists
 ```
    - 等号：```latex
-$=$
+=
 ```
    - 变元：```latex
-$x, y, z, \ldots$
+x, y, z, \ldots
 ```
 
 2. **非逻辑符号**:
    - 谓词符号：```latex
-$P, Q, R, \ldots$
+P, Q, R, \ldots
 ```
    - 函数符号：```latex
-$f, g, h, \ldots$
+f, g, h, \ldots
 ```
    - 常元符号：```latex
-$a, b, c, \ldots$
+a, b, c, \ldots
 ```
 
 **定义 2.2**: 自由变元和约束变元
 
 - 变元 ```latex
-$x$
+x
 ``` 在公式 ```latex
-$\phi$
+\phi
 ``` 中是**自由的**，如果它不在任何量词 ```latex
-$\forall x$
+\forall x
 ``` 或 ```latex
-$\exists x$
+\exists x
 ``` 的范围内
 - 变元 ```latex
-$x$
+x
 ``` 在公式 ```latex
-$\phi$
+\phi
 ``` 中是**约束的**，如果它在某个量词 ```latex
-$\forall x$
+\forall x
 ``` 或 ```latex
-$\exists x$
+\exists x
 ``` 的范围内
 
 **定义 2.3**: 句子
@@ -202,94 +202,94 @@ $\exists x$
 **定义 2.4**: 结构
 
 对于语言 ```latex
-$\mathcal{L}$
+\mathcal{L}
 ```，一个**结构** ```latex
-$\mathcal{A} = (A, I)$
+\mathcal{A} = (A, I)
 ``` 由以下部分组成：
 
 1. **论域** ```latex
-$A$
+A
 ```: 非空集合
 2. **解释函数** ```latex
-$I$
+I
 ```: 为非逻辑符号分配语义
 
 **定义 2.5**: 赋值
 
 **赋值** ```latex
-$s: \text{Var} \rightarrow A$
+s: \text{Var} \rightarrow A
 ``` 为每个变元分配论域中的元素。
 
 **定义 2.6**: 项的解释
 
 项 ```latex
-$t$
+t
 ``` 在结构 ```latex
-$\mathcal{A}$
+\mathcal{A}
 ``` 和赋值 ```latex
-$s$
+s
 ``` 下的解释 ```latex
-$\llbracket t \rrbracket_{\mathcal{A}, s}$
+\llbracket t \rrbracket_{\mathcal{A}, s}
 ```：
 
 1. 如果 ```latex
-$t = x$
+t = x
 ``` 是变元，则 ```latex
-$\llbracket t \rrbracket_{\mathcal{A}, s} = s(x)$
+\llbracket t \rrbracket_{\mathcal{A}, s} = s(x)
 ```
 2. 如果 ```latex
-$t = c$
+t = c
 ``` 是常元，则 ```latex
-$\llbracket t \rrbracket_{\mathcal{A}, s} = I(c)$
+\llbracket t \rrbracket_{\mathcal{A}, s} = I(c)
 ```
 3. 如果 ```latex
-$t = f(t_1, \ldots, t_n)$
+t = f(t_1, \ldots, t_n)
 ```，则 ```latex
-$\llbracket t \rrbracket_{\mathcal{A}, s} = I(f)(\llbracket t_1 \rrbracket_{\mathcal{A}, s}, \ldots, \llbracket t_n \rrbracket_{\mathcal{A}, s})$
+\llbracket t \rrbracket_{\mathcal{A}, s} = I(f)(\llbracket t_1 \rrbracket_{\mathcal{A}, s}, \ldots, \llbracket t_n \rrbracket_{\mathcal{A}, s})
 ```
 
 **定义 2.7**: 公式的语义
 
 公式 ```latex
-$\phi$
+\phi
 ``` 在结构 ```latex
-$\mathcal{A}$
+\mathcal{A}
 ``` 和赋值 ```latex
-$s$
+s
 ``` 下的真值 ```latex
-$\llbracket \phi \rrbracket_{\mathcal{A}, s}$
+\llbracket \phi \rrbracket_{\mathcal{A}, s}
 ```：
 
 1. **原子公式**: ```latex
-$\llbracket P(t_1, \ldots, t_n) \rrbracket_{\mathcal{A}, s} = \text{true}$
+\llbracket P(t_1, \ldots, t_n) \rrbracket_{\mathcal{A}, s} = \text{true}
 ``` 当且仅当 ```latex
-$(\llbracket t_1 \rrbracket_{\mathcal{A}, s}, \ldots, \llbracket t_n \rrbracket_{\mathcal{A}, s}) \in I(P)$
+(\llbracket t_1 \rrbracket_{\mathcal{A}, s}, \ldots, \llbracket t_n \rrbracket_{\mathcal{A}, s}) \in I(P)
 ```
 
 2. **连接词**: 与命题逻辑相同
 
 3. **量词**:
    - ```latex
-$\llbracket \forall x \phi \rrbracket_{\mathcal{A}, s} = \text{true}$
+\llbracket \forall x \phi \rrbracket_{\mathcal{A}, s} = \text{true}
 ``` 当且仅当对所有 ```latex
-$a \in A$
+a \in A
 ```，```latex
-$\llbracket \phi \rrbracket_{\mathcal{A}, s[x \mapsto a]} = \text{true}$
+\llbracket \phi \rrbracket_{\mathcal{A}, s[x \mapsto a]} = \text{true}
 ```
    - ```latex
-$\llbracket \exists x \phi \rrbracket_{\mathcal{A}, s} = \text{true}$
+\llbracket \exists x \phi \rrbracket_{\mathcal{A}, s} = \text{true}
 ``` 当且仅当存在 ```latex
-$a \in A$
+a \in A
 ```，```latex
-$\llbracket \phi \rrbracket_{\mathcal{A}, s[x \mapsto a]} = \text{true}$
+\llbracket \phi \rrbracket_{\mathcal{A}, s[x \mapsto a]} = \text{true}
 ```
 
 其中 ```latex
-$s[x \mapsto a]$
+s[x \mapsto a]
 ``` 表示将变元 ```latex
-$x$
+x
 ``` 的值改为 ```latex
-$a$
+a
 ``` 的赋值。
 
 ### 2.3 逻辑等价
@@ -297,43 +297,43 @@ $a$
 **定义 2.8**: 逻辑等价
 
 两个公式 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 逻辑等价，记作 ```latex
-$\phi \equiv \psi$
+\phi \equiv \psi
 ```，当且仅当对于所有结构 ```latex
-$\mathcal{A}$
+\mathcal{A}
 ``` 和赋值 ```latex
-$s$
+s
 ```，```latex
-$\llbracket \phi \rrbracket_{\mathcal{A}, s} = \llbracket \psi \rrbracket_{\mathcal{A}, s}$
+\llbracket \phi \rrbracket_{\mathcal{A}, s} = \llbracket \psi \rrbracket_{\mathcal{A}, s}
 ```。
 
 **重要等价律**:
 
 1. **量词对偶性**:
    - ```latex
-$\neg \forall x \phi \equiv \exists x \neg \phi$
+\neg \forall x \phi \equiv \exists x \neg \phi
 ```
    - ```latex
-$\neg \exists x \phi \equiv \forall x \neg \phi$
+\neg \exists x \phi \equiv \forall x \neg \phi
 ```
 
 2. **量词分配律**:
    - ```latex
-$\forall x (\phi \land \psi) \equiv \forall x \phi \land \forall x \psi$
+\forall x (\phi \land \psi) \equiv \forall x \phi \land \forall x \psi
 ```
    - ```latex
-$\exists x (\phi \lor \psi) \equiv \exists x \phi \lor \exists x \psi$
+\exists x (\phi \lor \psi) \equiv \exists x \phi \lor \exists x \psi
 ```
 
 3. **变元重命名**: 如果 ```latex
-$y$
+y
 ``` 不在 ```latex
-$\phi$
+\phi
 ``` 中自由出现，则 ```latex
-$\forall x \phi \equiv \forall y \phi[x/y]$
+\forall x \phi \equiv \forall y \phi[x/y]
 ```
 
 ## 3. 推理系统
@@ -345,48 +345,48 @@ $\forall x \phi \equiv \forall y \phi[x/y]$
 **量词规则**:
 
 - **全称引入** (```latex
-$\forall$
+\forall
 ```-I): 如果从假设 ```latex
-$\phi$
+\phi
 ``` 可以推出 ```latex
-$\psi$
+\psi
 ```，且 ```latex
-$x$
+x
 ``` 不在 ```latex
-$\phi$
+\phi
 ``` 中自由出现，则可以从 ```latex
-$\phi$
+\phi
 ``` 推出 ```latex
-$\forall x \psi$
+\forall x \psi
 ```
 - **全称消除** (```latex
-$\forall$
+\forall
 ```-E): 从 ```latex
-$\forall x \phi$
+\forall x \phi
 ``` 可以推出 ```latex
-$\phi[t/x]$
+\phi[t/x]
 ```，其中 ```latex
-$t$
+t
 ``` 是项
 - **存在引入** (```latex
-$\exists$
+\exists
 ```-I): 从 ```latex
-$\phi[t/x]$
+\phi[t/x]
 ``` 可以推出 ```latex
-$\exists x \phi$
+\exists x \phi
 ```
 - **存在消除** (```latex
-$\exists$
+\exists
 ```-E): 从 ```latex
-$\exists x \phi$
+\exists x \phi
 ``` 和 ```latex
-$\phi \rightarrow \psi$
+\phi \rightarrow \psi
 ```（其中 ```latex
-$x$
+x
 ``` 不在 ```latex
-$\psi$
+\psi
 ``` 中自由出现）可以推出 ```latex
-$\psi$
+\psi
 ```
 
 ### 3.2 归结原理
@@ -394,15 +394,15 @@ $\psi$
 **定义 3.2**: 前束范式
 
 公式 ```latex
-$\phi$
+\phi
 ``` 是**前束范式**，如果它具有形式：
 $```latex
-$Q_1 x_1 Q_2 x_2 \ldots Q_n x_n \psi$
+Q_1 x_1 Q_2 x_2 \ldots Q_n x_n \psi
 ```$
 其中 ```latex
-$Q_i$
+Q_i
 ``` 是量词，```latex
-$\psi$
+\psi
 ``` 是不包含量词的公式。
 
 **定理 3.1**: 每个公式都等价于某个前束范式。
@@ -420,18 +420,18 @@ $\psi$
 对于量词公式：
 
 - **全称公式**: 将 ```latex
-$\forall x \phi$
+\forall x \phi
 ``` 分解为 ```latex
-$\phi[t/x]$
+\phi[t/x]
 ```，其中 ```latex
-$t$
+t
 ``` 是新的项
 - **存在公式**: 将 ```latex
-$\exists x \phi$
+\exists x \phi
 ``` 分解为 ```latex
-$\phi[c/x]$
+\phi[c/x]
 ```，其中 ```latex
-$c$
+c
 ``` 是新的常元
 
 ## 4. Go语言实现

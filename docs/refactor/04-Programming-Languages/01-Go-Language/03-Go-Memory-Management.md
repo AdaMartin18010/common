@@ -44,20 +44,20 @@ Main Memory (100-300 cycles) → Disk (millions of cycles)
 
 **形式化定义**：
 设 ```latex
-$M_i$
+M_i
 ``` 为第 ```latex
-$i$
+i
 ``` 层内存，```latex
-$t_i$
+t_i
 ``` 为访问时间，```latex
-$s_i$
+s_i
 ``` 为容量，则：
 
 $```latex
-$t_1 < t_2 < t_3 < t_4 < t_5$
+t_1 < t_2 < t_3 < t_4 < t_5
 ```$
 $```latex
-$s_1 < s_2 < s_3 < s_4 < s_5$
+s_1 < s_2 < s_3 < s_4 < s_5
 ```$
 
 **局部性原理**：
@@ -98,15 +98,15 @@ func (m *CacheFriendlyMatrix) GetColumnMajor(row, col int) float64 {
 
 **形式化定义**：
 设 ```latex
-$S$
+S
 ``` 为内存空间，```latex
-$R$
+R
 ``` 为请求序列，```latex
-$A$
+A
 ``` 为分配算法，则：
 
 $```latex
-$A: R \rightarrow S$
+A: R \rightarrow S
 ```$
 
 **主要分配策略**：
@@ -114,19 +114,19 @@ $A: R \rightarrow S$
 1. **首次适应算法 (First Fit)**
    - 从空闲链表头部开始查找第一个足够大的块
    - 时间复杂度：```latex
-$O(n)$
+O(n)
 ```
 
 2. **最佳适应算法 (Best Fit)**
    - 查找最小的足够大的空闲块
    - 时间复杂度：```latex
-$O(n)$
+O(n)
 ```
 
 3. **最坏适应算法 (Worst Fit)**
    - 查找最大的空闲块
    - 时间复杂度：```latex
-$O(n)$
+O(n)
 ```
 
 ```go
@@ -184,13 +184,13 @@ func (b *BestFitStrategy) Allocate(blocks []*MemoryBlock, size uintptr) *MemoryB
 
 **碎片化度量**：
 $```latex
-$Fragmentation = \frac{\sum_{i=1}^{n} (block_i - request_i)}{\sum_{i=1}^{n} block_i}$
+Fragmentation = \frac{\sum_{i=1}^{n} (block_i - request_i)}{\sum_{i=1}^{n} block_i}
 ```$
 
 其中 ```latex
-$block_i$
+block_i
 ``` 是分配块大小，```latex
-$request_i$
+request_i
 ``` 是请求大小。
 
 ```go
@@ -228,13 +228,13 @@ func (fa *FragmentationAnalyzer) CalculateFragmentation() float64 {
 
 **形式化定义**：
 设 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 为对象图，```latex
-$R \subseteq V$
+R \subseteq V
 ``` 为根对象集合，则可达对象集合为：
 
 $```latex
-$Reachable(R) = \{v \in V | \exists path \text{ from } r \in R \text{ to } v\}$
+Reachable(R) = \{v \in V | \exists path \text{ from } r \in R \text{ to } v\}
 ```$
 
 ```go

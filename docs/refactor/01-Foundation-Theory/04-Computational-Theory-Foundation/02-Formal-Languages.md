@@ -32,25 +32,25 @@
 
 **定义 1.1**: 字母表 (Alphabet)
 字母表 ```latex
-$\Sigma$
+\Sigma
 ``` 是一个有限的符号集合。
 
 **定义 1.2**: 字符串 (String)
 字母表 ```latex
-$\Sigma$
+\Sigma
 ``` 上的字符串是 ```latex
-$\Sigma$
+\Sigma
 ``` 中符号的有限序列。
 
 **定义 1.3**: 语言 (Language)
 字母表 ```latex
-$\Sigma$
+\Sigma
 ``` 上的语言是 ```latex
-$\Sigma^*$
+\Sigma^*
 ``` 的子集，其中 ```latex
-$\Sigma^*$
+\Sigma^*
 ``` 表示 ```latex
-$\Sigma$
+\Sigma
 ``` 上所有字符串的集合。
 
 ### 1.2 核心思想
@@ -63,42 +63,42 @@ $\Sigma$
 
 **定义 2.1**: 字符串操作
 设 ```latex
-$w = a_1a_2\ldots a_n$
+w = a_1a_2\ldots a_n
 ``` 和 ```latex
-$v = b_1b_2\ldots b_m$
+v = b_1b_2\ldots b_m
 ``` 是字符串：
 
 1. **连接**: ```latex
-$w \cdot v = a_1a_2\ldots a_nb_1b_2\ldots b_m$
+w \cdot v = a_1a_2\ldots a_nb_1b_2\ldots b_m
 ```
 2. **长度**: ```latex
-$|w| = n$
+|w| = n
 ```
 3. **空字符串**: ```latex
-$\varepsilon$
+\varepsilon
 ``` 是长度为0的字符串
 4. **幂**: ```latex
-$w^0 = \varepsilon$
+w^0 = \varepsilon
 ```, ```latex
-$w^{n+1} = w^n \cdot w$
+w^{n+1} = w^n \cdot w
 ```
 
 **定义 2.2**: 语言操作
 设 ```latex
-$L_1, L_2$
+L_1, L_2
 ``` 是语言：
 
 1. **并**: ```latex
-$L_1 \cup L_2 = \{w \mid w \in L_1 \text{ 或 } w \in L_2\}$
+L_1 \cup L_2 = \{w \mid w \in L_1 \text{ 或 } w \in L_2\}
 ```
 2. **交**: ```latex
-$L_1 \cap L_2 = \{w \mid w \in L_1 \text{ 且 } w \in L_2\}$
+L_1 \cap L_2 = \{w \mid w \in L_1 \text{ 且 } w \in L_2\}
 ```
 3. **连接**: ```latex
-$L_1 \cdot L_2 = \{w \cdot v \mid w \in L_1, v \in L_2\}$
+L_1 \cdot L_2 = \{w \cdot v \mid w \in L_1, v \in L_2\}
 ```
 4. **克林闭包**: ```latex
-$L^* = \bigcup_{i=0}^{\infty} L^i$
+L^* = \bigcup_{i=0}^{\infty} L^i
 ```
 
 **定义 2.3**: 乔姆斯基层次结构
@@ -174,57 +174,57 @@ type Production struct {
 
 **定理 3.1**: 泵引理 (Pumping Lemma)
 设 ```latex
-$L$
+L
 ``` 是正则语言，则存在常数 ```latex
-$n$
+n
 ```，使得对于任意 ```latex
-$w \in L$
+w \in L
 ``` 且 ```latex
-$|w| \geq n$
+|w| \geq n
 ```，存在分解 ```latex
-$w = xyz$
+w = xyz
 ```，满足：
 
 1. ```latex
-$|xy| \leq n$
+|xy| \leq n
 ```
 2. ```latex
-$|y| > 0$
+|y| > 0
 ```
 3. 对于所有 ```latex
-$i \geq 0$
+i \geq 0
 ```，```latex
-$xy^iz \in L$
+xy^iz \in L
 ```
 
 **定理 3.2**: 上下文无关语言的泵引理
 设 ```latex
-$L$
+L
 ``` 是上下文无关语言，则存在常数 ```latex
-$n$
+n
 ```，使得对于任意 ```latex
-$w \in L$
+w \in L
 ``` 且 ```latex
-$|w| \geq n$
+|w| \geq n
 ```，存在分解 ```latex
-$w = uvxyz$
+w = uvxyz
 ```，满足：
 
 1. ```latex
-$|vxy| \leq n$
+|vxy| \leq n
 ```
 2. ```latex
-$|vy| > 0$
+|vy| > 0
 ```
 3. 对于所有 ```latex
-$i \geq 0$
+i \geq 0
 ```，```latex
-$uv^ixy^iz \in L$
+uv^ixy^iz \in L
 ```
 
 **定理 3.3**: 语言类的包含关系
 $```latex
-$\text{Regular} \subset \text{Context-Free} \subset \text{Context-Sensitive} \subset \text{Recursively-Enumerable}$
+\text{Regular} \subset \text{Context-Free} \subset \text{Context-Sensitive} \subset \text{Recursively-Enumerable}
 ```$
 
 ### 3.2 证明过程
@@ -232,76 +232,76 @@ $\text{Regular} \subset \text{Context-Free} \subset \text{Context-Sensitive} \su
 **证明定理 3.1**: 泵引理
 
 设 ```latex
-$L$
+L
 ``` 是正则语言，```latex
-$M$
+M
 ``` 是接受 ```latex
-$L$
+L
 ``` 的DFA，有 ```latex
-$n$
+n
 ``` 个状态。
 
 对于任意 ```latex
-$w \in L$
+w \in L
 ``` 且 ```latex
-$|w| \geq n$
+|w| \geq n
 ```，考虑 ```latex
-$M$
+M
 ``` 在输入 ```latex
-$w$
+w
 ``` 上的计算路径：
 $```latex
-$q_0 \xrightarrow{a_1} q_1 \xrightarrow{a_2} q_2 \ldots \xrightarrow{a_n} q_n$
+q_0 \xrightarrow{a_1} q_1 \xrightarrow{a_2} q_2 \ldots \xrightarrow{a_n} q_n
 ```$
 
 由于 ```latex
-$M$
+M
 ``` 只有 ```latex
-$n$
+n
 ``` 个状态，根据鸽巢原理，在路径 ```latex
-$q_0, q_1, \ldots, q_n$
+q_0, q_1, \ldots, q_n
 ``` 中至少有两个状态相同，设为 ```latex
-$q_i = q_j$
+q_i = q_j
 ```，其中 ```latex
-$i < j \leq n$
+i < j \leq n
 ```。
 
 设 ```latex
-$x = a_1\ldots a_i$
+x = a_1\ldots a_i
 ```，```latex
-$y = a_{i+1}\ldots a_j$
+y = a_{i+1}\ldots a_j
 ```，```latex
-$z = a_{j+1}\ldots a_m$
+z = a_{j+1}\ldots a_m
 ```。
 
 则 ```latex
-$w = xyz$
+w = xyz
 ```，且：
 
 1. ```latex
-$|xy| = j \leq n$
+|xy| = j \leq n
 ```
 2. ```latex
-$|y| = j - i > 0$
+|y| = j - i > 0
 ```
 3. 对于任意 ```latex
-$k \geq 0$
+k \geq 0
 ```，```latex
-$xy^kz \in L$
+xy^kz \in L
 ```
 
 **证明定理 3.2**: 上下文无关语言的泵引理
 
 设 ```latex
-$L$
+L
 ``` 是上下文无关语言，```latex
-$G$
+G
 ``` 是生成 ```latex
-$L$
+L
 ``` 的乔姆斯基范式文法。
 
 对于足够长的字符串，推导树中必然存在一条路径，其中某个变量 ```latex
-$A$
+A
 ``` 出现两次。利用这个重复可以构造泵引理。
 
 ## 4. Go语言实现
@@ -937,32 +937,32 @@ func RegexMatchingExample() {
 ### 6.1 时间复杂度
 
 - **字符串查找**: ```latex
-$O(1)$
+O(1)
 ``` (哈希表)
 - **DFA接受**: ```latex
-$O(n)$
+O(n)
 ``` 其中 ```latex
-$n$
+n
 ``` 是字符串长度
 - **语言操作**: ```latex
-$O(|L_1| \times |L_2|)$
+O(|L_1| \times |L_2|)
 ``` (连接)
 - **空性检查**: ```latex
-$O(|Q| + |E|)$
+O(|Q| + |E|)
 ``` (图遍历)
 
 ### 6.2 空间复杂度
 
 - **有限语言**: ```latex
-$O(\sum_{w \in L} |w|)$
+O(\sum_{w \in L} |w|)
 ```
 - **DFA**: ```latex
-$O(|Q| \times |\Sigma|)$
+O(|Q| \times |\Sigma|)
 ```
 - **字符串**: ```latex
-$O(n)$
+O(n)
 ``` 其中 ```latex
-$n$
+n
 ``` 是字符串长度
 
 ### 6.3 基准测试

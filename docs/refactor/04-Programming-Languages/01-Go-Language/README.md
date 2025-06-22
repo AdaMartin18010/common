@@ -10,20 +10,20 @@ Go语言是一种静态类型、编译型编程语言，具有简洁的语法、
 
 **定义 1.1.1 (Go程序)**
 Go程序是一个四元组 ```latex
-$GP = (P, I, F, M)$
+GP = (P, I, F, M)
 ```，其中：
 
 - ```latex
-$P = \{p_1, p_2, \ldots, p_n\}$
+P = \{p_1, p_2, \ldots, p_n\}
 ``` 是包集合
 - ```latex
-$I: P \to \mathcal{P}(I)$
+I: P \to \mathcal{P}(I)
 ``` 是包到导入的映射
 - ```latex
-$F: P \to \mathcal{P}(F)$
+F: P \to \mathcal{P}(F)
 ``` 是包到函数的映射
 - ```latex
-$M: P \to \mathcal{P}(M)$
+M: P \to \mathcal{P}(M)
 ``` 是包到方法的映射
 
 **定义 1.1.2 (Go语法)**
@@ -42,19 +42,19 @@ Declaration ::= ConstDecl | TypeDecl | VarDecl
 **定义 1.2.1 (标识符)**
 标识符的语法规则：
 $```latex
-$\text{Identifier} ::= \text{Letter} (\text{Letter} \mid \text{Digit})^*$
+\text{Identifier} ::= \text{Letter} (\text{Letter} \mid \text{Digit})^*
 ```$
 
 **定义 1.2.2 (类型声明)**
 类型声明的语法规则：
 $```latex
-$\text{TypeDecl} ::= "type" \text{TypeSpec} \mid "type" "(" \text{TypeSpec}^* ")"$
+\text{TypeDecl} ::= "type" \text{TypeSpec} \mid "type" "(" \text{TypeSpec}^* ")"
 ```$
 
 **定义 1.2.3 (函数声明)**
 函数声明的语法规则：
 $```latex
-$\text{FunctionDecl} ::= "func" \text{FunctionName} \text{Signature} \text{FunctionBody}$
+\text{FunctionDecl} ::= "func" \text{FunctionName} \text{Signature} \text{FunctionBody}
 ```$
 
 ### 1.3 Go语言实现
@@ -499,46 +499,46 @@ func (gsv *GoSyntaxValidator) isValidImportPath(path string) bool {
 
 **定义 2.1.1 (Go类型系统)**
 Go类型系统是一个五元组 ```latex
-$GTS = (T, \leq, \circ, I, R)$
+GTS = (T, \leq, \circ, I, R)
 ```，其中：
 
 - ```latex
-$T$
+T
 ``` 是类型集合
 - ```latex
-$\leq \subseteq T \times T$
+\leq \subseteq T \times T
 ``` 是子类型关系
 - ```latex
-$\circ: T \times T \to T$
+\circ: T \times T \to T
 ``` 是类型组合操作
 - ```latex
-$I: T \to \mathcal{P}(M)$
+I: T \to \mathcal{P}(M)
 ``` 是类型到方法的映射
 - ```latex
-$R: T \to \mathcal{P}(T)$
+R: T \to \mathcal{P}(T)
 ``` 是类型到接口的映射
 
 **定义 2.1.2 (类型约束)**
 Go类型系统必须满足以下约束：
 
 1. **自反性**: ```latex
-$\forall t \in T: t \leq t$
+\forall t \in T: t \leq t
 ```
 2. **传递性**: ```latex
-$\forall t_1, t_2, t_3 \in T: t_1 \leq t_2 \land t_2 \leq t_3 \implies t_1 \leq t_3$
+\forall t_1, t_2, t_3 \in T: t_1 \leq t_2 \land t_2 \leq t_3 \implies t_1 \leq t_3
 ```
 3. **反对称性**: ```latex
-$\forall t_1, t_2 \in T: t_1 \leq t_2 \land t_2 \leq t_1 \implies t_1 = t_2$
+\forall t_1, t_2 \in T: t_1 \leq t_2 \land t_2 \leq t_1 \implies t_1 = t_2
 ```
 4. **接口实现**: ```latex
-$\forall t \in T: \forall i \in R(t): I(t) \supseteq I(i)$
+\forall t \in T: \forall i \in R(t): I(t) \supseteq I(i)
 ```
 
 ### 2.2 类型系统定理
 
 **定理 2.2.1 (类型系统的偏序性)**
 Go类型系统的子类型关系 ```latex
-$\leq$
+\leq
 ``` 构成偏序关系。
 
 **证明**：
@@ -549,24 +549,24 @@ $\leq$
 
 **定理 2.2.2 (接口实现的正确性)**
 如果类型 ```latex
-$t$
+t
 ``` 实现接口 ```latex
-$i$
+i
 ```，则 ```latex
-$t$
+t
 ``` 提供 ```latex
-$i$
+i
 ``` 的所有方法。
 
 **证明**：
 
 1. 由接口实现约束，```latex
-$I(t) \supseteq I(i)$
+I(t) \supseteq I(i)
 ```
 2. 因此 ```latex
-$t$
+t
 ``` 提供 ```latex
-$i$
+i
 ``` 的所有方法
 3. 使用结构归纳法证明实现的正确性
 
@@ -880,42 +880,42 @@ func (tc *TypeChecker) getNumericResultType(left, right Type) (Type, error) {
 
 **定义 3.1.1 (Go并发模型)**
 Go并发模型是一个六元组 ```latex
-$GCM = (G, C, M, S, R, L)$
+GCM = (G, C, M, S, R, L)
 ```，其中：
 
 - ```latex
-$G = \{g_1, g_2, \ldots, g_n\}$
+G = \{g_1, g_2, \ldots, g_n\}
 ``` 是goroutine集合
 - ```latex
-$C = \{c_1, c_2, \ldots, c_m\}$
+C = \{c_1, c_2, \ldots, c_m\}
 ``` 是通道集合
 - ```latex
-$M: G \to \mathcal{P}(M)$
+M: G \to \mathcal{P}(M)
 ``` 是goroutine到方法的映射
 - ```latex
-$S: C \to \mathcal{P}(G)$
+S: C \to \mathcal{P}(G)
 ``` 是通道到发送者的映射
 - ```latex
-$R: C \to \mathcal{P}(G)$
+R: C \to \mathcal{P}(G)
 ``` 是通道到接收者的映射
 - ```latex
-$L: G \to \mathcal{P}(L)$
+L: G \to \mathcal{P}(L)
 ``` 是goroutine到锁的映射
 
 **定义 3.1.2 (并发约束)**
 Go并发模型必须满足以下约束：
 
 1. **goroutine独立性**: ```latex
-$\forall g_1, g_2 \in G: g_1 \neq g_2 \implies M(g_1) \cap M(g_2) = \emptyset$
+\forall g_1, g_2 \in G: g_1 \neq g_2 \implies M(g_1) \cap M(g_2) = \emptyset
 ```
 2. **通道通信**: ```latex
-$\forall c \in C: S(c) \cap R(c) \neq \emptyset \implies \text{通信发生}$
+\forall c \in C: S(c) \cap R(c) \neq \emptyset \implies \text{通信发生}
 ```
 3. **死锁避免**: ```latex
-$\forall g \in G: \exists \text{路径使得 } g \text{ 可以继续执行}$
+\forall g \in G: \exists \text{路径使得 } g \text{ 可以继续执行}
 ```
 4. **内存安全**: ```latex
-$\forall g_1, g_2 \in G: g_1 \neq g_2 \implies L(g_1) \cap L(g_2) = \emptyset$
+\forall g_1, g_2 \in G: g_1 \neq g_2 \implies L(g_1) \cap L(g_2) = \emptyset
 ```
 
 ### 3.2 并发模型定理

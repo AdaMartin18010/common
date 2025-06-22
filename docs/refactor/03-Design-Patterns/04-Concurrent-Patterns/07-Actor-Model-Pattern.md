@@ -9,29 +9,29 @@
 ### 1.2 形式化定义
 
 设 ```latex
-$A$
+A
 ``` 为Actor集合，```latex
-$M$
+M
 ``` 为消息集合，```latex
-$S$
+S
 ``` 为状态集合，```latex
-$B$
+B
 ``` 为邮箱集合，则Actor模型可形式化为：
 
 $```latex
-$\text{Actor} = (A, M, S, B, \text{send}, \text{receive}, \text{process})$
+\text{Actor} = (A, M, S, B, \text{send}, \text{receive}, \text{process})
 ```$
 
 其中：
 
 - ```latex
-$\text{send}: A \times A \times M \rightarrow \text{void}$
+\text{send}: A \times A \times M \rightarrow \text{void}
 ``` 为发送函数
 - ```latex
-$\text{receive}: A \times B \rightarrow M$
+\text{receive}: A \times B \rightarrow M
 ``` 为接收函数
 - ```latex
-$\text{process}: A \times M \times S \rightarrow S$
+\text{process}: A \times M \times S \rightarrow S
 ``` 为处理函数
 
 ### 1.3 数学性质

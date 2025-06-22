@@ -42,148 +42,148 @@
 **定义 1.2** (动作): 动作是过程可以执行的基本操作，包括：
 
 - 内部动作：```latex
-$\tau$
+\tau
 ```（不可观察）
 - 外部动作：```latex
-$a, b, c, \ldots$
+a, b, c, \ldots
 ```（可观察）
 - 通信动作：```latex
-$\overline{a}, \overline{b}, \overline{c}, \ldots$
+\overline{a}, \overline{b}, \overline{c}, \ldots
 ```（输出）
 
 **定义 1.3** (过程项): 过程项是描述过程的表达式，包括：
 
 - 空过程：```latex
-$\mathbf{0}$
+\mathbf{0}
 ```
 - 前缀：```latex
-$a.P$
+a.P
 ```
 - 选择：```latex
-$P + Q$
+P + Q
 ```
 - 并行：```latex
-$P \mid Q$
+P \mid Q
 ```
 - 限制：```latex
-$P \backslash L$
+P \backslash L
 ```
 - 重命名：```latex
-$P[f]$
+P[f]
 ```
 - 递归：```latex
-$\mu X.P$
+\mu X.P
 ```
 
 ### 1.2 语法和语义
 
 **定义 1.4** (语法): 过程代数的语法定义为：
 $```latex
-$P ::= \mathbf{0} \mid a.P \mid P + P \mid P \mid P \mid P \backslash L \mid P[f] \mid X \mid \mu X.P$
+P ::= \mathbf{0} \mid a.P \mid P + P \mid P \mid P \mid P \backslash L \mid P[f] \mid X \mid \mu X.P
 ```$
 
 其中：
 
 - ```latex
-$a \in Act$
+a \in Act
 ``` 是动作集合
 - ```latex
-$L \subseteq Act$
+L \subseteq Act
 ``` 是限制集合
 - ```latex
-$f: Act \rightarrow Act$
+f: Act \rightarrow Act
 ``` 是重命名函数
 - ```latex
-$X$
+X
 ``` 是过程变量
 
 **定义 1.5** (操作语义): 操作语义通过转移关系 ```latex
-$\rightarrow$
+\rightarrow
 ``` 定义：
 $```latex
-$\frac{}{a.P \xrightarrow{a} P} \quad \text{(前缀)}$
+\frac{}{a.P \xrightarrow{a} P} \quad \text{(前缀)}
 ```$
 
 $```latex
-$\frac{P \xrightarrow{a} P'}{P + Q \xrightarrow{a} P'} \quad \text{(选择1)}$
+\frac{P \xrightarrow{a} P'}{P + Q \xrightarrow{a} P'} \quad \text{(选择1)}
 ```$
 
 $```latex
-$\frac{Q \xrightarrow{a} Q'}{P + Q \xrightarrow{a} Q'} \quad \text{(选择2)}$
+\frac{Q \xrightarrow{a} Q'}{P + Q \xrightarrow{a} Q'} \quad \text{(选择2)}
 ```$
 
 $```latex
-$\frac{P \xrightarrow{a} P'}{P \mid Q \xrightarrow{a} P' \mid Q} \quad \text{(并行1)}$
+\frac{P \xrightarrow{a} P'}{P \mid Q \xrightarrow{a} P' \mid Q} \quad \text{(并行1)}
 ```$
 
 $```latex
-$\frac{Q \xrightarrow{a} Q'}{P \mid Q \xrightarrow{a} P \mid Q'} \quad \text{(并行2)}$
+\frac{Q \xrightarrow{a} Q'}{P \mid Q \xrightarrow{a} P \mid Q'} \quad \text{(并行2)}
 ```$
 
 $```latex
-$\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{\overline{a}} Q'}{P \mid Q \xrightarrow{\tau} P' \mid Q'} \quad \text{(通信)}$
+\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{\overline{a}} Q'}{P \mid Q \xrightarrow{\tau} P' \mid Q'} \quad \text{(通信)}
 ```$
 
 ### 1.3 等价关系
 
 **定义 1.6** (强双模拟): 关系 ```latex
-$R$
+R
 ``` 是强双模拟，如果对于任意 ```latex
-$(P, Q) \in R$
+(P, Q) \in R
 ```：
 
 1. 如果 ```latex
-$P \xrightarrow{a} P'$
+P \xrightarrow{a} P'
 ```，则存在 ```latex
-$Q'$
+Q'
 ``` 使得 ```latex
-$Q \xrightarrow{a} Q'$
+Q \xrightarrow{a} Q'
 ``` 且 ```latex
-$(P', Q') \in R$
+(P', Q') \in R
 ```
 2. 如果 ```latex
-$Q \xrightarrow{a} Q'$
+Q \xrightarrow{a} Q'
 ```，则存在 ```latex
-$P'$
+P'
 ``` 使得 ```latex
-$P \xrightarrow{a} P'$
+P \xrightarrow{a} P'
 ``` 且 ```latex
-$(P', Q') \in R$
+(P', Q') \in R
 ```
 
 **定义 1.7** (强等价): 过程 ```latex
-$P$
+P
 ``` 和 ```latex
-$Q$
+Q
 ``` 强等价，记作 ```latex
-$P \sim Q$
+P \sim Q
 ```，如果存在包含 ```latex
-$(P, Q)$
+(P, Q)
 ``` 的强双模拟。
 
 **定义 1.8** (弱双模拟): 关系 ```latex
-$R$
+R
 ``` 是弱双模拟，如果对于任意 ```latex
-$(P, Q) \in R$
+(P, Q) \in R
 ```：
 
 1. 如果 ```latex
-$P \xrightarrow{a} P'$
+P \xrightarrow{a} P'
 ```，则存在 ```latex
-$Q'$
+Q'
 ``` 使得 ```latex
-$Q \xrightarrow{\tau^*} \xrightarrow{a} \xrightarrow{\tau^*} Q'$
+Q \xrightarrow{\tau^*} \xrightarrow{a} \xrightarrow{\tau^*} Q'
 ``` 且 ```latex
-$(P', Q') \in R$
+(P', Q') \in R
 ```
 2. 如果 ```latex
-$Q \xrightarrow{a} Q'$
+Q \xrightarrow{a} Q'
 ```，则存在 ```latex
-$P'$
+P'
 ``` 使得 ```latex
-$P \xrightarrow{\tau^*} \xrightarrow{a} \xrightarrow{\tau^*} P'$
+P \xrightarrow{\tau^*} \xrightarrow{a} \xrightarrow{\tau^*} P'
 ``` 且 ```latex
-$(P', Q') \in R$
+(P', Q') \in R
 ```
 
 ## 2. CCS理论
@@ -192,22 +192,22 @@ $(P', Q') \in R$
 
 **定义 2.1** (CCS语法): CCS的语法定义为：
 $```latex
-$P ::= \mathbf{0} \mid a.P \mid P + P \mid P \mid P \mid P \backslash L \mid P[f] \mid X \mid \mu X.P$
+P ::= \mathbf{0} \mid a.P \mid P + P \mid P \mid P \mid P \backslash L \mid P[f] \mid X \mid \mu X.P
 ```$
 
 其中：
 
 - ```latex
-$a \in Act = \mathcal{L} \cup \overline{\mathcal{L}} \cup \{\tau\}$
+a \in Act = \mathcal{L} \cup \overline{\mathcal{L}} \cup \{\tau\}
 ```
 - ```latex
-$\mathcal{L}$
+\mathcal{L}
 ``` 是输入动作集合
 - ```latex
-$\overline{\mathcal{L}}$
+\overline{\mathcal{L}}
 ``` 是输出动作集合
 - ```latex
-$\tau$
+\tau
 ``` 是内部动作
 
 **定义 2.2** (CCS过程): CCS过程是满足以下条件的表达式：
@@ -221,74 +221,74 @@ $\tau$
 
 **前缀规则**:
 $```latex
-$\frac{}{a.P \xrightarrow{a} P}$
+\frac{}{a.P \xrightarrow{a} P}
 ```$
 
 **选择规则**:
 $```latex
-$\frac{P \xrightarrow{a} P'}{P + Q \xrightarrow{a} P'} \quad \frac{Q \xrightarrow{a} Q'}{P + Q \xrightarrow{a} Q'}$
+\frac{P \xrightarrow{a} P'}{P + Q \xrightarrow{a} P'} \quad \frac{Q \xrightarrow{a} Q'}{P + Q \xrightarrow{a} Q'}
 ```$
 
 **并行规则**:
 $```latex
-$\frac{P \xrightarrow{a} P'}{P \mid Q \xrightarrow{a} P' \mid Q} \quad \frac{Q \xrightarrow{a} Q'}{P \mid Q \xrightarrow{a} P \mid Q'}$
+\frac{P \xrightarrow{a} P'}{P \mid Q \xrightarrow{a} P' \mid Q} \quad \frac{Q \xrightarrow{a} Q'}{P \mid Q \xrightarrow{a} P \mid Q'}
 ```$
 
 **通信规则**:
 $```latex
-$\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{\overline{a}} Q'}{P \mid Q \xrightarrow{\tau} P' \mid Q'}$
+\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{\overline{a}} Q'}{P \mid Q \xrightarrow{\tau} P' \mid Q'}
 ```$
 
 **限制规则**:
 $```latex
-$\frac{P \xrightarrow{a} P' \quad a, \overline{a} \notin L}{P \backslash L \xrightarrow{a} P' \backslash L}$
+\frac{P \xrightarrow{a} P' \quad a, \overline{a} \notin L}{P \backslash L \xrightarrow{a} P' \backslash L}
 ```$
 
 **重命名规则**:
 $```latex
-$\frac{P \xrightarrow{a} P'}{P[f] \xrightarrow{f(a)} P'[f]}$
+\frac{P \xrightarrow{a} P'}{P[f] \xrightarrow{f(a)} P'[f]}
 ```$
 
 **递归规则**:
 $```latex
-$\frac{P[\mu X.P/X] \xrightarrow{a} P'}{\mu X.P \xrightarrow{a} P'}$
+\frac{P[\mu X.P/X] \xrightarrow{a} P'}{\mu X.P \xrightarrow{a} P'}
 ```$
 
 ### 2.3 双模拟
 
 **定义 2.4** (强双模拟): 关系 ```latex
-$R \subseteq \text{Proc} \times \text{Proc}$
+R \subseteq \text{Proc} \times \text{Proc}
 ``` 是强双模拟，如果对于任意 ```latex
-$(P, Q) \in R$
+(P, Q) \in R
 ```：
 
 1. 如果 ```latex
-$P \xrightarrow{a} P'$
+P \xrightarrow{a} P'
 ```，则存在 ```latex
-$Q'$
+Q'
 ``` 使得 ```latex
-$Q \xrightarrow{a} Q'$
+Q \xrightarrow{a} Q'
 ``` 且 ```latex
-$(P', Q') \in R$
+(P', Q') \in R
 ```
 2. 如果 ```latex
-$Q \xrightarrow{a} Q'$
+Q \xrightarrow{a} Q'
 ```，则存在 ```latex
-$P'$
+P'
 ``` 使得 ```latex
-$P \xrightarrow{a} P'$
+P \xrightarrow{a} P'
 ``` 且 ```latex
-$(P', Q') \in R$
+(P', Q') \in R
 ```
 
 **定义 2.5** (强等价): 过程 ```latex
-$P$
+P
 ``` 和 ```latex
-$Q$
+Q
 ``` 强等价，记作 ```latex
-$P \sim Q$
+P \sim Q
 ```，如果存在包含 ```latex
-$(P, Q)$
+(P, Q)
 ``` 的强双模拟。
 
 **定理 2.1**: 强等价是等价关系（自反、对称、传递）。
@@ -297,19 +297,19 @@ $(P, Q)$
 
 1. 自反性：恒等关系是强双模拟
 2. 对称性：如果 ```latex
-$R$
+R
 ``` 是强双模拟，则 ```latex
-$R^{-1}$
+R^{-1}
 ``` 也是强双模拟
 3. 传递性：如果 ```latex
-$R_1$
+R_1
 ``` 和 ```latex
-$R_2$
+R_2
 ``` 是强双模拟，则 ```latex
-$R_1 \circ R_2$
+R_1 \circ R_2
 ``` 也是强双模拟
 4. 因此强等价是等价关系。```latex
-$\square$
+\square
 ```
 
 ## 3. CSP理论
@@ -318,25 +318,25 @@ $\square$
 
 **定义 3.1** (CSP语法): CSP的语法定义为：
 $```latex
-$P ::= \mathbf{STOP} \mid a \rightarrow P \mid P \sqcap P \mid P \parallel P \mid P \setminus L \mid P[f] \mid X \mid \mu X.P$
+P ::= \mathbf{STOP} \mid a \rightarrow P \mid P \sqcap P \mid P \parallel P \mid P \setminus L \mid P[f] \mid X \mid \mu X.P
 ```$
 
 其中：
 
 - ```latex
-$\mathbf{STOP}$
+\mathbf{STOP}
 ``` 是停止过程
 - ```latex
-$a \rightarrow P$
+a \rightarrow P
 ``` 是前缀
 - ```latex
-$P \sqcap Q$
+P \sqcap Q
 ``` 是内部选择
 - ```latex
-$P \parallel Q$
+P \parallel Q
 ``` 是并行组合
 - ```latex
-$P \setminus L$
+P \setminus L
 ``` 是隐藏操作
 
 ### 3.2 通信语义
@@ -345,53 +345,53 @@ $P \setminus L$
 
 **前缀规则**:
 $```latex
-$\frac{}{a \rightarrow P \xrightarrow{a} P}$
+\frac{}{a \rightarrow P \xrightarrow{a} P}
 ```$
 
 **内部选择规则**:
 $```latex
-$\frac{P \xrightarrow{a} P'}{P \sqcap Q \xrightarrow{a} P'} \quad \frac{Q \xrightarrow{a} Q'}{P \sqcap Q \xrightarrow{a} Q'}$
+\frac{P \xrightarrow{a} P'}{P \sqcap Q \xrightarrow{a} P'} \quad \frac{Q \xrightarrow{a} Q'}{P \sqcap Q \xrightarrow{a} Q'}
 ```$
 
 **并行规则**:
 $```latex
-$\frac{P \xrightarrow{a} P' \quad a \notin \Sigma(Q)}{P \parallel Q \xrightarrow{a} P' \parallel Q}$
+\frac{P \xrightarrow{a} P' \quad a \notin \Sigma(Q)}{P \parallel Q \xrightarrow{a} P' \parallel Q}
 ```$
 
 $```latex
-$\frac{Q \xrightarrow{a} Q' \quad a \notin \Sigma(P)}{P \parallel Q \xrightarrow{a} P \parallel Q'}$
+\frac{Q \xrightarrow{a} Q' \quad a \notin \Sigma(P)}{P \parallel Q \xrightarrow{a} P \parallel Q'}
 ```$
 
 $```latex
-$\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{a} Q'}{P \parallel Q \xrightarrow{a} P' \parallel Q'}$
+\frac{P \xrightarrow{a} P' \quad Q \xrightarrow{a} Q'}{P \parallel Q \xrightarrow{a} P' \parallel Q'}
 ```$
 
 ### 3.3 失败语义
 
 **定义 3.3** (失败): 失败是二元组 ```latex
-$(s, X)$
+(s, X)
 ```，其中 ```latex
-$s$
+s
 ``` 是迹，```latex
-$X$
+X
 ``` 是拒绝集。
 
 **定义 3.4** (失败语义): 过程 ```latex
-$P$
+P
 ``` 的失败语义 ```latex
-$F(P)$
+F(P)
 ``` 是 ```latex
-$P$
+P
 ``` 的所有失败集合。
 
 **定义 3.5** (失败等价): 过程 ```latex
-$P$
+P
 ``` 和 ```latex
-$Q$
+Q
 ``` 失败等价，记作 ```latex
-$P =_F Q$
+P =_F Q
 ```，如果 ```latex
-$F(P) = F(Q)$
+F(P) = F(Q)
 ```。
 
 ## 4. π演算
@@ -400,43 +400,43 @@ $F(P) = F(Q)$
 
 **定义 4.1** (π演算语法): π演算的语法定义为：
 $```latex
-$P ::= \mathbf{0} \mid \pi.P \mid P + P \mid P \mid P \mid (\nu x)P \mid !P \mid X \mid \mu X.P$
+P ::= \mathbf{0} \mid \pi.P \mid P + P \mid P \mid P \mid (\nu x)P \mid !P \mid X \mid \mu X.P
 ```$
 
 其中：
 
 - ```latex
-$\pi ::= \overline{x}(y) \mid x(y) \mid \tau$
+\pi ::= \overline{x}(y) \mid x(y) \mid \tau
 ```
 - ```latex
-$\overline{x}(y)$
+\overline{x}(y)
 ``` 是输出前缀
 - ```latex
-$x(y)$
+x(y)
 ``` 是输入前缀
 - ```latex
-$\tau$
+\tau
 ``` 是内部动作
 - ```latex
-$(\nu x)P$
+(\nu x)P
 ``` 是名称限制
 - ```latex
-$!P$
+!P
 ``` 是复制
 
 ### 4.2 名称传递
 
 **定义 4.2** (名称传递): π演算通过名称传递实现通信：
 $```latex
-$\frac{}{x(y).P \xrightarrow{x(z)} P[z/y]} \quad \text{(输入)}$
+\frac{}{x(y).P \xrightarrow{x(z)} P[z/y]} \quad \text{(输入)}
 ```$
 
 $```latex
-$\frac{}{\overline{x}(y).P \xrightarrow{\overline{x}(y)} P} \quad \text{(输出)}$
+\frac{}{\overline{x}(y).P \xrightarrow{\overline{x}(y)} P} \quad \text{(输出)}
 ```$
 
 $```latex
-$\frac{P \xrightarrow{x(z)} P' \quad Q \xrightarrow{\overline{x}(z)} Q'}{P \mid Q \xrightarrow{\tau} P' \mid Q'} \quad \text{(通信)}$
+\frac{P \xrightarrow{x(z)} P' \quad Q \xrightarrow{\overline{x}(z)} Q'}{P \mid Q \xrightarrow{\tau} P' \mid Q'} \quad \text{(通信)}
 ```$
 
 ### 4.3 移动性
@@ -444,25 +444,25 @@ $\frac{P \xrightarrow{x(z)} P' \quad Q \xrightarrow{\overline{x}(z)} Q'}{P \mid 
 **定义 4.3** (移动性): π演算的名称可以动态传递，实现进程的移动性。
 
 **定义 4.4** (结构同余): 结构同余关系 ```latex
-$\equiv$
+\equiv
 ``` 满足：
 
 - ```latex
-$P \mid Q \equiv Q \mid P$
+P \mid Q \equiv Q \mid P
 ``` (交换律)
 - ```latex
-$(P \mid Q) \mid R \equiv P \mid (Q \mid R)$
+(P \mid Q) \mid R \equiv P \mid (Q \mid R)
 ``` (结合律)
 - ```latex
-$P \mid \mathbf{0} \equiv P$
+P \mid \mathbf{0} \equiv P
 ``` (单位元)
 - ```latex
-$(\nu x)(\nu y)P \equiv (\nu y)(\nu x)P$
+(\nu x)(\nu y)P \equiv (\nu y)(\nu x)P
 ``` (交换限制)
 - ```latex
-$(\nu x)(P \mid Q) \equiv P \mid (\nu x)Q$
+(\nu x)(P \mid Q) \equiv P \mid (\nu x)Q
 ``` (如果 ```latex
-$x \notin fn(P)$
+x \notin fn(P)
 ```)
 
 ## 5. 工作流过程代数
@@ -471,31 +471,31 @@ $x \notin fn(P)$
 
 **定义 5.1** (工作流过程代数): 工作流过程代数的语法定义为：
 $```latex
-$W ::= \mathbf{SKIP} \mid a.W \mid W; W \mid W \parallel W \mid W + W \mid W^* \mid W \setminus L \mid X \mid \mu X.W$
+W ::= \mathbf{SKIP} \mid a.W \mid W; W \mid W \parallel W \mid W + W \mid W^* \mid W \setminus L \mid X \mid \mu X.W
 ```$
 
 其中：
 
 - ```latex
-$\mathbf{SKIP}$
+\mathbf{SKIP}
 ``` 是空工作流
 - ```latex
-$a.W$
+a.W
 ``` 是活动前缀
 - ```latex
-$W_1; W_2$
+W_1; W_2
 ``` 是顺序组合
 - ```latex
-$W_1 \parallel W_2$
+W_1 \parallel W_2
 ``` 是并行组合
 - ```latex
-$W_1 + W_2$
+W_1 + W_2
 ``` 是选择组合
 - ```latex
-$W^*$
+W^*
 ``` 是循环组合
 - ```latex
-$W \setminus L$
+W \setminus L
 ``` 是活动隐藏
 
 ### 5.2 工作流语义
@@ -504,76 +504,76 @@ $W \setminus L$
 
 **活动规则**:
 $```latex
-$\frac{}{a.W \xrightarrow{a} W}$
+\frac{}{a.W \xrightarrow{a} W}
 ```$
 
 **顺序规则**:
 $```latex
-$\frac{W_1 \xrightarrow{a} W_1'}{W_1; W_2 \xrightarrow{a} W_1'; W_2}$
+\frac{W_1 \xrightarrow{a} W_1'}{W_1; W_2 \xrightarrow{a} W_1'; W_2}
 ```$
 
 $```latex
-$\frac{W_1 \xrightarrow{\checkmark} W_1'}{W_1; W_2 \xrightarrow{\tau} W_2}$
+\frac{W_1 \xrightarrow{\checkmark} W_1'}{W_1; W_2 \xrightarrow{\tau} W_2}
 ```$
 
 **并行规则**:
 $```latex
-$\frac{W_1 \xrightarrow{a} W_1'}{W_1 \parallel W_2 \xrightarrow{a} W_1' \parallel W_2}$
+\frac{W_1 \xrightarrow{a} W_1'}{W_1 \parallel W_2 \xrightarrow{a} W_1' \parallel W_2}
 ```$
 
 $```latex
-$\frac{W_2 \xrightarrow{a} W_2'}{W_1 \parallel W_2 \xrightarrow{a} W_1 \parallel W_2'}$
+\frac{W_2 \xrightarrow{a} W_2'}{W_1 \parallel W_2 \xrightarrow{a} W_1 \parallel W_2'}
 ```$
 
 **选择规则**:
 $```latex
-$\frac{W_1 \xrightarrow{a} W_1'}{W_1 + W_2 \xrightarrow{a} W_1'}$
+\frac{W_1 \xrightarrow{a} W_1'}{W_1 + W_2 \xrightarrow{a} W_1'}
 ```$
 
 $```latex
-$\frac{W_2 \xrightarrow{a} W_2'}{W_1 + W_2 \xrightarrow{a} W_2'}$
+\frac{W_2 \xrightarrow{a} W_2'}{W_1 + W_2 \xrightarrow{a} W_2'}
 ```$
 
 **循环规则**:
 $```latex
-$\frac{W \xrightarrow{a} W'}{W^* \xrightarrow{a} W'; W^*} \quad \frac{}{W^* \xrightarrow{\checkmark} \mathbf{SKIP}}$
+\frac{W \xrightarrow{a} W'}{W^* \xrightarrow{a} W'; W^*} \quad \frac{}{W^* \xrightarrow{\checkmark} \mathbf{SKIP}}
 ```$
 
 ### 5.3 工作流等价
 
 **定义 5.3** (工作流双模拟): 关系 ```latex
-$R$
+R
 ``` 是工作流双模拟，如果对于任意 ```latex
-$(W_1, W_2) \in R$
+(W_1, W_2) \in R
 ```：
 
 1. 如果 ```latex
-$W_1 \xrightarrow{a} W_1'$
+W_1 \xrightarrow{a} W_1'
 ```，则存在 ```latex
-$W_2'$
+W_2'
 ``` 使得 ```latex
-$W_2 \xrightarrow{a} W_2'$
+W_2 \xrightarrow{a} W_2'
 ``` 且 ```latex
-$(W_1', W_2') \in R$
+(W_1', W_2') \in R
 ```
 2. 如果 ```latex
-$W_2 \xrightarrow{a} W_2'$
+W_2 \xrightarrow{a} W_2'
 ```，则存在 ```latex
-$W_1'$
+W_1'
 ``` 使得 ```latex
-$W_1 \xrightarrow{a} W_1'$
+W_1 \xrightarrow{a} W_1'
 ``` 且 ```latex
-$(W_1', W_2') \in R$
+(W_1', W_2') \in R
 ```
 
 **定义 5.4** (工作流等价): 工作流 ```latex
-$W_1$
+W_1
 ``` 和 ```latex
-$W_2$
+W_2
 ``` 等价，记作 ```latex
-$W_1 \sim W_2$
+W_1 \sim W_2
 ```，如果存在包含 ```latex
-$(W_1, W_2)$
+(W_1, W_2)
 ``` 的工作流双模拟。
 
 ## 6. Go语言实现
@@ -999,82 +999,82 @@ func (ec *EquivalenceChecker) parseProcess(key string) ProcessExpression {
 ### 7.1 等价性定理
 
 **定理 7.1** (强等价性质): 强等价 ```latex
-$\sim$
+\sim
 ``` 是等价关系，并且是最大的强双模拟。
 
 **证明**:
 
 1. 自反性：恒等关系是强双模拟
 2. 对称性：如果 ```latex
-$R$
+R
 ``` 是强双模拟，则 ```latex
-$R^{-1}$
+R^{-1}
 ``` 也是强双模拟
 3. 传递性：如果 ```latex
-$R_1$
+R_1
 ``` 和 ```latex
-$R_2$
+R_2
 ``` 是强双模拟，则 ```latex
-$R_1 \circ R_2$
+R_1 \circ R_2
 ``` 也是强双模拟
 4. 最大性：强等价包含所有强双模拟
 5. 因此强等价是等价关系且是最大的强双模拟。```latex
-$\square$
+\square
 ```
 
 ### 7.2 组合性定理
 
 **定理 7.2** (组合性): 如果 ```latex
-$P_1 \sim Q_1$
+P_1 \sim Q_1
 ``` 且 ```latex
-$P_2 \sim Q_2$
+P_2 \sim Q_2
 ```，则：
 
 - ```latex
-$P_1 + P_2 \sim Q_1 + Q_2$
+P_1 + P_2 \sim Q_1 + Q_2
 ```
 - ```latex
-$P_1 \mid P_2 \sim Q_1 \mid Q_2$
+P_1 \mid P_2 \sim Q_1 \mid Q_2
 ```
 - ```latex
-$P_1 \backslash L \sim Q_1 \backslash L$
+P_1 \backslash L \sim Q_1 \backslash L
 ```
 
 **证明**:
 
 1. 选择组合：构造关系 ```latex
-$R = \{(P_1 + P_2, Q_1 + Q_2) \mid P_1 \sim Q_1, P_2 \sim Q_2\}$
+R = \{(P_1 + P_2, Q_1 + Q_2) \mid P_1 \sim Q_1, P_2 \sim Q_2\}
 ```
 2. 并行组合：构造关系 ```latex
-$R = \{(P_1 \mid P_2, Q_1 \mid Q_2) \mid P_1 \sim Q_1, P_2 \sim Q_2\}$
+R = \{(P_1 \mid P_2, Q_1 \mid Q_2) \mid P_1 \sim Q_1, P_2 \sim Q_2\}
 ```
 3. 限制组合：构造关系 ```latex
-$R = \{(P_1 \backslash L, Q_1 \backslash L) \mid P_1 \sim Q_1\}$
+R = \{(P_1 \backslash L, Q_1 \backslash L) \mid P_1 \sim Q_1\}
 ```
 4. 验证这些关系都是强双模拟
 5. 因此组合性成立。```latex
-$\square$
+\square
 ```
 
 ### 7.3 不动点定理
 
 **定理 7.3** (不动点): 对于递归过程 ```latex
-$\mu X.P$
+\mu X.P
 ```，有：
 $```latex
-$\mu X.P \sim P[\mu X.P/X]$
+\mu X.P \sim P[\mu X.P/X]
 ```$
 
 **证明**:
 
 1. 构造关系 ```latex
-$R = \{(\mu X.P, P[\mu X.P/X])\}$
+R = \{(\mu X.P, P[\mu X.P/X])\}
 ```
 2. 验证 ```latex
-$R$
+R
 ``` 是强双模拟
 3. 因此不动点定理成立。```latex
-$\square$
+\square
 ```
 
 ---

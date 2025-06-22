@@ -76,49 +76,49 @@
 ### 2.1 分片模型
 
 设数据集 ```latex
-$D = \{d_1, d_2, ..., d_n\}$
+D = \{d_1, d_2, ..., d_n\}
 ``` 包含 ```latex
-$n$
+n
 ``` 个数据项。
 
 **定义 2.1 (分片函数)**
 分片函数 ```latex
-$f: D \rightarrow S$
+f: D \rightarrow S
 ``` 将数据集 ```latex
-$D$
+D
 ``` 映射到分片集合 ```latex
-$S = \{s_1, s_2, ..., s_m\}$
+S = \{s_1, s_2, ..., s_m\}
 ```，其中 ```latex
-$m$
+m
 ``` 是分片数量。
 
 **定义 2.2 (分片一致性)**
 分片函数 ```latex
-$f$
+f
 ``` 是一致的，当且仅当：
 $```latex
-$\forall d_i, d_j \in D: f(d_i) = f(d_j) \Rightarrow \text{consistent}(d_i, d_j)$
+\forall d_i, d_j \in D: f(d_i) = f(d_j) \Rightarrow \text{consistent}(d_i, d_j)
 ```$
 
 ### 2.2 负载均衡
 
 **定义 2.3 (负载均衡)**
 分片 ```latex
-$s_i$
+s_i
 ``` 的负载定义为：
 $```latex
-$L(s_i) = \sum_{d \in f^{-1}(s_i)} w(d)$
+L(s_i) = \sum_{d \in f^{-1}(s_i)} w(d)
 ```$
 其中 ```latex
-$w(d)$
+w(d)
 ``` 是数据项 ```latex
-$d$
+d
 ``` 的权重。
 
 **定义 2.4 (负载均衡度)**
 分片系统的负载均衡度定义为：
 $```latex
-$\text{Balance}(S) = \frac{\max_{s \in S} L(s) - \min_{s \in S} L(s)}{\max_{s \in S} L(s)}$
+\text{Balance}(S) = \frac{\max_{s \in S} L(s) - \min_{s \in S} L(s)}{\max_{s \in S} L(s)}
 ```$
 
 ### 2.3 分片正确性
@@ -127,13 +127,13 @@ $\text{Balance}(S) = \frac{\max_{s \in S} L(s) - \min_{s \in S} L(s)}{\max_{s \i
 分片系统是正确的，当且仅当：
 
 1. **完整性**: ```latex
-$\bigcup_{s \in S} s = D$
+\bigcup_{s \in S} s = D
 ```
 2. **互斥性**: ```latex
-$\forall s_i, s_j \in S: s_i \cap s_j = \emptyset$
+\forall s_i, s_j \in S: s_i \cap s_j = \emptyset
 ```
 3. **一致性**: 分片函数 ```latex
-$f$
+f
 ``` 是一致的
 
 **证明**:
@@ -148,52 +148,52 @@ $f$
 
 **定义 3.1 (哈希函数)**
 哈希函数 ```latex
-$h: U \rightarrow [0, m-1]$
+h: U \rightarrow [0, m-1]
 ``` 将输入域 ```latex
-$U$
+U
 ``` 映射到范围 ```latex
-$[0, m-1]$
+[0, m-1]
 ```。
 
 **定义 3.2 (均匀哈希)**
 哈希函数 ```latex
-$h$
+h
 ``` 是均匀的，当且仅当：
 $```latex
-$\forall i \in [0, m-1]: P(h(x) = i) = \frac{1}{m}$
+\forall i \in [0, m-1]: P(h(x) = i) = \frac{1}{m}
 ```$
 
 ### 3.2 一致性哈希
 
 **定义 3.3 (一致性哈希)**
 一致性哈希函数 ```latex
-$h_c$
+h_c
 ``` 满足：
 $```latex
-$\forall x \in U, \forall s \in S: h_c(x) = \arg\min_{s \in S} \text{distance}(h(x), h(s))$
+\forall x \in U, \forall s \in S: h_c(x) = \arg\min_{s \in S} \text{distance}(h(x), h(s))
 ```$
 
 **定理 3.1 (一致性哈希性质)**
 当添加或删除节点时，一致性哈希最多需要重新映射 ```latex
-$\frac{n}{m}$
+\frac{n}{m}
 ``` 个数据项，其中 ```latex
-$n$
+n
 ``` 是数据项数量，```latex
-$m$
+m
 ``` 是节点数量。
 
 ### 3.3 分片复杂度分析
 
 **定理 3.2 (分片时间复杂度)**
 基于哈希的分片算法的时间复杂度为 ```latex
-$O(1)$
+O(1)
 ```。
 
 **定理 3.3 (分片空间复杂度)**
 分片系统的空间复杂度为 ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是数据项数量。
 
 ## 4. 分区策略
@@ -262,7 +262,7 @@ $n$
 一致性哈希将哈希空间组织成一个虚拟环，节点和数据项都映射到环上的点：
 
 1. **哈希环**: 将哈希值空间 ```latex
-$[0, 2^{32}-1]$
+[0, 2^{32}-1]
 ``` 组织成环
 2. **节点映射**: 每个节点映射到环上的多个虚拟节点
 3. **数据分配**: 数据项分配到顺时针方向的下一个节点
@@ -274,11 +274,11 @@ $[0, 2^{32}-1]$
 
 **定理 5.1 (虚拟节点效果)**
 使用 ```latex
-$k$
+k
 ``` 个虚拟节点可以将负载不平衡度从 ```latex
-$O(\log n)$
+O(\log n)
 ``` 降低到 ```latex
-$O(\frac{1}{k})$
+O(\frac{1}{k})
 ```。
 
 ## 6. Go语言实现
@@ -836,27 +836,27 @@ func main() {
 ### 7.2 空间复杂度分析
 
 所有分片策略的空间复杂度都是 ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是数据项数量。
 
 ### 7.3 负载均衡分析
 
 **定理 7.1 (哈希分片负载均衡)**
 哈希分片的负载不平衡度期望为 ```latex
-$O(\sqrt{\frac{n}{m}})$
+O(\sqrt{\frac{n}{m}})
 ```，其中 ```latex
-$n$
+n
 ``` 是数据项数量，```latex
-$m$
+m
 ``` 是分片数量。
 
 **定理 7.2 (一致性哈希负载均衡)**
 使用 ```latex
-$k$
+k
 ``` 个虚拟节点的一致性哈希的负载不平衡度为 ```latex
-$O(\frac{1}{k})$
+O(\frac{1}{k})
 ```。
 
 ## 8. 应用场景

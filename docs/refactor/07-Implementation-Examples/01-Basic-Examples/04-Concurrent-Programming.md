@@ -8,10 +8,10 @@
 
 **形式化定义**：
 设 ```latex
-$T_1, T_2, ..., T_n$
+T_1, T_2, ..., T_n
 ``` 为任务集合，并发执行函数：
 $```latex
-$\text{Concurrent}(T_1, T_2, ..., T_n) = \text{parallel}(T_1) \parallel \text{parallel}(T_2) \parallel ... \parallel \text{parallel}(T_n)$
+\text{Concurrent}(T_1, T_2, ..., T_n) = \text{parallel}(T_1) \parallel \text{parallel}(T_2) \parallel ... \parallel \text{parallel}(T_n)
 ```$
 
 ### 1.2 Go并发模型

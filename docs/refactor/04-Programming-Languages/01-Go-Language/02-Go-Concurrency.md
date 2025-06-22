@@ -79,22 +79,22 @@
 
 ```latex
 - 并发：```latex
-$\forall t_1, t_2 \in T, \exists t \in T: t_1 \cap t_2 \neq \emptyset$
+\forall t_1, t_2 \in T, \exists t \in T: t_1 \cap t_2 \neq \emptyset
 ```
 - 并行：```latex
-$\forall t_1, t_2 \in T, t_1 \parallel t_2 \Rightarrow t_1 \cap t_2 = t_1 = t_2$
+\forall t_1, t_2 \in T, t_1 \parallel t_2 \Rightarrow t_1 \cap t_2 = t_1 = t_2
 ```
 
 其中：
 
 - ```latex
-$T$
+T
 ``` 是任务集合
 - ```latex
-$t_1, t_2$
+t_1, t_2
 ``` 是任务执行时间区间
 - ```latex
-$\parallel$
+\parallel
 ``` 表示并行关系
 ```
 
@@ -116,22 +116,22 @@ Go采用CSP（Communicating Sequential Processes）模型，核心思想是：
 CSP模型可以形式化表示为：
 
 ```latex
-$P = (S, \Sigma, \rightarrow, s_0)$
+P = (S, \Sigma, \rightarrow, s_0)
 ```
 
 其中：
 
 - ```latex
-$S$
+S
 ``` 是状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是事件集合
 - ```latex
-$\rightarrow \subseteq S \times \Sigma \times S$
+\rightarrow \subseteq S \times \Sigma \times S
 ``` 是转移关系
 - ```latex
-$s_0 \in S$
+s_0 \in S
 ``` 是初始状态
 
 #### Go并发原语
@@ -156,25 +156,25 @@ value := <-ch   // 接收
 
 **形式化定义**：
 ```latex
-$\exists g_1, g_2 \in G, \exists m \in M: (g_1, m, w) \land (g_2, m, r/w) \land (t_1 \cap t_2 \neq \emptyset)$
+\exists g_1, g_2 \in G, \exists m \in M: (g_1, m, w) \land (g_2, m, r/w) \land (t_1 \cap t_2 \neq \emptyset)
 ```
 
 其中：
 
 - ```latex
-$G$
+G
 ``` 是goroutine集合
 - ```latex
-$M$
+M
 ``` 是内存位置集合
 - ```latex
-$w$
+w
 ``` 表示写操作
 - ```latex
-$r$
+r
 ``` 表示读操作
 - ```latex
-$t_1, t_2$
+t_1, t_2
 ``` 是操作时间
 
 #### 2. 死锁（Deadlock）
@@ -388,19 +388,19 @@ func channelOperations() {
 #### Channel形式化语义
 
 对于channel ```latex
-$c$
+c
 ``` 和值 ```latex
-$v$
+v
 ```：
 
 - **发送操作**：```latex
-$c \leftarrow v$
+c \leftarrow v
 ```
 - **接收操作**：```latex
-$v \leftarrow c$
+v \leftarrow c
 ```
 - **关闭操作**：```latex
-$close(c)$
+close(c)
 ```
 
 **阻塞语义**：

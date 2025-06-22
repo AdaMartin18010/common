@@ -37,9 +37,9 @@
 ### 1.1 工作流空间定义
 
 **定义 1.1** (工作流空间): 工作流空间 ```latex
-$W$
+W
 ``` 是一个三元组 ```latex
-$(S, T, \rightarrow)$
+(S, T, \rightarrow)
 ```，其中：
 
 ```latex
@@ -47,35 +47,35 @@ W = (S, T, \rightarrow)
 ```
 
 - ```latex
-$S$
+S
 ``` 是状态集合
 - ```latex
-$T$
+T
 ``` 是转换集合  
 - ```latex
-$\rightarrow \subseteq S \times T \times S$
+\rightarrow \subseteq S \times T \times S
 ``` 是转换关系
 
 **定义 1.2** (工作流路径): 工作流路径 ```latex
-$\pi$
+\pi
 ``` 是状态序列 ```latex
-$s_0, s_1, \ldots, s_n$
+s_0, s_1, \ldots, s_n
 ```，其中对于每个 ```latex
-$i$
+i
 ```，存在转换 ```latex
-$t_i$
+t_i
 ``` 使得 ```latex
-$(s_i, t_i, s_{i+1}) \in \rightarrow$
+(s_i, t_i, s_{i+1}) \in \rightarrow
 ```。
 
 ### 1.2 基本运算
 
 **定义 1.3** (顺序组合): 对于工作流 ```latex
-$w_1$
+w_1
 ``` 和 ```latex
-$w_2$
+w_2
 ```，其顺序组合 ```latex
-$w_1 \circ w_2$
+w_1 \circ w_2
 ``` 定义为：
 
 ```latex
@@ -83,11 +83,11 @@ w_1 \circ w_2 = \{(s, t, s') \mid (s, t, s') \in w_1 \text{ 或 } (s, t, s') \in
 ```
 
 **定义 1.4** (并行组合): 对于工作流 ```latex
-$w_1$
+w_1
 ``` 和 ```latex
-$w_2$
+w_2
 ```，其并行组合 ```latex
-$w_1 \parallel w_2$
+w_1 \parallel w_2
 ``` 定义为：
 
 ```latex
@@ -119,36 +119,36 @@ w_1 \circ (w_2 \parallel w_3) = (w_1 \circ w_2) \parallel (w_1 \circ w_3)
 ### 2.1 工作流路径空间
 
 **定义 2.1** (路径空间): 给定工作流空间 ```latex
-$W$
+W
 ```，其路径空间 ```latex
-$P(W)$
+P(W)
 ``` 是所有可能路径的集合，配备紧致开拓扑。
 
 **定理 2.1**: 路径空间 ```latex
-$P(W)$
+P(W)
 ``` 是连通的当且仅当工作流空间 ```latex
-$W$
+W
 ``` 是强连通的。
 
 **证明**:
 
 - 必要性：如果 ```latex
-$P(W)$
+P(W)
 ``` 连通，则任意两个路径都可以通过连续变形连接，因此 ```latex
-$W$
+W
 ``` 强连通。
 - 充分性：如果 ```latex
-$W$
+W
 ``` 强连通，则任意两个状态之间都存在路径，因此 ```latex
-$P(W)$
+P(W)
 ``` 连通。
 
 ### 2.2 同伦等价
 
 **定义 2.2** (路径同伦): 两个路径 ```latex
-$\alpha, \beta: [0,1] \rightarrow W$
+\alpha, \beta: [0,1] \rightarrow W
 ``` 是同伦的，如果存在连续映射 ```latex
-$H: [0,1] \times [0,1] \rightarrow W$
+H: [0,1] \times [0,1] \rightarrow W
 ``` 使得：
 
 ```latex
@@ -160,74 +160,74 @@ H(t,0) = \alpha(t), \quad H(t,1) = \beta(t)
 **证明**:
 
 1. 自反性：```latex
-$H(t,s) = \alpha(t)$
+H(t,s) = \alpha(t)
 ``` 定义了 ```latex
-$\alpha$
+\alpha
 ``` 到自身的同伦
 2. 对称性：如果 ```latex
-$H$
+H
 ``` 是 ```latex
-$\alpha$
+\alpha
 ``` 到 ```latex
-$\beta$
+\beta
 ``` 的同伦，则 ```latex
-$H(t,1-s)$
+H(t,1-s)
 ``` 是 ```latex
-$\beta$
+\beta
 ``` 到 ```latex
-$\alpha$
+\alpha
 ``` 的同伦
 3. 传递性：如果 ```latex
-$H_1$
+H_1
 ``` 是 ```latex
-$\alpha$
+\alpha
 ``` 到 ```latex
-$\beta$
+\beta
 ``` 的同伦，```latex
-$H_2$
+H_2
 ``` 是 ```latex
-$\beta$
+\beta
 ``` 到 ```latex
-$\gamma$
+\gamma
 ``` 的同伦，则 ```latex
-$H(t,s) = H_1(t,2s)$
+H(t,s) = H_1(t,2s)
 ``` 当 ```latex
-$s \leq 1/2$
+s \leq 1/2
 ```，```latex
-$H(t,s) = H_2(t,2s-1)$
+H(t,s) = H_2(t,2s-1)
 ``` 当 ```latex
-$s > 1/2$
+s > 1/2
 ```
 
 ### 2.3 基本群
 
 **定义 2.3** (基本群): 工作流空间 ```latex
-$W$
+W
 ``` 在基点 ```latex
-$s_0$
+s_0
 ``` 的基本群 ```latex
-$\pi_1(W,s_0)$
+\pi_1(W,s_0)
 ``` 是同伦类 ```latex
-$[\alpha]$
+[\alpha]
 ``` 的集合，其中 ```latex
-$\alpha$
+\alpha
 ``` 是基于 ```latex
-$s_0$
+s_0
 ``` 的环路。
 
 **定理 2.3**: 基本群 ```latex
-$\pi_1(W,s_0)$
+\pi_1(W,s_0)
 ``` 在路径连接下构成群。
 
 **证明**:
 
 - 单位元：常数路径 ```latex
-$e(t) = s_0$
+e(t) = s_0
 ```
 - 逆元：路径 ```latex
-$\alpha$
+\alpha
 ``` 的逆元是 ```latex
-$\alpha^{-1}(t) = \alpha(1-t)$
+\alpha^{-1}(t) = \alpha(1-t)
 ```
 - 结合律：路径连接满足结合律
 
@@ -236,7 +236,7 @@ $\alpha^{-1}(t) = \alpha(1-t)$
 ### 3.1 工作流范畴
 
 **定义 3.1** (工作流范畴): 工作流范畴 ```latex
-$\mathcal{W}$
+\mathcal{W}
 ``` 定义为：
 
 - 对象：工作流状态
@@ -245,7 +245,7 @@ $\mathcal{W}$
 - 态射复合：转换序列
 
 **定理 3.1**: 工作流范畴 ```latex
-$\mathcal{W}$
+\mathcal{W}
 ``` 是笛卡尔闭的。
 
 **证明**:
@@ -257,7 +257,7 @@ $\mathcal{W}$
 ### 3.2 函子与自然变换
 
 **定义 3.2** (工作流函子): 工作流函子 ```latex
-$F: \mathcal{W} \rightarrow \mathcal{W}'$
+F: \mathcal{W} \rightarrow \mathcal{W}'
 ``` 保持工作流结构：
 
 ```latex
@@ -265,9 +265,9 @@ F(w_1 \circ w_2) = F(w_1) \circ F(w_2)
 ```
 
 **定义 3.3** (自然变换): 自然变换 ```latex
-$\eta: F \Rightarrow G$
+\eta: F \Rightarrow G
 ``` 是态射族 ```latex
-$\eta_w: F(w) \rightarrow G(w)$
+\eta_w: F(w) \rightarrow G(w)
 ```，满足自然性条件。
 
 ### 3.3 极限与余极限
@@ -287,26 +287,26 @@ $\eta_w: F(w) \rightarrow G(w)$
 其中：
 
 - ```latex
-$\mathbf{X} \phi$
+\mathbf{X} \phi
 ```: 下一个状态满足 ```latex
-$\phi$
+\phi
 ```
 - ```latex
-$\mathbf{F} \phi$
+\mathbf{F} \phi
 ```: 将来某个状态满足 ```latex
-$\phi$
+\phi
 ```
 - ```latex
-$\mathbf{G} \phi$
+\mathbf{G} \phi
 ```: 所有将来状态都满足 ```latex
-$\phi$
+\phi
 ```
 - ```latex
-$\phi \mathbf{U} \psi$
+\phi \mathbf{U} \psi
 ```: ```latex
-$\phi$
+\phi
 ``` 成立直到 ```latex
-$\psi$
+\psi
 ``` 成立
 
 ### 4.2 分支时态逻辑
@@ -546,11 +546,11 @@ func (c *Category) hasTerminalObject() bool {
 ### 6.1 定理证明
 
 **定理 6.1** (工作流组合性): 对于任意工作流 ```latex
-$w_1, w_2, w_3$
+w_1, w_2, w_3
 ```，有：
 
 $```latex
-$(w_1 \circ w_2) \circ w_3 = w_1 \circ (w_2 \circ w_3)$
+(w_1 \circ w_2) \circ w_3 = w_1 \circ (w_2 \circ w_3)
 ```$
 
 **证明**:

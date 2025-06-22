@@ -5,20 +5,20 @@
 ### 1.1.1 金融数学基础
 
 **定义 1.1** (金融算法): 金融算法是一个四元组 ```latex
-$\mathcal{F} = (M, P, R, T)$
+\mathcal{F} = (M, P, R, T)
 ```，其中：
 
 - ```latex
-$M$
+M
 ``` 是市场模型集合 (Market Models)
 - ```latex
-$P$
+P
 ``` 是定价模型集合 (Pricing Models)
 - ```latex
-$R$
+R
 ``` 是风险模型集合 (Risk Models)
 - ```latex
-$T$
+T
 ``` 是交易模型集合 (Trading Models)
 
 **金融计算核心**:
@@ -30,27 +30,27 @@ $T$
 ### 1.1.2 时间价值理论
 
 **定义 1.2** (现值): 现值 ```latex
-$PV$
+PV
 ``` 是未来现金流 ```latex
-$CF_t$
+CF_t
 ``` 在当前时点的价值：
 
 $```latex
-$PV = \sum_{t=1}^{n} \frac{CF_t}{(1 + r)^t}$
+PV = \sum_{t=1}^{n} \frac{CF_t}{(1 + r)^t}
 ```$
 
 其中 ```latex
-$r$
+r
 ``` 是折现率，```latex
-$n$
+n
 ``` 是期数。
 
 **定义 1.3** (终值): 终值 ```latex
-$FV$
+FV
 ``` 是当前投资在未来时点的价值：
 
 $```latex
-$FV = PV \times (1 + r)^n$
+FV = PV \times (1 + r)^n
 ```$
 
 ## 1.2 Go语言金融算法实现

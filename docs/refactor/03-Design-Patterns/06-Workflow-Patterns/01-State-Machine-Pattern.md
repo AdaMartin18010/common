@@ -79,34 +79,34 @@
 
 **定义 2.1 (有限状态机)**
 有限状态机是一个五元组 ```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$Q$
+Q
 ``` 是有限状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是有限输入字母表
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ``` 是状态转换函数
 - ```latex
-$q_0 \in Q$
+q_0 \in Q
 ``` 是初始状态
 - ```latex
-$F \subseteq Q$
+F \subseteq Q
 ``` 是接受状态集合
 
 **定义 2.2 (状态转换)**
 状态转换是一个三元组 ```latex
-$(q, a, q')$
+(q, a, q')
 ```，表示在状态 ```latex
-$q$
+q
 ``` 下接收输入 ```latex
-$a$
+a
 ``` 后转换到状态 ```latex
-$q'$
+q'
 ```。
 
 ### 2.2 状态机正确性
@@ -115,10 +115,10 @@ $q'$
 状态机是正确的，当且仅当：
 
 1. **确定性**: ```latex
-$\forall q \in Q, \forall a \in \Sigma: |\delta(q, a)| \leq 1$
+\forall q \in Q, \forall a \in \Sigma: |\delta(q, a)| \leq 1
 ```
 2. **完整性**: ```latex
-$\forall q \in Q, \forall a \in \Sigma: \delta(q, a) \neq \emptyset$
+\forall q \in Q, \forall a \in \Sigma: \delta(q, a) \neq \emptyset
 ```
 3. **可达性**: 所有状态都是可达的
 
@@ -132,12 +132,12 @@ $\forall q \in Q, \forall a \in \Sigma: \delta(q, a) \neq \emptyset$
 
 **定义 2.3 (状态机等价)**
 两个状态机 ```latex
-$M_1$
+M_1
 ``` 和 ```latex
-$M_2$
+M_2
 ``` 是等价的，当且仅当它们接受相同的语言：
 $```latex
-$L(M_1) = L(M_2)$
+L(M_1) = L(M_2)
 ```$
 
 ## 3. 数学基础
@@ -146,14 +146,14 @@ $L(M_1) = L(M_2)$
 
 **定义 3.1 (状态转换图)**
 状态转换图 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 是一个有向图，其中：
 
 - ```latex
-$V = Q$
+V = Q
 ``` 是状态集合
 - ```latex
-$E = \{(q, a, q') | \delta(q, a) = q'\}$
+E = \{(q, a, q') | \delta(q, a) = q'\}
 ``` 是转换边集合
 
 **定理 3.1 (状态转换图性质)**
@@ -163,12 +163,12 @@ $E = \{(q, a, q') | \delta(q, a) = q'\}$
 
 **定义 3.2 (状态等价)**
 两个状态 ```latex
-$q_1$
+q_1
 ``` 和 ```latex
-$q_2$
+q_2
 ``` 是等价的，当且仅当：
 $```latex
-$\forall w \in \Sigma^*: \delta^*(q_1, w) \in F \Leftrightarrow \delta^*(q_2, w) \in F$
+\forall w \in \Sigma^*: \delta^*(q_1, w) \in F \Leftrightarrow \delta^*(q_2, w) \in F
 ```$
 
 **定理 3.2 (最小化定理)**
@@ -178,15 +178,15 @@ $\forall w \in \Sigma^*: \delta^*(q_1, w) \in F \Leftrightarrow \delta^*(q_2, w)
 
 **定理 3.3 (状态数下界)**
 对于语言 ```latex
-$L$
+L
 ```，最小状态机的状态数至少为：
 $```latex
-$|Q| \geq \text{index of } \equiv_L$
+|Q| \geq \text{index of } \equiv_L
 ```$
 其中 ```latex
-$\equiv_L$
+\equiv_L
 ``` 是 ```latex
-$L$
+L
 ``` 的Myhill-Nerode等价关系。
 
 ## 4. 状态机类型
@@ -196,7 +196,7 @@ $L$
 **定义 4.1 (DFA)**
 DFA是状态转换函数为单值函数的状态机：
 $```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ```$
 
 **特点**:
@@ -210,7 +210,7 @@ $\delta: Q \times \Sigma \rightarrow Q$
 **定义 4.2 (NFA)**
 NFA是状态转换函数为多值函数的状态机：
 $```latex
-$\delta: Q \times \Sigma \rightarrow 2^Q$
+\delta: Q \times \Sigma \rightarrow 2^Q
 ```$
 
 **特点**:
@@ -224,7 +224,7 @@ $\delta: Q \times \Sigma \rightarrow 2^Q$
 **定义 4.3 (摩尔机)**
 摩尔机的输出只依赖于当前状态：
 $```latex
-$\lambda: Q \rightarrow \Gamma$
+\lambda: Q \rightarrow \Gamma
 ```$
 
 **特点**:
@@ -238,7 +238,7 @@ $\lambda: Q \rightarrow \Gamma$
 **定义 4.4 (米利机)**
 米利机的输出依赖于当前状态和输入：
 $```latex
-$\lambda: Q \times \Sigma \rightarrow \Gamma$
+\lambda: Q \times \Sigma \rightarrow \Gamma
 ```$
 
 **特点**:
@@ -264,13 +264,13 @@ type TransitionAction func(from State, to State, event interface{}, context inte
 **定义 5.1 (内部转换)**
 内部转换不改变状态，只执行动作：
 $```latex
-$\delta(q, a) = q$
+\delta(q, a) = q
 ```$
 
 **定义 5.2 (外部转换)**
 外部转换改变状态并执行动作：
 $```latex
-$\delta(q, a) = q' \text{ where } q' \neq q$
+\delta(q, a) = q' \text{ where } q' \neq q
 ```$
 
 ### 5.3 转换验证
@@ -840,23 +840,23 @@ func main() {
 
 **定理 7.1 (状态转换时间复杂度)**
 状态转换的时间复杂度为 ```latex
-$O(1)$
+O(1)
 ```，其中常数因子取决于转换条件的复杂度。
 
 **定理 7.2 (状态机初始化时间复杂度)**
 状态机初始化的时间复杂度为 ```latex
-$O(|Q| + |\delta|)$
+O(|Q| + |\delta|)
 ```，其中 ```latex
-$|Q|$
+|Q|
 ``` 是状态数量，```latex
-$|\delta|$
+|\delta|
 ``` 是转换数量。
 
 ### 7.2 空间复杂度
 
 **定理 7.3 (状态机空间复杂度)**
 状态机的空间复杂度为 ```latex
-$O(|Q| + |\delta|)$
+O(|Q| + |\delta|)
 ```。
 
 ### 7.3 内存使用分析

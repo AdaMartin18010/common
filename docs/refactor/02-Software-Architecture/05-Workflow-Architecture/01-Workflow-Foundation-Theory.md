@@ -47,35 +47,35 @@
 从形式化角度定义，工作流可以表示为：
 
 $```latex
-$W = \{A, T, D, R, C\}$
+W = \{A, T, D, R, C\}
 ```$
 
 其中：
 
 - ```latex
-$A$
+A
 ```：活动集合，```latex
-$A = \{a_1, a_2, ..., a_n\}$
+A = \{a_1, a_2, ..., a_n\}
 ```
 - ```latex
-$T$
+T
 ```：活动间转移关系，```latex
-$T \subseteq A \times A$
+T \subseteq A \times A
 ```
 - ```latex
-$D$
+D
 ```：数据对象集合，```latex
-$D = \{d_1, d_2, ..., d_m\}$
+D = \{d_1, d_2, ..., d_m\}
 ```
 - ```latex
-$R$
+R
 ```：资源集合，```latex
-$R = \{r_1, r_2, ..., r_k\}$
+R = \{r_1, r_2, ..., r_k\}
 ```
 - ```latex
-$C$
+C
 ```：约束条件集合，```latex
-$C = \{c_1, c_2, ..., c_l\}$
+C = \{c_1, c_2, ..., c_l\}
 ```
 
 ### 2.2 工作流状态模型
@@ -83,25 +83,25 @@ $C = \{c_1, c_2, ..., c_l\}$
 工作流状态可以定义为：
 
 $```latex
-$S = (M, V, E)$
+S = (M, V, E)
 ```$
 
 其中：
 
 - ```latex
-$M$
+M
 ```：活动状态映射，```latex
-$M: A \rightarrow \{Ready, Running, Completed, Failed\}$
+M: A \rightarrow \{Ready, Running, Completed, Failed\}
 ```
 - ```latex
-$V$
+V
 ```：变量状态，```latex
-$V: D \rightarrow Value$
+V: D \rightarrow Value
 ```
 - ```latex
-$E$
+E
 ```：执行历史，```latex
-$E = \{e_1, e_2, ..., e_p\}$
+E = \{e_1, e_2, ..., e_p\}
 ```
 
 ### 2.3 工作流执行语义
@@ -109,24 +109,24 @@ $E = \{e_1, e_2, ..., e_p\}$
 工作流执行可以形式化为状态转换系统：
 
 $```latex
-$(S_0, \Sigma, \delta, F)$
+(S_0, \Sigma, \delta, F)
 ```$
 
 其中：
 
 - ```latex
-$S_0$
+S_0
 ```：初始状态
 - ```latex
-$\Sigma$
+\Sigma
 ```：事件集合
 - ```latex
-$\delta$
+\delta
 ```：状态转换函数，```latex
-$\delta: S \times \Sigma \rightarrow S$
+\delta: S \times \Sigma \rightarrow S
 ```
 - ```latex
-$F$
+F
 ```：终止状态集合
 
 ## 3. 工作流模型
@@ -136,41 +136,41 @@ $F$
 Petri网是描述并发系统的经典形式化工具，适用于工作流建模：
 
 **基本定义**：Petri网是一个五元组 ```latex
-$(P, T, F, W, M_0)$
+(P, T, F, W, M_0)
 ```
 
 - ```latex
-$P$
+P
 ```：库所集（表示状态或条件）
 - ```latex
-$T$
+T
 ```：变迁集（表示活动或事件）
 - ```latex
-$F \subseteq (P \times T) \cup (T \times P)$
+F \subseteq (P \times T) \cup (T \times P)
 ```：流关系
 - ```latex
-$W: F \rightarrow \mathbb{N}^+$
+W: F \rightarrow \mathbb{N}^+
 ```：权重函数
 - ```latex
-$M_0: P \rightarrow \mathbb{N}$
+M_0: P \rightarrow \mathbb{N}
 ```：初始标识
 
 **工作流Petri网（WF-net）特性**：
 
 1. 存在唯一的源库所```latex
-$i$
+i
 ```：```latex
-$\bullet i = \emptyset$
+\bullet i = \emptyset
 ```
 2. 存在唯一的汇库所```latex
-$o$
+o
 ```：```latex
-$o \bullet = \emptyset$
+o \bullet = \emptyset
 ```
 3. 网络中每个节点都在从```latex
-$i$
+i
 ```到```latex
-$o$
+o
 ```的路径上
 
 **形式化性质**：
@@ -187,19 +187,19 @@ $o$
 **基本算子**：
 
 - 顺序组合：```latex
-$P \cdot Q$
+P \cdot Q
 ```
 - 选择组合：```latex
-$P + Q$
+P + Q
 ```
 - 并行组合：```latex
-$P \parallel Q$
+P \parallel Q
 ```
 - 通信组合：```latex
-$P | Q$
+P | Q
 ```
 - 同步组合：```latex
-$P \times Q$
+P \times Q
 ```
 
 **等价关系**：
@@ -214,28 +214,28 @@ $P \times Q$
 **基本时态算子**：
 
 - 下一状态（Next）：```latex
-$X\phi$
+X\phi
 ```
 - 直到（Until）：```latex
-$\phi U \psi$
+\phi U \psi
 ```
 - 始终（Always）：```latex
-$G\phi$
+G\phi
 ```
 - 最终（Eventually）：```latex
-$F\phi$
+F\phi
 ```
 
 **工作流属性表达**：
 
 - 活性（Liveness）：```latex
-$F\phi$
+F\phi
 ```（某事件最终会发生）
 - 安全性（Safety）：```latex
-$G\phi$
+G\phi
 ```（不期望的事件不会发生）
 - 公平性（Fairness）：```latex
-$GF\phi$
+GF\phi
 ```（事件无限次发生）
 
 ## 4. Go语言实现
@@ -525,28 +525,28 @@ const (
 **工作流执行复杂度**：
 
 - **最坏情况**：```latex
-$O(|A|^2 \cdot |T|)$
+O(|A|^2 \cdot |T|)
 ```，其中```latex
-$|A|$
+|A|
 ```是活动数量，```latex
-$|T|$
+|T|
 ```是转移数量
 - **平均情况**：```latex
-$O(|A| \cdot \log|A|)$
+O(|A| \cdot \log|A|)
 ```，使用优化的图算法
 - **最佳情况**：```latex
-$O(|A|)$
+O(|A|)
 ```，线性工作流
 
 **空间复杂度**：
 
 - **状态存储**：```latex
-$O(|A| + |D|)$
+O(|A| + |D|)
 ```，活动状态和数据对象
 - **执行历史**：```latex
-$O(|E|)$
+O(|E|)
 ```，其中```latex
-$|E|$
+|E|
 ```是执行事件数量
 
 ### 5.2 并发性能

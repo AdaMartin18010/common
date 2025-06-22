@@ -23,32 +23,30 @@
 
 **定义 1.1** (数据处理函数)
 设 ```latex
-$D$
+D
 ``` 为数据集，```latex
-$F$
+F
 ``` 为处理函数集合，数据处理函数 ```latex
-$f: D \rightarrow D'$
+f: D \rightarrow D'
 ``` 满足：
 
-```latex
-$$
+$
 f(d) = \begin{cases}
 \text{transform}(d) & \text{if } \text{valid}(d) \\
 \text{clean}(d) & \text{if } \text{dirty}(d) \\
 \text{drop}(d) & \text{if } \text{invalid}(d)
 \end{cases}
-$$
-```
+$
 
 **定理 1.1** (数据处理幂等性)
 对于数据处理函数 ```latex
-$f$
+f
 ```，如果 ```latex
-$f$
+f
 ``` 是幂等的，则：
 
 $```latex
-$f(f(d)) = f(d)$
+f(f(d)) = f(d)
 ```$
 
 ### 1.2 处理模式
@@ -335,11 +333,11 @@ func FlattenJSON(data map[string]interface{}) map[string]interface{} {
 
 **定义 4.1** (聚合函数)
 聚合函数 ```latex
-$f: D^n \rightarrow D$
+f: D^n \rightarrow D
 ``` 满足：
 
 $```latex
-$f(d_1, d_2, ..., d_n) = \text{aggregate}(d_1, d_2, ..., d_n)$
+f(d_1, d_2, ..., d_n) = \text{aggregate}(d_1, d_2, ..., d_n)
 ```$
 
 常见的聚合函数包括：
@@ -471,7 +469,7 @@ func ExampleGroupAggregation() {
 流处理是对连续数据流的实时处理，满足：
 
 $```latex
-$\text{Stream}(t) = \text{process}(\text{data}_t, \text{state}_{t-1})$
+\text{Stream}(t) = \text{process}(\text{data}_t, \text{state}_{t-1})
 ```$
 
 ```go
@@ -621,11 +619,11 @@ func ExampleStreamProcessing() {
 批处理是对大量数据的批量处理，满足：
 
 $```latex
-$\text{Batch}(D) = \bigcup_{i=1}^{n} \text{process}(D_i)$
+\text{Batch}(D) = \bigcup_{i=1}^{n} \text{process}(D_i)
 ```$
 
 其中 ```latex
-$D = \{D_1, D_2, ..., D_n\}$
+D = \{D_1, D_2, ..., D_n\}
 ``` 是数据分片。
 
 ```go
@@ -800,11 +798,11 @@ func (wcr *WordCountReducer) Reduce(key string, values [][]byte) ([]byte, error)
 
 **定义 7.1** (实时处理)
 实时处理要求在时间约束 ```latex
-$T$
+T
 ``` 内完成处理：
 
 $```latex
-$\text{RealTime}(data_t) = \text{process}(data_t) \text{ s.t. } \text{latency} \leq T$
+\text{RealTime}(data_t) = \text{process}(data_t) \text{ s.t. } \text{latency} \leq T
 ```$
 
 ```go

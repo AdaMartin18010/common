@@ -10,34 +10,34 @@
 
 **定义 2.2.1** (抽象)
 抽象 ```latex
-$A$
+A
 ``` 是一个接口或抽象类的集合，定义了系统的行为规范：
 $```latex
-$A = \{a_1, a_2, \ldots, a_n\}$
+A = \{a_1, a_2, \ldots, a_n\}
 ```$
 
 其中 ```latex
-$a_i$
+a_i
 ``` 是抽象方法。
 
 **定义 2.2.2** (实现)
 实现 ```latex
-$I$
+I
 ``` 是一个具体类的集合，提供了抽象的具体实现：
 $```latex
-$I = \{i_1, i_2, \ldots, i_m\}$
+I = \{i_1, i_2, \ldots, i_m\}
 ```$
 
 其中 ```latex
-$i_j$
+i_j
 ``` 是具体实现。
 
 **定义 2.2.3** (桥接)
 桥接 ```latex
-$B$
+B
 ``` 是抽象与实现之间的连接：
 $```latex
-$B: A \times I \rightarrow \text{System}$
+B: A \times I \rightarrow \text{System}
 ```$
 
 ### 桥接模式的形式化模型
@@ -45,27 +45,27 @@ $B: A \times I \rightarrow \text{System}$
 **定义 2.2.4** (桥接模式)
 桥接模式是一个三元组：
 $```latex
-$\text{BridgePattern} = \langle A, I, B \rangle$
+\text{BridgePattern} = \langle A, I, B \rangle
 ```$
 
 其中：
 
 - ```latex
-$A$
+A
 ```: 抽象集合
 - ```latex
-$I$
+I
 ```: 实现集合
 - ```latex
-$B$
+B
 ```: 桥接函数
 
 **定义 2.2.5** (解耦性)
 抽象与实现解耦，记作 ```latex
-$A \perp I$
+A \perp I
 ```，当且仅当：
 $```latex
-$\forall a \in A, \forall i \in I: \text{change}(a) \not\Rightarrow \text{change}(i)$
+\forall a \in A, \forall i \in I: \text{change}(a) \not\Rightarrow \text{change}(i)
 ```$
 
 ## 核心定理
@@ -74,7 +74,7 @@ $\forall a \in A, \forall i \in I: \text{change}(a) \not\Rightarrow \text{change
 
 **定理**: 桥接模式实现抽象与实现的完全解耦：
 $```latex
-$A \perp I$
+A \perp I
 ```$
 
 **证明**:
@@ -88,7 +88,7 @@ $A \perp I$
 
 **定理**: 桥接模式支持任意组合：
 $```latex
-$\forall a \in A, \forall i \in I: B(a, i) \text{ is valid}$
+\forall a \in A, \forall i \in I: B(a, i) \text{ is valid}
 ```$
 
 **证明**:

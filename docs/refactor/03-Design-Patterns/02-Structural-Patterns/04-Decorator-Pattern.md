@@ -5,25 +5,25 @@
 ### 1.1 数学定义
 
 设 ```latex
-$C$
+C
 ``` 为组件接口，```latex
-$D$
+D
 ``` 为装饰器集合，装饰器模式满足以下公理：
 
 $```latex
-$\forall c \in C, \forall d \in D: \text{decorate}(c, d) \rightarrow C$
+\forall c \in C, \forall d \in D: \text{decorate}(c, d) \rightarrow C
 ```$
 
 **形式化约束**：
 
 - **接口保持**: ```latex
-$\text{interface}(\text{decorate}(c, d)) = \text{interface}(c)$
+\text{interface}(\text{decorate}(c, d)) = \text{interface}(c)
 ```
 - **功能增强**: ```latex
-$\text{function}(\text{decorate}(c, d)) \supset \text{function}(c)$
+\text{function}(\text{decorate}(c, d)) \supset \text{function}(c)
 ```
 - **组合性**: ```latex
-$\text{decorate}(\text{decorate}(c, d_1), d_2) = \text{decorate}(c, d_1 \circ d_2)$
+\text{decorate}(\text{decorate}(c, d_1), d_2) = \text{decorate}(c, d_1 \circ d_2)
 ```
 
 ### 1.2 类型理论定义

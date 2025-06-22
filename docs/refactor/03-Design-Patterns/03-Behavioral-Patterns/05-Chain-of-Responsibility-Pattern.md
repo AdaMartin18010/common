@@ -72,30 +72,30 @@
 ### 2.1 责任链定义
 
 设 ```latex
-$H$
+H
 ``` 为处理者集合，```latex
-$R$
+R
 ``` 为请求集合，```latex
-$P$
+P
 ``` 为处理函数，则责任链可形式化为：
 
 $```latex
-$\text{Chain of Responsibility} = (H, R, P, \text{next})$
+\text{Chain of Responsibility} = (H, R, P, \text{next})
 ```$
 
 其中：
 
 - ```latex
-$H = \{h_1, h_2, ..., h_n\}$
+H = \{h_1, h_2, ..., h_n\}
 ``` 为处理者集合
 - ```latex
-$R = \{r_1, r_2, ..., r_m\}$
+R = \{r_1, r_2, ..., r_m\}
 ``` 为请求集合
 - ```latex
-$P: H \times R \rightarrow \text{Result}$
+P: H \times R \rightarrow \text{Result}
 ``` 为处理函数
 - ```latex
-$\text{next}: H \rightarrow H$
+\text{next}: H \rightarrow H
 ``` 为下一个处理者函数
 
 ### 2.2 处理者接口定义
@@ -154,16 +154,16 @@ func (r *BaseRequest) GetPriority() int {
 责任链模式基于链表数据结构：
 
 $```latex
-$L = (N, \text{next})$
+L = (N, \text{next})
 ```$
 
 其中：
 
 - ```latex
-$N$
+N
 ``` 为节点集合
 - ```latex
-$\text{next}: N \rightarrow N \cup \{\text{nil}\}$
+\text{next}: N \rightarrow N \cup \{\text{nil}\}
 ``` 为后继函数
 
 ### 3.2 函数组合理论
@@ -171,7 +171,7 @@ $\text{next}: N \rightarrow N \cup \{\text{nil}\}$
 责任链体现了函数组合的概念：
 
 $```latex
-$f_1 \circ f_2 \circ ... \circ f_n(x) = f_1(f_2(...(f_n(x))))$
+f_1 \circ f_2 \circ ... \circ f_n(x) = f_1(f_2(...(f_n(x))))
 ```$
 
 ### 3.3 偏序关系
@@ -179,7 +179,7 @@ $f_1 \circ f_2 \circ ... \circ f_n(x) = f_1(f_2(...(f_n(x))))$
 处理者之间存在偏序关系：
 
 $```latex
-$\forall h_i, h_j \in H: h_i \preceq h_j \text{ if } h_i \text{ can handle requests that } h_j \text{ cannot}$
+\forall h_i, h_j \in H: h_i \preceq h_j \text{ if } h_i \text{ can handle requests that } h_j \text{ cannot}
 ```$
 
 ## 4. 模式结构
@@ -1042,31 +1042,31 @@ func (sc *SafeChain) HandleSafe(request Request) ProcessingResult {
 
 **证明**：
 设 ```latex
-$H$
+H
 ``` 为现有处理者集合，```latex
-$H'$
+H'
 ``` 为新增处理者集合，```latex
-$C$
+C
 ``` 为客户端。
 
 对于任意 ```latex
-$h \in H'$
+h \in H'
 ```，由于 ```latex
-$h$
+h
 ``` 实现了处理者接口 ```latex
-$P$
+P
 ```，且 ```latex
-$C$
+C
 ``` 依赖于 ```latex
-$P$
+P
 ``` 而非具体实现，因此：
 
 $```latex
-$C \circ h \text{ 是有效的}$
+C \circ h \text{ 是有效的}
 ```$
 
 且不需要修改 ```latex
-$C$
+C
 ``` 的代码，因此满足开闭原则。
 
 **证毕**。

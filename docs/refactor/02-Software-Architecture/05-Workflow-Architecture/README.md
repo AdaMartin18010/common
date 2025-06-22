@@ -35,27 +35,27 @@
 
 **定义 1** (工作流空间)
 工作流空间 ```latex
-$W$
+W
 ``` 是一个拓扑空间，其中每个点代表一个工作流状态，每条路径代表一个工作流执行。
 
 **定义 2** (同伦等价)
 两个工作流执行 ```latex
-$\gamma_1, \gamma_2: [0,1] \to W$
+\gamma_1, \gamma_2: [0,1] \to W
 ``` 称为同伦等价，如果存在连续映射 ```latex
-$H: [0,1] \times [0,1] \to W$
+H: [0,1] \times [0,1] \to W
 ``` 使得：
 
 - ```latex
-$H(t,0) = \gamma_1(t)$
+H(t,0) = \gamma_1(t)
 ```
 - ```latex
-$H(t,1) = \gamma_2(t)$
+H(t,1) = \gamma_2(t)
 ```
 - ```latex
-$H(0,s) = \gamma_1(0) = \gamma_2(0)$
+H(0,s) = \gamma_1(0) = \gamma_2(0)
 ```
 - ```latex
-$H(1,s) = \gamma_1(1) = \gamma_2(1)$
+H(1,s) = \gamma_1(1) = \gamma_2(1)
 ```
 
 **定理 1** (工作流容错性)
@@ -65,7 +65,7 @@ $H(1,s) = \gamma_1(1) = \gamma_2(1)$
 
 **定义 3** (工作流范畴)
 工作流范畴 ```latex
-$\mathcal{W}$
+\mathcal{W}
 ``` 定义为：
 
 - 对象：工作流状态
@@ -74,32 +74,32 @@ $\mathcal{W}$
 
 **定理 2** (工作流组合性)
 若 ```latex
-$\mathcal{W}$
+\mathcal{W}
 ``` 是笛卡尔闭范畴，则支持高阶工作流。
 
 ### 时态逻辑
 
 **定义 4** (工作流时态逻辑)
 工作流时态逻辑 ```latex
-$\mathcal{L}$
+\mathcal{L}
 ``` 包含以下算子：
 
 - ```latex
-$\Box \phi$
+\Box \phi
 ```: 总是 ```latex
-$\phi$
+\phi
 ```
 - ```latex
-$\Diamond \phi$
+\Diamond \phi
 ```: 最终 ```latex
-$\phi$
+\phi
 ```
 - ```latex
-$\phi \mathcal{U} \psi$
+\phi \mathcal{U} \psi
 ```: ```latex
-$\phi$
+\phi
 ``` 直到 ```latex
-$\psi$
+\psi
 ```
 
 ## 架构模式
@@ -108,41 +108,41 @@ $\psi$
 
 **定义 5** (工作流状态机)
 工作流状态机是一个五元组 ```latex
-$(S, \Sigma, \delta, s_0, F)$
+(S, \Sigma, \delta, s_0, F)
 ```：
 
 - ```latex
-$S$
+S
 ```: 状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ```: 事件集合
 - ```latex
-$\delta: S \times \Sigma \to S$
+\delta: S \times \Sigma \to S
 ```: 状态转换函数
 - ```latex
-$s_0 \in S$
+s_0 \in S
 ```: 初始状态
 - ```latex
-$F \subseteq S$
+F \subseteq S
 ```: 接受状态集合
 
 ### 事件驱动模式
 
 **定义 6** (事件驱动工作流)
 事件驱动工作流基于事件流 ```latex
-$E = (e_1, e_2, \ldots)$
+E = (e_1, e_2, \ldots)
 ``` 执行，其中每个事件 ```latex
-$e_i$
+e_i
 ``` 触发相应的处理函数 ```latex
-$f_i$
+f_i
 ```。
 
 ### 管道模式
 
 **定义 7** (工作流管道)
 工作流管道是函数序列 ```latex
-$f_1 \circ f_2 \circ \cdots \circ f_n$
+f_1 \circ f_2 \circ \cdots \circ f_n
 ```，数据依次通过每个处理阶段。
 
 ### 编排模式

@@ -9,33 +9,31 @@
 ### 1.1.1 数字孪生模型
 
 数字孪生 ```latex
-$DT$
+DT
 ``` 是一个五元组 ```latex
-$(P, M, S, C, A)$
+(P, M, S, C, A)
 ```，其中：
 
 ```latex
-$```latex
-$DT = (P, M, S, C, A)$
+$DT = (P, M, S, C, A)
 ```$
-```
 
 其中：
 
 - ```latex
-$P$
+P
 ```: 物理实体
 - ```latex
-$M$
+M
 ```: 数字模型
 - ```latex
-$S$
+S
 ```: 同步机制
 - ```latex
-$C$
+C
 ```: 连接接口
 - ```latex
-$A$
+A
 ```: 分析算法
 
 ### 1.1.2 数字孪生层次
@@ -43,10 +41,8 @@ $A$
 数字孪生分为三个层次：
 
 ```latex
-$```latex
-$L = \{Data, Model, Service\}$
+$L = \{Data, Model, Service\}
 ```$
-```
 
 **数据层 (Data Layer)**
 
@@ -71,42 +67,38 @@ $L = \{Data, Model, Service\}$
 ### 1.2.1 系统架构
 
 数字孪生系统架构 ```latex
-$SA$
+SA
 ``` 定义为：
 
 ```latex
-$```latex
-$SA = \{Sensing, Communication, Computing, Storage, Visualization\}$
+$SA = \{Sensing, Communication, Computing, Storage, Visualization\}
 ```$
-```
 
 ### 1.2.2 数据流模型
 
 数据流 ```latex
-$DF$
+DF
 ``` 是一个四元组 ```latex
-$(S, T, P, C)$
+(S, T, P, C)
 ```，其中：
 
 ```latex
-$```latex
-$DF = (S, T, P, C)$
+$DF = (S, T, P, C)
 ```$
-```
 
 其中：
 
 - ```latex
-$S$
+S
 ```: 数据源集合
 - ```latex
-$T$
+T
 ```: 传输通道集合
 - ```latex
-$P$
+P
 ```: 处理节点集合
 - ```latex
-$C$
+C
 ```: 控制逻辑集合
 
 ## 1.3 同步机制
@@ -114,51 +106,45 @@ $C$
 ### 1.3.1 实时同步
 
 实时同步函数 ```latex
-$Sync: P \times M \rightarrow M$
+Sync: P \times M \rightarrow M
 ``` 定义为：
 
 ```latex
-$```latex
-$Sync(p, m) = m'$
+$Sync(p, m) = m'
 ```$
-```
 
 其中 ```latex
-$m'$
+m'
 ``` 是更新后的数字模型。
 
 ### 1.3.2 同步频率
 
 同步频率 ```latex
-$f_{sync}$
+f_{sync}
 ``` 定义为：
 
 ```latex
-$```latex
-$f_{sync} = \frac{1}{T_{sync}}$
+$f_{sync} = \frac{1}{T_{sync}}
 ```$
-```
 
 其中 ```latex
-$T_{sync}$
+T_{sync}
 ``` 是同步周期。
 
 ### 1.3.3 数据一致性
 
 数据一致性度量 ```latex
-$C$
+C
 ``` 定义为：
 
 ```latex
-$```latex
-$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}$
+$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}
 ```$
-```
 
 其中 ```latex
-$P_{real}$
+P_{real}
 ``` 是物理实体状态，```latex
-$P_{virtual}$
+P_{virtual}
 ``` 是虚拟模型状态。
 
 ## 1.4 建模方法
@@ -166,82 +152,76 @@ $P_{virtual}$
 ### 1.4.1 几何建模
 
 几何模型 ```latex
-$G$
+G
 ``` 是一个三元组 ```latex
-$(V, E, F)$
+(V, E, F)
 ```，其中：
 
 ```latex
-$```latex
-$G = (V, E, F)$
+$G = (V, E, F)
 ```$
-```
 
 其中：
 
 - ```latex
-$V$
+V
 ```: 顶点集合
 - ```latex
-$E$
+E
 ```: 边集合
 - ```latex
-$F$
+F
 ```: 面集合
 
 ### 1.4.2 物理建模
 
 物理模型 ```latex
-$P$
+P
 ``` 是一个四元组 ```latex
-$(M, F, E, C)$
+(M, F, E, C)
 ```，其中：
 
 ```latex
-$```latex
-$P = (M, F, E, C)$
+$P = (M, F, E, C)
 ```$
-```
 
 其中：
 
 - ```latex
-$M$
+M
 ```: 质量矩阵
 - ```latex
-$F$
+F
 ```: 力向量
 - ```latex
-$E$
+E
 ```: 能量函数
 - ```latex
-$C$
+C
 ```: 约束条件
 
 ### 1.4.3 行为建模
 
 行为模型 ```latex
-$B$
+B
 ``` 是一个三元组 ```latex
-$(S, A, T)$
+(S, A, T)
 ```，其中：
 
 ```latex
-$```latex
-$B = (S, A, T)$
+$B = (S, A, T)
 ```$
-```
 
 其中：
 
 - ```latex
-$S$
+S
 ```: 状态集合
 - ```latex
-$A$
+A
 ```: 动作集合
 - ```latex
-$T$
+T
 ```: 转移函数
 
 ## 1.5 Go语言实现
@@ -730,92 +710,82 @@ func (haa *HealthAnalysisAlgorithm) GetType() string {
 
 **定理 1.1** (数字孪生一致性)
 对于数字孪生 ```latex
-$DT = (P, M, S, C, A)$
+DT = (P, M, S, C, A)
 ```，如果同步机制 ```latex
-$S$
+S
 ``` 是 ```latex
-$\epsilon$
+\epsilon
 ```-精确的，则数据一致性 ```latex
-$C \geq 1 - \epsilon$
+C \geq 1 - \epsilon
 ```。
 
 **证明**：
 设同步机制 ```latex
-$S$
+S
 ``` 的精度为 ```latex
-$\epsilon$
+\epsilon
 ```，即 ```latex
-$|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}$
+|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}
 ```。
 
 数据一致性定义为：
 
 ```latex
-$```latex
-$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}$
+$C = 1 - \frac{|P_{real} - P_{virtual}|}{P_{real}}
 ```$
-```
 
 由于 ```latex
-$|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}$
+|P_{real} - P_{virtual}| \leq \epsilon \cdot P_{real}
 ```，所以：
 
 ```latex
-$```latex
-$C \geq 1 - \frac{\epsilon \cdot P_{real}}{P_{real}} = 1 - \epsilon$
+$C \geq 1 - \frac{\epsilon \cdot P_{real}}{P_{real}} = 1 - \epsilon
 ```$
-```
 
 ### 1.7.2 同步频率优化
 
 **定理 1.2** (同步频率优化)
 对于给定的精度要求 ```latex
-$\epsilon$
+\epsilon
 ```，最优同步频率 ```latex
-$f_{opt}$
+f_{opt}
 ``` 满足：
 
 ```latex
-$```latex
-$f_{opt} = \sqrt{\frac{\alpha}{\beta \cdot \epsilon}}$
+$f_{opt} = \sqrt{\frac{\alpha}{\beta \cdot \epsilon}}
 ```$
-```
 
 其中 ```latex
-$\alpha$
+\alpha
 ``` 是系统变化率，```latex
-$\beta$
+\beta
 ``` 是同步成本。
 
 **证明**：
 设总成本 ```latex
-$C_{total} = C_{sync} + C_{error}$
+C_{total} = C_{sync} + C_{error}
 ```，其中：
 
 - ```latex
-$C_{sync} = \beta \cdot f$
+C_{sync} = \beta \cdot f
 ``` 是同步成本
 - ```latex
-$C_{error} = \alpha / f$
+C_{error} = \alpha / f
 ``` 是误差成本
 
 对 ```latex
-$f$
+f
 ``` 求导并令其为零：
 
 ```latex
-$```latex
-$\frac{dC_{total}}{df} = \beta - \frac{\alpha}{f^2} = 0$
+$\frac{dC_{total}}{df} = \beta - \frac{\alpha}{f^2} = 0
 ```$
-```
 
 解得：
 
 ```latex
-$```latex
-$f_{opt} = \sqrt{\frac{\alpha}{\beta}}$
+$f_{opt} = \sqrt{\frac{\alpha}{\beta}}
 ```$
-```
 
 ## 1.8 总结
 

@@ -59,12 +59,12 @@
 ```latex
 // 量子比特表示
 ```latex
-$|q\rangle = \alpha|0\rangle + \beta|1\rangle$
+|q\rangle = \alpha|0\rangle + \beta|1\rangle
 ```
 
 // 量子门操作
 ```latex
-$H = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$
+H = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}
 ```
 
 // 量子测量
@@ -152,14 +152,14 @@ func (qsv *QuantumStateVisualizer) BlochSphereCoordinates(qubit *Qubit) (theta, 
 ```python
 # 行内数学表达式
 r'(?<!```latex\n)\```latex
-$([^$
+([^
 ```]+)\$(?!\n```)'
 
 # 块级数学表达式  
 r'(?<!```latex\n)\```latex
-$\$
+\
 ```([^```latex
-$]+)\$
+]+)\
 ```\$(?!\n```)'
 ```
 

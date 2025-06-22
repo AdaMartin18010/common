@@ -42,23 +42,23 @@
 
 **形式化定义**：
 工作流可以表示为五元组 ```latex
-$W = \{A, T, D, R, C\}$
+W = \{A, T, D, R, C\}
 ```，其中：
 
 - ```latex
-$A$
+A
 ```：活动集合 (Activities)
 - ```latex
-$T$
+T
 ```：活动间转移关系 (Transitions)
 - ```latex
-$D$
+D
 ```：数据对象集合 (Data Objects)
 - ```latex
-$R$
+R
 ```：资源集合 (Resources)
 - ```latex
-$C$
+C
 ```：约束条件集合 (Constraints)
 
 ### 2. 工作流管理联盟 (WfMC) 定义

@@ -8,14 +8,14 @@
 
 **形式化定义**：
 设 ```latex
-$P$
+P
 ``` 为程序，```latex
-$S$
+S
 ``` 为程序状态空间，静态分析函数 ```latex
-$A: P \rightarrow 2^S$
+A: P \rightarrow 2^S
 ``` 满足：
 $```latex
-$A(P) = \{s \in S | \exists \text{ execution path } \pi: s \in \pi\}$
+A(P) = \{s \in S | \exists \text{ execution path } \pi: s \in \pi\}
 ```$
 
 ### 1.2 理论基础
@@ -25,30 +25,30 @@ $A(P) = \{s \in S | \exists \text{ execution path } \pi: s \in \pi\}$
 抽象解释是静态分析的理论基础，通过抽象域来近似程序行为：
 
 **定义**：抽象域 ```latex
-$(D, \sqsubseteq, \sqcup, \sqcap)$
+(D, \sqsubseteq, \sqcup, \sqcap)
 ``` 是一个完全格，其中：
 
 - ```latex
-$D$
+D
 ``` 是抽象值的集合
 - ```latex
-$\sqsubseteq$
+\sqsubseteq
 ``` 是偏序关系
 - ```latex
-$\sqcup$
+\sqcup
 ``` 是上确界操作
 - ```latex
-$\sqcap$
+\sqcap
 ``` 是下确界操作
 
 **Galois连接**：
 $```latex
-$(\alpha, \gamma): \mathcal{P}(S) \leftrightarrow D$
+(\alpha, \gamma): \mathcal{P}(S) \leftrightarrow D
 ```$
 其中 ```latex
-$\alpha$
+\alpha
 ``` 是抽象函数，```latex
-$\gamma$
+\gamma
 ``` 是具体化函数。
 
 ## 2. 数据流分析
@@ -58,45 +58,45 @@ $\gamma$
 #### 2.1.1 理论基础
 
 **定义**：变量 ```latex
-$v$
+v
 ``` 在程序点 ```latex
-$p$
+p
 ``` 处的定义 ```latex
-$d$
+d
 ``` 可达，当且仅当存在从 ```latex
-$d$
+d
 ``` 到 ```latex
-$p$
+p
 ``` 的路径，且该路径上 ```latex
-$v$
+v
 ``` 没有被重新定义。
 
 **形式化定义**：
 $```latex
-$RD(p) = \bigcup_{q \in pred(p)} (RD(q) \setminus kill(q) \cup gen(q))$
+RD(p) = \bigcup_{q \in pred(p)} (RD(q) \setminus kill(q) \cup gen(q))
 ```$
 
 其中：
 
 - ```latex
-$RD(p)$
+RD(p)
 ``` 是程序点 ```latex
-$p$
+p
 ``` 处的可达定义集合
 - ```latex
-$pred(p)$
+pred(p)
 ``` 是 ```latex
-$p$
+p
 ``` 的前驱节点集合
 - ```latex
-$kill(q)$
+kill(q)
 ``` 是在 ```latex
-$q$
+q
 ``` 处被杀死（覆盖）的定义
 - ```latex
-$gen(q)$
+gen(q)
 ``` 是在 ```latex
-$q$
+q
 ``` 处生成的新定义
 
 #### 2.1.2 Go语言实现
@@ -273,43 +273,43 @@ func (g *GenericStaticAnalyzer[T]) Analyze(node ast.Node) {
 #### 2.2.1 理论基础
 
 **定义**：变量 ```latex
-$v$
+v
 ``` 在程序点 ```latex
-$p$
+p
 ``` 处活跃，当且仅当存在从 ```latex
-$p$
+p
 ``` 开始的路径，在该路径上 ```latex
-$v$
+v
 ``` 被使用且在此之前 ```latex
-$v$
+v
 ``` 没有被重新定义。
 
 **形式化定义**：
 $```latex
-$LV(p) = \bigcup_{q \in succ(p)} (LV(q) \setminus def(q) \cup use(q))$
+LV(p) = \bigcup_{q \in succ(p)} (LV(q) \setminus def(q) \cup use(q))
 ```$
 
 其中：
 
 - ```latex
-$LV(p)$
+LV(p)
 ``` 是程序点 ```latex
-$p$
+p
 ``` 处的活跃变量集合
 - ```latex
-$succ(p)$
+succ(p)
 ``` 是 ```latex
-$p$
+p
 ``` 的后继节点集合
 - ```latex
-$def(q)$
+def(q)
 ``` 是在 ```latex
-$q$
+q
 ``` 处定义的变量
 - ```latex
-$use(q)$
+use(q)
 ``` 是在 ```latex
-$q$
+q
 ``` 处使用的变量
 
 #### 2.2.2 Go语言实现
@@ -457,14 +457,14 @@ func (lva *LiveVariableAnalysis) IsVariableLive(variable string, line int) bool 
 #### 3.1.1 理论基础
 
 **控制流图 (CFG)** 是一个有向图 ```latex
-$G = (V, E)$
+G = (V, E)
 ```，其中：
 
 - ```latex
-$V$
+V
 ``` 是基本块的集合
 - ```latex
-$E$
+E
 ``` 是基本块之间的控制流边
 
 **基本块** 是程序中的线性指令序列，只有一个入口点和一个出口点。
@@ -708,7 +708,7 @@ func (da *DominanceAnalysis) Dominates(block1, block2 *BasicBlock) bool {
 
 **类型推导** 是从表达式中推断类型的过程：
 $```latex
-$\frac{\Gamma \vdash e_1 : \tau_1 \quad \Gamma \vdash e_2 : \tau_2}{\Gamma \vdash e_1 + e_2 : \tau_1 \sqcup \tau_2}$
+\frac{\Gamma \vdash e_1 : \tau_1 \quad \Gamma \vdash e_2 : \tau_2}{\Gamma \vdash e_1 + e_2 : \tau_1 \sqcup \tau_2}
 ```$
 
 #### 4.1.2 Go语言实现
@@ -932,16 +932,16 @@ func (tc *TypeChecker) unifyNumericTypes(t1, t2 Type) Type {
 
 **形式化定义**：
 设 ```latex
-$B$
+B
 ``` 为缓冲区，```latex
-$size(B)$
+size(B)
 ``` 为缓冲区大小，```latex
-$access(B, i)$
+access(B, i)
 ``` 为对位置 ```latex
-$i$
+i
 ``` 的访问，则：
 $```latex
-$\forall i: access(B, i) \Rightarrow 0 \leq i < size(B)$
+\forall i: access(B, i) \Rightarrow 0 \leq i < size(B)
 ```$
 
 #### 5.1.2 Go语言实现
@@ -1076,12 +1076,12 @@ func (bod *BufferOverflowDetector) isIndexSafe(index ast.Expr, size int) bool {
 
 **形式化定义**：
 设 ```latex
-$p$
+p
 ``` 为指针，```latex
-$*p$
+*p
 ``` 为解引用操作，则：
 $```latex
-$*p \Rightarrow p \neq null$
+*p \Rightarrow p \neq null
 ```$
 
 #### 5.2.2 Go语言实现
@@ -1197,7 +1197,7 @@ func (npd *NullPointerDetector) checkNullDereferences() {
 
 **大O记号**：
 $```latex
-$f(n) = O(g(n)) \Leftrightarrow \exists c, n_0: \forall n \geq n_0, f(n) \leq c \cdot g(n)$
+f(n) = O(g(n)) \Leftrightarrow \exists c, n_0: \forall n \geq n_0, f(n) \leq c \cdot g(n)
 ```$
 
 #### 6.1.2 Go语言实现

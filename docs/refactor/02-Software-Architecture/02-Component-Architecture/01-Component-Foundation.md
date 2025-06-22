@@ -89,87 +89,87 @@ graph TB
 ### 2.1 基本定义
 
 设 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 为组件集合，```latex
-$\mathcal{I}$
+\mathcal{I}
 ``` 为接口集合，```latex
-$\mathcal{P}$
+\mathcal{P}
 ``` 为端口集合。
 
 **定义 2.1** (组件)
 组件是一个四元组 ```latex
-$(\mathcal{I}_p, \mathcal{I}_r, \mathcal{S}, \mathcal{B})$
+(\mathcal{I}_p, \mathcal{I}_r, \mathcal{S}, \mathcal{B})
 ```，其中：
 
 - ```latex
-$\mathcal{I}_p = \{I_1^p, I_2^p, \ldots, I_n^p\}$
+\mathcal{I}_p = \{I_1^p, I_2^p, \ldots, I_n^p\}
 ``` 是提供接口集合
 - ```latex
-$\mathcal{I}_r = \{I_1^r, I_2^r, \ldots, I_m^r\}$
+\mathcal{I}_r = \{I_1^r, I_2^r, \ldots, I_m^r\}
 ``` 是需求接口集合
 - ```latex
-$\mathcal{S}$
+\mathcal{S}
 ``` 是组件状态
 - ```latex
-$\mathcal{B}$
+\mathcal{B}
 ``` 是组件行为
 
 **定义 2.2** (组件架构)
 组件架构是一个三元组 ```latex
-$(\mathcal{C}, \mathcal{L}, \mathcal{B})$
+(\mathcal{C}, \mathcal{L}, \mathcal{B})
 ```，其中：
 
 - ```latex
-$\mathcal{C} = \{C_1, C_2, \ldots, C_n\}$
+\mathcal{C} = \{C_1, C_2, \ldots, C_n\}
 ``` 是组件集合
 - ```latex
-$\mathcal{L} \subseteq \mathcal{C} \times \mathcal{C}$
+\mathcal{L} \subseteq \mathcal{C} \times \mathcal{C}
 ``` 是连接关系
 - ```latex
-$\mathcal{B}: \mathcal{C} \times \mathcal{C} \rightarrow \mathcal{I}$
+\mathcal{B}: \mathcal{C} \times \mathcal{C} \rightarrow \mathcal{I}
 ``` 是绑定函数
 
 ### 2.2 形式化规范
 
 **公理 2.1** (接口兼容性)
 对于任意连接的两个组件 ```latex
-$C_i, C_j \in \mathcal{C}$
+C_i, C_j \in \mathcal{C}
 ```：
 
 $```latex
-$\mathcal{L}(C_i, C_j) \Rightarrow \text{compatible}(\mathcal{I}_p(C_i), \mathcal{I}_r(C_j))$
+\mathcal{L}(C_i, C_j) \Rightarrow \text{compatible}(\mathcal{I}_p(C_i), \mathcal{I}_r(C_j))
 ```$
 
 **公理 2.2** (组件独立性)
 对于任意组件 ```latex
-$C \in \mathcal{C}$
+C \in \mathcal{C}
 ```：
 
 $```latex
-$\text{independent}(C) \Leftrightarrow \forall C' \in \mathcal{C}: C' \neq C \Rightarrow \text{no\_direct\_dependency}(C, C')$
+\text{independent}(C) \Leftrightarrow \forall C' \in \mathcal{C}: C' \neq C \Rightarrow \text{no\_direct\_dependency}(C, C')
 ```$
 
 ### 2.3 组件生命周期
 
 **定义 2.3** (组件生命周期)
 组件生命周期是一个状态机 ```latex
-$(\mathcal{Q}, \Sigma, \delta, q_0, F)$
+(\mathcal{Q}, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$\mathcal{Q} = \{\text{created}, \text{initialized}, \text{active}, \text{inactive}, \text{destroyed}\}$
+\mathcal{Q} = \{\text{created}, \text{initialized}, \text{active}, \text{inactive}, \text{destroyed}\}
 ```
 - ```latex
-$\Sigma = \{\text{init}, \text{start}, \text{stop}, \text{destroy}\}$
+\Sigma = \{\text{init}, \text{start}, \text{stop}, \text{destroy}\}
 ```
 - ```latex
-$\delta: \mathcal{Q} \times \Sigma \rightarrow \mathcal{Q}$
+\delta: \mathcal{Q} \times \Sigma \rightarrow \mathcal{Q}
 ``` 是状态转换函数
 - ```latex
-$q_0 = \text{created}$
+q_0 = \text{created}
 ``` 是初始状态
 - ```latex
-$F = \{\text{destroyed}\}$
+F = \{\text{destroyed}\}
 ``` 是终止状态集合
 
 ## 3. 数学基础
@@ -178,15 +178,15 @@ $F = \{\text{destroyed}\}$
 
 **定理 3.1** (组件依赖图)
 设 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 为组件依赖图，其中 ```latex
-$V = \mathcal{C}$
+V = \mathcal{C}
 ``` 是组件集合，```latex
-$E = \mathcal{L}$
+E = \mathcal{L}
 ``` 是连接关系，则：
 
 $```latex
-$\text{acyclic}(G) \Leftrightarrow \text{no\_circular\_dependencies}(\mathcal{C})$
+\text{acyclic}(G) \Leftrightarrow \text{no\_circular\_dependencies}(\mathcal{C})
 ```$
 
 **证明**:
@@ -199,13 +199,13 @@ $\text{acyclic}(G) \Leftrightarrow \text{no\_circular\_dependencies}(\mathcal{C}
 
 **定理 3.2** (组件组合性)
 设 ```latex
-$C_1, C_2$
+C_1, C_2
 ``` 为两个组件，```latex
-$C = C_1 \oplus C_2$
+C = C_1 \oplus C_2
 ``` 为它们的组合，则：
 
 $```latex
-$\text{interface}(C) = \text{interface}(C_1) \cup \text{interface}(C_2) - \text{bound\_interfaces}$
+\text{interface}(C) = \text{interface}(C_1) \cup \text{interface}(C_2) - \text{bound\_interfaces}
 ```$
 
 **证明**:
@@ -218,15 +218,15 @@ $\text{interface}(C) = \text{interface}(C_1) \cup \text{interface}(C_2) - \text{
 
 **定理 3.3** (组件信息熵)
 设 ```latex
-$C$
+C
 ``` 为组件，```latex
-$p_i$
+p_i
 ``` 为第 ```latex
-$i$
+i
 ``` 个接口的使用概率，则组件信息熵为：
 
 $```latex
-$H(C) = -\sum_{i=1}^{n} p_i \log p_i$
+H(C) = -\sum_{i=1}^{n} p_i \log p_i
 ```$
 
 **证明**:
@@ -1189,20 +1189,20 @@ func TestComponent(t *testing.T) {
 ### 10.4 数学总结
 
 组件架构通过形式化定义 ```latex
-$(\mathcal{C}, \mathcal{L}, \mathcal{B})$
+(\mathcal{C}, \mathcal{L}, \mathcal{B})
 ``` 实现了系统的模块化，其中：
 
 - **接口兼容性**: ```latex
-$\mathcal{L}(C_i, C_j) \Rightarrow \text{compatible}(\mathcal{I}_p(C_i), \mathcal{I}_r(C_j))$
+\mathcal{L}(C_i, C_j) \Rightarrow \text{compatible}(\mathcal{I}_p(C_i), \mathcal{I}_r(C_j))
 ```
 - **组件独立性**: ```latex
-$\text{independent}(C) \Leftrightarrow \forall C' \in \mathcal{C}: C' \neq C \Rightarrow \text{no\_direct\_dependency}(C, C')$
+\text{independent}(C) \Leftrightarrow \forall C' \in \mathcal{C}: C' \neq C \Rightarrow \text{no\_direct\_dependency}(C, C')
 ```
 - **组合性**: ```latex
-$\text{interface}(C) = \text{interface}(C_1) \cup \text{interface}(C_2) - \text{bound\_interfaces}$
+\text{interface}(C) = \text{interface}(C_1) \cup \text{interface}(C_2) - \text{bound\_interfaces}
 ```
 - **信息熵**: ```latex
-$H(C) = -\sum_{i=1}^{n} p_i \log p_i$
+H(C) = -\sum_{i=1}^{n} p_i \log p_i
 ```
 
 这种架构在Go语言中通过接口、泛型和函数式编程得到了优雅的实现，既保持了类型安全，又提供了良好的扩展性。

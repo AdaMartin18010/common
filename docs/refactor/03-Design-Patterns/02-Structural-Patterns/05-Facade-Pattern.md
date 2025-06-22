@@ -5,27 +5,27 @@
 ### 1.1 数学定义
 
 设 ```latex
-$S$
+S
 ``` 为子系统集合，```latex
-$F$
+F
 ``` 为外观类，```latex
-$C$
+C
 ``` 为客户端，外观模式满足以下公理：
 
 $```latex
-$\forall s \in S, \exists f \in F: \text{facade}(f, s) \rightarrow \text{simplified}(C, s)$
+\forall s \in S, \exists f \in F: \text{facade}(f, s) \rightarrow \text{simplified}(C, s)
 ```$
 
 **形式化约束**：
 
 - **接口简化**: ```latex
-$\text{complex}(S) \land \text{facade}(F) \implies \text{simple}(C \rightarrow S)$
+\text{complex}(S) \land \text{facade}(F) \implies \text{simple}(C \rightarrow S)
 ```
 - **依赖倒置**: ```latex
-$\text{depend}(C, F) \land \text{depend}(F, S) \implies \text{not\_depend}(C, S)$
+\text{depend}(C, F) \land \text{depend}(F, S) \implies \text{not\_depend}(C, S)
 ```
 - **封装性**: ```latex
-$\text{internal}(S) \land \text{external}(F) \implies \text{hidden}(S)$
+\text{internal}(S) \land \text{external}(F) \implies \text{hidden}(S)
 ```
 
 ### 1.2 类型理论定义

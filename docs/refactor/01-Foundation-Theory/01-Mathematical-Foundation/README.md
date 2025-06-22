@@ -97,49 +97,49 @@ A = \{x \mid P(x)\}
 ```
 
 其中 ```latex
-$P(x)$
+P(x)
 ``` 是描述元素性质的谓词。
 
 ### 1.2 集合运算
 
 **定义 1.2** (集合运算): 给定集合 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ```，定义以下运算：
 
 - **并集**: ```latex
-$A \cup B = \{x \mid x \in A \lor x \in B\}$
+A \cup B = \{x \mid x \in A \lor x \in B\}
 ```
 - **交集**: ```latex
-$A \cap B = \{x \mid x \in A \land x \in B\}$
+A \cap B = \{x \mid x \in A \land x \in B\}
 ```
 - **差集**: ```latex
-$A \setminus B = \{x \mid x \in A \land x \notin B\}$
+A \setminus B = \{x \mid x \in A \land x \notin B\}
 ```
 - **补集**: ```latex
-$A^c = \{x \mid x \notin A\}$
+A^c = \{x \mid x \notin A\}
 ```
 
 ### 1.3 关系与函数
 
 **定义 1.3** (关系): 集合 ```latex
-$A$
+A
 ``` 到集合 ```latex
-$B$
+B
 ``` 的关系是 ```latex
-$A \times B$
+A \times B
 ``` 的子集。
 
 **定义 1.4** (函数): 函数 ```latex
-$f: A \rightarrow B$
+f: A \rightarrow B
 ``` 是满足以下条件的关系：
 
 - ```latex
-$\forall a \in A, \exists b \in B: (a,b) \in f$
+\forall a \in A, \exists b \in B: (a,b) \in f
 ```
 - ```latex
-$\forall a \in A, \forall b_1, b_2 \in B: (a,b_1) \in f \land (a,b_2) \in f \Rightarrow b_1 = b_2$
+\forall a \in A, \forall b_1, b_2 \in B: (a,b_1) \in f \land (a,b_2) \in f \Rightarrow b_1 = b_2
 ```
 
 ### 1.4 Go语言实现
@@ -233,19 +233,19 @@ func ExampleSetOperations() {
 **基本逻辑运算符**:
 
 - **否定**: ```latex
-$\neg p$
+\neg p
 ``` (非p)
 - **合取**: ```latex
-$p \land q$
+p \land q
 ``` (p且q)
 - **析取**: ```latex
-$p \lor q$
+p \lor q
 ``` (p或q)
 - **蕴含**: ```latex
-$p \rightarrow q$
+p \rightarrow q
 ``` (如果p则q)
 - **等价**: ```latex
-$p \leftrightarrow q$
+p \leftrightarrow q
 ``` (p当且仅当q)
 
 ### 2.2 谓词逻辑
@@ -255,26 +255,26 @@ $p \leftrightarrow q$
 **量词**:
 
 - **全称量词**: ```latex
-$\forall x P(x)$
+\forall x P(x)
 ``` (对所有x，P(x)成立)
 - **存在量词**: ```latex
-$\exists x P(x)$
+\exists x P(x)
 ``` (存在x，使得P(x)成立)
 
 ### 2.3 逻辑推理规则
 
 **定理 2.1** (假言推理): 如果 ```latex
-$p \rightarrow q$
+p \rightarrow q
 ``` 和 ```latex
-$p$
+p
 ``` 都为真，则 ```latex
-$q$
+q
 ``` 为真。
 
 **定理 2.2** (反证法): 如果假设 ```latex
-$\neg p$
+\neg p
 ``` 导致矛盾，则 ```latex
-$p$
+p
 ``` 为真。
 
 ### 2.4 Go语言实现
@@ -352,37 +352,37 @@ func ExampleLogic() {
 ### 3.1 基本概念
 
 **定义 3.1** (图): 图 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 由顶点集 ```latex
-$V$
+V
 ``` 和边集 ```latex
-$E$
+E
 ``` 组成，其中 ```latex
-$E \subseteq V \times V$
+E \subseteq V \times V
 ```。
 
 **定义 3.2** (有向图): 有向图的边是有序对 ```latex
-$(u, v)$
+(u, v)
 ```，表示从顶点 ```latex
-$u$
+u
 ``` 到顶点 ```latex
-$v$
+v
 ``` 的边。
 
 **定义 3.3** (无向图): 无向图的边是无序对 ```latex
-$\{u, v\}$
+\{u, v\}
 ```，表示顶点 ```latex
-$u$
+u
 ``` 和 ```latex
-$v$
+v
 ``` 之间的连接。
 
 ### 3.2 图的表示
 
 **邻接矩阵**: 对于图 ```latex
-$G = (V, E)$
+G = (V, E)
 ```，邻接矩阵 ```latex
-$A$
+A
 ``` 定义为：
 
 ```latex
@@ -397,11 +397,11 @@ A_{ij} = \begin{cases}
 ### 3.3 图算法
 
 **定理 3.1** (深度优先搜索): DFS的时间复杂度为 ```latex
-$O(|V| + |E|)$
+O(|V| + |E|)
 ```。
 
 **定理 3.2** (广度优先搜索): BFS的时间复杂度为 ```latex
-$O(|V| + |E|)$
+O(|V| + |E|)
 ```。
 
 ### 3.4 Go语言实现
@@ -504,30 +504,30 @@ func ExampleGraph() {
 ### 4.1 基本概念
 
 **定义 4.1** (样本空间): 样本空间 ```latex
-$\Omega$
+\Omega
 ``` 是所有可能结果的集合。
 
 **定义 4.2** (事件): 事件是样本空间的子集。
 
 **定义 4.3** (概率): 概率函数 ```latex
-$P: 2^\Omega \rightarrow [0,1]$
+P: 2^\Omega \rightarrow [0,1]
 ``` 满足：
 
 - ```latex
-$P(\Omega) = 1$
+P(\Omega) = 1
 ```
 - 对于互斥事件 ```latex
-$A_1, A_2, \ldots$
+A_1, A_2, \ldots
 ```，```latex
-$P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)$
+P(\bigcup_{i=1}^{\infty} A_i) = \sum_{i=1}^{\infty} P(A_i)
 ```
 
 ### 4.2 条件概率
 
 **定义 4.4** (条件概率): 给定事件 ```latex
-$B$
+B
 ``` 发生的条件下，事件 ```latex
-$A$
+A
 ``` 发生的概率为：
 
 ```latex
@@ -537,15 +537,15 @@ P(A|B) = \frac{P(A \cap B)}{P(B)}
 ### 4.3 随机变量
 
 **定义 4.5** (随机变量): 随机变量 ```latex
-$X$
+X
 ``` 是从样本空间到实数的函数。
 
 **期望值**: ```latex
-$E[X] = \sum_{x} x \cdot P(X = x)$
+E[X] = \sum_{x} x \cdot P(X = x)
 ```
 
 **方差**: ```latex
-$\text{Var}(X) = E[(X - E[X])^2]$
+\text{Var}(X) = E[(X - E[X])^2]
 ```
 
 ### 4.4 Go语言实现
@@ -617,46 +617,46 @@ func ExampleProbability() {
 ### 5.1 群论
 
 **定义 5.1** (群): 群 ```latex
-$(G, \cdot)$
+(G, \cdot)
 ``` 是一个集合 ```latex
-$G$
+G
 ``` 和二元运算 ```latex
-$\cdot$
+\cdot
 ```，满足：
 
 - **封闭性**: ```latex
-$\forall a, b \in G: a \cdot b \in G$
+\forall a, b \in G: a \cdot b \in G
 ```
 - **结合律**: ```latex
-$\forall a, b, c \in G: (a \cdot b) \cdot c = a \cdot (b \cdot c)$
+\forall a, b, c \in G: (a \cdot b) \cdot c = a \cdot (b \cdot c)
 ```
 - **单位元**: ```latex
-$\exists e \in G: \forall a \in G: e \cdot a = a \cdot e = a$
+\exists e \in G: \forall a \in G: e \cdot a = a \cdot e = a
 ```
 - **逆元**: ```latex
-$\forall a \in G: \exists a^{-1} \in G: a \cdot a^{-1} = a^{-1} \cdot a = e$
+\forall a \in G: \exists a^{-1} \in G: a \cdot a^{-1} = a^{-1} \cdot a = e
 ```
 
 ### 5.2 环论
 
 **定义 5.2** (环): 环 ```latex
-$(R, +, \cdot)$
+(R, +, \cdot)
 ``` 是一个集合 ```latex
-$R$
+R
 ``` 和两个二元运算 ```latex
-$+$
++
 ``` 和 ```latex
-$\cdot$
+\cdot
 ```，满足：
 
 - ```latex
-$(R, +)$
+(R, +)
 ``` 是阿贝尔群
 - ```latex
-$(R, \cdot)$
+(R, \cdot)
 ``` 是半群
 - 分配律: ```latex
-$a \cdot (b + c) = a \cdot b + a \cdot c$
+a \cdot (b + c) = a \cdot b + a \cdot c
 ```
 
 ### 5.3 Go语言实现
@@ -728,15 +728,15 @@ func ExampleGroup() {
 ### 6.1 拓扑空间
 
 **定义 6.1** (拓扑空间): 拓扑空间 ```latex
-$(X, \tau)$
+(X, \tau)
 ``` 是一个集合 ```latex
-$X$
+X
 ``` 和开集族 ```latex
-$\tau$
+\tau
 ```，满足：
 
 - ```latex
-$\emptyset, X \in \tau$
+\emptyset, X \in \tau
 ```
 - 任意开集的并集是开集
 - 有限开集的交集是开集
@@ -744,17 +744,17 @@ $\emptyset, X \in \tau$
 ### 6.2 连续映射
 
 **定义 6.2** (连续映射): 映射 ```latex
-$f: X \rightarrow Y$
+f: X \rightarrow Y
 ``` 是连续的，当且仅当 ```latex
-$Y$
+Y
 ``` 中任意开集的原像是 ```latex
-$X$
+X
 ``` 中的开集。
 
 ### 6.3 连通性
 
 **定义 6.3** (连通空间): 拓扑空间 ```latex
-$X$
+X
 ``` 是连通的，当且仅当它不能表示为两个非空开集的不交并。
 
 ### 6.4 Go语言实现
@@ -837,20 +837,20 @@ func ExampleTopology() {
 ### 7.1 范畴定义
 
 **定义 7.1** (范畴): 范畴 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 包含：
 
 - 对象类 ```latex
-$\text{Ob}(\mathcal{C})$
+\text{Ob}(\mathcal{C})
 ```
 - 态射类 ```latex
-$\text{Mor}(\mathcal{C})$
+\text{Mor}(\mathcal{C})
 ```
 - 复合运算 ```latex
-$\circ$
+\circ
 ```
 - 单位态射 ```latex
-$\text{id}_A$
+\text{id}_A
 ```
 
 满足结合律和单位律。
@@ -858,13 +858,13 @@ $\text{id}_A$
 ### 7.2 函子
 
 **定义 7.2** (函子): 函子 ```latex
-$F: \mathcal{C} \rightarrow \mathcal{D}$
+F: \mathcal{C} \rightarrow \mathcal{D}
 ``` 是范畴之间的映射，保持复合和单位。
 
 ### 7.3 自然变换
 
 **定义 7.3** (自然变换): 自然变换 ```latex
-$\eta: F \Rightarrow G$
+\eta: F \Rightarrow G
 ``` 是函子之间的态射族。
 
 ### 7.4 Go语言实现
@@ -951,41 +951,41 @@ func (m *SimpleMorphism) Compose(other Morphism) Morphism {
 ### 8.1 同伦定义
 
 **定义 8.1** (同伦): 两个连续映射 ```latex
-$f, g: X \rightarrow Y$
+f, g: X \rightarrow Y
 ``` 之间的同伦是一个连续映射 ```latex
-$H: X \times [0,1] \rightarrow Y$
+H: X \times [0,1] \rightarrow Y
 ```，使得 ```latex
-$H(x,0) = f(x)$
+H(x,0) = f(x)
 ``` 和 ```latex
-$H(x,1) = g(x)$
+H(x,1) = g(x)
 ```。
 
 ### 8.2 基本群
 
 **定义 8.2** (基本群): 空间 ```latex
-$X$
+X
 ``` 在点 ```latex
-$x_0$
+x_0
 ``` 的基本群 ```latex
-$\pi_1(X,x_0)$
+\pi_1(X,x_0)
 ``` 是所有基于 ```latex
-$x_0$
+x_0
 ``` 的环路同伦类的群。
 
 ### 8.3 同伦等价
 
 **定义 8.3** (同伦等价): 两个空间 ```latex
-$X$
+X
 ``` 和 ```latex
-$Y$
+Y
 ``` 是同伦等价的，如果存在映射 ```latex
-$f: X \rightarrow Y$
+f: X \rightarrow Y
 ``` 和 ```latex
-$g: Y \rightarrow X$
+g: Y \rightarrow X
 ```，使得 ```latex
-$g \circ f \simeq \text{id}_X$
+g \circ f \simeq \text{id}_X
 ``` 和 ```latex
-$f \circ g \simeq \text{id}_Y$
+f \circ g \simeq \text{id}_Y
 ```。
 
 ### 8.4 Go语言实现

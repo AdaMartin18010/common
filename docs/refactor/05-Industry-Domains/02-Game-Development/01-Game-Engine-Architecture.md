@@ -60,66 +60,66 @@
 
 **定义 2.1.1** (游戏引擎系统)
 游戏引擎系统是一个六元组 ```latex
-$G = (E, C, R, P, A, I)$
+G = (E, C, R, P, A, I)
 ```，其中：
 
 - ```latex
-$E$
+E
 ``` 是实体集合 (Entity Set)
 - ```latex
-$C$
+C
 ``` 是组件系统 (Component System)
 - ```latex
-$R$
+R
 ``` 是渲染系统 (Rendering System)
 - ```latex
-$P$
+P
 ``` 是物理系统 (Physics System)
 - ```latex
-$A$
+A
 ``` 是音频系统 (Audio System)
 - ```latex
-$I$
+I
 ``` 是输入系统 (Input System)
 
 **定义 2.1.2** (实体-组件系统)
 实体-组件系统是一个三元组 ```latex
-$ECS = (E, C, \phi)$
+ECS = (E, C, \phi)
 ```，其中：
 
 - ```latex
-$E = \{e_1, e_2, ..., e_n\}$
+E = \{e_1, e_2, ..., e_n\}
 ``` 是实体集合
 - ```latex
-$C = \{c_1, c_2, ..., c_m\}$
+C = \{c_1, c_2, ..., c_m\}
 ``` 是组件类型集合
 - ```latex
-$\phi: E \times C \rightarrow \{0,1\}$
+\phi: E \times C \rightarrow \{0,1\}
 ``` 是实体-组件关联函数
 
 ### 2.2 渲染管线
 
 **定义 2.2.1** (渲染管线)
 渲染管线是一个函数序列 ```latex
-$R = (f_1, f_2, ..., f_k)$
+R = (f_1, f_2, ..., f_k)
 ```，其中每个 ```latex
-$f_i: V_i \rightarrow V_{i+1}$
+f_i: V_i \rightarrow V_{i+1}
 ``` 是渲染阶段函数。
 
 **定义 2.2.2** (顶点变换)
 顶点变换函数 ```latex
-$T: \mathbb{R}^3 \rightarrow \mathbb{R}^3$
+T: \mathbb{R}^3 \rightarrow \mathbb{R}^3
 ``` 定义为：
 $```latex
-$T(v) = M_{model} \cdot M_{view} \cdot M_{projection} \cdot v$
+T(v) = M_{model} \cdot M_{view} \cdot M_{projection} \cdot v
 ```$
 
 其中 ```latex
-$M_{model}$
+M_{model}
 ```, ```latex
-$M_{view}$
+M_{view}
 ```, ```latex
-$M_{projection}$
+M_{projection}
 ``` 分别是模型、视图和投影矩阵。
 
 ## 3. 数学基础
@@ -128,54 +128,54 @@ $M_{projection}$
 
 **定理 3.1.1** (矩阵变换的可逆性)
 对于非奇异矩阵 ```latex
-$M$
+M
 ```，存在逆矩阵 ```latex
-$M^{-1}$
+M^{-1}
 ``` 使得 ```latex
-$M \cdot M^{-1} = I$
+M \cdot M^{-1} = I
 ```。
 
 **证明**:
 设 ```latex
-$M$
+M
 ``` 是 ```latex
-$n \times n$
+n \times n
 ``` 非奇异矩阵，则 ```latex
-$\det(M) \neq 0$
+\det(M) \neq 0
 ```。
 根据矩阵求逆公式：
 $```latex
-$M^{-1} = \frac{1}{\det(M)} \cdot \text{adj}(M)$
+M^{-1} = \frac{1}{\det(M)} \cdot \text{adj}(M)
 ```$
 
 其中 ```latex
-$\text{adj}(M)$
+\text{adj}(M)
 ``` 是 ```latex
-$M$
+M
 ``` 的伴随矩阵。
 
 ### 3.2 四元数旋转
 
 **定义 3.2.1** (四元数)
 四元数 ```latex
-$q = (w, x, y, z)$
+q = (w, x, y, z)
 ``` 可以表示为：
 $```latex
-$q = w + xi + yj + zk$
+q = w + xi + yj + zk
 ```$
 
 其中 ```latex
-$i^2 = j^2 = k^2 = ijk = -1$
+i^2 = j^2 = k^2 = ijk = -1
 ```。
 
 **定理 3.2.1** (四元数旋转公式)
 对于单位四元数 ```latex
-$q$
+q
 ``` 和向量 ```latex
-$v$
+v
 ```，旋转后的向量为：
 $```latex
-$v' = q \cdot v \cdot q^{-1}$
+v' = q \cdot v \cdot q^{-1}
 ```$
 
 ### 3.3 碰撞检测算法
@@ -192,9 +192,9 @@ func CheckAABBCollision(box1, box2 AABB) bool {
 ```
 
 **复杂度分析**: ```latex
-$O(1)$
+O(1)
 ``` 时间复杂度和 ```latex
-$O(1)$
+O(1)
 ``` 空间复杂度。
 
 ## 4. 架构模式
@@ -555,13 +555,13 @@ func (i *InputSystem) GetMouseDelta() mgl32.Vec2 {
 
 **定理 6.1.1** (视锥体剔除)
 对于视锥体 ```latex
-$F$
+F
 ``` 和包围盒 ```latex
-$B$
+B
 ```，如果 ```latex
-$B \cap F = \emptyset$
+B \cap F = \emptyset
 ```，则 ```latex
-$B$
+B
 ``` 中的对象不需要渲染。
 
 **实现**:

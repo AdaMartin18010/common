@@ -74,48 +74,48 @@ Future/Promise模式的核心思想是：
 ### 2.1 基本概念
 
 设 ```latex
-$F$
+F
 ``` 为Future集合，```latex
-$P$
+P
 ``` 为Promise集合，```latex
-$V$
+V
 ``` 为值集合，```latex
-$E$
+E
 ``` 为错误集合，```latex
-$S$
+S
 ``` 为状态集合。
 
 **定义 2.1** (Future)
 Future是一个四元组 ```latex
-$(f, value, error, state)$
+(f, value, error, state)
 ```，其中：
 
 - ```latex
-$f \in F$
+f \in F
 ``` 是Future实例
 - ```latex
-$value \in V$
+value \in V
 ``` 是计算结果
 - ```latex
-$error \in E$
+error \in E
 ``` 是错误信息
 - ```latex
-$state \in \{pending, fulfilled, rejected\}$
+state \in \{pending, fulfilled, rejected\}
 ``` 是状态
 
 **定义 2.2** (Promise)
 Promise是一个三元组 ```latex
-$(p, future, setters)$
+(p, future, setters)
 ```，其中：
 
 - ```latex
-$p \in P$
+p \in P
 ``` 是Promise实例
 - ```latex
-$future \in F$
+future \in F
 ``` 是关联的Future
 - ```latex
-$setters$
+setters
 ``` 是设置结果的函数集合
 
 **定义 2.3** (状态转换)
@@ -123,10 +123,10 @@ $setters$
 ```latex
 Future的状态转换遵循以下规则：
 $```latex
-$pending \rightarrow fulfilled \text{ (当设置值)}$
+pending \rightarrow fulfilled \text{ (当设置值)}
 ```$
 $```latex
-$pending \rightarrow rejected \text{ (当设置错误)}$
+pending \rightarrow rejected \text{ (当设置错误)}
 ```$
 ```
 
@@ -134,45 +134,45 @@ $pending \rightarrow rejected \text{ (当设置错误)}$
 
 **公理 2.1** (Future创建)
 对于值 ```latex
-$v$
+v
 ```：
 $```latex
-$create\_future() = (f, null, null, pending)$
+create\_future() = (f, null, null, pending)
 ```$
 
 **公理 2.2** (Promise创建)
 对于Future ```latex
-$f$
+f
 ```：
 $```latex
-$create\_promise(f) = (p, f, \{resolve, reject\})$
+create\_promise(f) = (p, f, \{resolve, reject\})
 ```$
 
 **公理 2.3** (结果设置)
 对于Promise ```latex
-$p$
+p
 ``` 和值 ```latex
-$v$
+v
 ```：
 $```latex
-$resolve(p, v) = set\_value(future(p), v) \land set\_state(future(p), fulfilled)$
+resolve(p, v) = set\_value(future(p), v) \land set\_state(future(p), fulfilled)
 ```$
 
 **公理 2.4** (错误设置)
 对于Promise ```latex
-$p$
+p
 ``` 和错误 ```latex
-$e$
+e
 ```：
 $```latex
-$reject(p, e) = set\_error(future(p), e) \land set\_state(future(p), rejected)$
+reject(p, e) = set\_error(future(p), e) \land set\_state(future(p), rejected)
 ```$
 
 **公理 2.5** (结果获取)
 
 ```latex
 对于Future ```latex
-$f$
+f
 ```：
 $$get(f) = \begin{cases}
 value(f) & \text{if } state(f) = fulfilled \\
@@ -187,9 +187,9 @@ block\_until\_complete(f) & \text{if } state(f) = pending
 
 ```latex
 对于Future ```latex
-$f$
+f
 ``` 和函数 ```latex
-$g$
+g
 ```：
 $$then(f, g) = \begin{cases}
 g(value(f)) & \text{if } state(f) = fulfilled \\
@@ -202,9 +202,9 @@ pending & \text{if } state(f) = pending
 
 ```latex
 对于Future ```latex
-$f$
+f
 ``` 和错误处理函数 ```latex
-$h$
+h
 ```：
 $$catch(f, h) = \begin{cases}
 value(f) & \text{if } state(f) = fulfilled \\
@@ -223,20 +223,20 @@ Future可以建模为函子：
 
 **定义 3.1** (Future函子)
 Future函子 ```latex
-$F: \text{Set} \rightarrow \text{Set}$
+F: \text{Set} \rightarrow \text{Set}
 ``` 定义为：
 $```latex
-$F(A) = \{pending\} \cup A \cup E$
+F(A) = \{pending\} \cup A \cup E
 ```$
 
 **定理 3.1** (函子性质)
 Future满足函子的性质：
 
 1. **单位律**: ```latex
-$F(id_A) = id_{F(A)}$
+F(id_A) = id_{F(A)}
 ```
 2. **结合律**: ```latex
-$F(g \circ f) = F(g) \circ F(f)$
+F(g \circ f) = F(g) \circ F(f)
 ```
 
 ### 3.2 单子理论
@@ -245,47 +245,47 @@ Future可以建模为单子：
 
 **定义 3.2** (Future单子)
 Future单子 ```latex
-$(F, \eta, \mu)$
+(F, \eta, \mu)
 ``` 定义为：
 
 - ```latex
-$F$
+F
 ``` 是Future函子
 - ```latex
-$\eta_A: A \rightarrow F(A)$
+\eta_A: A \rightarrow F(A)
 ``` 是单位映射
 - ```latex
-$\mu_A: F(F(A)) \rightarrow F(A)$
+\mu_A: F(F(A)) \rightarrow F(A)
 ``` 是乘法映射
 
 **定理 3.2** (单子定律)
 Future满足单子定律：
 
 1. **左单位律**: ```latex
-$\mu \circ F(\eta) = id$
+\mu \circ F(\eta) = id
 ```
 2. **右单位律**: ```latex
-$\mu \circ \eta_F = id$
+\mu \circ \eta_F = id
 ```
 3. **结合律**: ```latex
-$\mu \circ F(\mu) = \mu \circ \mu$
+\mu \circ F(\mu) = \mu \circ \mu
 ```
 
 ### 3.3 异步计算理论
 
 **定义 3.3** (异步计算)
 异步计算是一个三元组 ```latex
-$(input, computation, output)$
+(input, computation, output)
 ```，其中：
 
 - ```latex
-$input$
+input
 ``` 是输入数据
 - ```latex
-$computation$
+computation
 ``` 是计算函数
 - ```latex
-$output$
+output
 ``` 是输出Future
 
 **定理 3.3** (异步计算性质)
@@ -1335,33 +1335,33 @@ func main() {
 ### 6.1 时间复杂度
 
 - **Future创建**: ```latex
-$O(1)$
+O(1)
 ```
 - **Promise创建**: ```latex
-$O(1)$
+O(1)
 ```
 - **结果设置**: ```latex
-$O(1)$
+O(1)
 ```
 - **结果获取**: ```latex
-$O(1)$
+O(1)
 ``` (如果已完成)
 - **链式操作**: ```latex
-$O(1)$
+O(1)
 ```
 
 ### 6.2 空间复杂度
 
 - **Future对象**: ```latex
-$O(1)$
+O(1)
 ```
 - **Promise对象**: ```latex
-$O(1)$
+O(1)
 ```
 - **回调队列**: ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是回调数量
 
 ### 6.3 性能优化建议

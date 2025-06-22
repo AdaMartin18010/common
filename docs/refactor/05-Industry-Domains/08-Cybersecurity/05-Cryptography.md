@@ -8,23 +8,23 @@
 
 **形式化定义**：
 设 ```latex
-$M$
+M
 ``` 为明文空间，```latex
-$C$
+C
 ``` 为密文空间，```latex
-$K$
+K
 ``` 为密钥空间。
 加密函数 ```latex
-$E: M \times K \rightarrow C$
+E: M \times K \rightarrow C
 ``` 定义为：
 $```latex
-$E(m,k) = c$
+E(m,k) = c
 ```$
 解密函数 ```latex
-$D: C \times K \rightarrow M$
+D: C \times K \rightarrow M
 ``` 定义为：
 $```latex
-$D(c,k) = m$
+D(c,k) = m
 ```$
 
 **密码学分类**：

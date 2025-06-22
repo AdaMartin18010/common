@@ -73,30 +73,30 @@
 ### 2.1 模式结构定义
 
 设 ```latex
-$S$
+S
 ``` 为策略集合，```latex
-$C$
+C
 ``` 为上下文集合，```latex
-$A$
+A
 ``` 为算法集合，则策略模式可形式化为：
 
 $```latex
-$\text{Strategy Pattern} = (S, C, A, \text{execute})$
+\text{Strategy Pattern} = (S, C, A, \text{execute})
 ```$
 
 其中：
 
 - ```latex
-$S = \{s_1, s_2, ..., s_n\}$
+S = \{s_1, s_2, ..., s_n\}
 ``` 为策略集合
 - ```latex
-$C$
+C
 ``` 为上下文类
 - ```latex
-$A = \{a_1, a_2, ..., a_n\}$
+A = \{a_1, a_2, ..., a_n\}
 ``` 为算法集合
 - ```latex
-$\text{execute}: S \times \text{Input} \rightarrow \text{Output}$
+\text{execute}: S \times \text{Input} \rightarrow \text{Output}
 ``` 为执行函数
 
 ### 2.2 策略接口定义
@@ -132,25 +132,25 @@ func (c *Context[T, R]) ExecuteStrategy(input T) R {
 策略模式基于函数式编程的高阶函数概念：
 
 $```latex
-$f: A \rightarrow B$
+f: A \rightarrow B
 ```$
 $```latex
-$g: B \rightarrow C$
+g: B \rightarrow C
 ```$
 $```latex
-$h = g \circ f: A \rightarrow C$
+h = g \circ f: A \rightarrow C
 ```$
 
 ### 3.2 多态性理论
 
 设 ```latex
-$P$
+P
 ``` 为策略接口，```latex
-$S_1, S_2, ..., S_n$
+S_1, S_2, ..., S_n
 ``` 为具体策略类：
 
 $```latex
-$\forall s_i \in \{S_1, S_2, ..., S_n\}: s_i \text{ implements } P$
+\forall s_i \in \{S_1, S_2, ..., S_n\}: s_i \text{ implements } P
 ```$
 
 ### 3.3 组合理论
@@ -158,13 +158,13 @@ $\forall s_i \in \{S_1, S_2, ..., S_n\}: s_i \text{ implements } P$
 策略模式体现了组合优于继承的原则：
 
 $```latex
-$\text{Composition}(C, S) = C \circ S$
+\text{Composition}(C, S) = C \circ S
 ```$
 
 其中 ```latex
-$C$
+C
 ``` 为上下文，```latex
-$S$
+S
 ``` 为策略。
 
 ## 4. 模式结构
@@ -892,31 +892,31 @@ func (c *Context[T, R]) ExecuteStrategySafe(input T) StrategyResult[R] {
 
 **证明**：
 设 ```latex
-$S$
+S
 ``` 为现有策略集合，```latex
-$S'$
+S'
 ``` 为新增策略集合，```latex
-$C$
+C
 ``` 为上下文类。
 
 对于任意 ```latex
-$s \in S'$
+s \in S'
 ```，由于 ```latex
-$s$
+s
 ``` 实现了策略接口 ```latex
-$P$
+P
 ```，且 ```latex
-$C$
+C
 ``` 依赖于 ```latex
-$P$
+P
 ``` 而非具体实现，因此：
 
 $```latex
-$C \circ s \text{ 是有效的}$
+C \circ s \text{ 是有效的}
 ```$
 
 且不需要修改 ```latex
-$C$
+C
 ``` 的代码，因此满足开闭原则。
 
 **证毕**。

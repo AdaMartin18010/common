@@ -9,60 +9,56 @@
 ### 2.1.1 智能合约模型
 
 智能合约 ```latex
-$SC$
+SC
 ``` 是一个五元组 ```latex
-$(S, F, T, E, G)$
+(S, F, T, E, G)
 ```，其中：
 
 ```latex
-$```latex
-$SC = (S, F, T, E, G)$
+$SC = (S, F, T, E, G)
 ```$
-```
 
 其中：
 
 - ```latex
-$S$
+S
 ```: 状态集合
 - ```latex
-$F$
+F
 ```: 函数集合
 - ```latex
-$T$
+T
 ```: 触发条件
 - ```latex
-$E$
+E
 ```: 执行环境
 - ```latex
-$G$
+G
 ```: 气体机制
 
 ### 2.1.2 合约状态
 
 合约状态 ```latex
-$s \in S$
+s \in S
 ``` 包含：
 
 ```latex
-$```latex
-$s = (Storage, Balance, Code, Nonce)$
+$s = (Storage, Balance, Code, Nonce)
 ```$
-```
 
 其中：
 
 - ```latex
-$Storage$
+Storage
 ```: 存储数据
 - ```latex
-$Balance$
+Balance
 ```: 合约余额
 - ```latex
-$Code$
+Code
 ```: 合约代码
 - ```latex
-$Nonce$
+Nonce
 ```: 交易计数器
 
 ## 2.2 智能合约执行模型
@@ -70,31 +66,29 @@ $Nonce$
 ### 2.2.1 虚拟机模型
 
 智能合约虚拟机 ```latex
-$VM$
+VM
 ``` 执行指令：
 
 ```latex
-$```latex
-$VM = (PC, Stack, Memory, Storage, Gas)$
+$VM = (PC, Stack, Memory, Storage, Gas)
 ```$
-```
 
 其中：
 
 - ```latex
-$PC$
+PC
 ```: 程序计数器
 - ```latex
-$Stack$
+Stack
 ```: 操作数栈
 - ```latex
-$Memory$
+Memory
 ```: 内存
 - ```latex
-$Storage$
+Storage
 ```: 存储
 - ```latex
-$Gas$
+Gas
 ```: 气体消耗
 
 ### 2.2.2 气体机制
@@ -102,28 +96,24 @@ $Gas$
 气体消耗计算：
 
 ```latex
-$```latex
-$Gas_{total} = \sum_{i=1}^n Gas_{op_i} \times Count_{op_i}$
+$Gas_{total} = \sum_{i=1}^n Gas_{op_i} \times Count_{op_i}
 ```$
-```
 
 其中 ```latex
-$Gas_{op_i}$
+Gas_{op_i}
 ``` 是操作 ```latex
-$i$
+i
 ``` 的气体消耗。
 
 ### 2.2.3 执行环境
 
 执行环境 ```latex
-$E$
+E
 ``` 包含：
 
 ```latex
-$```latex
-$E = (Address, Origin, Caller, Value, Data, GasPrice, Block)$
+$E = (Address, Origin, Caller, Value, Data, GasPrice, Block)
 ```$
-```
 
 ## 2.3 智能合约语言
 
@@ -154,10 +144,8 @@ contract ContractName {
 合约生命周期：
 
 ```latex
-$```latex
-$Contract_{lifecycle} = (Deploy, Initialize, Execute, Terminate)$
+$Contract_{lifecycle} = (Deploy, Initialize, Execute, Terminate)
 ```$
-```
 
 ## 2.4 智能合约安全
 
@@ -168,30 +156,24 @@ $Contract_{lifecycle} = (Deploy, Initialize, Execute, Terminate)$
 重入攻击模式：
 
 ```latex
-$```latex
-$Attack_{reentrant} = (Call, Fallback, Reenter)$
+$Attack_{reentrant} = (Call, Fallback, Reenter)
 ```$
-```
 
 #### 整数溢出
 
 整数溢出检查：
 
 ```latex
-$```latex
-$Safe_{add}(a, b) = \begin{cases} a + b & \text{if } a + b \geq 0 \\ \text{revert} & \text{otherwise} \end{cases}$
+$Safe_{add}(a, b) = \begin{cases} a + b & \text{if } a + b \geq 0 \\ \text{revert} & \text{otherwise} \end{cases}
 ```$
-```
 
 #### 访问控制
 
 访问控制检查：
 
 ```latex
-$```latex
-$Access_{control}(user, role) = \begin{cases} \text{allow} & \text{if } user \in role \\ \text{deny} & \text{otherwise} \end{cases}$
+$Access_{control}(user, role) = \begin{cases} \text{allow} & \text{if } user \in role \\ \text{deny} & \text{otherwise} \end{cases}
 ```$
-```
 
 ### 2.4.2 安全模式
 
@@ -200,20 +182,16 @@ $Access_{control}(user, role) = \begin{cases} \text{allow} & \text{if } user \in
 CEI模式：
 
 ```latex
-$```latex
-$CEI_{pattern} = (Check, Effect, Interaction)$
+$CEI_{pattern} = (Check, Effect, Interaction)
 ```$
-```
 
 #### 拉取支付模式
 
 拉取支付：
 
 ```latex
-$```latex
-$Pull_{payment} = (Withdraw, Balance, Transfer)$
+$Pull_{payment} = (Withdraw, Balance, Transfer)
 ```$
-```
 
 ## 2.5 Go语言实现
 

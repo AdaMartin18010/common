@@ -5,17 +5,17 @@
 ### 3.1.1 模式分类体系
 
 **定义 3.1** (工作流模式): 工作流模式是一个三元组 ```latex
-$\mathcal{P} = (S, T, C)$
+\mathcal{P} = (S, T, C)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是结构模式集合
 - ```latex
-$T$
+T
 ``` 是任务模式集合  
 - ```latex
-$C$
+C
 ``` 是控制模式集合
 
 **模式分类**:
@@ -27,27 +27,27 @@ $C$
 ### 3.1.2 模式形式化定义
 
 **定义 3.2** (顺序模式): 顺序模式是一个二元组 ```latex
-$\text{Seq}(t_1, t_2)$
+\text{Seq}(t_1, t_2)
 ```，满足：
 
 $```latex
-$\text{Seq}(t_1, t_2) = \{s_1 \rightarrow s_2 \rightarrow s_3 \mid s_1 \xrightarrow{t_1} s_2 \xrightarrow{t_2} s_3\}$
+\text{Seq}(t_1, t_2) = \{s_1 \rightarrow s_2 \rightarrow s_3 \mid s_1 \xrightarrow{t_1} s_2 \xrightarrow{t_2} s_3\}
 ```$
 
 **定义 3.3** (并行模式): 并行模式是一个二元组 ```latex
-$\text{Par}(t_1, t_2)$
+\text{Par}(t_1, t_2)
 ```，满足：
 
 $```latex
-$\text{Par}(t_1, t_2) = \{s_1 \rightarrow s_2 \mid s_1 \xrightarrow{t_1 \parallel t_2} s_2\}$
+\text{Par}(t_1, t_2) = \{s_1 \rightarrow s_2 \mid s_1 \xrightarrow{t_1 \parallel t_2} s_2\}
 ```$
 
 **定义 3.4** (选择模式): 选择模式是一个三元组 ```latex
-$\text{Choice}(c, t_1, t_2)$
+\text{Choice}(c, t_1, t_2)
 ```，满足：
 
 $```latex
-$\text{Choice}(c, t_1, t_2) = \{s_1 \rightarrow s_2 \mid s_1 \xrightarrow{\text{if } c \text{ then } t_1 \text{ else } t_2} s_2\}$
+\text{Choice}(c, t_1, t_2) = \{s_1 \rightarrow s_2 \mid s_1 \xrightarrow{\text{if } c \text{ then } t_1 \text{ else } t_2} s_2\}
 ```$
 
 ## 3.2 基础工作流模式

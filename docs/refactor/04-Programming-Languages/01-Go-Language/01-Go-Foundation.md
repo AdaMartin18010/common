@@ -93,97 +93,97 @@ graph TB
 ### 2.1 基本定义
 
 设 ```latex
-$\mathcal{T}$
+\mathcal{T}
 ``` 为类型集合，```latex
-$\mathcal{V}$
+\mathcal{V}
 ``` 为值集合，```latex
-$\mathcal{E}$
+\mathcal{E}
 ``` 为表达式集合。
 
 **定义 2.1** (Go类型系统)
 Go类型系统是一个四元组 ```latex
-$(\mathcal{T}, \mathcal{V}, \mathcal{E}, \mathcal{R})$
+(\mathcal{T}, \mathcal{V}, \mathcal{E}, \mathcal{R})
 ```，其中：
 
 - ```latex
-$\mathcal{T} = \mathcal{T}_b \cup \mathcal{T}_c \cup \mathcal{T}_i$
+\mathcal{T} = \mathcal{T}_b \cup \mathcal{T}_c \cup \mathcal{T}_i
 ``` 是类型集合
 - ```latex
-$\mathcal{T}_b = \{\text{int}, \text{float64}, \text{string}, \text{bool}\}$
+\mathcal{T}_b = \{\text{int}, \text{float64}, \text{string}, \text{bool}\}
 ``` 是基本类型集合
 - ```latex
-$\mathcal{T}_c = \{\text{struct}, \text{array}, \text{slice}, \text{map}\}$
+\mathcal{T}_c = \{\text{struct}, \text{array}, \text{slice}, \text{map}\}
 ``` 是复合类型集合
 - ```latex
-$\mathcal{T}_i = \{\text{interface}\}$
+\mathcal{T}_i = \{\text{interface}\}
 ``` 是接口类型集合
 - ```latex
-$\mathcal{V}$
+\mathcal{V}
 ``` 是值集合
 - ```latex
-$\mathcal{E}$
+\mathcal{E}
 ``` 是表达式集合
 - ```latex
-$\mathcal{R}: \mathcal{E} \rightarrow \mathcal{T}$
+\mathcal{R}: \mathcal{E} \rightarrow \mathcal{T}
 ``` 是类型推导函数
 
 **定义 2.2** (Go并发模型)
 Go并发模型是一个三元组 ```latex
-$(\mathcal{G}, \mathcal{C}, \mathcal{S})$
+(\mathcal{G}, \mathcal{C}, \mathcal{S})
 ```，其中：
 
 - ```latex
-$\mathcal{G}$
+\mathcal{G}
 ``` 是Goroutine集合
 - ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 是Channel集合
 - ```latex
-$\mathcal{S}: \mathcal{G} \times \mathcal{C} \rightarrow \mathcal{V}$
+\mathcal{S}: \mathcal{G} \times \mathcal{C} \rightarrow \mathcal{V}
 ``` 是通信函数
 
 ### 2.2 形式化规范
 
 **公理 2.1** (类型安全)
 对于任意表达式 ```latex
-$e \in \mathcal{E}$
+e \in \mathcal{E}
 ``` 和类型 ```latex
-$t \in \mathcal{T}$
+t \in \mathcal{T}
 ```：
 
 $```latex
-$\mathcal{R}(e) = t \Rightarrow \text{type\_safe}(e, t)$
+\mathcal{R}(e) = t \Rightarrow \text{type\_safe}(e, t)
 ```$
 
 **公理 2.2** (并发安全)
 对于任意Goroutine ```latex
-$g \in \mathcal{G}$
+g \in \mathcal{G}
 ``` 和Channel ```latex
-$c \in \mathcal{C}$
+c \in \mathcal{C}
 ```：
 
 $```latex
-$\text{concurrent\_safe}(g, c) \Leftrightarrow \text{no\_race\_condition}(g, c)$
+\text{concurrent\_safe}(g, c) \Leftrightarrow \text{no\_race\_condition}(g, c)
 ```$
 
 ### 2.3 内存模型定义
 
 **定义 2.3** (Go内存模型)
 Go内存模型是一个四元组 ```latex
-$(\mathcal{M}, \mathcal{A}, \mathcal{H}, \mathcal{O})$
+(\mathcal{M}, \mathcal{A}, \mathcal{H}, \mathcal{O})
 ```，其中：
 
 - ```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 是内存位置集合
 - ```latex
-$\mathcal{A}$
+\mathcal{A}
 ``` 是原子操作集合
 - ```latex
-$\mathcal{H}$
+\mathcal{H}
 ``` 是happens-before关系
 - ```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 是操作顺序
 
 ## 3. 数学基础
@@ -192,15 +192,15 @@ $\mathcal{O}$
 
 **定理 3.1** (类型推导一致性)
 设 ```latex
-$\Gamma$
+\Gamma
 ``` 为类型环境，```latex
-$e$
+e
 ``` 为表达式，```latex
-$t$
+t
 ``` 为类型，则：
 
 $```latex
-$\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)$
+\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)
 ```$
 
 **证明**:
@@ -213,15 +213,15 @@ $\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)$
 
 **定理 3.2** (CSP通信安全性)
 设 ```latex
-$P$
+P
 ``` 和 ```latex
-$Q$
+Q
 ``` 为进程，```latex
-$c$
+c
 ``` 为通信通道，则：
 
 $```latex
-$\text{communicate}(P, Q, c) \Rightarrow \text{no\_deadlock}(P, Q)$
+\text{communicate}(P, Q, c) \Rightarrow \text{no\_deadlock}(P, Q)
 ```$
 
 **证明**:
@@ -234,13 +234,13 @@ $\text{communicate}(P, Q, c) \Rightarrow \text{no\_deadlock}(P, Q)$
 
 **定理 3.3** (垃圾回收复杂度)
 设 ```latex
-$n$
+n
 ``` 为对象数量，```latex
-$m$
+m
 ``` 为存活对象数量，则标记-清除算法的复杂度为：
 
 $```latex
-$T(n) = O(n) + O(m)$
+T(n) = O(n) + O(m)
 ```$
 
 **证明**:
@@ -1474,20 +1474,20 @@ func putBuffer(buf []byte) {
 ### 10.4 数学总结
 
 Go语言通过形式化定义 ```latex
-$(\mathcal{T}, \mathcal{V}, \mathcal{E}, \mathcal{R})$
+(\mathcal{T}, \mathcal{V}, \mathcal{E}, \mathcal{R})
 ``` 实现了类型安全的编程，其中：
 
 - **类型安全**: ```latex
-$\mathcal{R}(e) = t \Rightarrow \text{type\_safe}(e, t)$
+\mathcal{R}(e) = t \Rightarrow \text{type\_safe}(e, t)
 ```
 - **并发安全**: ```latex
-$\text{concurrent\_safe}(g, c) \Leftrightarrow \text{no\_race\_condition}(g, c)$
+\text{concurrent\_safe}(g, c) \Leftrightarrow \text{no\_race\_condition}(g, c)
 ```
 - **内存管理**: ```latex
-$T(n) = O(n) + O(m)$
+T(n) = O(n) + O(m)
 ```
 - **类型推导**: ```latex
-$\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)$
+\Gamma \vdash e : t \Rightarrow \text{consistent}(\Gamma, e, t)
 ```
 
 这种语言设计在并发编程、系统开发和网络服务等领域得到了广泛应用，既保持了高性能，又提供了良好的开发体验。

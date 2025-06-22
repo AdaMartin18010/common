@@ -23,11 +23,11 @@
 
 **定义 1.1.2** (推理规则)
 推理规则是形如 ```latex
-$\frac{P_1, P_2, ..., P_n}{C}$
+\frac{P_1, P_2, ..., P_n}{C}
 ``` 的规则，表示从前提 ```latex
-$P_1, P_2, ..., P_n$
+P_1, P_2, ..., P_n
 ``` 可以推出结论 ```latex
-$C$
+C
 ```。
 
 **定义 1.1.3** (证明树)
@@ -37,16 +37,16 @@ $C$
 
 **定义 1.1.4** (可靠性)
 如果 ```latex
-$\Gamma \vdash \phi$
+\Gamma \vdash \phi
 ```，则 ```latex
-$\Gamma \models \phi$
+\Gamma \models \phi
 ```（如果可证明，则语义有效）。
 
 **定义 1.1.5** (完备性)
 如果 ```latex
-$\Gamma \models \phi$
+\Gamma \models \phi
 ```，则 ```latex
-$\Gamma \vdash \phi$
+\Gamma \vdash \phi
 ```（如果语义有效，则可证明）。
 
 ### 1.3 Go语言实现
@@ -261,38 +261,38 @@ func (p *Proof) PrintProof() string {
 
 **规则 2.1.1** (∧-I: 合取引入)
 ```latex
-$\frac{\Gamma \vdash A \quad \Delta \vdash B}{\Gamma, \Delta \vdash A \land B}$
+\frac{\Gamma \vdash A \quad \Delta \vdash B}{\Gamma, \Delta \vdash A \land B}
 ```
 
 **规则 2.1.2** (∨-I: 析取引入)
 ```latex
-$\frac{\Gamma \vdash A}{\Gamma \vdash A \lor B}$
+\frac{\Gamma \vdash A}{\Gamma \vdash A \lor B}
 ``` 和 ```latex
-$\frac{\Gamma \vdash B}{\Gamma \vdash A \lor B}$
+\frac{\Gamma \vdash B}{\Gamma \vdash A \lor B}
 ```
 
 **规则 2.1.3** (→-I: 蕴含引入)
 ```latex
-$\frac{\Gamma, A \vdash B}{\Gamma \vdash A \rightarrow B}$
+\frac{\Gamma, A \vdash B}{\Gamma \vdash A \rightarrow B}
 ```
 
 ### 2.2 消除规则
 
 **规则 2.2.1** (∧-E: 合取消除)
 ```latex
-$\frac{\Gamma \vdash A \land B}{\Gamma \vdash A}$
+\frac{\Gamma \vdash A \land B}{\Gamma \vdash A}
 ``` 和 ```latex
-$\frac{\Gamma \vdash A \land B}{\Gamma \vdash B}$
+\frac{\Gamma \vdash A \land B}{\Gamma \vdash B}
 ```
 
 **规则 2.2.2** (∨-E: 析取消除)
 ```latex
-$\frac{\Gamma \vdash A \lor B \quad \Delta, A \vdash C \quad \Sigma, B \vdash C}{\Gamma, \Delta, \Sigma \vdash C}$
+\frac{\Gamma \vdash A \lor B \quad \Delta, A \vdash C \quad \Sigma, B \vdash C}{\Gamma, \Delta, \Sigma \vdash C}
 ```
 
 **规则 2.2.3** (→-E: 蕴含消除)
 ```latex
-$\frac{\Gamma \vdash A \rightarrow B \quad \Delta \vdash A}{\Gamma, \Delta \vdash B}$
+\frac{\Gamma \vdash A \rightarrow B \quad \Delta \vdash A}{\Gamma, \Delta \vdash B}
 ```
 
 ### 2.3 Go语言实现
@@ -452,24 +452,24 @@ func ExampleCommutativity() {
 
 **公理 3.1.1** (A1)
 ```latex
-$A \rightarrow (B \rightarrow A)$
+A \rightarrow (B \rightarrow A)
 ```
 
 **公理 3.1.2** (A2)
 ```latex
-$(A \rightarrow (B \rightarrow C)) \rightarrow ((A \rightarrow B) \rightarrow (A \rightarrow C))$
+(A \rightarrow (B \rightarrow C)) \rightarrow ((A \rightarrow B) \rightarrow (A \rightarrow C))
 ```
 
 **公理 3.1.3** (A3)
 ```latex
-$(\neg A \rightarrow \neg B) \rightarrow (B \rightarrow A)$
+(\neg A \rightarrow \neg B) \rightarrow (B \rightarrow A)
 ```
 
 ### 3.2 推理规则
 
 **规则 3.2.1** (MP: 假言推理)
 ```latex
-$\frac{A \rightarrow B \quad A}{B}$
+\frac{A \rightarrow B \quad A}{B}
 ```
 
 ### 3.3 Go语言实现

@@ -58,48 +58,48 @@
 命题逻辑语言由以下部分组成：
 
 - 命题变元集合 ```latex
-$P = \{p, q, r, \ldots\}$
+P = \{p, q, r, \ldots\}
 ```
 - 逻辑连接词：```latex
-$\neg$
+\neg
 ```（否定）、```latex
-$\wedge$
+\wedge
 ```（合取）、```latex
-$\vee$
+\vee
 ```（析取）、```latex
-$\rightarrow$
+\rightarrow
 ```（蕴含）、```latex
-$\leftrightarrow$
+\leftrightarrow
 ```（等价）
 - 辅助符号：```latex
-$($
+(
 ``` 和 ```latex
-$)$
+)
 ```
 
 **定义 1.5**: 合式公式
 合式公式（well-formed formula）递归定义如下：
 
 1. 每个命题变元 ```latex
-$p \in P$
+p \in P
 ``` 是合式公式
 2. 如果 ```latex
-$\phi$
+\phi
 ``` 是合式公式，则 ```latex
-$\neg\phi$
+\neg\phi
 ``` 是合式公式
 3. 如果 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 是合式公式，则 ```latex
-$(\phi \wedge \psi)$
+(\phi \wedge \psi)
 ```、```latex
-$(\phi \vee \psi)$
+(\phi \vee \psi)
 ```、```latex
-$(\phi \rightarrow \psi)$
+(\phi \rightarrow \psi)
 ```、```latex
-$(\phi \leftrightarrow \psi)$
+(\phi \leftrightarrow \psi)
 ``` 是合式公式
 4. 只有通过上述规则构造的表达式才是合式公式
 
@@ -107,77 +107,77 @@ $(\phi \leftrightarrow \psi)$
 
 **定义 1.6**: 真值赋值
 真值赋值是一个函数 ```latex
-$v: P \rightarrow \{T, F\}$
+v: P \rightarrow \{T, F\}
 ```，其中 ```latex
-$T$
+T
 ``` 表示真，```latex
-$F$
+F
 ``` 表示假。
 
 **定义 1.7**: 真值函数
 真值函数 ```latex
-$\overline{v}$
+\overline{v}
 ``` 递归定义如下：
 
 1. ```latex
-$\overline{v}(p) = v(p)$
+\overline{v}(p) = v(p)
 ``` 对于 ```latex
-$p \in P$
+p \in P
 ```
 2. ```latex
-$\overline{v}(\neg\phi) = T$
+\overline{v}(\neg\phi) = T
 ``` 当且仅当 ```latex
-$\overline{v}(\phi) = F$
+\overline{v}(\phi) = F
 ```
 3. ```latex
-$\overline{v}(\phi \wedge \psi) = T$
+\overline{v}(\phi \wedge \psi) = T
 ``` 当且仅当 ```latex
-$\overline{v}(\phi) = T$
+\overline{v}(\phi) = T
 ``` 且 ```latex
-$\overline{v}(\psi) = T$
+\overline{v}(\psi) = T
 ```
 4. ```latex
-$\overline{v}(\phi \vee \psi) = T$
+\overline{v}(\phi \vee \psi) = T
 ``` 当且仅当 ```latex
-$\overline{v}(\phi) = T$
+\overline{v}(\phi) = T
 ``` 或 ```latex
-$\overline{v}(\psi) = T$
+\overline{v}(\psi) = T
 ```
 5. ```latex
-$\overline{v}(\phi \rightarrow \psi) = T$
+\overline{v}(\phi \rightarrow \psi) = T
 ``` 当且仅当 ```latex
-$\overline{v}(\phi) = F$
+\overline{v}(\phi) = F
 ``` 或 ```latex
-$\overline{v}(\psi) = T$
+\overline{v}(\psi) = T
 ```
 6. ```latex
-$\overline{v}(\phi \leftrightarrow \psi) = T$
+\overline{v}(\phi \leftrightarrow \psi) = T
 ``` 当且仅当 ```latex
-$\overline{v}(\phi) = \overline{v}(\psi)$
+\overline{v}(\phi) = \overline{v}(\psi)
 ```
 
 **定义 1.8**: 重言式、矛盾式和可满足式
 
 - 公式 ```latex
-$\phi$
+\phi
 ``` 是重言式（tautology），如果对于所有真值赋值 ```latex
-$v$
+v
 ```，```latex
-$\overline{v}(\phi) = T$
+\overline{v}(\phi) = T
 ```
 - 公式 ```latex
-$\phi$
+\phi
 ``` 是矛盾式（contradiction），如果对于所有真值赋值 ```latex
-$v$
+v
 ```，```latex
-$\overline{v}(\phi) = F$
+\overline{v}(\phi) = F
 ```
 - 公式 ```latex
-$\phi$
+\phi
 ``` 是可满足式（satisfiable），如果存在真值赋值 ```latex
-$v$
+v
 ``` 使得 ```latex
-$\overline{v}(\phi) = T$
+\overline{v}(\phi) = T
 ```
 
 ### 1.4 推理规则
@@ -187,41 +187,41 @@ $\overline{v}(\phi) = T$
 
 1. **假言推理（Modus Ponens）**：
    $```latex
-$\frac{\phi \rightarrow \psi \quad \phi}{\psi}$
+\frac{\phi \rightarrow \psi \quad \phi}{\psi}
 ```$
 
 2. **假言三段论**：
    $```latex
-$\frac{\phi \rightarrow \psi \quad \psi \rightarrow \chi}{\phi \rightarrow \chi}$
+\frac{\phi \rightarrow \psi \quad \psi \rightarrow \chi}{\phi \rightarrow \chi}
 ```$
 
 3. **合取引入**：
    $```latex
-$\frac{\phi \quad \psi}{\phi \wedge \psi}$
+\frac{\phi \quad \psi}{\phi \wedge \psi}
 ```$
 
 4. **合取消除**：
    $```latex
-$\frac{\phi \wedge \psi}{\phi} \quad \frac{\phi \wedge \psi}{\psi}$
+\frac{\phi \wedge \psi}{\phi} \quad \frac{\phi \wedge \psi}{\psi}
 ```$
 
 5. **析取引入**：
    $```latex
-$\frac{\phi}{\phi \vee \psi} \quad \frac{\psi}{\phi \vee \psi}$
+\frac{\phi}{\phi \vee \psi} \quad \frac{\psi}{\phi \vee \psi}
 ```$
 
 **定理 1.1**: 德摩根律
 对于任意公式 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ```：
 
 1. ```latex
-$\neg(\phi \wedge \psi) \equiv \neg\phi \vee \neg\psi$
+\neg(\phi \wedge \psi) \equiv \neg\phi \vee \neg\psi
 ```
 2. ```latex
-$\neg(\phi \vee \psi) \equiv \neg\phi \wedge \neg\psi$
+\neg(\phi \vee \psi) \equiv \neg\phi \wedge \neg\psi
 ```
 
 ## 2. 谓词逻辑 (Predicate Logic)
@@ -234,10 +234,10 @@ $\neg(\phi \vee \psi) \equiv \neg\phi \wedge \neg\psi$
 **定义 2.2**: 量词
 
 - 全称量词 ```latex
-$\forall$
+\forall
 ```：表示"对于所有"
 - 存在量词 ```latex
-$\exists$
+\exists
 ```：表示"存在"
 
 **定义 2.3**: 项
@@ -245,13 +245,13 @@ $\exists$
 
 1. 变量和常量是项
 2. 如果 ```latex
-$f$
+f
 ``` 是 ```latex
-$n$
+n
 ``` 元函数符号，```latex
-$t_1, \ldots, t_n$
+t_1, \ldots, t_n
 ``` 是项，则 ```latex
-$f(t_1, \ldots, t_n)$
+f(t_1, \ldots, t_n)
 ``` 是项
 
 ### 2.2 语法
@@ -260,38 +260,38 @@ $f(t_1, \ldots, t_n)$
 一阶逻辑语言由以下部分组成：
 
 - 变量集合 ```latex
-$V = \{x, y, z, \ldots\}$
+V = \{x, y, z, \ldots\}
 ```
 - 常量集合 ```latex
-$C = \{a, b, c, \ldots\}$
+C = \{a, b, c, \ldots\}
 ```
 - 函数符号集合 ```latex
-$F = \{f, g, h, \ldots\}$
+F = \{f, g, h, \ldots\}
 ```
 - 谓词符号集合 ```latex
-$P = \{P, Q, R, \ldots\}$
+P = \{P, Q, R, \ldots\}
 ```
 - 逻辑连接词：```latex
-$\neg, \wedge, \vee, \rightarrow, \leftrightarrow$
+\neg, \wedge, \vee, \rightarrow, \leftrightarrow
 ```
 - 量词：```latex
-$\forall, \exists$
+\forall, \exists
 ```
 - 辅助符号：```latex
-$($
+(
 ``` 和 ```latex
-$)$
+)
 ```
 
 **定义 2.5**: 原子公式
 如果 ```latex
-$P$
+P
 ``` 是 ```latex
-$n$
+n
 ``` 元谓词符号，```latex
-$t_1, \ldots, t_n$
+t_1, \ldots, t_n
 ``` 是项，则 ```latex
-$P(t_1, \ldots, t_n)$
+P(t_1, \ldots, t_n)
 ``` 是原子公式。
 
 **定义 2.6**: 合式公式
@@ -299,87 +299,87 @@ $P(t_1, \ldots, t_n)$
 
 1. 每个原子公式是合式公式
 2. 如果 ```latex
-$\phi$
+\phi
 ``` 是合式公式，则 ```latex
-$\neg\phi$
+\neg\phi
 ``` 是合式公式
 3. 如果 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 是合式公式，则 ```latex
-$(\phi \wedge \psi)$
+(\phi \wedge \psi)
 ```、```latex
-$(\phi \vee \psi)$
+(\phi \vee \psi)
 ```、```latex
-$(\phi \rightarrow \psi)$
+(\phi \rightarrow \psi)
 ```、```latex
-$(\phi \leftrightarrow \psi)$
+(\phi \leftrightarrow \psi)
 ``` 是合式公式
 4. 如果 ```latex
-$\phi$
+\phi
 ``` 是合式公式，```latex
-$x$
+x
 ``` 是变量，则 ```latex
-$\forall x \phi$
+\forall x \phi
 ``` 和 ```latex
-$\exists x \phi$
+\exists x \phi
 ``` 是合式公式
 
 ### 2.3 语义
 
 **定义 2.7**: 解释
 解释 ```latex
-$\mathcal{I} = (D, \cdot^{\mathcal{I}})$
+\mathcal{I} = (D, \cdot^{\mathcal{I}})
 ``` 由以下部分组成：
 
 - 论域 ```latex
-$D$
+D
 ```（非空集合）
 - 解释函数 ```latex
-$\cdot^{\mathcal{I}}$
+\cdot^{\mathcal{I}}
 ```，将常量、函数符号和谓词符号映射到论域中的对象
 
 **定义 2.8**: 赋值
 赋值是一个函数 ```latex
-$\sigma: V \rightarrow D$
+\sigma: V \rightarrow D
 ```，将变量映射到论域中的对象。
 
 **定义 2.9**: 满足关系
 满足关系 ```latex
-$\models$
+\models
 ``` 递归定义如下：
 
 1. ```latex
-$\mathcal{I}, \sigma \models P(t_1, \ldots, t_n)$
+\mathcal{I}, \sigma \models P(t_1, \ldots, t_n)
 ``` 当且仅当 ```latex
-$(t_1^{\mathcal{I},\sigma}, \ldots, t_n^{\mathcal{I},\sigma}) \in P^{\mathcal{I}}$
+(t_1^{\mathcal{I},\sigma}, \ldots, t_n^{\mathcal{I},\sigma}) \in P^{\mathcal{I}}
 ```
 2. ```latex
-$\mathcal{I}, \sigma \models \neg\phi$
+\mathcal{I}, \sigma \models \neg\phi
 ``` 当且仅当 ```latex
-$\mathcal{I}, \sigma \not\models \phi$
+\mathcal{I}, \sigma \not\models \phi
 ```
 3. ```latex
-$\mathcal{I}, \sigma \models \phi \wedge \psi$
+\mathcal{I}, \sigma \models \phi \wedge \psi
 ``` 当且仅当 ```latex
-$\mathcal{I}, \sigma \models \phi$
+\mathcal{I}, \sigma \models \phi
 ``` 且 ```latex
-$\mathcal{I}, \sigma \models \psi$
+\mathcal{I}, \sigma \models \psi
 ```
 4. ```latex
-$\mathcal{I}, \sigma \models \forall x \phi$
+\mathcal{I}, \sigma \models \forall x \phi
 ``` 当且仅当对于所有 ```latex
-$d \in D$
+d \in D
 ```，```latex
-$\mathcal{I}, \sigma[x \mapsto d] \models \phi$
+\mathcal{I}, \sigma[x \mapsto d] \models \phi
 ```
 5. ```latex
-$\mathcal{I}, \sigma \models \exists x \phi$
+\mathcal{I}, \sigma \models \exists x \phi
 ``` 当且仅当存在 ```latex
-$d \in D$
+d \in D
 ``` 使得 ```latex
-$\mathcal{I}, \sigma[x \mapsto d] \models \phi$
+\mathcal{I}, \sigma[x \mapsto d] \models \phi
 ```
 
 ### 2.4 推理规则
@@ -389,41 +389,41 @@ $\mathcal{I}, \sigma[x \mapsto d] \models \phi$
 
 1. **全称消除**：
    $```latex
-$\frac{\forall x \phi}{\phi[t/x]}$
+\frac{\forall x \phi}{\phi[t/x]}
 ```$
    其中 ```latex
-$t$
+t
 ``` 是项，```latex
-$\phi[t/x]$
+\phi[t/x]
 ``` 表示将 ```latex
-$\phi$
+\phi
 ``` 中的 ```latex
-$x$
+x
 ``` 替换为 ```latex
-$t$
+t
 ```
 
 2. **全称引入**：
    $```latex
-$\frac{\phi}{\forall x \phi}$
+\frac{\phi}{\forall x \phi}
 ```$
    其中 ```latex
-$x$
+x
 ``` 不在 ```latex
-$\phi$
+\phi
 ``` 的自由变量中出现
 
 3. **存在引入**：
    $```latex
-$\frac{\phi[t/x]}{\exists x \phi}$
+\frac{\phi[t/x]}{\exists x \phi}
 ```$
 
 4. **存在消除**：
    $```latex
-$\frac{\exists x \phi \quad \phi[y/x] \vdash \psi}{\psi}$
+\frac{\exists x \phi \quad \phi[y/x] \vdash \psi}{\psi}
 ```$
    其中 ```latex
-$y$
+y
 ``` 是新的变量
 
 ## 3. 模态逻辑 (Modal Logic)
@@ -433,30 +433,30 @@ $y$
 **定义 3.1**: 模态算子
 
 - ```latex
-$\Box$
+\Box
 ```：必然算子（necessarily）
 - ```latex
-$\Diamond$
+\Diamond
 ```：可能算子（possibly）
 
 **定义 3.2**: 模态公式
 模态公式在命题逻辑基础上增加：
 
 - 如果 ```latex
-$\phi$
+\phi
 ``` 是模态公式，则 ```latex
-$\Box\phi$
+\Box\phi
 ``` 和 ```latex
-$\Diamond\phi$
+\Diamond\phi
 ``` 是模态公式
 
 ### 3.2 语法
 
 **定义 3.3**: 模态逻辑语言
 模态逻辑语言在命题逻辑基础上增加模态算子 ```latex
-$\Box$
+\Box
 ``` 和 ```latex
-$\Diamond$
+\Diamond
 ```。
 
 **定义 3.4**: 模态公式
@@ -464,84 +464,84 @@ $\Diamond$
 
 1. 每个命题变元是模态公式
 2. 如果 ```latex
-$\phi$
+\phi
 ``` 是模态公式，则 ```latex
-$\neg\phi$
+\neg\phi
 ```、```latex
-$\Box\phi$
+\Box\phi
 ```、```latex
-$\Diamond\phi$
+\Diamond\phi
 ``` 是模态公式
 3. 如果 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 是模态公式，则 ```latex
-$(\phi \wedge \psi)$
+(\phi \wedge \psi)
 ```、```latex
-$(\phi \vee \psi)$
+(\phi \vee \psi)
 ```、```latex
-$(\phi \rightarrow \psi)$
+(\phi \rightarrow \psi)
 ```、```latex
-$(\phi \leftrightarrow \psi)$
+(\phi \leftrightarrow \psi)
 ``` 是模态公式
 
 ### 3.3 语义
 
 **定义 3.5**: 克里普克模型
 克里普克模型是一个三元组 ```latex
-$\mathcal{M} = (W, R, V)$
+\mathcal{M} = (W, R, V)
 ```，其中：
 
 - ```latex
-$W$
+W
 ``` 是可能世界集合
 - ```latex
-$R \subseteq W \times W$
+R \subseteq W \times W
 ``` 是可达关系
 - ```latex
-$V: W \times P \rightarrow \{T, F\}$
+V: W \times P \rightarrow \{T, F\}
 ``` 是赋值函数
 
 **定义 3.6**: 模态逻辑满足关系
 满足关系 ```latex
-$\models$
+\models
 ``` 递归定义如下：
 
 1. ```latex
-$\mathcal{M}, w \models p$
+\mathcal{M}, w \models p
 ``` 当且仅当 ```latex
-$V(w, p) = T$
+V(w, p) = T
 ```
 2. ```latex
-$\mathcal{M}, w \models \neg\phi$
+\mathcal{M}, w \models \neg\phi
 ``` 当且仅当 ```latex
-$\mathcal{M}, w \not\models \phi$
+\mathcal{M}, w \not\models \phi
 ```
 3. ```latex
-$\mathcal{M}, w \models \phi \wedge \psi$
+\mathcal{M}, w \models \phi \wedge \psi
 ``` 当且仅当 ```latex
-$\mathcal{M}, w \models \phi$
+\mathcal{M}, w \models \phi
 ``` 且 ```latex
-$\mathcal{M}, w \models \psi$
+\mathcal{M}, w \models \psi
 ```
 4. ```latex
-$\mathcal{M}, w \models \Box\phi$
+\mathcal{M}, w \models \Box\phi
 ``` 当且仅当对于所有 ```latex
-$w'$
+w'
 ``` 使得 ```latex
-$wRw'$
+wRw'
 ```，```latex
-$\mathcal{M}, w' \models \phi$
+\mathcal{M}, w' \models \phi
 ```
 5. ```latex
-$\mathcal{M}, w \models \Diamond\phi$
+\mathcal{M}, w \models \Diamond\phi
 ``` 当且仅当存在 ```latex
-$w'$
+w'
 ``` 使得 ```latex
-$wRw'$
+wRw'
 ``` 且 ```latex
-$\mathcal{M}, w' \models \phi$
+\mathcal{M}, w' \models \phi
 ```
 
 ### 3.4 系统
@@ -551,13 +551,13 @@ $\mathcal{M}, w' \models \phi$
 
 1. **K系统**：最基本的模态逻辑系统
 2. **T系统**：K + ```latex
-$\Box\phi \rightarrow \phi$
+\Box\phi \rightarrow \phi
 ```（自反性）
 3. **S4系统**：T + ```latex
-$\Box\phi \rightarrow \Box\Box\phi$
+\Box\phi \rightarrow \Box\Box\phi
 ```（传递性）
 4. **S5系统**：S4 + ```latex
-$\Diamond\phi \rightarrow \Box\Diamond\phi$
+\Diamond\phi \rightarrow \Box\Diamond\phi
 ```（欧几里得性）
 
 ## 4. 时态逻辑 (Temporal Logic)
@@ -567,16 +567,16 @@ $\Diamond\phi \rightarrow \Box\Diamond\phi$
 **定义 4.1**: 时态算子
 
 - ```latex
-$G$
+G
 ```：全局算子（always）
 - ```latex
-$F$
+F
 ```：未来算子（eventually）
 - ```latex
-$X$
+X
 ```：下一个算子（next）
 - ```latex
-$U$
+U
 ```：直到算子（until）
 
 ### 4.2 线性时态逻辑
@@ -586,83 +586,83 @@ $U$
 
 1. 每个命题变元是LTL公式
 2. 如果 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 是LTL公式，则 ```latex
-$\neg\phi$
+\neg\phi
 ```、```latex
-$\phi \wedge \psi$
+\phi \wedge \psi
 ```、```latex
-$\phi \vee \psi$
+\phi \vee \psi
 ```、```latex
-$\phi \rightarrow \psi$
+\phi \rightarrow \psi
 ``` 是LTL公式
 3. 如果 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 是LTL公式，则 ```latex
-$X\phi$
+X\phi
 ```、```latex
-$G\phi$
+G\phi
 ```、```latex
-$F\phi$
+F\phi
 ```、```latex
-$\phi U\psi$
+\phi U\psi
 ``` 是LTL公式
 
 **定义 4.3**: LTL语义
 LTL公式在无限序列 ```latex
-$\pi = \pi_0\pi_1\pi_2\ldots$
+\pi = \pi_0\pi_1\pi_2\ldots
 ``` 上的满足关系：
 
 1. ```latex
-$\pi \models p$
+\pi \models p
 ``` 当且仅当 ```latex
-$p \in \pi_0$
+p \in \pi_0
 ```
 2. ```latex
-$\pi \models \neg\phi$
+\pi \models \neg\phi
 ``` 当且仅当 ```latex
-$\pi \not\models \phi$
+\pi \not\models \phi
 ```
 3. ```latex
-$\pi \models \phi \wedge \psi$
+\pi \models \phi \wedge \psi
 ``` 当且仅当 ```latex
-$\pi \models \phi$
+\pi \models \phi
 ``` 且 ```latex
-$\pi \models \psi$
+\pi \models \psi
 ```
 4. ```latex
-$\pi \models X\phi$
+\pi \models X\phi
 ``` 当且仅当 ```latex
-$\pi^1 \models \phi$
+\pi^1 \models \phi
 ```
 5. ```latex
-$\pi \models G\phi$
+\pi \models G\phi
 ``` 当且仅当对于所有 ```latex
-$i \geq 0$
+i \geq 0
 ```，```latex
-$\pi^i \models \phi$
+\pi^i \models \phi
 ```
 6. ```latex
-$\pi \models F\phi$
+\pi \models F\phi
 ``` 当且仅当存在 ```latex
-$i \geq 0$
+i \geq 0
 ``` 使得 ```latex
-$\pi^i \models \phi$
+\pi^i \models \phi
 ```
 7. ```latex
-$\pi \models \phi U\psi$
+\pi \models \phi U\psi
 ``` 当且仅当存在 ```latex
-$i \geq 0$
+i \geq 0
 ``` 使得 ```latex
-$\pi^i \models \psi$
+\pi^i \models \psi
 ``` 且对于所有 ```latex
-$0 \leq j < i$
+0 \leq j < i
 ```，```latex
-$\pi^j \models \phi$
+\pi^j \models \phi
 ```
 
 ### 4.3 分支时态逻辑
@@ -672,49 +672,49 @@ $\pi^j \models \phi$
 
 1. 每个命题变元是CTL公式
 2. 如果 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 是CTL公式，则 ```latex
-$\neg\phi$
+\neg\phi
 ```、```latex
-$\phi \wedge \psi$
+\phi \wedge \psi
 ```、```latex
-$\phi \vee \psi$
+\phi \vee \psi
 ```、```latex
-$\phi \rightarrow \psi$
+\phi \rightarrow \psi
 ``` 是CTL公式
 3. 如果 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 是CTL公式，则 ```latex
-$AX\phi$
+AX\phi
 ```、```latex
-$EX\phi$
+EX\phi
 ```、```latex
-$AG\phi$
+AG\phi
 ```、```latex
-$EG\phi$
+EG\phi
 ```、```latex
-$AF\phi$
+AF\phi
 ```、```latex
-$EF\phi$
+EF\phi
 ```、```latex
-$A[\phi U\psi]$
+A[\phi U\psi]
 ```、```latex
-$E[\phi U\psi]$
+E[\phi U\psi]
 ``` 是CTL公式
 
 ### 4.4 模型检验
 
 **定义 4.5**: 模型检验问题
 给定一个系统模型 ```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 和一个时态逻辑公式 ```latex
-$\phi$
+\phi
 ```，判断是否 ```latex
-$\mathcal{M} \models \phi$
+\mathcal{M} \models \phi
 ```。
 
 **算法 4.1**: CTL模型检验算法

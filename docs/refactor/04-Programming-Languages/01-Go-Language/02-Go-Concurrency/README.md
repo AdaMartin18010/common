@@ -58,77 +58,77 @@ type SyncPrimitive interface {
 
 **定义 2.1.1** (CSP进程)
 CSP进程是一个三元组 ```latex
-$P = (S, A, T)$
+P = (S, A, T)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是状态集合
 - ```latex
-$A$
+A
 ``` 是动作集合
 - ```latex
-$T \subseteq S \times A \times S$
+T \subseteq S \times A \times S
 ``` 是转换关系
 
 **定义 2.1.2** (Channel通信)
 Channel通信是一个四元组 ```latex
-$C = (P_1, P_2, M, \tau)$
+C = (P_1, P_2, M, \tau)
 ```，其中：
 
 - ```latex
-$P_1$
+P_1
 ``` 是发送进程
 - ```latex
-$P_2$
+P_2
 ``` 是接收进程
 - ```latex
-$M$
+M
 ``` 是消息集合
 - ```latex
-$\tau: P_1 \times M \rightarrow P_2$
+\tau: P_1 \times M \rightarrow P_2
 ``` 是通信函数
 
 **定理 2.1.1** (通信安全性)
 对于任意channel ```latex
-$c$
+c
 ``` 和消息 ```latex
-$m$
+m
 ```，如果 ```latex
-$c$
+c
 ``` 是类型安全的，则 ```latex
-$\tau(p_1, m) = p_2$
+\tau(p_1, m) = p_2
 ``` 当且仅当 ```latex
-$m$
+m
 ``` 的类型与 ```latex
-$c$
+c
 ``` 的类型匹配。
 
 **证明**：
 Go的channel是强类型的，编译时检查确保只有匹配类型的消息才能通过channel传输。
 因此，通信安全性成立。```latex
-$\square$
+\square
 ```
 
 #### 2.2 并发安全形式化
 
 **定义 2.2.1** (数据竞争)
 数据竞争是一个三元组 ```latex
-$R = (T_1, T_2, V)$
+R = (T_1, T_2, V)
 ```，其中：
 
 - ```latex
-$T_1, T_2$
+T_1, T_2
 ``` 是并发线程
 - ```latex
-$V$
+V
 ``` 是共享变量
 - ```latex
-$T_1$
+T_1
 ``` 和 ```latex
-$T_2$
+T_2
 ``` 同时访问 ```latex
-$V$
+V
 ```，且至少有一个是写操作
 
 **算法 2.2.1** (数据竞争检测)

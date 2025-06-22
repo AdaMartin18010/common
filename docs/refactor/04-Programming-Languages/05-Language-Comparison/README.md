@@ -37,82 +37,82 @@
 编程语言比较包含以下维度：
 
 - 语法维度：```latex
-$S = \{s_1, s_2, \ldots, s_n\}$
+S = \{s_1, s_2, \ldots, s_n\}
 ```
 - 语义维度：```latex
-$M = \{m_1, m_2, \ldots, m_n\}$
+M = \{m_1, m_2, \ldots, m_n\}
 ```
 - 性能维度：```latex
-$P = \{p_1, p_2, \ldots, p_n\}$
+P = \{p_1, p_2, \ldots, p_n\}
 ```
 - 生态维度：```latex
-$E = \{e_1, e_2, \ldots, e_n\}$
+E = \{e_1, e_2, \ldots, e_n\}
 ```
 
 **定义 2** (比较矩阵)
 对于语言 ```latex
-$L_1$
+L_1
 ``` 和 ```latex
-$L_2$
+L_2
 ```，比较矩阵 ```latex
-$C$
+C
 ``` 定义为：
 $```latex
-$C_{ij} = \text{compare}(L_1^i, L_2^j)$
+C_{ij} = \text{compare}(L_1^i, L_2^j)
 ```$
 
 其中 ```latex
-$L_1^i$
+L_1^i
 ``` 表示语言 ```latex
-$L_1$
+L_1
 ``` 的第 ```latex
-$i$
+i
 ``` 个特性。
 
 ### 评估标准
 
 **定义 3** (评估标准)
 评估标准 ```latex
-$A$
+A
 ``` 包含以下指标：
 
 - 可读性：```latex
-$R = \sum_{i=1}^n w_i \cdot r_i$
+R = \sum_{i=1}^n w_i \cdot r_i
 ```
 - 可维护性：```latex
-$M = \sum_{i=1}^n w_i \cdot m_i$
+M = \sum_{i=1}^n w_i \cdot m_i
 ```
 - 性能：```latex
-$P = \sum_{i=1}^n w_i \cdot p_i$
+P = \sum_{i=1}^n w_i \cdot p_i
 ```
 - 安全性：```latex
-$S = \sum_{i=1}^n w_i \cdot s_i$
+S = \sum_{i=1}^n w_i \cdot s_i
 ```
 
 其中 ```latex
-$w_i$
+w_i
 ``` 是权重，```latex
-$r_i, m_i, p_i, s_i$
+r_i, m_i, p_i, s_i
 ``` 是各维度的评分。
 
 ### 量化方法
 
 **定义 4** (量化评分)
 对于特性 ```latex
-$f$
+f
 ```，量化评分 ```latex
-$Q(f)$
+Q(f)
 ``` 定义为：
 $```latex
-$Q(f) = \frac{\sum_{i=1}^n s_i \cdot w_i}{\sum_{i=1}^n w_i}$
+Q(f) = \frac{\sum_{i=1}^n s_i \cdot w_i}{\sum_{i=1}^n w_i}
 ```$
 
 其中 ```latex
-$s_i$
+s_i
 ``` 是第 ```latex
-$i$
+i
 ``` 个评估者的评分，```latex
-$w_i$
+w_i
 ``` 是权重。
 
 ## 语言特性比较
@@ -121,57 +121,57 @@ $w_i$
 
 **定义 5** (类型系统强度)
 类型系统强度 ```latex
-$T$
+T
 ``` 定义为：
 $```latex
-$T = \alpha \cdot S + \beta \cdot C + \gamma \cdot P$
+T = \alpha \cdot S + \beta \cdot C + \gamma \cdot P
 ```$
 
 其中：
 
 - ```latex
-$S$
+S
 ```: 静态类型检查强度
 - ```latex
-$C$
+C
 ```: 编译时检查强度
 - ```latex
-$P$
+P
 ```: 类型安全保证强度
 - ```latex
-$\alpha, \beta, \gamma$
+\alpha, \beta, \gamma
 ```: 权重系数
 
 **定理 1** (类型安全)
 如果语言 ```latex
-$L$
+L
 ``` 的类型系统强度 ```latex
-$T(L) > T_{threshold}$
+T(L) > T_{threshold}
 ```，则 ```latex
-$L$
+L
 ``` 提供类型安全保证。
 
 ### 内存管理
 
 **定义 6** (内存管理模型)
 内存管理模型 ```latex
-$M$
+M
 ``` 包含以下组件：
 
 - 分配策略：```latex
-$A: \mathbb{N} \to \text{Address}$
+A: \mathbb{N} \to \text{Address}
 ```
 - 回收策略：```latex
-$G: \text{Address} \to \{\text{Keep}, \text{Free}\}$
+G: \text{Address} \to \{\text{Keep}, \text{Free}\}
 ```
 - 安全策略：```latex
-$S: \text{Address} \to \{\text{Safe}, \text{Unsafe}\}$
+S: \text{Address} \to \{\text{Safe}, \text{Unsafe}\}
 ```
 
 **定理 2** (内存安全)
 如果内存管理模型满足：
 $```latex
-$\forall a \in \text{Address}: S(a) = \text{Safe} \implies G(a) = \text{Keep}$
+\forall a \in \text{Address}: S(a) = \text{Safe} \implies G(a) = \text{Keep}
 ```$
 
 则系统提供内存安全保证。
@@ -180,31 +180,31 @@ $\forall a \in \text{Address}: S(a) = \text{Safe} \implies G(a) = \text{Keep}$
 
 **定义 7** (并发模型)
 并发模型 ```latex
-$C$
+C
 ``` 定义为：
 $```latex
-$C = (P, \Sigma, \delta, p_0)$
+C = (P, \Sigma, \delta, p_0)
 ```$
 
 其中：
 
 - ```latex
-$P$
+P
 ```: 进程集合
 - ```latex
-$\Sigma$
+\Sigma
 ```: 同步事件集合
 - ```latex
-$\delta: P \times \Sigma \to P$
+\delta: P \times \Sigma \to P
 ```: 状态转换函数
 - ```latex
-$p_0 \in P$
+p_0 \in P
 ```: 初始进程
 
 **定理 3** (并发安全性)
 如果并发模型满足：
 $```latex
-$\forall p_1, p_2 \in P: \text{race}(p_1, p_2) = \text{false}$
+\forall p_1, p_2 \in P: \text{race}(p_1, p_2) = \text{false}
 ```$
 
 则系统提供并发安全保证。
@@ -213,23 +213,23 @@ $\forall p_1, p_2 \in P: \text{race}(p_1, p_2) = \text{false}$
 
 **定义 8** (错误处理模型)
 错误处理模型 ```latex
-$E$
+E
 ``` 包含：
 
 - 错误类型：```latex
-$T_E = \{t_1, t_2, \ldots, t_n\}$
+T_E = \{t_1, t_2, \ldots, t_n\}
 ```
 - 处理策略：```latex
-$H: T_E \to \text{Strategy}$
+H: T_E \to \text{Strategy}
 ```
 - 传播机制：```latex
-$P: \text{Error} \to \text{Handler}$
+P: \text{Error} \to \text{Handler}
 ```
 
 **定理 4** (错误处理完整性)
 如果错误处理模型满足：
 $```latex
-$\forall e \in \text{Error}: \exists h \in \text{Handler}: P(e) = h$
+\forall e \in \text{Error}: \exists h \in \text{Handler}: P(e) = h
 ```$
 
 则系统提供完整的错误处理。

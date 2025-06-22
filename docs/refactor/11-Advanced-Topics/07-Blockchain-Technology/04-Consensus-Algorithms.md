@@ -38,46 +38,46 @@ const (
 
 **证明**:
 设攻击者算力为 ```latex
-$p$
+p
 ```，诚实节点算力为 ```latex
-$1-p$
+1-p
 ```。
 攻击成功的概率为：
 $```latex
-$P_{attack} = \left(\frac{p}{1-p}\right)^z$
+P_{attack} = \left(\frac{p}{1-p}\right)^z
 ```$
 其中 ```latex
-$z$
+z
 ``` 为确认区块数。
 
 当 ```latex
-$p < 0.5$
+p < 0.5
 ``` 时，```latex
-$\lim_{z \to \infty} P_{attack} = 0$
+\lim_{z \to \infty} P_{attack} = 0
 ```。
 
 ### 11.7.4.2.2 数学建模
 
 **定义 11.7.4.2** (挖矿难度)
 挖矿难度 ```latex
-$D$
+D
 ``` 定义为：
 $```latex
-$D = \frac{2^{256}}{T}$
+D = \frac{2^{256}}{T}
 ```$
 其中 ```latex
-$T$
+T
 ``` 为目标阈值。
 
 **定义 11.7.4.3** (期望出块时间)
 期望出块时间 ```latex
-$E[T]$
+E[T]
 ``` 为：
 $```latex
-$E[T] = \frac{D \cdot 2^{32}}{H}$
+E[T] = \frac{D \cdot 2^{32}}{H}
 ```$
 其中 ```latex
-$H$
+H
 ``` 为全网算力。
 
 ### 11.7.4.2.3 Go实现
@@ -161,42 +161,42 @@ func (pow *ProofOfWork) AdjustDifficulty(actualTime time.Duration) {
 
 **证明**:
 设攻击者质押代币价值为 ```latex
-$V$
+V
 ```，攻击成功概率为 ```latex
-$p$
+p
 ```。
 期望损失为：
 $```latex
-$E[Loss] = V \cdot p$
+E[Loss] = V \cdot p
 ```$
 当 ```latex
-$p$
+p
 ``` 很小时，攻击成本接近 ```latex
-$V$
+V
 ```。
 
 ### 11.7.4.3.2 数学建模
 
 **定义 11.7.4.5** (验证者选择概率)
 验证者 ```latex
-$i$
+i
 ``` 被选中的概率为：
 $```latex
-$P_i = \frac{s_i}{\sum_{j=1}^n s_j}$
+P_i = \frac{s_i}{\sum_{j=1}^n s_j}
 ```$
 其中 ```latex
-$s_i$
+s_i
 ``` 为验证者 ```latex
-$i$
+i
 ``` 的质押数量。
 
 **定义 11.7.4.6** (惩罚机制)
 恶意行为的惩罚函数为：
 $```latex
-$Penalty(s) = \alpha \cdot s + \beta \cdot s^2$
+Penalty(s) = \alpha \cdot s + \beta \cdot s^2
 ```$
 其中 ```latex
-$\alpha, \beta$
+\alpha, \beta
 ``` 为惩罚参数。
 
 ### 11.7.4.3.3 Go实现
@@ -359,9 +359,9 @@ func (pos *ProofOfStake) Delegate(delegator, validator string, amount uint64) er
 
 **定理 11.7.4.3** (DPoS效率)
 DPoS通过减少验证者数量，将共识复杂度从 ```latex
-$O(n^2)$
+O(n^2)
 ``` 降低到 ```latex
-$O(n)$
+O(n)
 ```。
 
 ### 11.7.4.4.2 数学建模
@@ -369,18 +369,18 @@ $O(n)$
 **定义 11.7.4.8** (投票权重)
 投票权重函数为：
 $```latex
-$W(v_i) = \sum_{j=1}^m w_j \cdot vote_{i,j}$
+W(v_i) = \sum_{j=1}^m w_j \cdot vote_{i,j}
 ```$
 其中 ```latex
-$w_j$
+w_j
 ``` 为选民 ```latex
-$j$
+j
 ``` 的权重，```latex
-$vote_{i,j}$
+vote_{i,j}
 ``` 为选民 ```latex
-$j$
+j
 ``` 对验证者 ```latex
-$i$
+i
 ``` 的投票。
 
 ### 11.7.4.4.3 Go实现
@@ -531,32 +531,32 @@ func (dpos *DelegatedProofOfStake) UpdatePerformance(validator string, success b
 
 **定理 11.7.4.4** (PBFT容错性)
 PBFT可以在 ```latex
-$f$
+f
 ``` 个拜占庭节点存在的情况下正常工作，其中 ```latex
-$f < \frac{n}{3}$
+f < \frac{n}{3}
 ```，```latex
-$n$
+n
 ``` 为总节点数。
 
 **证明**:
 设诚实节点数为 ```latex
-$h$
+h
 ```，拜占庭节点数为 ```latex
-$f$
+f
 ```。
 需要满足：
 
 1. ```latex
-$h > f$
+h > f
 ``` (诚实节点多于拜占庭节点)
 2. ```latex
-$h + f = n$
+h + f = n
 ``` (总节点数)
 
 因此 ```latex
-$h > \frac{n}{2}$
+h > \frac{n}{2}
 ```，即 ```latex
-$f < \frac{n}{3}$
+f < \frac{n}{3}
 ```。
 
 ### 11.7.4.5.2 数学建模
@@ -565,13 +565,13 @@ $f < \frac{n}{3}$
 PBFT包含三个阶段：
 
 1. **预准备阶段**: ```latex
-$2f+1$
+2f+1
 ``` 个节点确认
 2. **准备阶段**: ```latex
-$2f+1$
+2f+1
 ``` 个节点准备
 3. **提交阶段**: ```latex
-$2f+1$
+2f+1
 ``` 个节点提交
 
 ### 11.7.4.5.3 Go实现
@@ -870,7 +870,7 @@ func (pbft *PBFT) createCheckpoint(sequenceNum uint64) {
 **证明**:
 
 1. **PBFT**: 需要 ```latex
-$2f+1$
+2f+1
 ``` 个诚实节点，容错率最高
 2. **PoS**: 攻击成本等于质押价值，经济安全性强
 3. **DPoS**: 验证者数量有限，攻击成本相对较低

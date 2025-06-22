@@ -87,78 +87,78 @@ classDiagram
 ### 2.1 基本定义
 
 设 ```latex
-$\mathcal{A}$
+\mathcal{A}
 ``` 为抽象类集合，```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 为具体类集合，```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 为操作集合。
 
 **定义 2.1** (模板方法模式)
 模板方法模式是一个四元组 ```latex
-$(\mathcal{A}, \mathcal{C}, \mathcal{O}, \mathcal{T})$
+(\mathcal{A}, \mathcal{C}, \mathcal{O}, \mathcal{T})
 ```，其中：
 
 - ```latex
-$\mathcal{A} = \{A_1, A_2, \ldots, A_n\}$
+\mathcal{A} = \{A_1, A_2, \ldots, A_n\}
 ``` 是抽象类集合
 - ```latex
-$\mathcal{C} = \{C_1, C_2, \ldots, C_m\}$
+\mathcal{C} = \{C_1, C_2, \ldots, C_m\}
 ``` 是具体类集合
 - ```latex
-$\mathcal{O} = \{O_1, O_2, \ldots, O_k\}$
+\mathcal{O} = \{O_1, O_2, \ldots, O_k\}
 ``` 是操作集合
 - ```latex
-$\mathcal{T}: \mathcal{A} \times \mathcal{O} \rightarrow \mathcal{O}^*$
+\mathcal{T}: \mathcal{A} \times \mathcal{O} \rightarrow \mathcal{O}^*
 ``` 是模板函数
 
 ### 2.2 形式化规范
 
 **公理 2.1** (模板方法不变性)
 对于任意抽象类 ```latex
-$A \in \mathcal{A}$
+A \in \mathcal{A}
 ``` 和模板方法 ```latex
-$T \in \mathcal{T}$
+T \in \mathcal{T}
 ```：
 
 $```latex
-$\forall A \in \mathcal{A}, \forall T \in \mathcal{T}: \text{structure}(T(A)) = \text{constant}$
+\forall A \in \mathcal{A}, \forall T \in \mathcal{T}: \text{structure}(T(A)) = \text{constant}
 ```$
 
 **公理 2.2** (步骤可变性)
 对于任意具体类 ```latex
-$C \in \mathcal{C}$
+C \in \mathcal{C}
 ``` 和基本操作 ```latex
-$O \in \mathcal{O}$
+O \in \mathcal{O}
 ```：
 
 $```latex
-$\forall C \in \mathcal{C}, \exists O \in \mathcal{O}: \text{implementation}(O(C)) \neq \text{implementation}(O(A))$
+\forall C \in \mathcal{C}, \exists O \in \mathcal{O}: \text{implementation}(O(C)) \neq \text{implementation}(O(A))
 ```$
 
 ### 2.3 算法骨架定义
 
 设 ```latex
-$S$
+S
 ``` 为算法步骤序列，```latex
-$P$
+P
 ``` 为基本操作集合。
 
 **定义 2.2** (算法骨架)
 算法骨架是一个有序对 ```latex
-$(S, P)$
+(S, P)
 ```，其中：
 
 $```latex
-$S = \langle s_1, s_2, \ldots, s_n \rangle$
+S = \langle s_1, s_2, \ldots, s_n \rangle
 ```$
 $```latex
-$P = \{p_1, p_2, \ldots, p_m\}$
+P = \{p_1, p_2, \ldots, p_m\}
 ```$
 
 且满足：
 $```latex
-$\forall s_i \in S: s_i \in P \lor s_i \text{ is concrete}$
+\forall s_i \in S: s_i \in P \lor s_i \text{ is concrete}
 ```$
 
 ## 3. 数学基础
@@ -167,62 +167,62 @@ $\forall s_i \in S: s_i \in P \lor s_i \text{ is concrete}$
 
 **定理 3.1** (模板方法同构性)
 设 ```latex
-$G_1 = (\mathcal{A}_1, \mathcal{O}_1)$
+G_1 = (\mathcal{A}_1, \mathcal{O}_1)
 ``` 和 ```latex
-$G_2 = (\mathcal{A}_2, \mathcal{O}_2)$
+G_2 = (\mathcal{A}_2, \mathcal{O}_2)
 ``` 为两个模板方法结构，如果存在同构映射 ```latex
-$\phi: \mathcal{A}_1 \rightarrow \mathcal{A}_2$
+\phi: \mathcal{A}_1 \rightarrow \mathcal{A}_2
 ```，则：
 
 $```latex
-$\forall a \in \mathcal{A}_1: \phi(T(a)) = T(\phi(a))$
+\forall a \in \mathcal{A}_1: \phi(T(a)) = T(\phi(a))
 ```$
 
 **证明**:
 
 1. 由同构定义，```latex
-$\phi$
+\phi
 ``` 是双射
 2. 对于任意 ```latex
-$a \in \mathcal{A}_1$
+a \in \mathcal{A}_1
 ```，存在唯一的 ```latex
-$\phi(a) \in \mathcal{A}_2$
+\phi(a) \in \mathcal{A}_2
 ```
 3. 由于模板方法结构不变性，```latex
-$T(a)$
+T(a)
 ``` 和 ```latex
-$T(\phi(a))$
+T(\phi(a))
 ``` 具有相同的结构
 4. 因此 ```latex
-$\phi(T(a)) = T(\phi(a))$
+\phi(T(a)) = T(\phi(a))
 ```
 
 ### 3.2 算法复杂度分析
 
 **定理 3.2** (模板方法时间复杂度)
 设模板方法包含 ```latex
-$n$
+n
 ``` 个步骤，其中 ```latex
-$k$
+k
 ``` 个为抽象步骤，则时间复杂度为：
 
 $```latex
-$T(n) = O(n) + \sum_{i=1}^{k} T_i$
+T(n) = O(n) + \sum_{i=1}^{k} T_i
 ```$
 
 其中 ```latex
-$T_i$
+T_i
 ``` 是第 ```latex
-$i$
+i
 ``` 个抽象步骤的实现复杂度。
 
 **证明**:
 
 1. 模板方法按顺序执行 ```latex
-$n$
+n
 ``` 个步骤
 2. 每个具体步骤的时间复杂度为 ```latex
-$O(1)$
+O(1)
 ```
 3. 每个抽象步骤的时间复杂度取决于具体实现
 4. 总时间复杂度为所有步骤复杂度的和
@@ -233,13 +233,13 @@ $O(1)$
 模板方法的空间复杂度为：
 
 $```latex
-$S(n) = O(1) + \max_{i=1}^{k} S_i$
+S(n) = O(1) + \max_{i=1}^{k} S_i
 ```$
 
 其中 ```latex
-$S_i$
+S_i
 ``` 是第 ```latex
-$i$
+i
 ``` 个抽象步骤的空间复杂度。
 
 ## 4. 设计原则
@@ -804,20 +804,20 @@ func (m *MockConcreteClass) PrimitiveOperation2() {
 ### 10.4 数学总结
 
 模板方法模式通过形式化定义 ```latex
-$(\mathcal{A}, \mathcal{C}, \mathcal{O}, \mathcal{T})$
+(\mathcal{A}, \mathcal{C}, \mathcal{O}, \mathcal{T})
 ``` 实现了算法骨架的抽象，其中：
 
 - **结构不变性**: ```latex
-$\text{structure}(T(A)) = \text{constant}$
+\text{structure}(T(A)) = \text{constant}
 ```
 - **实现可变性**: ```latex
-$\text{implementation}(O(C)) \neq \text{implementation}(O(A))$
+\text{implementation}(O(C)) \neq \text{implementation}(O(A))
 ```
 - **时间复杂度**: ```latex
-$T(n) = O(n) + \sum_{i=1}^{k} T_i$
+T(n) = O(n) + \sum_{i=1}^{k} T_i
 ```
 - **空间复杂度**: ```latex
-$S(n) = O(1) + \max_{i=1}^{k} S_i$
+S(n) = O(1) + \max_{i=1}^{k} S_i
 ```
 
 这种模式在Go语言中通过接口和结构体嵌入得到了优雅的实现，既保持了类型安全，又提供了良好的扩展性。

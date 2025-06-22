@@ -9,25 +9,23 @@
 ### 3.1.1 差分隐私定义
 
 对于相邻数据集 ```latex
-$D$
+D
 ``` 和 ```latex
-$D'$
+D'
 ```，算法 ```latex
-$A$
+A
 ``` 满足 ```latex
-$(\epsilon, \delta)$
+(\epsilon, \delta)
 ```-差分隐私：
 
 ```latex
-$```latex
-$\Pr[A(D) \in S] \leq e^\epsilon \Pr[A(D') \in S] + \delta$
+$\Pr[A(D) \in S] \leq e^\epsilon \Pr[A(D') \in S] + \delta
 ```$
-```
 
 其中 ```latex
-$\epsilon$
+\epsilon
 ``` 是隐私预算，```latex
-$\delta$
+\delta
 ``` 是失败概率。
 
 ### 3.1.2 拉普拉斯机制
@@ -35,15 +33,13 @@ $\delta$
 拉普拉斯机制添加噪声：
 
 ```latex
-$```latex
-$A(D) = f(D) + \text{Lap}\left(\frac{\Delta f}{\epsilon}\right)$
+$A(D) = f(D) + \text{Lap}\left(\frac{\Delta f}{\epsilon}\right)
 ```$
-```
 
 其中 ```latex
-$\Delta f$
+\Delta f
 ``` 是函数 ```latex
-$f$
+f
 ``` 的敏感度。
 
 ### 3.1.3 高斯机制
@@ -51,10 +47,8 @@ $f$
 高斯机制添加高斯噪声：
 
 ```latex
-$```latex
-$A(D) = f(D) + \mathcal{N}\left(0, \frac{\Delta f^2 \log(1/\delta)}{2\epsilon^2}\right)$
+$A(D) = f(D) + \mathcal{N}\left(0, \frac{\Delta f^2 \log(1/\delta)}{2\epsilon^2}\right)
 ```$
-```
 
 ## 3.2 联邦学习中的差分隐私
 
@@ -63,13 +57,11 @@ $A(D) = f(D) + \mathcal{N}\left(0, \frac{\Delta f^2 \log(1/\delta)}{2\epsilon^2}
 客户端级差分隐私保护整个客户端的数据：
 
 ```latex
-$```latex
-$\tilde{w}_i = w_i + \mathcal{N}\left(0, \frac{c^2 \log(1/\delta)}{2\epsilon^2} I\right)$
+$\tilde{w}_i = w_i + \mathcal{N}\left(0, \frac{c^2 \log(1/\delta)}{2\epsilon^2} I\right)
 ```$
-```
 
 其中 ```latex
-$c$
+c
 ``` 是裁剪范数。
 
 ### 3.2.2 样本级差分隐私
@@ -77,13 +69,11 @@ $c$
 样本级差分隐私保护单个样本：
 
 ```latex
-$```latex
-$\tilde{g}_i = \text{Clip}(g_i, c) + \mathcal{N}\left(0, \frac{c^2 \log(1/\delta)}{2\epsilon^2} I\right)$
+$\tilde{g}_i = \text{Clip}(g_i, c) + \mathcal{N}\left(0, \frac{c^2 \log(1/\delta)}{2\epsilon^2} I\right)
 ```$
-```
 
 其中 ```latex
-$\text{Clip}(g, c) = g \cdot \min(1, c/\|g\|)$
+\text{Clip}(g, c) = g \cdot \min(1, c/\|g\|)
 ```。
 
 ### 3.2.3 隐私预算管理
@@ -91,13 +81,11 @@ $\text{Clip}(g, c) = g \cdot \min(1, c/\|g\|)$
 隐私预算的组成：
 
 ```latex
-$```latex
-$\epsilon_{total} = \sum_{t=1}^T \epsilon_t$
+$\epsilon_{total} = \sum_{t=1}^T \epsilon_t
 ```$
-```
 
 其中 ```latex
-$T$
+T
 ``` 是通信轮数。
 
 ## 3.3 安全多方计算
@@ -105,21 +93,19 @@ $T$
 ### 3.3.1 秘密共享
 
 ```latex
-$(t, n)$
+(t, n)
 ``` 秘密共享将秘密 ```latex
-$s$
+s
 ``` 分割为 ```latex
-$n$
+n
 ``` 个份额：
 
 ```latex
-$```latex
-$s = \sum_{i=1}^t s_i \pmod{p}$
+$s = \sum_{i=1}^t s_i \pmod{p}
 ```$
-```
 
 其中任意 ```latex
-$t$
+t
 ``` 个份额可以重构秘密。
 
 ### 3.3.2 安全聚合
@@ -127,17 +113,15 @@ $t$
 安全聚合协议：
 
 ```latex
-$```latex
-$y = \sum_{i=1}^n x_i = \sum_{i=1}^n \left(\sum_{j=1}^n s_{i,j}\right) = \sum_{j=1}^n \left(\sum_{i=1}^n s_{i,j}\right)$
+$y = \sum_{i=1}^n x_i = \sum_{i=1}^n \left(\sum_{j=1}^n s_{i,j}\right) = \sum_{j=1}^n \left(\sum_{i=1}^n s_{i,j}\right)
 ```$
-```
 
 其中 ```latex
-$s_{i,j}$
+s_{i,j}
 ``` 是客户端 ```latex
-$i$
+i
 ``` 发送给客户端 ```latex
-$j$
+j
 ``` 的份额。
 
 ### 3.3.3 同态加密
@@ -145,13 +129,11 @@ $j$
 同态加密支持在密文上进行计算：
 
 ```latex
-$```latex
-$\text{Enc}(m_1) \oplus \text{Enc}(m_2) = \text{Enc}(m_1 + m_2)$
+$\text{Enc}(m_1) \oplus \text{Enc}(m_2) = \text{Enc}(m_1 + m_2)
 ```$
 $```latex
-$\text{Enc}(m_1) \otimes \text{Enc}(m_2) = \text{Enc}(m_1 \times m_2)$
+\text{Enc}(m_1) \otimes \text{Enc}(m_2) = \text{Enc}(m_1 \times m_2)
 ```$
-```
 
 ## 3.4 联邦学习隐私攻击
 
@@ -160,15 +142,13 @@ $\text{Enc}(m_1) \otimes \text{Enc}(m_2) = \text{Enc}(m_1 \times m_2)$
 成员推理攻击判断样本是否在训练集中：
 
 ```latex
-$```latex
-$P(\text{member}|x) = \sigma(f(x; \theta))$
+$P(\text{member}|x) = \sigma(f(x; \theta))
 ```$
-```
 
 其中 ```latex
-$f$
+f
 ``` 是攻击模型，```latex
-$\sigma$
+\sigma
 ``` 是sigmoid函数。
 
 ### 3.4.2 模型反演攻击
@@ -176,13 +156,11 @@ $\sigma$
 模型反演攻击重构训练数据：
 
 ```latex
-$```latex
-$\hat{x} = \arg\min_x \mathcal{L}(f(x; \theta), y) + \lambda R(x)$
+$\hat{x} = \arg\min_x \mathcal{L}(f(x; \theta), y) + \lambda R(x)
 ```$
-```
 
 其中 ```latex
-$R(x)$
+R(x)
 ``` 是正则化项。
 
 ### 3.4.3 属性推理攻击
@@ -190,13 +168,11 @@ $R(x)$
 属性推理攻击推断敏感属性：
 
 ```latex
-$```latex
-$P(a|x) = \sigma(g(f(x; \theta)))$
+$P(a|x) = \sigma(g(f(x; \theta)))
 ```$
-```
 
 其中 ```latex
-$g$
+g
 ``` 是属性推理模型。
 
 ## 3.5 Go语言实现
@@ -825,7 +801,7 @@ func PrivacyPreservingTrainingExample() {
 
 **定理 3.1** (差分隐私保护)
 高斯机制提供 ```latex
-$(\epsilon, \delta)$
+(\epsilon, \delta)
 ```-差分隐私保护。
 
 **证明**：
@@ -835,7 +811,7 @@ $(\epsilon, \delta)$
 
 **定理 3.2** (安全聚合正确性)
 秘密共享协议在任意 ```latex
-$t$
+t
 ``` 个参与方的情况下可以正确重构秘密。
 
 **证明**：

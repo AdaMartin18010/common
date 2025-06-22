@@ -41,23 +41,23 @@
 #### 1.1 Petri网定义
 
 Petri网是一个五元组 ```latex
-$N = (P, T, F, W, M_0)$
+N = (P, T, F, W, M_0)
 ```，其中：
 
 - ```latex
-$P = \{p_1, p_2, ..., p_n\}$
+P = \{p_1, p_2, ..., p_n\}
 ```：库所集合 (Places)
 - ```latex
-$T = \{t_1, t_2, ..., t_m\}$
+T = \{t_1, t_2, ..., t_m\}
 ```：变迁集合 (Transitions)
 - ```latex
-$F \subseteq (P \times T) \cup (T \times P)$
+F \subseteq (P \times T) \cup (T \times P)
 ```：流关系 (Flow Relation)
 - ```latex
-$W: F \rightarrow \mathbb{N}^+$
+W: F \rightarrow \mathbb{N}^+
 ```：权重函数 (Weight Function)
 - ```latex
-$M_0: P \rightarrow \mathbb{N}$
+M_0: P \rightarrow \mathbb{N}
 ```：初始标识 (Initial Marking)
 
 #### 1.2 WF-net特性
@@ -65,10 +65,10 @@ $M_0: P \rightarrow \mathbb{N}$
 工作流Petri网 (WF-net) 具有以下特性：
 
 1. **存在唯一的源库所i**：```latex
-$\bullet i = \emptyset$
+\bullet i = \emptyset
 ```
 2. **存在唯一的汇库所o**：```latex
-$o \bullet = \emptyset$
+o \bullet = \emptyset
 ```
 3. **网络中每个节点都在从i到o的路径上**
 
@@ -86,58 +86,58 @@ $o \bullet = \emptyset$
 过程代数提供了一种代数方法描述并发系统的行为：
 
 - **顺序组合**：```latex
-$P \cdot Q$
+P \cdot Q
 ```
 - **选择组合**：```latex
-$P + Q$
+P + Q
 ```
 - **并行组合**：```latex
-$P \parallel Q$
+P \parallel Q
 ```
 - **通信组合**：```latex
-$P | Q$
+P | Q
 ```
 - **同步组合**：```latex
-$P \times Q$
+P \times Q
 ```
 
 #### 2.2 通信机制
 
 - **同步通信**：```latex
-$\overline{a}.P | a.Q \rightarrow P | Q$
+\overline{a}.P | a.Q \rightarrow P | Q
 ```
 - **异步通信**：```latex
-$\overline{a}.P | a.Q \rightarrow P | Q | \overline{a}.P$
+\overline{a}.P | a.Q \rightarrow P | Q | \overline{a}.P
 ```
 - **通道通信**：```latex
-$c!v.P | c?x.Q \rightarrow P | Q[v/x]$
+c!v.P | c?x.Q \rightarrow P | Q[v/x]
 ```
 - **广播通信**：```latex
-$a!v.P | a?x.Q | a?y.R \rightarrow P | Q[v/x] | R[v/y]$
+a!v.P | a?x.Q | a?y.R \rightarrow P | Q[v/x] | R[v/y]
 ```
 
 #### 2.3 行为等价
 
 - **强等价**：```latex
-$P \sim Q$
+P \sim Q
 ``` 当且仅当 ```latex
-$P$
+P
 ``` 和 ```latex
-$Q$
+Q
 ``` 具有相同的转换关系
 - **弱等价**：```latex
-$P \approx Q$
+P \approx Q
 ``` 当且仅当 ```latex
-$P$
+P
 ``` 和 ```latex
-$Q$
+Q
 ``` 在忽略内部动作后等价
 - **观察等价**：```latex
-$P \simeq Q$
+P \simeq Q
 ``` 当且仅当 ```latex
-$P$
+P
 ``` 和 ```latex
-$Q$
+Q
 ``` 对外部观察者不可区分
 
 ### 3. 时态逻辑
@@ -147,16 +147,16 @@ $Q$
 LTL公式用于描述工作流属性：
 
 - **安全性**：```latex
-$\Box \neg \text{deadlock}$
+\Box \neg \text{deadlock}
 ```
 - **活性**：```latex
-$\Box \Diamond \text{completion}$
+\Box \Diamond \text{completion}
 ```
 - **公平性**：```latex
-$\Box \Diamond \text{progress}$
+\Box \Diamond \text{progress}
 ```
 - **响应性**：```latex
-$\Box(\text{request} \rightarrow \Diamond \text{response})$
+\Box(\text{request} \rightarrow \Diamond \text{response})
 ```
 
 #### 3.2 计算树逻辑 (CTL)
@@ -164,16 +164,16 @@ $\Box(\text{request} \rightarrow \Diamond \text{response})$
 CTL用于描述分支时态逻辑：
 
 - **存在性**：```latex
-$\exists \Box \text{invariant}$
+\exists \Box \text{invariant}
 ```
 - **普遍性**：```latex
-$\forall \Box \text{invariant}$
+\forall \Box \text{invariant}
 ```
 - **可达性**：```latex
-$\exists \Diamond \text{goal}$
+\exists \Diamond \text{goal}
 ```
 - **必然性**：```latex
-$\forall \Diamond \text{goal}$
+\forall \Diamond \text{goal}
 ```
 
 #### 3.3 μ演算
@@ -181,10 +181,10 @@ $\forall \Diamond \text{goal}$
 μ演算是最强的时态逻辑，表达能力最强：
 
 - **不动点**：```latex
-$\mu X.\phi(X)$
+\mu X.\phi(X)
 ``` 表示最小的不动点
 - **递归定义**：```latex
-$X = \phi(X)$
+X = \phi(X)
 ``` 表示递归过程
 - **表达能力**：可以表达所有可计算的时态性质
 
@@ -193,64 +193,64 @@ $X = \phi(X)$
 #### 4.1 控制流模式
 
 1. **顺序模式**：```latex
-$A \rightarrow B \rightarrow C$
+A \rightarrow B \rightarrow C
 ```
 2. **并行模式**：```latex
-$A \rightarrow (B \parallel C) \rightarrow D$
+A \rightarrow (B \parallel C) \rightarrow D
 ```
 3. **选择模式**：```latex
-$A \rightarrow (B | C) \rightarrow D$
+A \rightarrow (B | C) \rightarrow D
 ```
 4. **循环模式**：```latex
-$A \rightarrow B \rightarrow (C \rightarrow B)^* \rightarrow D$
+A \rightarrow B \rightarrow (C \rightarrow B)^* \rightarrow D
 ```
 5. **同步模式**：```latex
-$(A \parallel B) \rightarrow C$
+(A \parallel B) \rightarrow C
 ```
 
 #### 4.2 数据流模式
 
 1. **数据传递**：```latex
-$A \xrightarrow{data} B$
+A \xrightarrow{data} B
 ```
 2. **数据转换**：```latex
-$A \xrightarrow{transform} B$
+A \xrightarrow{transform} B
 ```
 3. **数据聚合**：```latex
-$(A \parallel B) \xrightarrow{aggregate} C$
+(A \parallel B) \xrightarrow{aggregate} C
 ```
 4. **数据分发**：```latex
-$A \xrightarrow{distribute} (B \parallel C)$
+A \xrightarrow{distribute} (B \parallel C)
 ```
 
 #### 4.3 资源模式
 
 1. **资源分配**：```latex
-$\text{allocate}(r, A)$
+\text{allocate}(r, A)
 ```
 2. **资源调度**：```latex
-$\text{schedule}(R, A)$
+\text{schedule}(R, A)
 ```
 3. **资源竞争**：```latex
-$\text{compete}(r, A, B)$
+\text{compete}(r, A, B)
 ```
 4. **资源优化**：```latex
-$\text{optimize}(R, W)$
+\text{optimize}(R, W)
 ```
 
 #### 4.4 异常处理模式
 
 1. **异常检测**：```latex
-$\text{detect}(exception, A)$
+\text{detect}(exception, A)
 ```
 2. **异常恢复**：```latex
-$\text{recover}(exception, A)$
+\text{recover}(exception, A)
 ```
 3. **补偿处理**：```latex
-$\text{compensate}(A, B)$
+\text{compensate}(A, B)
 ```
 4. **容错设计**：```latex
-$\text{fault-tolerant}(A, B)$
+\text{fault-tolerant}(A, B)
 ```
 
 ## 技术栈

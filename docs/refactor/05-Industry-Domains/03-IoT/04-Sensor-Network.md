@@ -76,44 +76,44 @@
 
 **定义 2.1** (传感器网络)
 传感器网络是一个有向图 ```latex
-$G = (V, E, W)$
+G = (V, E, W)
 ```，其中：
 
 - ```latex
-$V = \{v_1, v_2, ..., v_n\}$
+V = \{v_1, v_2, ..., v_n\}
 ``` 是传感器节点集合
 - ```latex
-$E \subseteq V \times V$
+E \subseteq V \times V
 ``` 是通信链路集合
 - ```latex
-$W: E \rightarrow \mathbb{R}^+$
+W: E \rightarrow \mathbb{R}^+
 ``` 是链路权重函数
 
 **定义 2.2** (传感器节点)
 传感器节点 ```latex
-$v_i \in V$
+v_i \in V
 ``` 是一个五元组：
 $```latex
-$v_i = (id_i, pos_i, energy_i, data_i, neighbors_i)$
+v_i = (id_i, pos_i, energy_i, data_i, neighbors_i)
 ```$
 
 其中：
 
 ```latex
 - ```latex
-$id_i$
+id_i
 ``` 是节点唯一标识符
 - ```latex
-$pos_i = (x_i, y_i)$
+pos_i = (x_i, y_i)
 ``` 是节点位置坐标
 - ```latex
-$energy_i \in [0, E_{max}]$
+energy_i \in [0, E_{max}]
 ``` 是当前能量水平
 - ```latex
-$data_i$
+data_i
 ``` 是节点收集的数据
 - ```latex
-$neighbors_i \subseteq V$
+neighbors_i \subseteq V
 ``` 是邻居节点集合
 ```
 
@@ -121,28 +121,28 @@ $neighbors_i \subseteq V$
 
 **定义 2.3** (网络状态)
 网络在时刻 ```latex
-$t$
+t
 ``` 的状态为：
 $```latex
-$S(t) = (G(t), E(t), D(t), T(t))$
+S(t) = (G(t), E(t), D(t), T(t))
 ```$
 
 其中：
 
 ```latex
 - ```latex
-$G(t)$
+G(t)
 ``` 是时刻 ```latex
-$t$
+t
 ``` 的网络拓扑
 - ```latex
-$E(t) = \{energy_i(t) | v_i \in V\}$
+E(t) = \{energy_i(t) | v_i \in V\}
 ``` 是能量状态
 - ```latex
-$D(t) = \{data_i(t) | v_i \in V\}$
+D(t) = \{data_i(t) | v_i \in V\}
 ``` 是数据状态
 - ```latex
-$T(t)$
+T(t)
 ``` 是网络拓扑信息
 ```
 
@@ -154,69 +154,69 @@ $T(t)$
 
 **定理 3.1** (连通性定理)
 传感器网络 ```latex
-$G$
+G
 ``` 是连通的，当且仅当对于任意两个节点 ```latex
-$v_i, v_j \in V$
+v_i, v_j \in V
 ```，存在一条从 ```latex
-$v_i$
+v_i
 ``` 到 ```latex
-$v_j$
+v_j
 ``` 的路径。
 
 **证明**:
 假设网络连通，则对于任意节点对 ```latex
-$(v_i, v_j)$
+(v_i, v_j)
 ```，存在路径 ```latex
-$P = (v_i, v_{k1}, v_{k2}, ..., v_{km}, v_j)$
+P = (v_i, v_{k1}, v_{k2}, ..., v_{km}, v_j)
 ```。
 反之，如果存在节点对 ```latex
-$(v_i, v_j)$
+(v_i, v_j)
 ``` 之间没有路径，则网络不连通。
 
 **定理 3.2** (最小生成树存在性)
 对于连通的传感器网络 ```latex
-$G$
+G
 ```，存在最小生成树 ```latex
-$T$
+T
 ```，使得：
 $```latex
-$\sum_{e \in T} W(e) = \min_{T' \in \mathcal{T}} \sum_{e \in T'} W(e)$
+\sum_{e \in T} W(e) = \min_{T' \in \mathcal{T}} \sum_{e \in T'} W(e)
 ```$
 
 其中 ```latex
-$\mathcal{T}$
+\mathcal{T}
 ``` 是所有生成树的集合。
 
 ### 3.2 能量模型
 
 **定义 3.1** (能量消耗模型)
 节点 ```latex
-$v_i$
+v_i
 ``` 在时间间隔 ```latex
-$\Delta t$
+\Delta t
 ``` 内的能量消耗为：
 $```latex
-$E_{consume}(v_i, \Delta t) = E_{sense} + E_{compute} + E_{comm}$
+E_{consume}(v_i, \Delta t) = E_{sense} + E_{compute} + E_{comm}
 ```$
 
 其中：
 
 - ```latex
-$E_{sense}$
+E_{sense}
 ``` 是感知能量消耗
 - ```latex
-$E_{compute}$
+E_{compute}
 ``` 是计算能量消耗  
 - ```latex
-$E_{comm}$
+E_{comm}
 ``` 是通信能量消耗
 
 **定理 3.3** (能量平衡方程)
 对于节点 ```latex
-$v_i$
+v_i
 ```，能量变化满足：
 $```latex
-$energy_i(t + \Delta t) = energy_i(t) - E_{consume}(v_i, \Delta t)$
+energy_i(t + \Delta t) = energy_i(t) - E_{consume}(v_i, \Delta t)
 ```$
 
 ---
@@ -239,7 +239,7 @@ graph TD
 **定义 4.1** (星形拓扑)
 星形拓扑中，所有传感器节点直接与汇聚节点通信：
 $```latex
-$E_{star} = \{(sink, v_i) | v_i \in V \setminus \{sink\}\}$
+E_{star} = \{(sink, v_i) | v_i \in V \setminus \{sink\}\}
 ```$
 
 #### 4.1.2 网状拓扑
@@ -257,13 +257,13 @@ graph TD
 **定义 4.2** (网状拓扑)
 网状拓扑中，节点可以与多个邻居通信：
 $```latex
-$E_{mesh} = \{(v_i, v_j) | d(v_i, v_j) \leq R_{comm}\}$
+E_{mesh} = \{(v_i, v_j) | d(v_i, v_j) \leq R_{comm}\}
 ```$
 
 其中 ```latex
-$R_{comm}$
+R_{comm}
 ``` 是通信半径，```latex
-$d(v_i, v_j)$
+d(v_i, v_j)
 ``` 是节点间距离。
 
 ### 4.2 拓扑发现算法
@@ -291,20 +291,20 @@ func DiscoverNeighbors(node *SensorNode, network *SensorNetwork) {
 
 **定义 5.1** (最短路径)
 从节点 ```latex
-$v_s$
+v_s
 ``` 到节点 ```latex
-$v_d$
+v_d
 ``` 的最短路径是权重和最小的路径：
 $```latex
-$P^* = \arg\min_{P \in \mathcal{P}_{s,d}} \sum_{e \in P} W(e)$
+P^* = \arg\min_{P \in \mathcal{P}_{s,d}} \sum_{e \in P} W(e)
 ```$
 
 其中 ```latex
-$\mathcal{P}_{s,d}$
+\mathcal{P}_{s,d}
 ``` 是从 ```latex
-$v_s$
+v_s
 ``` 到 ```latex
-$v_d$
+v_d
 ``` 的所有路径集合。
 
 **算法 5.1** (Dijkstra算法)
@@ -345,7 +345,7 @@ func Dijkstra(graph *Graph, source NodeID) map[NodeID]float64 {
 **定义 5.2** (能量感知路径)
 考虑节点能量的路径权重：
 $```latex
-$W_{energy}(e_{ij}) = W(e_{ij}) \cdot \frac{E_{max}}{energy_i}$
+W_{energy}(e_{ij}) = W(e_{ij}) \cdot \frac{E_{max}}{energy_i}
 ```$
 
 **算法 5.2** (能量感知路由)
@@ -367,13 +367,13 @@ func EnergyAwareRouting(graph *Graph, source, target NodeID) []NodeID {
 **定义 6.1** (能量均衡度)
 网络能量均衡度定义为：
 $```latex
-$\eta = 1 - \frac{\sigma_E}{\mu_E}$
+\eta = 1 - \frac{\sigma_E}{\mu_E}
 ```$
 
 其中 ```latex
-$\sigma_E$
+\sigma_E
 ``` 是节点能量的标准差，```latex
-$\mu_E$
+\mu_E
 ``` 是平均能量。
 
 **算法 6.1** (能量均衡算法)
@@ -399,7 +399,7 @@ func EnergyBalancing(network *SensorNetwork) {
 **定义 6.2** (睡眠调度)
 睡眠调度是节点在非活跃期间进入低功耗模式的过程：
 $```latex
-$S_{schedule} = \{(v_i, t_{sleep}, t_{wake}) | v_i \in V\}$
+S_{schedule} = \{(v_i, t_{sleep}, t_{wake}) | v_i \in V\}
 ```$
 
 **算法 6.2** (自适应睡眠调度)
@@ -429,25 +429,25 @@ func AdaptiveSleepScheduling(node *SensorNode) {
 
 **定义 7.1** (数据聚合函数)
 数据聚合函数 ```latex
-$f: \mathbb{R}^n \rightarrow \mathbb{R}$
+f: \mathbb{R}^n \rightarrow \mathbb{R}
 ``` 将多个节点的数据聚合为单个值：
 $```latex
-$y = f(x_1, x_2, ..., x_n)$
+y = f(x_1, x_2, ..., x_n)
 ```$
 
 常见的聚合函数包括：
 
 - 平均值：```latex
-$f_{avg}(x) = \frac{1}{n}\sum_{i=1}^n x_i$
+f_{avg}(x) = \frac{1}{n}\sum_{i=1}^n x_i
 ```
 - 最大值：```latex
-$f_{max}(x) = \max_{i=1}^n x_i$
+f_{max}(x) = \max_{i=1}^n x_i
 ```
 - 最小值：```latex
-$f_{min}(x) = \min_{i=1}^n x_i$
+f_{min}(x) = \min_{i=1}^n x_i
 ```
 - 求和：```latex
-$f_{sum}(x) = \sum_{i=1}^n x_i$
+f_{sum}(x) = \sum_{i=1}^n x_i
 ```
 
 ### 7.2 聚合树构建
@@ -482,7 +482,7 @@ func BuildAggregationTree(network *SensorNetwork, sink NodeID) *Tree {
 **定义 8.1** (密钥分配)
 密钥分配是向网络节点分发加密密钥的过程：
 $```latex
-$K_{dist} = \{(v_i, k_i) | v_i \in V, k_i \in \mathcal{K}\}$
+K_{dist} = \{(v_i, k_i) | v_i \in V, k_i \in \mathcal{K}\}
 ```$
 
 **算法 8.1** (随机密钥预分配)
@@ -504,12 +504,10 @@ func RandomKeyPredistribution(network *SensorNetwork, keyPoolSize int) {
 **定义 8.2** (异常检测)
 异常检测基于节点行为模式识别恶意节点：
 
-```latex
-$$A(v_i) = \begin{cases}
+$A(v_i) = \begin{cases}
 1 & \text{if } behavior(v_i) \text{ is normal} \\
 0 & \text{if } behavior(v_i) \text{ is anomalous}
-\end{cases}$$
-```
+\end{cases}$
 
 **算法 8.2** (分布式入侵检测)
 
@@ -819,43 +817,43 @@ func (em *EnergyManager) calculateEnergyStatistics() EnergyStats {
 
 **定理 10.1** (路由算法复杂度)
 Dijkstra算法的时间复杂度为 ```latex
-$O(|V|^2)$
+O(|V|^2)
 ```，其中 ```latex
-$|V|$
+|V|
 ``` 是节点数量。
 
 **证明**:
 
 - 外层循环执行 ```latex
-$|V|$
+|V|
 ``` 次
 - 每次循环中查找最小距离节点需要 ```latex
-$O(|V|)$
+O(|V|)
 ``` 时间
 - 更新邻居距离需要 ```latex
-$O(|E|)$
+O(|E|)
 ``` 时间
 - 总时间复杂度为 ```latex
-$O(|V|^2 + |E|) = O(|V|^2)$
+O(|V|^2 + |E|) = O(|V|^2)
 ```
 
 ### 10.2 空间复杂度分析
 
 **定理 10.2** (存储复杂度)
 传感器网络的存储复杂度为 ```latex
-$O(|V| + |E|)$
+O(|V| + |E|)
 ```。
 
 **证明**:
 
 - 节点存储需要 ```latex
-$O(|V|)$
+O(|V|)
 ``` 空间
 - 边存储需要 ```latex
-$O(|E|)$
+O(|E|)
 ``` 空间
 - 总空间复杂度为 ```latex
-$O(|V| + |E|)$
+O(|V| + |E|)
 ```
 
 ### 10.3 能量效率分析
@@ -865,12 +863,12 @@ $O(|V| + |E|)$
 
 **证明**:
 设均衡前能量标准差为 ```latex
-$\sigma_1$
+\sigma_1
 ```，均衡后为 ```latex
-$\sigma_2$
+\sigma_2
 ```，则：
 $```latex
-$\eta_2 - \eta_1 = \left(1 - \frac{\sigma_2}{\mu}\right) - \left(1 - \frac{\sigma_1}{\mu}\right) = \frac{\sigma_1 - \sigma_2}{\mu} \geq 0.2$
+\eta_2 - \eta_1 = \left(1 - \frac{\sigma_2}{\mu}\right) - \left(1 - \frac{\sigma_1}{\mu}\right) = \frac{\sigma_1 - \sigma_2}{\mu} \geq 0.2
 ```$
 
 ---

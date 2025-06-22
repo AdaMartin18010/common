@@ -8,21 +8,19 @@
 
 **形式化定义**：
 设 ```latex
-$D$
+D
 ``` 为数据集，```latex
-$U$
+U
 ``` 为用户集合，```latex
-$A$
+A
 ``` 为操作集合。
 数据安全函数 ```latex
-$S: D \times U \times A \rightarrow \{0,1\}$
+S: D \times U \times A \rightarrow \{0,1\}
 ``` 定义为：
-```latex
-$$S(d,u,a) = \begin{cases}
+$S(d,u,a) = \begin{cases}
 1 & \text{if user } u \text{ is authorized to perform action } a \text{ on data } d \\
 0 & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}$
 
 ### 4.1.2 数据分类
 

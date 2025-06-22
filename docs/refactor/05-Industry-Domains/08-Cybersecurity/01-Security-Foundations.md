@@ -21,33 +21,29 @@
 
 **定义 1.1** (安全函数)
 安全函数 ```latex
-$S: M \times K \rightarrow C$
+S: M \times K \rightarrow C
 ``` 将消息 ```latex
-$M$
+M
 ``` 使用密钥 ```latex
-$K$
+K
 ``` 加密为密文 ```latex
-$C$
+C
 ```：
 
 ```latex
-$```latex
-$S(m, k) = c \text{ where } c = \text{encrypt}(m, k)$
+$S(m, k) = c \text{ where } c = \text{encrypt}(m, k)
 ```$
-```
 
 **定理 1.1** (安全可逆性)
 对于安全函数 ```latex
-$S$
+S
 ```，存在解密函数 ```latex
-$S^{-1}$
+S^{-1}
 ``` 满足：
 
 ```latex
-$```latex
-$S^{-1}(S(m, k), k) = m$
+$S^{-1}(S(m, k), k) = m
 ```$
-```
 
 ### 1.2 安全原则
 
@@ -97,13 +93,11 @@ func (sm *SecurityManager) RegisterProvider(name string, provider SecurityProvid
 对称加密使用相同密钥进行加密和解密：
 
 ```latex
-$```latex
-$\text{Encrypt}(m, k) = c$
+$\text{Encrypt}(m, k) = c
 ```$
 $```latex
-$\text{Decrypt}(c, k) = m$
+\text{Decrypt}(c, k) = m
 ```$
-```
 
 ```go
 // AES加密器

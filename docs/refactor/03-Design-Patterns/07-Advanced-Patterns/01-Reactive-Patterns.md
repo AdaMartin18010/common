@@ -5,20 +5,20 @@
 ### 1.1.1 响应式系统形式化定义
 
 **定义 1.1** (响应式系统): 响应式系统是一个四元组 ```latex
-$\mathcal{R} = (S, E, T, R)$
+\mathcal{R} = (S, E, T, R)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是状态集合 (States)
 - ```latex
-$E$
+E
 ``` 是事件集合 (Events)
 - ```latex
-$T$
+T
 ``` 是时间集合 (Time)
 - ```latex
-$R$
+R
 ``` 是响应函数集合 (Response Functions)
 
 **响应式原则**:
@@ -30,17 +30,17 @@ $R$
 ### 1.1.2 响应式流模型
 
 **定义 1.2** (响应式流): 响应式流是一个三元组 ```latex
-$\text{Stream} = (P, S, B)$
+\text{Stream} = (P, S, B)
 ```，其中：
 
 - ```latex
-$P$
+P
 ``` 是发布者 (Publisher)
 - ```latex
-$S$
+S
 ``` 是订阅者 (Subscriber)
 - ```latex
-$B$
+B
 ``` 是背压处理 (Backpressure)
 
 **流操作符**:

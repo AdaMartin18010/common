@@ -65,29 +65,29 @@
 ### 2.1 集合论定义
 
 设 ```latex
-$P$
+P
 ``` 为程序集合，```latex
-$F$
+F
 ``` 为范式集合，```latex
-$S$
+S
 ``` 为语义集合，则编程范式满足：
 
 $```latex
-$\forall f \in F, \exists s \in S : f = \text{paradigm}(s)$
+\forall f \in F, \exists s \in S : f = \text{paradigm}(s)
 ```$
 
 其中 ```latex
-$\text{paradigm}: S \rightarrow F$
+\text{paradigm}: S \rightarrow F
 ``` 为范式映射函数。
 
 ### 2.2 函数式定义
 
 定义范式函数族 ```latex
-$\mathcal{P} = \{p_s : P \rightarrow P \mid s \in S\}$
+\mathcal{P} = \{p_s : P \rightarrow P \mid s \in S\}
 ```，满足：
 
 $```latex
-$p_s(program) = \text{transform}(program, s)$
+p_s(program) = \text{transform}(program, s)
 ```$
 
 ### 2.3 类型论定义
@@ -95,13 +95,13 @@ $p_s(program) = \text{transform}(program, s)$
 在类型论中，编程范式可以表示为：
 
 $```latex
-$\text{Paradigm} = \Pi_{s:S} \Sigma_{p:P} \text{Program}(p)$
+\text{Paradigm} = \Pi_{s:S} \Sigma_{p:P} \text{Program}(p)
 ```$
 
 其中 ```latex
-$\text{Program}(p)$
+\text{Program}(p)
 ``` 表示程序 ```latex
-$p$
+p
 ``` 的类型。
 
 ---
@@ -115,12 +115,12 @@ $p$
 **证明**:
 
 1. 设 ```latex
-$f_1, f_2$
+f_1, f_2
 ``` 为两个不同的范式
 2. 对于任意程序 ```latex
-$p$
+p
 ```，```latex
-$f_1(p) \neq f_2(p)$
+f_1(p) \neq f_2(p)
 ```
 3. 因此范式之间相互独立
 
@@ -131,15 +131,15 @@ $f_1(p) \neq f_2(p)$
 **证明**:
 
 1. 设 ```latex
-$f_1, f_2$
+f_1, f_2
 ``` 为两个范式
 2. 组合范式 ```latex
-$f_{composite} = f_1 \circ f_2$
+f_{composite} = f_1 \circ f_2
 ```
 3. 对于任意程序 ```latex
-$p$
+p
 ```，```latex
-$f_{composite}(p) = f_1(f_2(p))$
+f_{composite}(p) = f_1(f_2(p))
 ```
 4. 因此范式支持组合
 
@@ -1066,37 +1066,37 @@ func BenchmarkFunctionalParadigm(b *testing.B) {
 ### 5.1 时间复杂度
 
 - **命令式编程**: ```latex
-$O(n)$
+O(n)
 ``` 线性时间复杂度
 - **函数式编程**: ```latex
-$O(n \log n)$
+O(n \log n)
 ``` 由于不可变性
 - **面向对象编程**: ```latex
-$O(n)$
+O(n)
 ``` 方法调用开销
 - **逻辑编程**: ```latex
-$O(2^n)$
+O(2^n)
 ``` 回溯搜索
 - **并发编程**: ```latex
-$O(n/p)$
+O(n/p)
 ``` p为处理器数量
 
 ### 5.2 空间复杂度
 
 - **命令式编程**: ```latex
-$O(1)$
+O(1)
 ``` 原地操作
 - **函数式编程**: ```latex
-$O(n)$
+O(n)
 ``` 不可变性导致
 - **面向对象编程**: ```latex
-$O(n)$
+O(n)
 ``` 对象开销
 - **逻辑编程**: ```latex
-$O(n)$
+O(n)
 ``` 搜索空间
 - **并发编程**: ```latex
-$O(n)$
+O(n)
 ``` 线程开销
 
 ### 5.3 性能优化

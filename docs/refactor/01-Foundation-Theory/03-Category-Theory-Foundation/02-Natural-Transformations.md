@@ -37,27 +37,27 @@
 ### 1.1 基本定义
 
 **定义 1.1 (自然变换)**: 设 ```latex
-$F, G: \mathcal{C} \rightarrow \mathcal{D}$
+F, G: \mathcal{C} \rightarrow \mathcal{D}
 ``` 是两个函子，从 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 到 ```latex
-$\mathcal{D}$
+\mathcal{D}
 ``` 的自然变换 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ``` 是一个函数族：
 
 $```latex
-$\alpha = \{\alpha_A: F(A) \rightarrow G(A) \mid A \in \text{Ob}(\mathcal{C})\}$
+\alpha = \{\alpha_A: F(A) \rightarrow G(A) \mid A \in \text{Ob}(\mathcal{C})\}
 ```$
 
 满足自然性条件：对于 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 中的任意态射 ```latex
-$f: A \rightarrow B$
+f: A \rightarrow B
 ```，有：
 
 $```latex
-$G(f) \circ \alpha_A = \alpha_B \circ F(f)$
+G(f) \circ \alpha_A = \alpha_B \circ F(f)
 ```$
 
 即下图交换：
@@ -71,79 +71,79 @@ graph LR
 ```
 
 **定义 1.2 (自然变换的组成)**: 设 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ``` 和 ```latex
-$\beta: G \Rightarrow H$
+\beta: G \Rightarrow H
 ``` 是两个自然变换，它们的垂直组成 ```latex
-$\beta \circ \alpha: F \Rightarrow H$
+\beta \circ \alpha: F \Rightarrow H
 ``` 定义为：
 
 $```latex
-$(\beta \circ \alpha)_A = \beta_A \circ \alpha_A$
+(\beta \circ \alpha)_A = \beta_A \circ \alpha_A
 ```$
 
 **定义 1.3 (恒等自然变换)**: 对于函子 ```latex
-$F: \mathcal{C} \rightarrow \mathcal{D}$
+F: \mathcal{C} \rightarrow \mathcal{D}
 ```，恒等自然变换 ```latex
-$1_F: F \Rightarrow F$
+1_F: F \Rightarrow F
 ``` 定义为：
 
 $```latex
-$(1_F)_A = 1_{F(A)}$
+(1_F)_A = 1_{F(A)}
 ```$
 
 ### 1.2 自然变换的性质
 
 **定理 1.1 (自然变换的结合律)**: 对于自然变换 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ```，```latex
-$\beta: G \Rightarrow H$
+\beta: G \Rightarrow H
 ```，```latex
-$\gamma: H \Rightarrow K$
+\gamma: H \Rightarrow K
 ```，有：
 
 $```latex
-$(\gamma \circ \beta) \circ \alpha = \gamma \circ (\beta \circ \alpha)$
+(\gamma \circ \beta) \circ \alpha = \gamma \circ (\beta \circ \alpha)
 ```$
 
 **证明**: 对于任意对象 ```latex
-$A$
+A
 ```，有：
 $```latex
-$((\gamma \circ \beta) \circ \alpha)_A = (\gamma \circ \beta)_A \circ \alpha_A = (\gamma_A \circ \beta_A) \circ \alpha_A = \gamma_A \circ (\beta_A \circ \alpha_A) = \gamma_A \circ (\beta \circ \alpha)_A = (\gamma \circ (\beta \circ \alpha))_A$
+((\gamma \circ \beta) \circ \alpha)_A = (\gamma \circ \beta)_A \circ \alpha_A = (\gamma_A \circ \beta_A) \circ \alpha_A = \gamma_A \circ (\beta_A \circ \alpha_A) = \gamma_A \circ (\beta \circ \alpha)_A = (\gamma \circ (\beta \circ \alpha))_A
 ```$
 
 **定理 1.2 (自然变换的单位律)**: 对于自然变换 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ```，有：
 
 $```latex
-$1_G \circ \alpha = \alpha = \alpha \circ 1_F$
+1_G \circ \alpha = \alpha = \alpha \circ 1_F
 ```$
 
 **证明**: 对于任意对象 ```latex
-$A$
+A
 ```，有：
 $```latex
-$(1_G \circ \alpha)_A = (1_G)_A \circ \alpha_A = 1_{G(A)} \circ \alpha_A = \alpha_A$
+(1_G \circ \alpha)_A = (1_G)_A \circ \alpha_A = 1_{G(A)} \circ \alpha_A = \alpha_A
 ```$
 
 ### 1.3 自然变换的组成
 
 **定义 1.4 (水平组成)**: 设 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ``` 是 ```latex
-$\mathcal{C} \rightarrow \mathcal{D}$
+\mathcal{C} \rightarrow \mathcal{D}
 ``` 的自然变换，```latex
-$\beta: H \Rightarrow K$
+\beta: H \Rightarrow K
 ``` 是 ```latex
-$\mathcal{D} \rightarrow \mathcal{E}$
+\mathcal{D} \rightarrow \mathcal{E}
 ``` 的自然变换，它们的水平组成 ```latex
-$\beta \star \alpha: H \circ F \Rightarrow K \circ G$
+\beta \star \alpha: H \circ F \Rightarrow K \circ G
 ``` 定义为：
 
 $```latex
-$(\beta \star \alpha)_A = \beta_{G(A)} \circ H(\alpha_A)$
+(\beta \star \alpha)_A = \beta_{G(A)} \circ H(\alpha_A)
 ```$
 
 ---
@@ -153,50 +153,50 @@ $(\beta \star \alpha)_A = \beta_{G(A)} \circ H(\alpha_A)$
 ### 2.1 自然同构
 
 **定义 2.1 (自然同构)**: 自然变换 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ``` 是自然同构，如果对于每个对象 ```latex
-$A$
+A
 ```，```latex
-$\alpha_A$
+\alpha_A
 ``` 都是同构。
 
 **定理 2.1**: 自然变换 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ``` 是自然同构当且仅当存在自然变换 ```latex
-$\beta: G \Rightarrow F$
+\beta: G \Rightarrow F
 ``` 使得：
 
 $```latex
-$\beta \circ \alpha = 1_F \text{ 且 } \alpha \circ \beta = 1_G$
+\beta \circ \alpha = 1_F \text{ 且 } \alpha \circ \beta = 1_G
 ```$
 
 **证明**:
 
 - 必要性：如果 ```latex
-$\alpha$
+\alpha
 ``` 是自然同构，则每个 ```latex
-$\alpha_A$
+\alpha_A
 ``` 都有逆 ```latex
-$\alpha_A^{-1}$
+\alpha_A^{-1}
 ```，定义 ```latex
-$\beta_A = \alpha_A^{-1}$
+\beta_A = \alpha_A^{-1}
 ``` 即可
 - 充分性：如果存在 ```latex
-$\beta$
+\beta
 ``` 满足条件，则每个 ```latex
-$\alpha_A$
+\alpha_A
 ``` 都有逆 ```latex
-$\beta_A$
+\beta_A
 ```
 
 ### 2.2 自然单射
 
 **定义 2.2 (自然单射)**: 自然变换 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ``` 是自然单射，如果对于每个对象 ```latex
-$A$
+A
 ```，```latex
-$\alpha_A$
+\alpha_A
 ``` 都是单射。
 
 **性质**:
@@ -207,11 +207,11 @@ $\alpha_A$
 ### 2.3 自然满射
 
 **定义 2.3 (自然满射)**: 自然变换 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ``` 是自然满射，如果对于每个对象 ```latex
-$A$
+A
 ```，```latex
-$\alpha_A$
+\alpha_A
 ``` 都是满射。
 
 **性质**:
@@ -358,46 +358,46 @@ func (lt *LogTransformer[Input, Output]) Transform(algorithm func(Input) Output)
 ### 4.1 自然变换的形式化定义
 
 **定义 4.1 (自然变换的形式化定义)**: 设 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 和 ```latex
-$\mathcal{D}$
+\mathcal{D}
 ``` 是范畴，```latex
-$F, G: \mathcal{C} \rightarrow \mathcal{D}$
+F, G: \mathcal{C} \rightarrow \mathcal{D}
 ``` 是函子。自然变换 ```latex
-$\alpha: F \Rightarrow G$
+\alpha: F \Rightarrow G
 ``` 是一个函数：
 
 $```latex
-$\alpha: \text{Ob}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{D})$
+\alpha: \text{Ob}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{D})
 ```$
 
 满足：
 
 1. 对于每个对象 ```latex
-$A \in \text{Ob}(\mathcal{C})$
+A \in \text{Ob}(\mathcal{C})
 ```，```latex
-$\alpha(A) \in \text{Hom}_{\mathcal{D}}(F(A), G(A))$
+\alpha(A) \in \text{Hom}_{\mathcal{D}}(F(A), G(A))
 ```
 2. 对于每个态射 ```latex
-$f: A \rightarrow B$
+f: A \rightarrow B
 ```，有交换图：
 
 $```latex
-$G(f) \circ \alpha(A) = \alpha(B) \circ F(f)$
+G(f) \circ \alpha(A) = \alpha(B) \circ F(f)
 ```$
 
 **定义 4.2 (自然变换的范畴)**: 设 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 和 ```latex
-$\mathcal{D}$
+\mathcal{D}
 ``` 是范畴，函子范畴 ```latex
-$[\mathcal{C}, \mathcal{D}]$
+[\mathcal{C}, \mathcal{D}]
 ``` 定义为：
 
 - 对象：从 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 到 ```latex
-$\mathcal{D}$
+\mathcal{D}
 ``` 的函子
 - 态射：自然变换
 - 恒等态射：恒等自然变换
@@ -406,74 +406,74 @@ $\mathcal{D}$
 ### 4.2 基本定理
 
 **定理 4.1 (Yoneda引理)**: 设 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 是局部小范畴，```latex
-$F: \mathcal{C}^{op} \rightarrow \text{Set}$
+F: \mathcal{C}^{op} \rightarrow \text{Set}
 ``` 是函子，```latex
-$A \in \text{Ob}(\mathcal{C})$
+A \in \text{Ob}(\mathcal{C})
 ```。则存在双射：
 
 $```latex
-$\text{Nat}(\text{Hom}_{\mathcal{C}}(-, A), F) \cong F(A)$
+\text{Nat}(\text{Hom}_{\mathcal{C}}(-, A), F) \cong F(A)
 ```$
 
 **证明**: 定义映射 ```latex
-$\Phi: \text{Nat}(\text{Hom}_{\mathcal{C}}(-, A), F) \rightarrow F(A)$
+\Phi: \text{Nat}(\text{Hom}_{\mathcal{C}}(-, A), F) \rightarrow F(A)
 ``` 为：
 
 $```latex
-$\Phi(\alpha) = \alpha_A(1_A)$
+\Phi(\alpha) = \alpha_A(1_A)
 ```$
 
 其逆映射 ```latex
-$\Psi: F(A) \rightarrow \text{Nat}(\text{Hom}_{\mathcal{C}}(-, A), F)$
+\Psi: F(A) \rightarrow \text{Nat}(\text{Hom}_{\mathcal{C}}(-, A), F)
 ``` 为：
 
 $```latex
-$\Psi(x)_B(f) = F(f)(x)$
+\Psi(x)_B(f) = F(f)(x)
 ```$
 
 **定理 4.2 (自然变换的唯一性)**: 如果自然变换 ```latex
-$\alpha, \beta: F \Rightarrow G$
+\alpha, \beta: F \Rightarrow G
 ``` 在某个对象 ```latex
-$A$
+A
 ``` 上相等，即 ```latex
-$\alpha_A = \beta_A$
+\alpha_A = \beta_A
 ```，且 ```latex
-$A$
+A
 ``` 是生成对象，则 ```latex
-$\alpha = \beta$
+\alpha = \beta
 ```。
 
 **证明**: 由于 ```latex
-$A$
+A
 ``` 是生成对象，任意对象 ```latex
-$B$
+B
 ``` 都可以通过 ```latex
-$A$
+A
 ``` 的态射到达，因此自然性条件确保 ```latex
-$\alpha_B = \beta_B$
+\alpha_B = \beta_B
 ```。
 
 ### 4.3 构造性证明
 
 **定理 4.3 (自然变换的构造)**: 设 ```latex
-$F, G: \mathcal{C} \rightarrow \mathcal{D}$
+F, G: \mathcal{C} \rightarrow \mathcal{D}
 ``` 是函子，如果对于每个对象 ```latex
-$A$
+A
 ```，存在态射 ```latex
-$\alpha_A: F(A) \rightarrow G(A)$
+\alpha_A: F(A) \rightarrow G(A)
 ```，且满足自然性条件，则 ```latex
-$\alpha = \{\alpha_A\}$
+\alpha = \{\alpha_A\}
 ``` 是自然变换。
 
 **证明**: 构造性证明，直接验证自然性条件：
 
 对于任意态射 ```latex
-$f: A \rightarrow B$
+f: A \rightarrow B
 ```，有：
 $```latex
-$G(f) \circ \alpha_A = \alpha_B \circ F(f)$
+G(f) \circ \alpha_A = \alpha_B \circ F(f)
 ```$
 
 这确保了交换图的成立。
@@ -735,16 +735,16 @@ func (cnt *CachedNaturalTransformation[F, G, A]) Transform(fa F[A]) G[A] {
 | 操作 | 时间复杂度 | 说明 |
 |------|------------|------|
 | 自然变换应用 | ```latex
-$O(1)$
+O(1)
 ``` | 直接函数调用 |
 | 自然变换组合 | ```latex
-$O(1)$
+O(1)
 ``` | 函数组合 |
 | 自然变换验证 | ```latex
-$O(n)$
+O(n)
 ``` | 需要遍历所有对象 |
 | 缓存自然变换 | ```latex
-$O(1)$
+O(1)
 ``` | 哈希表查找 |
 
 ### 6.2 空间复杂度
@@ -752,29 +752,29 @@ $O(1)$
 | 实现 | 空间复杂度 | 说明 |
 |------|------------|------|
 | 基础自然变换 | ```latex
-$O(1)$
+O(1)
 ``` | 只存储函数指针 |
 | 缓存自然变换 | ```latex
-$O(n)$
+O(n)
 ``` | 存储所有变换结果 |
 | 组合自然变换 | ```latex
-$O(k)$
+O(k)
 ``` | k为组合的变换数量 |
 
 ### 6.3 最优性分析
 
 **定理 6.1**: 自然变换的应用时间复杂度是 ```latex
-$O(1)$
+O(1)
 ```，这是最优的。
 
 **证明**: 自然变换本质上是一个函数调用，无法比 ```latex
-$O(1)$
+O(1)
 ``` 更快。
 
 **定理 6.2**: 自然变换的验证需要 ```latex
-$O(n)$
+O(n)
 ``` 时间，其中 ```latex
-$n$
+n
 ``` 是对象数量。
 
 **证明**: 需要检查所有对象的自然性条件。

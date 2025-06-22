@@ -8,21 +8,19 @@
 
 **形式化定义**：
 设 ```latex
-$N = (V, E)$
+N = (V, E)
 ``` 为网络图，其中 ```latex
-$V$
+V
 ``` 为节点集合，```latex
-$E$
+E
 ``` 为边集合。
 网络安全函数 ```latex
-$S: N \times T \rightarrow \{0,1\}$
+S: N \times T \rightarrow \{0,1\}
 ``` 定义为：
-```latex
-$$S(N,t) = \begin{cases}
+$S(N,t) = \begin{cases}
 1 & \text{if } N \text{ is secure at time } t \\
 0 & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}$
 
 ### 2.1.2 网络安全威胁模型
 
@@ -34,39 +32,39 @@ $$S(N,t) = \begin{cases}
 
 **威胁概率模型**：
 $```latex
-$P(T_i) = \sum_{j=1}^{n} P(T_i|V_j) \cdot P(V_j)$
+P(T_i) = \sum_{j=1}^{n} P(T_i|V_j) \cdot P(V_j)
 ```$
 其中 ```latex
-$T_i$
+T_i
 ``` 为威胁类型，```latex
-$V_j$
+V_j
 ``` 为漏洞类型。
 
 ### 2.1.3 网络安全原则
 
 **CIA三元组**：
 - **机密性 (Confidentiality)**：```latex
-$C = \frac{|S|}{|T|}$
+C = \frac{|S|}{|T|}
 ```
 - **完整性 (Integrity)**：```latex
-$I = \frac{|V|}{|D|}$
+I = \frac{|V|}{|D|}
 ```
 - **可用性 (Availability)**：```latex
-$A = \frac{|U|}{|R|}$
+A = \frac{|U|}{|R|}
 ```
 
 其中 ```latex
-$S$
+S
 ``` 为安全传输的数据，```latex
-$T$
+T
 ``` 为总数据，```latex
-$V$
+V
 ``` 为验证通过的数据，```latex
-$D$
+D
 ``` 为总数据，```latex
-$U$
+U
 ``` 为可用时间，```latex
-$R$
+R
 ``` 为总时间。
 
 ## 2.2 网络协议安全
@@ -521,7 +519,7 @@ func (nm *NetworkMonitor) Monitor() {
 
 **风险评估公式**：
 $```latex
-$Risk = Threat \times Vulnerability \times Impact$
+Risk = Threat \times Vulnerability \times Impact
 ```$
 
 ## 2.6 网络安全最佳实践

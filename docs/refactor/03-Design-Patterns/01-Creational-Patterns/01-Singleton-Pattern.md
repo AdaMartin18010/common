@@ -51,10 +51,10 @@
 
 **形式化定义**：
 设 ```latex
-$C$
+C
 ``` 是一个类，单例模式确保：
 $```latex
-$\forall x, y \in C: x = y$
+\forall x, y \in C: x = y
 ```$
 
 **目的**：
@@ -100,54 +100,54 @@ $\forall x, y \in C: x = y$
 
 **定义 2.1.1** (单例类)
 单例类 ```latex
-$S$
+S
 ``` 是一个满足以下条件的类：
 
 1. **唯一性**：```latex
-$\forall x, y \in S: x = y$
+\forall x, y \in S: x = y
 ```
 2. **存在性**：```latex
-$\exists x \in S$
+\exists x \in S
 ```
 3. **可访问性**：```latex
-$\forall x \in S: \text{accessible}(x)$
+\forall x \in S: \text{accessible}(x)
 ```
 
 **定义 2.1.2** (单例函数)
 单例函数 ```latex
-$f: \emptyset \to S$
+f: \emptyset \to S
 ``` 满足：
 $```latex
-$f() = \text{the unique instance of } S$
+f() = \text{the unique instance of } S
 ```$
 
 **定义 2.1.3** (线程安全单例)
 线程安全单例 ```latex
-$S$
+S
 ``` 满足：
 $```latex
-$\forall t_1, t_2 \in \text{Threads}: f_{t_1}() = f_{t_2}()$
+\forall t_1, t_2 \in \text{Threads}: f_{t_1}() = f_{t_2}()
 ```$
 
 ### 2.2 类型系统
 
 **定义 2.2.1** (单例类型)
 在类型系统中，单例类型 ```latex
-$T$
+T
 ``` 满足：
 $```latex
-$\text{Card}(T) = 1$
+\text{Card}(T) = 1
 ```$
 
 其中 ```latex
-$\text{Card}(T)$
+\text{Card}(T)
 ``` 表示类型 ```latex
-$T$
+T
 ``` 的基数。
 
 **定义 2.2.2** (单例接口)
 单例接口 ```latex
-$I$
+I
 ``` 定义：
 
 ```typescript
@@ -159,10 +159,10 @@ interface Singleton<T> {
 
 **定义 2.2.3** (单例约束)
 单例约束 ```latex
-$C$
+C
 ``` 确保：
 $```latex
-$\forall x, y: \text{instanceOf}(x, T) \land \text{instanceOf}(y, T) \Rightarrow x = y$
+\forall x, y: \text{instanceOf}(x, T) \land \text{instanceOf}(y, T) \Rightarrow x = y
 ```$
 
 ### 2.3 行为规范
@@ -1528,25 +1528,25 @@ func (p *ConnectionPool) updateMetrics(start time.Time) {
 
 **形式化证明**：
 设 ```latex
-$f$
+f
 ``` 是获取实例的函数，```latex
-$o$
+o
 ``` 是 `sync.Once` 实例，```latex
-$c$
+c
 ``` 是创建实例的函数。
 
 $```latex
-$\forall x, y: f() = o.Do(c) \land f() = o.Do(c) \Rightarrow x = y$
+\forall x, y: f() = o.Do(c) \land f() = o.Do(c) \Rightarrow x = y
 ```$
 
 由于 `sync.Once` 保证 ```latex
-$o.Do(c)$
+o.Do(c)
 ``` 只执行一次，所以 ```latex
-$x = y$
+x = y
 ```。
 
 ```latex
-$\square$
+\square
 ```
 
 ### 8.2 线程安全定理
@@ -1563,21 +1563,21 @@ $\square$
 
 **形式化证明**：
 设 ```latex
-$T$
+T
 ``` 是线程集合，```latex
-$f_t$
+f_t
 ``` 是线程 ```latex
-$t$
+t
 ``` 的获取实例函数。
 
 $```latex
-$\forall t_1, t_2 \in T: f_{t_1}() = f_{t_2}()$
+\forall t_1, t_2 \in T: f_{t_1}() = f_{t_2}()
 ```$
 
 由于 `sync.Once` 的线程安全保证，所有线程都获得相同的实例。
 
 ```latex
-$\square$
+\square
 ```
 
 ### 8.3 性能定理
@@ -1588,10 +1588,10 @@ $\square$
 **证明**：
 
 1. 第一次调用需要创建实例，开销为 ```latex
-$O(1)$
+O(1)
 ```
 2. 后续调用只需要内存访问，开销为 ```latex
-$O(1)$
+O(1)
 ```
 3. 没有锁竞争，避免了互斥锁的开销
 4. 内存屏障开销最小
@@ -1599,17 +1599,17 @@ $O(1)$
 **复杂度分析**：
 
 - 时间复杂度：```latex
-$O(1)$
+O(1)
 ```
 - 空间复杂度：```latex
-$O(1)$
+O(1)
 ```
 - 并发开销：```latex
-$O(1)$
+O(1)
 ```
 
 ```latex
-$\square$
+\square
 ```
 
 ---

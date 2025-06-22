@@ -9,25 +9,25 @@
 ### 数学定义
 
 设 ```latex
-$A$
+A
 ``` 为抽象类集合，```latex
-$I$
+I
 ``` 为实现接口集合，桥接模式定义为：
 
 $```latex
-$\text{Bridge}(A, I) = \{ (a, i) \mid a \in A, i \in I, \text{且存在桥接关系} \}$
+\text{Bridge}(A, I) = \{ (a, i) \mid a \in A, i \in I, \text{且存在桥接关系} \}
 ```$
 
 对于任意抽象 ```latex
-$a \in A$
+a \in A
 ``` 和实现 ```latex
-$i \in I$
+i \in I
 ```，桥接函数 ```latex
-$B$
+B
 ``` 满足：
 
 $```latex
-$B: A \times I \rightarrow \text{System}$
+B: A \times I \rightarrow \text{System}
 ```$
 
 ### 类型理论定义
@@ -35,15 +35,15 @@ $B: A \times I \rightarrow \text{System}$
 在类型理论中，桥接模式可以表示为：
 
 $```latex
-$\frac{\Gamma \vdash a : A \quad \Gamma \vdash i : I \quad \Gamma \vdash B : A \times I \rightarrow T}{\Gamma \vdash B(a, i) : T}$
+\frac{\Gamma \vdash a : A \quad \Gamma \vdash i : I \quad \Gamma \vdash B : A \times I \rightarrow T}{\Gamma \vdash B(a, i) : T}
 ```$
 
 其中 ```latex
-$A$
+A
 ``` 是抽象类型，```latex
-$I$
+I
 ``` 是实现类型，```latex
-$T$
+T
 ``` 是系统类型。
 
 ## Go语言实现
@@ -339,26 +339,26 @@ func (p *ProductDatabase) GetProductByID(id int) (*sql.Rows, error) {
 **证明**:
 
 1. 设 ```latex
-$A$
+A
 ``` 为抽象类集合，```latex
-$I$
+I
 ``` 为实现接口集合
 2. 桥接模式建立映射 ```latex
-$f: A \times I \rightarrow \text{System}$
+f: A \times I \rightarrow \text{System}
 ```
 3. 对于任意 ```latex
-$a_1, a_2 \in A$
+a_1, a_2 \in A
 ``` 和 ```latex
-$i_1, i_2 \in I$
+i_1, i_2 \in I
 ```
 4. 可以独立组合 ```latex
-$(a_1, i_1)$
+(a_1, i_1)
 ```, ```latex
-$(a_1, i_2)$
+(a_1, i_2)
 ```, ```latex
-$(a_2, i_1)$
+(a_2, i_1)
 ```, ```latex
-$(a_2, i_2)$
+(a_2, i_2)
 ```
 5. 因此抽象与实现完全解耦
 
@@ -369,13 +369,13 @@ $(a_2, i_2)$
 **证明**:
 
 1. 设 ```latex
-$A = \{a_1, a_2, ..., a_n\}$
+A = \{a_1, a_2, ..., a_n\}
 ``` 为抽象集合
 2. 设 ```latex
-$I = \{i_1, i_2, ..., i_m\}$
+I = \{i_1, i_2, ..., i_m\}
 ``` 为实现集合
 3. 桥接模式支持 ```latex
-$n \times m$
+n \times m
 ``` 种组合
 4. 每种组合都是独立的系统实例
 5. 因此桥接模式满足组合律

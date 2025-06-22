@@ -11,15 +11,13 @@
 变分量子本征求解器通过最小化期望值来找到哈密顿量的基态：
 
 ```latex
-$```latex
-$\min_{\theta} \langle\psi(\theta)|H|\psi(\theta)\rangle$
+$\min_{\theta} \langle\psi(\theta)|H|\psi(\theta)\rangle
 ```$
-```
 
 其中 ```latex
-$|\psi(\theta)\rangle$
+|\psi(\theta)\rangle
 ``` 是参数化量子态，```latex
-$H$
+H
 ``` 是哈密顿量。
 
 ### 3.1.2 期望值计算
@@ -27,15 +25,13 @@ $H$
 期望值通过量子测量计算：
 
 ```latex
-$```latex
-$\langle H \rangle = \sum_i c_i \langle\psi(\theta)|P_i|\psi(\theta)\rangle$
+$\langle H \rangle = \sum_i c_i \langle\psi(\theta)|P_i|\psi(\theta)\rangle
 ```$
-```
 
 其中 ```latex
-$H = \sum_i c_i P_i$
+H = \sum_i c_i P_i
 ```，```latex
-$P_i$
+P_i
 ``` 是泡利算符。
 
 ### 3.1.3 参数更新
@@ -43,10 +39,8 @@ $P_i$
 使用经典优化器更新参数：
 
 ```latex
-$```latex
-$\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \langle H \rangle$
+$\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \langle H \rangle
 ```$
-```
 
 ## 3.2 量子近似优化算法（QAOA）
 
@@ -55,21 +49,19 @@ $\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \langle H \rangle$
 QAOA通过交替应用问题哈密顿量和混合哈密顿量：
 
 ```latex
-$```latex
-$|\psi(\gamma, \beta)\rangle = e^{-i\beta_p H_M} e^{-i\gamma_p H_P} \cdots e^{-i\beta_1 H_M} e^{-i\gamma_1 H_P}|+\rangle^{\otimes n}$
+$|\psi(\gamma, \beta)\rangle = e^{-i\beta_p H_M} e^{-i\gamma_p H_P} \cdots e^{-i\beta_1 H_M} e^{-i\gamma_1 H_P}|+\rangle^{\otimes n}
 ```$
-```
 
 其中：
 
 - ```latex
-$H_P$
+H_P
 ```: 问题哈密顿量
 - ```latex
-$H_M$
+H_M
 ```: 混合哈密顿量
 - ```latex
-$\gamma, \beta$
+\gamma, \beta
 ```: 优化参数
 
 ### 3.2.2 期望值优化
@@ -77,44 +69,36 @@ $\gamma, \beta$
 优化目标：
 
 ```latex
-$```latex
-$\min_{\gamma, \beta} \langle\psi(\gamma, \beta)|H_P|\psi(\gamma, \beta)\rangle$
+$\min_{\gamma, \beta} \langle\psi(\gamma, \beta)|H_P|\psi(\gamma, \beta)\rangle
 ```$
-```
 
 ### 3.2.3 近似比
 
 QAOA的近似比：
 
 ```latex
-$```latex
-$r = \frac{\langle H_P \rangle_{QAOA}}{\langle H_P \rangle_{optimal}} \geq \frac{1}{2}$
+$r = \frac{\langle H_P \rangle_{QAOA}}{\langle H_P \rangle_{optimal}} \geq \frac{1}{2}
 ```$
-```
 
 ## 3.3 量子自然梯度
 
 ### 3.3.1 量子Fisher信息矩阵
 
 量子Fisher信息矩阵 ```latex
-$F$
+F
 ```：
 
 ```latex
-$```latex
-$F_{ij} = \text{Re}\left[\langle\partial_i\psi|\partial_j\psi\rangle - \langle\partial_i\psi|\psi\rangle\langle\psi|\partial_j\psi\rangle\right]$
+$F_{ij} = \text{Re}\left[\langle\partial_i\psi|\partial_j\psi\rangle - \langle\partial_i\psi|\psi\rangle\langle\psi|\partial_j\psi\rangle\right]
 ```$
-```
 
 ### 3.3.2 自然梯度更新
 
 自然梯度更新规则：
 
 ```latex
-$```latex
-$\theta_{t+1} = \theta_t - \eta F^{-1} \nabla_{\theta} L(\theta)$
+$\theta_{t+1} = \theta_t - \eta F^{-1} \nabla_{\theta} L(\theta)
 ```$
-```
 
 ## 3.4 Go语言实现
 
@@ -567,7 +551,7 @@ VQE通过最小化期望值来寻找基态，在参数空间足够丰富的情�
 
 **定理 3.2** (QAOA近似比)
 对于MaxCut问题，QAOA的近似比至少为 ```latex
-$\frac{1}{2}$
+\frac{1}{2}
 ```。
 
 **证明**：

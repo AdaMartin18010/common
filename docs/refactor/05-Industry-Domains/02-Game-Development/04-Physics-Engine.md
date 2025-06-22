@@ -61,79 +61,79 @@
 
 **定义 2.1.1** (物理系统)
 物理系统是一个六元组 ```latex
-$P = (B, C, F, T, S, I)$
+P = (B, C, F, T, S, I)
 ```，其中：
 
 - ```latex
-$B$
+B
 ``` 是刚体集合 (Body Set)
 - ```latex
-$C$
+C
 ``` 是约束集合 (Constraint Set)
 - ```latex
-$F$
+F
 ``` 是力集合 (Force Set)
 - ```latex
-$T$
+T
 ``` 是时间系统 (Time System)
 - ```latex
-$S$
+S
 ``` 是求解器 (Solver)
 - ```latex
-$I$
+I
 ``` 是积分器 (Integrator)
 
 **定义 2.1.2** (刚体)
 刚体是一个五元组 ```latex
-$R = (m, I, p, v, \omega)$
+R = (m, I, p, v, \omega)
 ```，其中：
 
 - ```latex
-$m$
+m
 ``` 是质量 (Mass)
 - ```latex
-$I$
+I
 ``` 是惯性张量 (Inertia Tensor)
 - ```latex
-$p$
+p
 ``` 是位置 (Position)
 - ```latex
-$v$
+v
 ``` 是速度 (Velocity)
 - ```latex
-$\omega$
+\omega
 ``` 是角速度 (Angular Velocity)
 
 ### 2.2 运动方程
 
 **定义 2.2.1** (牛顿第二定律)
 对于刚体 ```latex
-$R$
+R
 ```，运动方程为：
 $```latex
-$F = m \cdot a$
+F = m \cdot a
 ```$
 $```latex
-$\tau = I \cdot \alpha$
+\tau = I \cdot \alpha
 ```$
 
 其中 ```latex
-$F$
+F
 ``` 是合力，```latex
-$\tau$
+\tau
 ``` 是合力矩，```latex
-$a$
+a
 ``` 是加速度，```latex
-$\alpha$
+\alpha
 ``` 是角加速度。
 
 **定义 2.2.2** (运动积分)
 位置和速度的积分方程为：
 $```latex
-$p(t + \Delta t) = p(t) + v(t) \cdot \Delta t + \frac{1}{2} a(t) \cdot \Delta t^2$
+p(t + \Delta t) = p(t) + v(t) \cdot \Delta t + \frac{1}{2} a(t) \cdot \Delta t^2
 ```$
 $```latex
-$v(t + \Delta t) = v(t) + a(t) \cdot \Delta t$
+v(t + \Delta t) = v(t) + a(t) \cdot \Delta t
 ```$
 
 ## 3. 数学基础
@@ -142,49 +142,49 @@ $v(t + \Delta t) = v(t) + a(t) \cdot \Delta t$
 
 **定理 3.1.1** (惯性张量的对角化)
 对于刚体的惯性张量 ```latex
-$I$
+I
 ```，存在正交矩阵 ```latex
-$Q$
+Q
 ``` 使得：
 $```latex
-$I = Q \cdot D \cdot Q^T$
+I = Q \cdot D \cdot Q^T
 ```$
 
 其中 ```latex
-$D$
+D
 ``` 是对角矩阵，对角线元素是主惯性矩。
 
 **证明**:
 根据谱定理，实对称矩阵可以对角化。惯性张量是实对称矩阵，因此存在正交矩阵 ```latex
-$Q$
+Q
 ``` 使得 ```latex
-$I = Q \cdot D \cdot Q^T$
+I = Q \cdot D \cdot Q^T
 ```。
 
 ### 3.2 碰撞检测
 
 **定义 3.2.1** (分离轴定理)
 对于两个凸多面体 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ```，如果存在一个轴 ```latex
-$n$
+n
 ``` 使得 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ``` 在该轴上的投影不重叠，则 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ``` 不相交。
 
 **定理 3.2.1** (GJK算法)
 GJK算法可以在 ```latex
-$O(n)$
+O(n)
 ``` 时间内检测两个凸多面体的碰撞，其中 ```latex
-$n$
+n
 ``` 是顶点数。
 
 ### 3.3 约束求解
@@ -192,23 +192,23 @@ $n$
 **定义 3.3.1** (约束方程)
 约束方程定义为：
 $```latex
-$C(q) = 0$
+C(q) = 0
 ```$
 
 其中 ```latex
-$q$
+q
 ``` 是广义坐标。
 
 **定理 3.3.1** (拉格朗日乘数法)
 约束力的计算为：
 $```latex
-$\lambda = -J \cdot M^{-1} \cdot J^T \cdot C$
+\lambda = -J \cdot M^{-1} \cdot J^T \cdot C
 ```$
 
 其中 ```latex
-$J$
+J
 ``` 是雅可比矩阵，```latex
-$M$
+M
 ``` 是质量矩阵。
 
 ## 4. 物理系统
@@ -1032,9 +1032,9 @@ func (sb *SoftBody) integrateParticle(particle *Particle, deltaTime float32) {
 
 **定理 6.1.1** (空间分割复杂度)
 使用空间分割可以将碰撞检测复杂度从 ```latex
-$O(n^2)$
+O(n^2)
 ``` 降低到 ```latex
-$O(n \log n)$
+O(n \log n)
 ```。
 
 **实现**:

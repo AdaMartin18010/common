@@ -10,55 +10,55 @@
 
 **定义 1.1** (并发模式)
 并发模式是一个四元组 ```latex
-$\mathcal{CP} = (T, S, R, \phi)$
+\mathcal{CP} = (T, S, R, \phi)
 ```，其中：
 
 - ```latex
-$T$
+T
 ``` 是线程/协程集合
 - ```latex
-$S$
+S
 ``` 是共享状态集合
 - ```latex
-$R$
+R
 ``` 是同步关系集合
 - ```latex
-$\phi: T \times S \rightarrow R$
+\phi: T \times S \rightarrow R
 ``` 是线程到同步关系的映射
 
 **公理 1.1** (并发模式公理)
 对于任意并发模式 ```latex
-$\mathcal{CP} = (T, S, R, \phi)$
+\mathcal{CP} = (T, S, R, \phi)
 ```：
 
 1. **安全性**: ```latex
-$\forall t_1, t_2 \in T: \text{race\_free}(t_1, t_2)$
+\forall t_1, t_2 \in T: \text{race\_free}(t_1, t_2)
 ```
 2. **活性**: ```latex
-$\forall t \in T: \text{eventually\_progress}(t)$
+\forall t \in T: \text{eventually\_progress}(t)
 ```
 3. **公平性**: ```latex
-$\forall t_1, t_2 \in T: \text{fair\_scheduling}(t_1, t_2)$
+\forall t_1, t_2 \in T: \text{fair\_scheduling}(t_1, t_2)
 ```
 
 ### 2. 并发安全性的形式化
 
 **定义 1.2** (数据竞争)
 对于线程 ```latex
-$t_1, t_2$
+t_1, t_2
 ``` 和共享状态 ```latex
-$s$
+s
 ```，存在数据竞争当且仅当：
 $```latex
-$\exists t_1, t_2 \in T, s \in S: \text{concurrent\_access}(t_1, t_2, s) \land \text{one\_write}(t_1, t_2, s)$
+\exists t_1, t_2 \in T, s \in S: \text{concurrent\_access}(t_1, t_2, s) \land \text{one\_write}(t_1, t_2, s)
 ```$
 
 **定义 1.3** (死锁)
 死锁是线程集合 ```latex
-$T' \subseteq T$
+T' \subseteq T
 ``` 的状态，满足：
 $```latex
-$\forall t \in T': \text{waiting\_for}(t) \in T' \land \text{circular\_wait}(T')$
+\forall t \in T': \text{waiting\_for}(t) \in T' \land \text{circular\_wait}(T')
 ```$
 
 ## 核心模式
@@ -70,12 +70,12 @@ $\forall t \in T': \text{waiting\_for}(t) \in T' \land \text{circular\_wait}(T')
 
 **形式化定义**:
 设 ```latex
-$W$
+W
 ``` 为工作线程集合，```latex
-$Q$
+Q
 ``` 为任务队列，线程池模式定义为：
 $```latex
-$\text{ThreadPool}: Q \rightarrow W \times \text{Result}$
+\text{ThreadPool}: Q \rightarrow W \times \text{Result}
 ```$
 
 **Go 语言实现**:
@@ -382,7 +382,7 @@ func ExampleThreadPool() {
 **定理 1.5** (线程池的安全性)
 线程池模式保证任务执行的线程安全：
 $```latex
-$\forall t_1, t_2 \in T, \forall s \in S: \text{no\_race\_condition}(t_1, t_2, s)$
+\forall t_1, t_2 \in T, \forall s \in S: \text{no\_race\_condition}(t_1, t_2, s)
 ```$
 
 **证明**:
@@ -399,13 +399,13 @@ Future 表示一个尚未完成的异步计算的结果，Promise 用于设置�
 
 **形式化定义**:
 设 ```latex
-$T$
+T
 ``` 为结果类型，Future/Promise 模式定义为：
 $```latex
-$\text{Future}[T]: \text{Unit} \rightarrow T \times \text{Status}$
+\text{Future}[T]: \text{Unit} \rightarrow T \times \text{Status}
 ```$
 $```latex
-$\text{Promise}[T]: T \rightarrow \text{Unit}$
+\text{Promise}[T]: T \rightarrow \text{Unit}
 ```$
 
 **Go 语言实现**:
@@ -621,12 +621,12 @@ Actor 模式中，每个 Actor 是一个并发执行的实体，拥有自己的�
 
 **形式化定义**:
 设 ```latex
-$A$
+A
 ``` 为 Actor 集合，```latex
-$M$
+M
 ``` 为消息集合，Actor 模式定义为：
 $```latex
-$\text{Actor}: A \times M \rightarrow A \times \text{Response}$
+\text{Actor}: A \times M \rightarrow A \times \text{Response}
 ```$
 
 **Go 语言实现**:
@@ -908,14 +908,14 @@ func ExampleActor() {
 
 **形式化定义**:
 设 ```latex
-$P$
+P
 ``` 为生产者集合，```latex
-$C$
+C
 ``` 为消费者集合，```latex
-$Q$
+Q
 ``` 为队列，模式定义为：
 $```latex
-$P \times Q \rightarrow Q \times C \rightarrow \text{Result}$
+P \times Q \rightarrow Q \times C \rightarrow \text{Result}
 ```$
 
 **Go 语言实现**:
@@ -1268,17 +1268,17 @@ func ExampleProducerConsumer() {
 
 **定义 1.8** (并发模式组合)
 设 ```latex
-$\mathcal{CP}_1, \mathcal{CP}_2$
+\mathcal{CP}_1, \mathcal{CP}_2
 ``` 为两个并发模式，其组合定义为：
 $```latex
-$\mathcal{CP}_1 \circ \mathcal{CP}_2 = (T_1 \cup T_2, S_1 \cup S_2, R_1 \cup R_2, \phi_1 \cup \phi_2)$
+\mathcal{CP}_1 \circ \mathcal{CP}_2 = (T_1 \cup T_2, S_1 \cup S_2, R_1 \cup R_2, \phi_1 \cup \phi_2)
 ```$
 
 **定理 1.6** (组合的安全性)
 如果 ```latex
-$\mathcal{CP}_1, \mathcal{CP}_2$
+\mathcal{CP}_1, \mathcal{CP}_2
 ``` 都是安全的，则其组合 ```latex
-$\mathcal{CP}_1 \circ \mathcal{CP}_2$
+\mathcal{CP}_1 \circ \mathcal{CP}_2
 ``` 也是安全的。
 
 ### 2. 性能分析

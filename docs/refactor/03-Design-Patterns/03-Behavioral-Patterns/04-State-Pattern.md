@@ -73,30 +73,30 @@
 ### 2.1 状态机定义
 
 设 ```latex
-$S$
+S
 ``` 为状态集合，```latex
-$E$
+E
 ``` 为事件集合，```latex
-$T$
+T
 ``` 为转换函数，则状态机可形式化为：
 
 $```latex
-$\text{State Machine} = (S, E, T, s_0)$
+\text{State Machine} = (S, E, T, s_0)
 ```$
 
 其中：
 
 - ```latex
-$S = \{s_1, s_2, ..., s_n\}$
+S = \{s_1, s_2, ..., s_n\}
 ``` 为状态集合
 - ```latex
-$E = \{e_1, e_2, ..., e_m\}$
+E = \{e_1, e_2, ..., e_m\}
 ``` 为事件集合
 - ```latex
-$T: S \times E \rightarrow S$
+T: S \times E \rightarrow S
 ``` 为状态转换函数
 - ```latex
-$s_0 \in S$
+s_0 \in S
 ``` 为初始状态
 
 ### 2.2 状态接口定义
@@ -165,25 +165,25 @@ func (c *Context) SetData(key string, value interface{}) {
 状态模式基于有限状态机（FSM）理论：
 
 $```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```$
 
 其中：
 
 - ```latex
-$Q$
+Q
 ``` 为有限状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 为有限输入字母表
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ``` 为状态转移函数
 - ```latex
-$q_0 \in Q$
+q_0 \in Q
 ``` 为初始状态
 - ```latex
-$F \subseteq Q$
+F \subseteq Q
 ``` 为接受状态集合
 
 ### 3.2 状态转换图
@@ -191,28 +191,28 @@ $F \subseteq Q$
 状态转换可以用有向图表示：
 
 $```latex
-$G = (V, E)$
+G = (V, E)
 ```$
 
 其中：
 
 - ```latex
-$V$
+V
 ``` 为顶点集合（状态）
 - ```latex
-$E$
+E
 ``` 为边集合（转换）
 
 ### 3.3 状态不变性
 
 对于状态 ```latex
-$s$
+s
 ``` 和事件 ```latex
-$e$
+e
 ```，状态转换满足：
 
 $```latex
-$\forall s \in S, \forall e \in E: \delta(s, e) \in S$
+\forall s \in S, \forall e \in E: \delta(s, e) \in S
 ```$
 
 ## 4. 模式结构
@@ -1269,31 +1269,31 @@ func (ssm *SafeStateMachine) SafeTransition(event string) TransitionResult {
 
 **证明**：
 设 ```latex
-$S$
+S
 ``` 为现有状态集合，```latex
-$S'$
+S'
 ``` 为新增状态集合，```latex
-$C$
+C
 ``` 为上下文类。
 
 对于任意 ```latex
-$s \in S'$
+s \in S'
 ```，由于 ```latex
-$s$
+s
 ``` 实现了状态接口 ```latex
-$P$
+P
 ```，且 ```latex
-$C$
+C
 ``` 依赖于 ```latex
-$P$
+P
 ``` 而非具体实现，因此：
 
 $```latex
-$C \circ s \text{ 是有效的}$
+C \circ s \text{ 是有效的}
 ```$
 
 且不需要修改 ```latex
-$C$
+C
 ``` 的代码，因此满足开闭原则。
 
 **证毕**。

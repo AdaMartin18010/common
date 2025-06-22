@@ -1,74 +1,75 @@
 #!/usr/bin/env python3
 import os
-import subprocess
 import sys
+import subprocess
 import time
 
-def run_script(script_path, description):
-    """Run a script and capture its output."""
-    print(f"\n{'='*80}")
-    print(f"Running: {description}")
-    print(f"{'='*80}\n")
+def print_header(message):
+    """Print a formatted header message."""
+    print("\n" + "=" * 80)
+    print(f" {message} ".center(80, "="))
+    print("=" * 80 + "\n")
+
+def run_script(script_path, args=None):
+    """Run a Python script with optional arguments."""
+    cmd = [sys.executable, script_path]
+    if args:
+        cmd.extend(args)
     
-    start_time = time.time()
+    print(f"Running: {' '.join(cmd)}")
     
     try:
-        result = subprocess.run(['python', script_path], 
-                                capture_output=True, 
-                                text=True)
-        
-        print(result.stdout)
-        
-        if result.stderr:
-            print("Errors:")
-            print(result.stderr)
-        
-        elapsed = time.time() - start_time
-        print(f"\nFinished in {elapsed:.2f} seconds with exit code: {result.returncode}")
-        
-        return result.returncode == 0
+        start_time = time.time()
+        result = subprocess.run(cmd, check=True)
+        elapsed_time = time.time() - start_time
+        print(f"Completed in {elapsed_time:.2f} seconds with exit code {result.returncode}")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Error: Script failed with exit code {e.returncode}")
+        return False
     except Exception as e:
-        print(f"Failed to run {script_path}: {e}")
+        print(f"Error: {str(e)}")
         return False
 
 def main():
-    """Run all maintenance scripts in sequence."""
-    refactor_dir = "docs/refactor"
+    """Run all maintenance scripts."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     
-    if not os.path.isdir(refactor_dir):
-        print(f"Error: {refactor_dir} directory not found.")
-        sys.exit(1)
-    
+    # List of scripts to run in order
     scripts = [
-        ("docs/refactor/ensure_directory_structure.py", "Checking directory structure"),
-        ("docs/refactor/verify_links.py", "Verifying internal links"),
-        ("docs/refactor/fix_all_math_expressions.py", "Fixing LaTeX math expressions")
+        "ensure_directory_structure.py",
+        "fix_latex_formatting.py",
+        "fix_local_links.py",
     ]
     
-    results = []
+    print_header("STARTING MAINTENANCE PROCESS")
     
-    for script_path, description in scripts:
-        success = run_script(script_path, description)
-        results.append((description, success))
+    success_count = 0
+    failure_count = 0
     
-    # Print summary
-    print("\n\n")
-    print(f"{'='*80}")
-    print("MAINTENANCE SUMMARY")
-    print(f"{'='*80}")
+    for script in scripts:
+        script_path = os.path.join(base_dir, script)
+        if not os.path.exists(script_path):
+            print(f"Warning: Script {script} not found at {script_path}")
+            continue
+        
+        print_header(f"RUNNING {script}")
+        
+        if run_script(script_path, [base_dir]):
+            success_count += 1
+        else:
+            failure_count += 1
     
-    all_success = True
-    for description, success in results:
-        status = "✅ SUCCESS" if success else "❌ FAILED"
-        print(f"{status} - {description}")
-        all_success = all_success and success
+    print_header("MAINTENANCE COMPLETE")
+    print(f"Scripts completed successfully: {success_count}")
+    print(f"Scripts failed: {failure_count}")
     
-    if all_success:
-        print("\n✅ All maintenance tasks completed successfully!")
-        return 0
-    else:
-        print("\n❌ Some maintenance tasks failed. Please check the output above.")
+    if failure_count > 0:
+        print("\nSome scripts failed. Please check the output above for details.")
         return 1
+    else:
+        print("\nAll maintenance tasks completed successfully!")
+        return 0
 
 if __name__ == "__main__":
     sys.exit(main()) 

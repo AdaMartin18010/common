@@ -103,67 +103,67 @@ classDiagram
 ### 2.1 基本定义
 
 设 ```latex
-$\mathcal{V}$
+\mathcal{V}
 ``` 为访问者集合，```latex
-$\mathcal{E}$
+\mathcal{E}
 ``` 为元素集合，```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 为操作集合。
 
 **定义 2.1** (访问者模式)
 访问者模式是一个五元组 ```latex
-$(\mathcal{V}, \mathcal{E}, \mathcal{O}, \mathcal{A}, \mathcal{S})$
+(\mathcal{V}, \mathcal{E}, \mathcal{O}, \mathcal{A}, \mathcal{S})
 ```，其中：
 
 - ```latex
-$\mathcal{V} = \{V_1, V_2, \ldots, V_n\}$
+\mathcal{V} = \{V_1, V_2, \ldots, V_n\}
 ``` 是访问者集合
 - ```latex
-$\mathcal{E} = \{E_1, E_2, \ldots, E_m\}$
+\mathcal{E} = \{E_1, E_2, \ldots, E_m\}
 ``` 是元素集合
 - ```latex
-$\mathcal{O} = \{O_1, O_2, \ldots, O_k\}$
+\mathcal{O} = \{O_1, O_2, \ldots, O_k\}
 ``` 是操作集合
 - ```latex
-$\mathcal{A}: \mathcal{E} \times \mathcal{V} \rightarrow \mathcal{O}$
+\mathcal{A}: \mathcal{E} \times \mathcal{V} \rightarrow \mathcal{O}
 ``` 是接受函数
 - ```latex
-$\mathcal{S}: \mathcal{E}^* \rightarrow \mathcal{V} \rightarrow \mathcal{O}^*$
+\mathcal{S}: \mathcal{E}^* \rightarrow \mathcal{V} \rightarrow \mathcal{O}^*
 ``` 是访问序列函数
 
 ### 2.2 形式化规范
 
 **公理 2.1** (访问者分离性)
 对于任意元素 ```latex
-$E \in \mathcal{E}$
+E \in \mathcal{E}
 ``` 和访问者 ```latex
-$V \in \mathcal{V}$
+V \in \mathcal{V}
 ```：
 
 $```latex
-$\mathcal{A}(E, V) = V.\text{visit}(E)$
+\mathcal{A}(E, V) = V.\text{visit}(E)
 ```$
 
 **公理 2.2** (操作独立性)
 对于任意操作 ```latex
-$O \in \mathcal{O}$
+O \in \mathcal{O}
 ``` 和元素 ```latex
-$E \in \mathcal{E}$
+E \in \mathcal{E}
 ```：
 
 $```latex
-$\exists V \in \mathcal{V}: O = \mathcal{A}(E, V)$
+\exists V \in \mathcal{V}: O = \mathcal{A}(E, V)
 ```$
 
 ### 2.3 双重分派定义
 
 **定义 2.2** (双重分派)
 双重分派是一个函数 ```latex
-$\mathcal{D}: \mathcal{E} \times \mathcal{V} \rightarrow \mathcal{O}$
+\mathcal{D}: \mathcal{E} \times \mathcal{V} \rightarrow \mathcal{O}
 ```，满足：
 
 $```latex
-$\mathcal{D}(E, V) = V.\text{visit}(E) = E.\text{accept}(V)$
+\mathcal{D}(E, V) = V.\text{visit}(E) = E.\text{accept}(V)
 ```$
 
 ## 3. 数学基础
@@ -172,68 +172,68 @@ $\mathcal{D}(E, V) = V.\text{visit}(E) = E.\text{accept}(V)$
 
 **定理 3.1** (访问者模式同构性)
 设 ```latex
-$G_1 = (\mathcal{E}_1, \mathcal{V}_1)$
+G_1 = (\mathcal{E}_1, \mathcal{V}_1)
 ``` 和 ```latex
-$G_2 = (\mathcal{E}_2, \mathcal{V}_2)$
+G_2 = (\mathcal{E}_2, \mathcal{V}_2)
 ``` 为两个访问者结构，如果存在同构映射 ```latex
-$\phi: \mathcal{E}_1 \rightarrow \mathcal{E}_2$
+\phi: \mathcal{E}_1 \rightarrow \mathcal{E}_2
 ``` 和 ```latex
-$\psi: \mathcal{V}_1 \rightarrow \mathcal{V}_2$
+\psi: \mathcal{V}_1 \rightarrow \mathcal{V}_2
 ```，则：
 
 $```latex
-$\forall e \in \mathcal{E}_1, \forall v \in \mathcal{V}_1: \psi(v).\text{visit}(\phi(e)) = \phi(v.\text{visit}(e))$
+\forall e \in \mathcal{E}_1, \forall v \in \mathcal{V}_1: \psi(v).\text{visit}(\phi(e)) = \phi(v.\text{visit}(e))
 ```$
 
 **证明**:
 
 1. 由同构定义，```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\psi$
+\psi
 ``` 都是双射
 2. 对于任意 ```latex
-$e \in \mathcal{E}_1$
+e \in \mathcal{E}_1
 ``` 和 ```latex
-$v \in \mathcal{V}_1$
+v \in \mathcal{V}_1
 ```，存在唯一的 ```latex
-$\phi(e) \in \mathcal{E}_2$
+\phi(e) \in \mathcal{E}_2
 ``` 和 ```latex
-$\psi(v) \in \mathcal{V}_2$
+\psi(v) \in \mathcal{V}_2
 ```
 3. 由于访问者模式的结构不变性，访问操作的结果应该保持一致
 4. 因此 ```latex
-$\psi(v).\text{visit}(\phi(e)) = \phi(v.\text{visit}(e))$
+\psi(v).\text{visit}(\phi(e)) = \phi(v.\text{visit}(e))
 ```
 
 ### 3.2 算法复杂度分析
 
 **定理 3.2** (访问者模式时间复杂度)
 设对象结构包含 ```latex
-$n$
+n
 ``` 个元素，每个访问者需要访问所有元素，则时间复杂度为：
 
 $```latex
-$T(n) = O(n \cdot m)$
+T(n) = O(n \cdot m)
 ```$
 
 其中 ```latex
-$m$
+m
 ``` 是访问者数量。
 
 **证明**:
 
 1. 每个访问者需要访问所有 ```latex
-$n$
+n
 ``` 个元素
 2. 每个访问操作的时间复杂度为 ```latex
-$O(1)$
+O(1)
 ```
 3. 总共有 ```latex
-$m$
+m
 ``` 个访问者
 4. 总时间复杂度为 ```latex
-$O(n \cdot m)$
+O(n \cdot m)
 ```
 
 ### 3.3 空间复杂度分析
@@ -242,28 +242,28 @@ $O(n \cdot m)$
 访问者模式的空间复杂度为：
 
 $```latex
-$S(n) = O(n + m)$
+S(n) = O(n + m)
 ```$
 
 其中 ```latex
-$n$
+n
 ``` 是元素数量，```latex
-$m$
+m
 ``` 是访问者数量。
 
 **证明**:
 
 1. 需要存储 ```latex
-$n$
+n
 ``` 个元素
 2. 需要存储 ```latex
-$m$
+m
 ``` 个访问者
 3. 访问过程中的临时空间为 ```latex
-$O(1)$
+O(1)
 ```
 4. 总空间复杂度为 ```latex
-$O(n + m)$
+O(n + m)
 ```
 
 ## 4. 设计原则
@@ -994,20 +994,20 @@ func (m *MockVisitor) VisitTriangle(t *Triangle) {}
 ### 10.4 数学总结
 
 访问者模式通过形式化定义 ```latex
-$(\mathcal{V}, \mathcal{E}, \mathcal{O}, \mathcal{A}, \mathcal{S})$
+(\mathcal{V}, \mathcal{E}, \mathcal{O}, \mathcal{A}, \mathcal{S})
 ``` 实现了操作与数据结构的分离，其中：
 
 - **双重分派**: ```latex
-$\mathcal{D}(E, V) = V.\text{visit}(E) = E.\text{accept}(V)$
+\mathcal{D}(E, V) = V.\text{visit}(E) = E.\text{accept}(V)
 ```
 - **时间复杂度**: ```latex
-$T(n) = O(n \cdot m)$
+T(n) = O(n \cdot m)
 ```
 - **空间复杂度**: ```latex
-$S(n) = O(n + m)$
+S(n) = O(n + m)
 ```
 - **操作独立性**: ```latex
-$\exists V \in \mathcal{V}: O = \mathcal{A}(E, V)$
+\exists V \in \mathcal{V}: O = \mathcal{A}(E, V)
 ```
 
 这种模式在Go语言中通过接口和泛型得到了优雅的实现，既保持了类型安全，又提供了良好的扩展性。

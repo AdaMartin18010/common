@@ -10,23 +10,23 @@
 
 **定义 1.1** (工作流优化问题)
 工作流优化问题是一个五元组 ```latex
-$\mathcal{O} = (W, C, F, \Omega, \mathcal{A})$
+\mathcal{O} = (W, C, F, \Omega, \mathcal{A})
 ```，其中：
 
 - ```latex
-$W$
+W
 ``` 是工作流模型
 - ```latex
-$C$
+C
 ``` 是约束集合
 - ```latex
-$F$
+F
 ``` 是目标函数
 - ```latex
-$\Omega$
+\Omega
 ``` 是可行解空间
 - ```latex
-$\mathcal{A}$
+\mathcal{A}
 ``` 是优化算法
 
 **定理 1.1** (优化问题复杂性)
@@ -43,13 +43,13 @@ $\mathcal{A}$
 **定义 1.2** (多目标优化)
 多目标优化问题定义为：
 $```latex
-$\min_{x \in \Omega} F(x) = [f_1(x), f_2(x), \ldots, f_m(x)]^T$
+\min_{x \in \Omega} F(x) = [f_1(x), f_2(x), \ldots, f_m(x)]^T
 ```$
 
 其中 ```latex
-$f_i(x)$
+f_i(x)
 ``` 是第 ```latex
-$i$
+i
 ``` 个目标函数。
 
 ```go

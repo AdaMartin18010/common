@@ -34,25 +34,25 @@
 
 **定义 1.1.1** (命题)
 命题是一个具有确定真值的陈述句，用符号 ```latex
-$P, Q, R$
+P, Q, R
 ``` 等表示。
 
 **定义 1.1.2** (逻辑连接词)
 
 - 否定 (Negation): ```latex
-$\neg P$
+\neg P
 ```
 - 合取 (Conjunction): ```latex
-$P \land Q$
+P \land Q
 ```
 - 析取 (Disjunction): ```latex
-$P \lor Q$
+P \lor Q
 ```
 - 蕴含 (Implication): ```latex
-$P \rightarrow Q$
+P \rightarrow Q
 ```
 - 等价 (Equivalence): ```latex
-$P \leftrightarrow Q$
+P \leftrightarrow Q
 ```
 
 ### 1.2 真值表
@@ -167,10 +167,10 @@ func TruthTable(prop Proposition, variables []string) [][]bool {
 
 **定理 1.4.1** (德摩根律)
 ```latex
-$\neg(P \land Q) \equiv \neg P \lor \neg Q$
+\neg(P \land Q) \equiv \neg P \lor \neg Q
 ```
 ```latex
-$\neg(P \lor Q) \equiv \neg P \land \neg Q$
+\neg(P \lor Q) \equiv \neg P \land \neg Q
 ```
 
 **证明**:
@@ -191,16 +191,16 @@ $\neg(P \lor Q) \equiv \neg P \land \neg Q$
 
 **定义 2.1.1** (谓词)
 谓词是描述对象性质的函数，用 ```latex
-$P(x), Q(x,y)$
+P(x), Q(x,y)
 ``` 等表示。
 
 **定义 2.1.2** (量词)
 
 - 全称量词 (Universal): ```latex
-$\forall x P(x)$
+\forall x P(x)
 ```
 - 存在量词 (Existential): ```latex
-$\exists x P(x)$
+\exists x P(x)
 ```
 
 ### 2.2 Go语言实现
@@ -287,25 +287,25 @@ func IsPrime(n int) bool {
 
 **定理 2.3.1** (量词否定律)
 ```latex
-$\neg \forall x P(x) \equiv \exists x \neg P(x)$
+\neg \forall x P(x) \equiv \exists x \neg P(x)
 ```
 ```latex
-$\neg \exists x P(x) \equiv \forall x \neg P(x)$
+\neg \exists x P(x) \equiv \forall x \neg P(x)
 ```
 
 **证明**:
 设论域为 ```latex
-$D = \{a_1, a_2, ..., a_n\}$
+D = \{a_1, a_2, ..., a_n\}
 ```
 
 ```latex
-$\neg \forall x P(x) \equiv \neg (P(a_1) \land P(a_2) \land ... \land P(a_n))$
+\neg \forall x P(x) \equiv \neg (P(a_1) \land P(a_2) \land ... \land P(a_n))
 ```
 ```latex
-$\equiv \neg P(a_1) \lor \neg P(a_2) \lor ... \lor \neg P(a_n)$
+\equiv \neg P(a_1) \lor \neg P(a_2) \lor ... \lor \neg P(a_n)
 ```
 ```latex
-$\equiv \exists x \neg P(x)$
+\equiv \exists x \neg P(x)
 ```
 
 ---
@@ -318,60 +318,60 @@ $\equiv \exists x \neg P(x)$
 
 1. **引入规则** (Introduction Rules)
    - ```latex
-$\land$
+\land
 ```-I: 从 ```latex
-$A$
+A
 ``` 和 ```latex
-$B$
+B
 ``` 推出 ```latex
-$A \land B$
+A \land B
 ```
    - ```latex
-$\lor$
+\lor
 ```-I: 从 ```latex
-$A$
+A
 ``` 推出 ```latex
-$A \lor B$
+A \lor B
 ```
    - ```latex
-$\rightarrow$
+\rightarrow
 ```-I: 从假设 ```latex
-$A$
+A
 ``` 推出 ```latex
-$B$
+B
 ``` 得到 ```latex
-$A \rightarrow B$
+A \rightarrow B
 ```
 
 2. **消除规则** (Elimination Rules)
    - ```latex
-$\land$
+\land
 ```-E: 从 ```latex
-$A \land B$
+A \land B
 ``` 推出 ```latex
-$A$
+A
 ``` 或 ```latex
-$B$
+B
 ```
    - ```latex
-$\lor$
+\lor
 ```-E: 从 ```latex
-$A \lor B$
+A \lor B
 ``` 和 ```latex
-$A \rightarrow C$
+A \rightarrow C
 ``` 和 ```latex
-$B \rightarrow C$
+B \rightarrow C
 ``` 推出 ```latex
-$C$
+C
 ```
    - ```latex
-$\rightarrow$
+\rightarrow
 ```-E: 从 ```latex
-$A \rightarrow B$
+A \rightarrow B
 ``` 和 ```latex
-$A$
+A
 ``` 推出 ```latex
-$B$
+B
 ```
 
 ### 3.2 Go语言实现

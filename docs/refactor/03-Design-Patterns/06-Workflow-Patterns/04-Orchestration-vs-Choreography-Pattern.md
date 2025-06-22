@@ -78,54 +78,54 @@
 
 **定义 2.1 (编排模式)**
 编排模式是一个三元组 ```latex
-$O = (C, S, F)$
+O = (C, S, F)
 ```，其中：
 
 - ```latex
-$C$
+C
 ``` 是中央协调器
 - ```latex
-$S = \{s_1, s_2, ..., s_n\}$
+S = \{s_1, s_2, ..., s_n\}
 ``` 是服务集合
 - ```latex
-$F: C \times S \rightarrow S$
+F: C \times S \rightarrow S
 ``` 是协调函数
 
 **定义 2.2 (编排执行)**
 编排执行是一个序列：
 $```latex
-$\langle c_0, s_1, c_1, s_2, c_2, ..., s_n, c_n \rangle$
+\langle c_0, s_1, c_1, s_2, c_2, ..., s_n, c_n \rangle
 ```$
 其中 ```latex
-$c_i$
+c_i
 ``` 是协调器状态，```latex
-$s_i$
+s_i
 ``` 是服务调用。
 
 ### 2.2 协同模式模型
 
 **定义 2.3 (协同模式)**
 协同模式是一个四元组 ```latex
-$H = (S, E, M, R)$
+H = (S, E, M, R)
 ```，其中：
 
 - ```latex
-$S = \{s_1, s_2, ..., s_n\}$
+S = \{s_1, s_2, ..., s_n\}
 ``` 是服务集合
 - ```latex
-$E = \{e_1, e_2, ..., e_m\}$
+E = \{e_1, e_2, ..., e_m\}
 ``` 是事件集合
 - ```latex
-$M: S \times E \rightarrow S$
+M: S \times E \rightarrow S
 ``` 是消息传递函数
 - ```latex
-$R: S \times E \rightarrow 2^E$
+R: S \times E \rightarrow 2^E
 ``` 是反应函数
 
 **定义 2.4 (协同执行)**
 协同执行是一个事件序列：
 $```latex
-$\langle e_1, e_2, ..., e_k \rangle$
+\langle e_1, e_2, ..., e_k \rangle
 ```$
 其中每个事件触发相应的服务反应。
 
@@ -133,9 +133,9 @@ $\langle e_1, e_2, ..., e_k \rangle$
 
 **定理 2.1 (模式等价性)**
 对于任何编排模式 ```latex
-$O$
+O
 ```，存在等价的协同模式 ```latex
-$H$
+H
 ```，反之亦然。
 
 **证明**:
@@ -149,34 +149,34 @@ $H$
 
 **定义 3.1 (分布式状态机)**
 分布式状态机是一个五元组 ```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$Q$
+Q
 ``` 是状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是输入字母表
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ``` 是状态转换函数
 - ```latex
-$q_0 \in Q$
+q_0 \in Q
 ``` 是初始状态
 - ```latex
-$F \subseteq Q$
+F \subseteq Q
 ``` 是接受状态集合
 
 **定理 3.1 (状态一致性)**
 在异步网络中，分布式状态机的一致性需要满足：
 $```latex
-$\forall i, j: |s_i - s_j| \leq 1$
+\forall i, j: |s_i - s_j| \leq 1
 ```$
 其中 ```latex
-$s_i$
+s_i
 ``` 是节点 ```latex
-$i$
+i
 ``` 的状态。
 
 ### 3.2 事件流理论
@@ -184,60 +184,60 @@ $i$
 **定义 3.2 (事件流)**
 事件流是一个有序的事件序列：
 $```latex
-$E = \langle e_1, e_2, ..., e_n \rangle$
+E = \langle e_1, e_2, ..., e_n \rangle
 ```$
 
 **定义 3.3 (事件因果关系)**
 事件 ```latex
-$e_i$
+e_i
 ``` 因果先于事件 ```latex
-$e_j$
+e_j
 ```，记作 ```latex
-$e_i \rightarrow e_j$
+e_i \rightarrow e_j
 ```，当且仅当：
 
 1. ```latex
-$e_i$
+e_i
 ``` 和 ```latex
-$e_j$
+e_j
 ``` 在同一进程中，且 ```latex
-$i < j$
+i < j
 ```
 2. ```latex
-$e_i$
+e_i
 ``` 发送消息，```latex
-$e_j$
+e_j
 ``` 接收该消息
 3. 存在事件 ```latex
-$e_k$
+e_k
 ``` 使得 ```latex
-$e_i \rightarrow e_k \rightarrow e_j$
+e_i \rightarrow e_k \rightarrow e_j
 ```
 
 **定理 3.2 (因果一致性)**
 因果一致性要求：
 $```latex
-$\forall e_i, e_j: e_i \rightarrow e_j \Rightarrow \text{deliver}(e_i) < \text{deliver}(e_j)$
+\forall e_i, e_j: e_i \rightarrow e_j \Rightarrow \text{deliver}(e_i) < \text{deliver}(e_j)
 ```$
 
 ### 3.3 复杂度分析
 
 **定理 3.3 (编排复杂度)**
 编排模式的时间复杂度为 ```latex
-$O(n)$
+O(n)
 ```，空间复杂度为 ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是服务数量。
 
 **定理 3.4 (协同复杂度)**
 协同模式的时间复杂度为 ```latex
-$O(m)$
+O(m)
 ```，空间复杂度为 ```latex
-$O(m)$
+O(m)
 ```，其中 ```latex
-$m$
+m
 ``` 是事件数量。
 
 ## 4. 编排模式
@@ -277,19 +277,19 @@ type WorkflowStep struct {
 **定义 4.1 (顺序执行)**
 步骤按预定义顺序依次执行：
 $```latex
-$\forall i < j: \text{step}_i \prec \text{step}_j$
+\forall i < j: \text{step}_i \prec \text{step}_j
 ```$
 
 **定义 4.2 (并行执行)**
 满足条件的步骤可以并行执行：
 $```latex
-$\text{step}_i \parallel \text{step}_j \Leftrightarrow \text{not } (\text{step}_i \rightarrow \text{step}_j \lor \text{step}_j \rightarrow \text{step}_i)$
+\text{step}_i \parallel \text{step}_j \Leftrightarrow \text{not } (\text{step}_i \rightarrow \text{step}_j \lor \text{step}_j \rightarrow \text{step}_i)
 ```$
 
 **定义 4.3 (条件执行)**
 步骤根据条件决定是否执行：
 $```latex
-$\text{execute}(\text{step}) \Leftrightarrow \text{condition}(\text{step}, \text{context})$
+\text{execute}(\text{step}) \Leftrightarrow \text{condition}(\text{step}, \text{context})
 ```$
 
 ### 4.3 状态管理
@@ -350,19 +350,19 @@ type EventHandler func(event Event) error
 **定义 5.1 (事件反应)**
 服务对事件的反应是一个函数：
 $```latex
-$R: S \times E \rightarrow 2^E$
+R: S \times E \rightarrow 2^E
 ```$
 
 **定义 5.2 (状态转换)**
 事件导致的状态转换：
 $```latex
-$\delta(s, e) = s'$
+\delta(s, e) = s'
 ```$
 
 **定义 5.3 (因果链)**
 事件的因果链是一个序列：
 $```latex
-$\langle e_1, e_2, ..., e_n \rangle \text{ where } e_i \rightarrow e_{i+1}$
+\langle e_1, e_2, ..., e_n \rangle \text{ where } e_i \rightarrow e_{i+1}
 ```$
 
 ### 5.3 消息传递
@@ -1231,28 +1231,28 @@ func main() {
 
 **定理 7.1 (编排模式时间复杂度)**
 编排模式的时间复杂度为 ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是服务调用次数。
 
 **定理 7.2 (协同模式时间复杂度)**
 协同模式的时间复杂度为 ```latex
-$O(m)$
+O(m)
 ```，其中 ```latex
-$m$
+m
 ``` 是事件数量。
 
 ### 7.2 空间复杂度
 
 **定理 7.3 (编排模式空间复杂度)**
 编排模式的空间复杂度为 ```latex
-$O(n)$
+O(n)
 ```，主要用于存储工作流状态。
 
 **定理 7.4 (协同模式空间复杂度)**
 协同模式的空间复杂度为 ```latex
-$O(m)$
+O(m)
 ```，主要用于存储事件和状态。
 
 ### 7.3 扩展性分析
@@ -1260,13 +1260,13 @@ $O(m)$
 **定理 7.5 (编排模式扩展性)**
 编排模式的扩展性受中央协调器限制：
 $```latex
-$\text{Scalability} = O(1)$
+\text{Scalability} = O(1)
 ```$
 
 **定理 7.6 (协同模式扩展性)**
 协同模式的扩展性随服务数量线性增长：
 $```latex
-$\text{Scalability} = O(n)$
+\text{Scalability} = O(n)
 ```$
 
 ## 8. 应用场景

@@ -71,89 +71,89 @@
 
 **定义 2.1.1 (设备)**
 设备是一个三元组 ```latex
-$D = (id, state, config)$
+D = (id, state, config)
 ```，其中：
 
 - ```latex
-$id \in \Sigma^*$
+id \in \Sigma^*
 ``` 是设备的唯一标识符
 - ```latex
-$state \in S$
+state \in S
 ``` 是设备状态，```latex
-$S$
+S
 ``` 是状态空间
 - ```latex
-$config \in C$
+config \in C
 ``` 是设备配置，```latex
-$C$
+C
 ``` 是配置空间
 
 **定义 2.1.2 (设备状态)**
 设备状态是一个五元组 ```latex
-$state = (status, health, lastSeen, metrics, alerts)$
+state = (status, health, lastSeen, metrics, alerts)
 ```，其中：
 
 - ```latex
-$status \in \{online, offline, error, maintenance\}$
+status \in \{online, offline, error, maintenance\}
 ```
 - ```latex
-$health \in [0, 1]$
+health \in [0, 1]
 ``` 是健康度评分
 - ```latex
-$lastSeen \in \mathbb{R}$
+lastSeen \in \mathbb{R}
 ``` 是最后通信时间戳
 - ```latex
-$metrics \in M$
+metrics \in M
 ``` 是性能指标集合
 - ```latex
-$alerts \in A$
+alerts \in A
 ``` 是告警集合
 
 ### 2.2 设备管理平台
 
 **定义 2.2.1 (设备管理平台)**
 设备管理平台是一个七元组 ```latex
-$P = (D, R, C, M, S, A, F)$
+P = (D, R, C, M, S, A, F)
 ```，其中：
 
 - ```latex
-$D = \{d_1, d_2, ..., d_n\}$
+D = \{d_1, d_2, ..., d_n\}
 ``` 是设备集合
 - ```latex
-$R$
+R
 ``` 是注册服务
 - ```latex
-$C$
+C
 ``` 是配置管理服务
 - ```latex
-$M$
+M
 ``` 是监控服务
 - ```latex
-$S$
+S
 ``` 是安全服务
 - ```latex
-$A$
+A
 ``` 是告警服务
 - ```latex
-$F$
+F
 ``` 是固件管理服务
 
 ### 2.3 操作语义
 
 **定义 2.3.1 (设备注册)**
 注册操作 ```latex
-$register: \Sigma^* \times C \rightarrow D$
+register: \Sigma^* \times C \rightarrow D
 ``` 定义为：
 $```latex
-$register(id, config) = (id, initial\_state, config)$
+register(id, config) = (id, initial\_state, config)
 ```$
 
 **定义 2.3.2 (状态更新)**
 状态更新操作 ```latex
-$update\_state: D \times S \rightarrow D$
+update\_state: D \times S \rightarrow D
 ``` 定义为：
 $```latex
-$update\_state((id, state, config), new\_state) = (id, new\_state, config)$
+update\_state((id, state, config), new\_state) = (id, new\_state, config)
 ```$
 
 ---
@@ -164,66 +164,66 @@ $update\_state((id, state, config), new\_state) = (id, new\_state, config)$
 
 **定理 3.1.1 (设备网络连通性)**
 设备网络 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 中，如果每个设备 ```latex
-$v \in V$
+v \in V
 ``` 的度数 ```latex
-$deg(v) \geq 1$
+deg(v) \geq 1
 ```，则网络是连通的。
 
 **证明**:
 假设网络不连通，则存在至少两个连通分量。设 ```latex
-$C_1$
+C_1
 ``` 和 ```latex
-$C_2$
+C_2
 ``` 是两个不同的连通分量。
 对于任意 ```latex
-$v_1 \in C_1$
+v_1 \in C_1
 ``` 和 ```latex
-$v_2 \in C_2$
+v_2 \in C_2
 ```，由于 ```latex
-$deg(v_1) \geq 1$
+deg(v_1) \geq 1
 ``` 和 ```latex
-$deg(v_2) \geq 1$
+deg(v_2) \geq 1
 ```，
 存在边 ```latex
-$(v_1, u_1)$
+(v_1, u_1)
 ``` 和 ```latex
-$(v_2, u_2)$
+(v_2, u_2)
 ```，其中 ```latex
-$u_1 \in C_1$
+u_1 \in C_1
 ``` 和 ```latex
-$u_2 \in C_2$
+u_2 \in C_2
 ```。
 这与 ```latex
-$C_1$
+C_1
 ``` 和 ```latex
-$C_2$
+C_2
 ``` 是连通分量的定义矛盾。因此网络是连通的。
 
 ### 3.2 概率模型
 
 **定义 3.2.1 (设备可用性)**
 设备 ```latex
-$d$
+d
 ``` 在时间 ```latex
-$t$
+t
 ``` 的可用性定义为：
 $```latex
-$A(d, t) = \frac{MTTF(d)}{MTTF(d) + MTTR(d)}$
+A(d, t) = \frac{MTTF(d)}{MTTF(d) + MTTR(d)}
 ```$
 其中 ```latex
-$MTTF$
+MTTF
 ``` 是平均无故障时间，```latex
-$MTTR$
+MTTR
 ``` 是平均修复时间。
 
 **定理 3.2.1 (系统可用性)**
 对于 ```latex
-$n$
+n
 ``` 个设备的系统，系统可用性为：
 $```latex
-$A_{system} = \prod_{i=1}^{n} A(d_i, t)$
+A_{system} = \prod_{i=1}^{n} A(d_i, t)
 ```$
 
 ### 3.3 队列理论
@@ -232,13 +232,13 @@ $A_{system} = \prod_{i=1}^{n} A(d_i, t)$
 设备请求队列是一个 M/M/1 队列，其中：
 
 - 到达率 ```latex
-$\lambda$
+\lambda
 ``` 是设备请求到达速率
 - 服务率 ```latex
-$\mu$
+\mu
 ``` 是平台处理速率
 - 队列长度 ```latex
-$L = \frac{\lambda}{\mu - \lambda}$
+L = \frac{\lambda}{\mu - \lambda}
 ```
 
 ---
@@ -1178,34 +1178,34 @@ func (p *DeviceManagementPlatform) GetAlerts(c *gin.Context) {
 ### 6.1 时间复杂度分析
 
 **设备注册**: ```latex
-$O(1)$
+O(1)
 ``` - 哈希表插入
 **设备查询**: ```latex
-$O(1)$
+O(1)
 ``` - 哈希表查找
 **设备列表**: ```latex
-$O(n \log n)$
+O(n \log n)
 ``` - 排序
 **状态更新**: ```latex
-$O(1)$
+O(1)
 ``` - 哈希表更新
 **指标存储**: ```latex
-$O(1)$
+O(1)
 ``` - 数组追加
 
 ### 6.2 空间复杂度分析
 
 **设备存储**: ```latex
-$O(n)$
+O(n)
 ``` - n个设备
 **指标存储**: ```latex
-$O(n \times m)$
+O(n \times m)
 ``` - n个设备，每个设备m个指标
 **告警存储**: ```latex
-$O(n \times a)$
+O(n \times a)
 ``` - n个设备，每个设备a个告警
 **配置缓存**: ```latex
-$O(n)$
+O(n)
 ``` - n个设备配置
 
 ### 6.3 并发性能

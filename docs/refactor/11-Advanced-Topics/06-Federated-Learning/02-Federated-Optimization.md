@@ -11,25 +11,23 @@
 联邦优化的目标函数：
 
 ```latex
-$```latex
-$\min_w F(w) = \sum_{i=1}^N p_i F_i(w)$
+$\min_w F(w) = \sum_{i=1}^N p_i F_i(w)
 ```$
-```
 
 其中：
 
 - ```latex
-$F_i(w)$
+F_i(w)
 ```: 客户端 ```latex
-$i$
+i
 ``` 的本地目标函数
 - ```latex
-$p_i = \frac{|D_i|}{|D|}$
+p_i = \frac{|D_i|}{|D|}
 ```: 客户端 ```latex
-$i$
+i
 ``` 的数据权重
 - ```latex
-$N$
+N
 ```: 客户端数量
 
 ### 2.1.2 数据异质性
@@ -37,15 +35,13 @@ $N$
 数据异质性通过统计异质性度量：
 
 ```latex
-$```latex
-$\Gamma = F^* - \sum_{i=1}^N p_i F_i^*$
+$\Gamma = F^* - \sum_{i=1}^N p_i F_i^*
 ```$
-```
 
 其中 ```latex
-$F^*$
+F^*
 ``` 和 ```latex
-$F_i^*$
+F_i^*
 ``` 分别是全局和本地最优值。
 
 ## 2.2 联邦平均算法（FedAvg）
@@ -55,33 +51,27 @@ $F_i^*$
 FedAvg算法的更新规则：
 
 ```latex
-$```latex
-$w_{t+1} = \sum_{i=1}^N p_i w_{t+1}^i$
+$w_{t+1} = \sum_{i=1}^N p_i w_{t+1}^i
 ```$
-```
 
 其中客户端 ```latex
-$i$
+i
 ``` 的本地更新：
 
 ```latex
-$```latex
-$w_{t+1}^i = w_t - \eta_t \nabla F_i(w_t)$
+$w_{t+1}^i = w_t - \eta_t \nabla F_i(w_t)
 ```$
-```
 
 ### 2.2.2 收敛性分析
 
 在强凸和Lipschitz条件下，FedAvg的收敛率：
 
 ```latex
-$```latex
-$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{T}\right)$
+$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{T}\right)
 ```$
-```
 
 其中 ```latex
-$\sigma^2$
+\sigma^2
 ``` 是梯度方差。
 
 ## 2.3 联邦近端算法（FedProx）
@@ -91,13 +81,11 @@ $\sigma^2$
 FedProx通过添加近端项来稳定训练：
 
 ```latex
-$```latex
-$\min_w F_i(w) + \frac{\mu}{2} \|w - w_t\|^2$
+$\min_w F_i(w) + \frac{\mu}{2} \|w - w_t\|^2
 ```$
-```
 
 其中 ```latex
-$\mu$
+\mu
 ``` 是近端参数。
 
 ### 2.3.2 更新规则
@@ -105,20 +93,16 @@ $\mu$
 FedProx的更新规则：
 
 ```latex
-$```latex
-$w_{t+1}^i = \arg\min_w \left\{F_i(w) + \frac{\mu}{2} \|w - w_t\|^2\right\}$
+$w_{t+1}^i = \arg\min_w \left\{F_i(w) + \frac{\mu}{2} \|w - w_t\|^2\right\}
 ```$
-```
 
 ### 2.3.3 收敛性
 
 FedProx的收敛性：
 
 ```latex
-$```latex
-$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{\mu T}\right)$
+$\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{\mu T}\right)
 ```$
-```
 
 ## 2.4 联邦自适应算法
 
@@ -127,26 +111,22 @@ $\mathbb{E}[F(w_T)] - F^* \leq O\left(\frac{1}{T} + \frac{\sigma^2}{\mu T}\right
 FedAdam结合了Adam优化器和联邦学习：
 
 ```latex
-$```latex
-$m_{t+1} = \beta_1 m_t + (1-\beta_1) \sum_{i=1}^N p_i \nabla F_i(w_t)$
+$m_{t+1} = \beta_1 m_t + (1-\beta_1) \sum_{i=1}^N p_i \nabla F_i(w_t)
 ```$
 $```latex
-$v_{t+1} = \beta_2 v_t + (1-\beta_2) \left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2$
+v_{t+1} = \beta_2 v_t + (1-\beta_2) \left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2
 ```$
 $```latex
-$w_{t+1} = w_t - \frac{\eta_t}{\sqrt{v_{t+1}} + \epsilon} m_{t+1}$
+w_{t+1} = w_t - \frac{\eta_t}{\sqrt{v_{t+1}} + \epsilon} m_{t+1}
 ```$
-```
 
 ### 2.4.2 FedYogi
 
 FedYogi改进了FedAdam的方差估计：
 
 ```latex
-$```latex
-$v_{t+1} = v_t - (1-\beta_2) \text{sign}\left(\left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2 - v_t\right) \left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2$
+$v_{t+1} = v_t - (1-\beta_2) \text{sign}\left(\left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2 - v_t\right) \left(\sum_{i=1}^N p_i \nabla F_i(w_t)\right)^2
 ```$
-```
 
 ## 2.5 通信效率优化
 
@@ -155,28 +135,22 @@ $v_{t+1} = v_t - (1-\beta_2) \text{sign}\left(\left(\sum_{i=1}^N p_i \nabla F_i(
 模型压缩技术：
 
 ```latex
-$```latex
-$C_{compressed} = \text{Compress}(w)$
+$C_{compressed} = \text{Compress}(w)
 ```$
-```
 
 压缩率：
 
 ```latex
-$```latex
-$\rho = \frac{\text{Size}(C_{compressed})}{\text{Size}(w)}$
+$\rho = \frac{\text{Size}(C_{compressed})}{\text{Size}(w)}
 ```$
-```
 
 ### 2.5.2 梯度压缩
 
 梯度压缩算法：
 
 ```latex
-$```latex
-$\text{Compress}(\nabla F_i(w)) = \text{TopK}(\nabla F_i(w), k)$
+$\text{Compress}(\nabla F_i(w)) = \text{TopK}(\nabla F_i(w), k)
 ```$
-```
 
 其中TopK保留最大的k个梯度分量。
 

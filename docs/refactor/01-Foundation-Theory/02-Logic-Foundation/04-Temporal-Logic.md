@@ -35,28 +35,28 @@
 时态逻辑是研究时间相关性质的模态逻辑分支，用于描述系统在时间上的行为。在软件工程中，时态逻辑广泛应用于程序验证、硬件验证和协议验证。
 
 **定义 1.1**: 时态逻辑语言 ```latex
-$\mathcal{L}_{TL}$
+\mathcal{L}_{TL}
 ``` 由以下部分组成：
 
 - 原子命题集合 ```latex
-$AP = \{p, q, r, \ldots\}$
+AP = \{p, q, r, \ldots\}
 ```
 - 逻辑连接词：```latex
-$\neg, \land, \lor, \rightarrow$
+\neg, \land, \lor, \rightarrow
 ```
 - 时态算子：```latex
-$\mathbf{X}$
+\mathbf{X}
 ``` (下一个), ```latex
-$\mathbf{F}$
+\mathbf{F}
 ``` (将来), ```latex
-$\mathbf{G}$
+\mathbf{G}
 ``` (全局), ```latex
-$\mathbf{U}$
+\mathbf{U}
 ``` (直到)
 - 路径量词：```latex
-$\mathbf{A}$
+\mathbf{A}
 ``` (所有路径), ```latex
-$\mathbf{E}$
+\mathbf{E}
 ``` (存在路径)
 
 ### 1.2 时态算子
@@ -64,28 +64,28 @@ $\mathbf{E}$
 **定义 1.2**: 基本时态算子的语义：
 
 - ```latex
-$\mathbf{X} \phi$
+\mathbf{X} \phi
 ``` 表示"下一个时刻 ```latex
-$\phi$
+\phi
 ```"
 - ```latex
-$\mathbf{F} \phi$
+\mathbf{F} \phi
 ``` 表示"将来某个时刻 ```latex
-$\phi$
+\phi
 ```"
 - ```latex
-$\mathbf{G} \phi$
+\mathbf{G} \phi
 ``` 表示"全局 ```latex
-$\phi$
+\phi
 ```"（所有时刻都 ```latex
-$\phi$
+\phi
 ```）
 - ```latex
-$\phi \mathbf{U} \psi$
+\phi \mathbf{U} \psi
 ``` 表示"```latex
-$\phi$
+\phi
 ``` 直到 ```latex
-$\psi$
+\psi
 ```"
 
 ### 1.3 线性时态逻辑
@@ -95,10 +95,10 @@ $\psi$
 **LTL公式示例**:
 
 - ```latex
-$\mathbf{G}(request \rightarrow \mathbf{F} response)$
+\mathbf{G}(request \rightarrow \mathbf{F} response)
 ``` - "每个请求最终都会得到响应"
 - ```latex
-$\mathbf{G}(mutex \rightarrow \mathbf{X}(\neg mutex))$
+\mathbf{G}(mutex \rightarrow \mathbf{X}(\neg mutex))
 ``` - "互斥锁在下一个时刻会被释放"
 
 ### 1.4 分支时态逻辑
@@ -108,10 +108,10 @@ $\mathbf{G}(mutex \rightarrow \mathbf{X}(\neg mutex))$
 **CTL公式示例**:
 
 - ```latex
-$\mathbf{AG}(safe)$
+\mathbf{AG}(safe)
 ``` - "在所有可达状态中都是安全的"
 - ```latex
-$\mathbf{EF}(error)$
+\mathbf{EF}(error)
 ``` - "存在一条路径最终会到达错误状态"
 
 ## 2. 形式化定义
@@ -121,11 +121,11 @@ $\mathbf{EF}(error)$
 **定义 2.1**: LTL公式的归纳定义：
 
 $```latex
-$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \psi$
+\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \psi
 ```$
 
 其中 ```latex
-$p \in AP$
+p \in AP
 ``` 是原子命题。
 
 ### 2.2 CTL语法
@@ -133,32 +133,31 @@ $p \in AP$
 **定义 2.2**: CTL公式的归纳定义：
 
 $```latex
-$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{AX} \phi \mid \mathbf{EX} \phi \mid \mathbf{AF} \phi \mid \mathbf{EF} \phi \mid \mathbf{AG} \phi \mid \mathbf{EG} \phi \mid \mathbf{A}[\phi \mathbf{U} \psi] \mid \mathbf{E}[\phi \mathbf{U} \psi]$
+\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \mathbf{AX} \phi \mid \mathbf{EX} \phi \mid \mathbf{AF} \phi \mid \mathbf{EF} \phi \mid \mathbf{AG} \phi \mid \mathbf{EG} \phi \mid \mathbf{A}[\phi \mathbf{U} \psi] \mid \mathbf{E}[\phi \mathbf{U} \psi]
 ```$
 
 ### 2.3 语义定义
 
 **定义 2.3**: 对于Kripke结构 ```latex
-$M = (S, S_0, R, L)$
+M = (S, S_0, R, L)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是状态集合
 - ```latex
-$S_0 \subseteq S$
+S_0 \subseteq S
 ``` 是初始状态集合
 - ```latex
-$R \subseteq S \times S$
+R \subseteq S \times S
 ``` 是转移关系
 - ```latex
-$L: S \rightarrow 2^{AP}$
+L: S \rightarrow 2^{AP}
 ``` 是标记函数
 
 **LTL语义**:
 
-```latex
-$$\begin{align}
+$\begin{align}
 \pi, i &\models p \text{ 当且仅当 } p \in L(\pi[i]) \\
 \pi, i &\models \neg \phi \text{ 当且仅当 } \pi, i \not\models \phi \\
 \pi, i &\models \phi \land \psi \text{ 当且仅当 } \pi, i \models \phi \text{ 且 } \pi, i \models \psi \\
@@ -166,8 +165,7 @@ $$\begin{align}
 \pi, i &\models \mathbf{F} \phi \text{ 当且仅当 } \exists j \geq i: \pi, j \models \phi \\
 \pi, i &\models \mathbf{G} \phi \text{ 当且仅当 } \forall j \geq i: \pi, j \models \phi \\
 \pi, i &\models \phi \mathbf{U} \psi \text{ 当且仅当 } \exists j \geq i: \pi, j \models \psi \text{ 且 } \forall k \in [i,j): \pi, k \models \phi
-\end{align}$$
-```
+\end{align}$
 
 ## 3. Go语言实现
 
@@ -834,28 +832,28 @@ func (pv *ProtocolVerification) VerifyLiveness() bool {
 ### 5.1 完备性定理
 
 **定理 5.1** (LTL完备性): 对于任意LTL公式 ```latex
-$\phi$
+\phi
 ```，如果 ```latex
-$\phi$
+\phi
 ``` 在所有Kripke结构中有效，则 ```latex
-$\phi$
+\phi
 ``` 在LTL公理系统中可证。
 
 **证明**:
 1. 假设 ```latex
-$\phi$
+\phi
 ``` 在LTL公理系统中不可证
 2. 构造典范模型 ```latex
-$M^c$
+M^c
 ```
 3. 证明 ```latex
-$M^c \not\models \phi$
+M^c \not\models \phi
 ```
 4. 这与 ```latex
-$\phi$
+\phi
 ``` 在所有模型中有效矛盾
 5. 因此 ```latex
-$\phi$
+\phi
 ``` 在LTL公理系统中可证
 
 ### 5.2 模型检查算法
@@ -873,7 +871,7 @@ $\phi$
 ```
 
 **定理 5.2**: LTL模型检查的时间复杂度为 ```latex
-$O(|M| \times 2^{|\phi|})$
+O(|M| \times 2^{|\phi|})
 ```。
 
 ### 5.3 复杂度分析

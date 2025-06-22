@@ -9,56 +9,52 @@
 ### 1.1.1 边缘计算定义
 
 边缘计算 ```latex
-$EC$
+EC
 ``` 是一个三元组 ```latex
-$(N, R, S)$
+(N, R, S)
 ```，其中：
 
 ```latex
-$```latex
-$EC = (N, R, S)$
+$EC = (N, R, S)
 ```$
-```
 
 其中：
 
 - ```latex
-$N$
+N
 ```: 边缘节点集合
 - ```latex
-$R$
+R
 ```: 资源集合
 - ```latex
-$S$
+S
 ```: 服务集合
 
 ### 1.1.2 边缘节点模型
 
 边缘节点 ```latex
-$n \in N$
+n \in N
 ``` 是一个四元组 ```latex
-$(c, m, s, b)$
+(c, m, s, b)
 ```，其中：
 
 ```latex
-$```latex
-$n = (c, m, s, b)$
+$n = (c, m, s, b)
 ```$
-```
 
 其中：
 
 - ```latex
-$c$
+c
 ```: 计算能力 (CPU核心数)
 - ```latex
-$m$
+m
 ```: 内存容量 (GB)
 - ```latex
-$s$
+s
 ```: 存储容量 (GB)
 - ```latex
-$b$
+b
 ```: 带宽 (Mbps)
 
 ## 1.2 边缘计算架构
@@ -68,10 +64,8 @@ $b$
 边缘计算采用三层架构：
 
 ```latex
-$```latex
-$L = \{Cloud, Edge, Device\}$
+$L = \{Cloud, Edge, Device\}
 ```$
-```
 
 **云层 (Cloud Layer)**
 
@@ -94,46 +88,40 @@ $L = \{Cloud, Edge, Device\}$
 ### 1.2.2 网络拓扑
 
 边缘计算网络拓扑 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 其中：
 
 ```latex
-$```latex
-$V = V_{cloud} \cup V_{edge} \cup V_{device}$
+$V = V_{cloud} \cup V_{edge} \cup V_{device}
 ```$
 $```latex
-$E = E_{cloud-edge} \cup E_{edge-device} \cup E_{edge-edge}$
+E = E_{cloud-edge} \cup E_{edge-device} \cup E_{edge-edge}
 ```$
-```
 
 ## 1.3 资源管理
 
 ### 1.3.1 资源分配
 
 资源分配函数 ```latex
-$A: N \times R \rightarrow \mathbb{R}^+$
+A: N \times R \rightarrow \mathbb{R}^+
 ``` 定义为：
 
 ```latex
-$```latex
-$A(n, r) = \frac{\text{allocated}(n, r)}{\text{total}(n, r)}$
+$A(n, r) = \frac{\text{allocated}(n, r)}{\text{total}(n, r)}
 ```$
-```
 
 ### 1.3.2 负载均衡
 
 负载均衡目标函数：
 
 ```latex
-$```latex
-$\min \sum_{i,j \in N} \frac{|L_i - L_j|}{L_{max}}$
+$\min \sum_{i,j \in N} \frac{|L_i - L_j|}{L_{max}}
 ```$
-```
 
 其中 ```latex
-$L_i$
+L_i
 ``` 是节点 ```latex
-$i$
+i
 ``` 的负载。
 
 ### 1.3.3 资源调度
@@ -141,13 +129,11 @@ $i$
 资源调度算法的时间复杂度：
 
 ```latex
-$```latex
-$T(n) = O(n \log n)$
+$T(n) = O(n \log n)
 ```$
-```
 
 其中 ```latex
-$n$
+n
 ``` 是边缘节点数量。
 
 ## 1.4 延迟模型
@@ -155,52 +141,48 @@ $n$
 ### 1.4.1 端到端延迟
 
 端到端延迟 ```latex
-$L_{e2e}$
+L_{e2e}
 ``` 定义为：
 
 ```latex
-$```latex
-$L_{e2e} = L_{prop} + L_{trans} + L_{proc} + L_{queue}$
+$L_{e2e} = L_{prop} + L_{trans} + L_{proc} + L_{queue}
 ```$
-```
 
 其中：
 
 - ```latex
-$L_{prop}$
+L_{prop}
 ```: 传播延迟
 - ```latex
-$L_{trans}$
+L_{trans}
 ```: 传输延迟
 - ```latex
-$L_{proc}$
+L_{proc}
 ```: 处理延迟
 - ```latex
-$L_{queue}$
+L_{queue}
 ```: 排队延迟
 
 ### 1.4.2 边缘计算延迟
 
 边缘计算延迟 ```latex
-$L_{edge}$
+L_{edge}
 ``` 为：
 
 ```latex
-$```latex
-$L_{edge} = \frac{d}{c} + T_{process}$
+$L_{edge} = \frac{d}{c} + T_{process}
 ```$
-```
 
 其中：
 
 - ```latex
-$d$
+d
 ```: 数据传输距离
 - ```latex
-$c$
+c
 ```: 光速
 - ```latex
-$T_{process}$
+T_{process}
 ```: 处理时间
 
 ## 1.5 Go语言实现
@@ -555,76 +537,70 @@ type NodeStatus struct {
 
 **定理 1.1** (边缘计算延迟优势)
 对于距离 ```latex
-$d$
+d
 ``` 和数据大小 ```latex
-$s$
+s
 ```，边缘计算的延迟 ```latex
-$L_{edge}$
+L_{edge}
 ``` 小于云计算延迟 ```latex
-$L_{cloud}$
+L_{cloud}
 ```。
 
 **证明**：
 设云数据中心距离为 ```latex
-$d_{cloud}$
+d_{cloud}
 ```，边缘节点距离为 ```latex
-$d_{edge}$
+d_{edge}
 ```。
 
 边缘计算延迟：
 
 ```latex
-$```latex
-$L_{edge} = \frac{d_{edge}}{c} + T_{process}$
+$L_{edge} = \frac{d_{edge}}{c} + T_{process}
 ```$
-```
 
 云计算延迟：
 
 ```latex
-$```latex
-$L_{cloud} = \frac{d_{cloud}}{c} + T_{process}$
+$L_{cloud} = \frac{d_{cloud}}{c} + T_{process}
 ```$
-```
 
 由于 ```latex
-$d_{edge} < d_{cloud}$
+d_{edge} < d_{cloud}
 ```，所以 ```latex
-$L_{edge} < L_{cloud}$
+L_{edge} < L_{cloud}
 ```。
 
 ### 1.7.2 负载均衡最优性
 
 **定理 1.2** (负载均衡最优性)
 对于 ```latex
-$n$
+n
 ``` 个边缘节点，最小化最大负载的贪心算法是 ```latex
-$\frac{2}{3}$
+\frac{2}{3}
 ``` 近似的。
 
 **证明**：
 设最优解的最大负载为 ```latex
-$OPT$
+OPT
 ```，贪心算法的最大负载为 ```latex
-$GREEDY$
+GREEDY
 ```。
 
 对于任意任务 ```latex
-$t$
+t
 ```，其负载 ```latex
-$l_t \leq OPT$
+l_t \leq OPT
 ```。
 
 贪心算法将任务分配给当前负载最小的节点，因此：
 
 ```latex
-$```latex
-$GREEDY \leq \frac{\sum_{t} l_t}{n} + \max_t l_t \leq \frac{n \cdot OPT}{n} + OPT = 2 \cdot OPT$
+$GREEDY \leq \frac{\sum_{t} l_t}{n} + \max_t l_t \leq \frac{n \cdot OPT}{n} + OPT = 2 \cdot OPT
 ```$
-```
 
 实际上，通过更精细的分析可以得到 ```latex
-$\frac{2}{3}$
+\frac{2}{3}
 ``` 近似比。
 
 ## 1.8 总结

@@ -55,20 +55,18 @@ const (
 单个神经元的输出计算为：
 
 ```latex
-$```latex
-$z = \mathbf{w}^T \mathbf{x} + b$
+$z = \mathbf{w}^T \mathbf{x} + b
 ```$
 $```latex
-$a = \sigma(z)$
+a = \sigma(z)
 ```$
-```
 
 其中 ```latex
-$\mathbf{w}$
+\mathbf{w}
 ``` 是权重向量，```latex
-$b$
+b
 ``` 是偏置，```latex
-$\sigma$
+\sigma
 ``` 是激活函数。
 
 ### 11.9.2.2.2 反向传播算法
@@ -81,18 +79,16 @@ $\sigma$
 
 **证明**:
 设 ```latex
-$L$
+L
 ``` 为损失函数，```latex
-$z$
+z
 ``` 为神经元的加权输入，```latex
-$w$
+w
 ``` 为权重，则：
 
 ```latex
-$```latex
-$\frac{\partial L}{\partial w} = \frac{\partial L}{\partial a} \cdot \frac{\partial a}{\partial z} \cdot \frac{\partial z}{\partial w}$
+$\frac{\partial L}{\partial w} = \frac{\partial L}{\partial a} \cdot \frac{\partial a}{\partial z} \cdot \frac{\partial z}{\partial w}
 ```$
-```
 
 ### 11.9.2.2.3 Go实现前馈神经网络
 
@@ -314,10 +310,8 @@ func (nn *NeuralNetwork) computeLoss(output, target []float64) float64 {
 **数学表示**:
 
 ```latex
-$```latex
-$(I * K)(i, j) = \sum_m \sum_n I(i-m, j-n)K(m,n)$
+$(I * K)(i, j) = \sum_m \sum_n I(i-m, j-n)K(m,n)
 ```$
-```
 
 ### 11.9.2.3.3 Go实现CNN
 
@@ -398,13 +392,11 @@ func (cl *ConvLayer) Forward(input [][][]float64) [][][]float64 {
 RNN单元更新公式：
 
 ```latex
-$```latex
-$h_t = \sigma(W_{xh} x_t + W_{hh} h_{t-1} + b_h)$
+$h_t = \sigma(W_{xh} x_t + W_{hh} h_{t-1} + b_h)
 ```$
 $```latex
-$y_t = W_{hy} h_t + b_y$
+y_t = W_{hy} h_t + b_y
 ```$
-```
 
 ### 11.9.2.4.2 LSTM网络
 
@@ -539,10 +531,8 @@ func dotProduct(a, b []float64) float64 {
 GAN的目标函数：
 
 ```latex
-$```latex
-$\min_G \max_D V(D, G) = \mathbb{E}_{x \sim p_{data}(x)} [\log D(x)] + \mathbb{E}_{z \sim p_z(z)} [\log (1 - D(G(z)))]$
+$\min_G \max_D V(D, G) = \mathbb{E}_{x \sim p_{data}(x)} [\log D(x)] + \mathbb{E}_{z \sim p_z(z)} [\log (1 - D(G(z)))]
 ```$
-```
 
 ### 11.9.2.5.2 GAN架构
 

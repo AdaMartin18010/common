@@ -9,63 +9,59 @@
 ### 3.1.1 DeFi协议模型
 
 DeFi协议 ```latex
-$P$
+P
 ``` 是一个六元组 ```latex
-$(A, L, T, R, S, G)$
+(A, L, T, R, S, G)
 ```，其中：
 
 ```latex
-$```latex
-$P = (A, L, T, R, S, G)$
+$P = (A, L, T, R, S, G)
 ```$
-```
 
 其中：
 
 - ```latex
-$A$
+A
 ```: 资产集合
 - ```latex
-$L$
+L
 ```: 流动性池
 - ```latex
-$T$
+T
 ```: 交易机制
 - ```latex
-$R$
+R
 ```: 风险管理
 - ```latex
-$S$
+S
 ```: 治理机制
 - ```latex
-$G$
+G
 ```: 激励机制
 
 ### 3.1.2 流动性池
 
 流动性池 ```latex
-$LP$
+LP
 ``` 包含：
 
 ```latex
-$```latex
-$LP = (Token_A, Token_B, Reserve_A, Reserve_B, Fee, K)$
+$LP = (Token_A, Token_B, Reserve_A, Reserve_B, Fee, K)
 ```$
-```
 
 其中：
 
 - ```latex
-$Token_A, Token_B$
+Token_A, Token_B
 ```: 代币对
 - ```latex
-$Reserve_A, Reserve_B$
+Reserve_A, Reserve_B
 ```: 储备量
 - ```latex
-$Fee$
+Fee
 ```: 手续费率
 - ```latex
-$K = Reserve_A \times Reserve_B$
+K = Reserve_A \times Reserve_B
 ```: 恒定乘积
 
 ## 3.2 自动做市商（AMM）
@@ -75,21 +71,19 @@ $K = Reserve_A \times Reserve_B$
 AMM价格计算：
 
 ```latex
-$```latex
-$(x + \Delta x)(y - \Delta y) = xy = k$
+$(x + \Delta x)(y - \Delta y) = xy = k
 ```$
-```
 
 其中：
 
 - ```latex
-$x, y$
+x, y
 ```: 当前储备量
 - ```latex
-$\Delta x, \Delta y$
+\Delta x, \Delta y
 ```: 交易量
 - ```latex
-$k$
+k
 ```: 恒定乘积
 
 ### 3.2.2 价格影响
@@ -97,20 +91,16 @@ $k$
 价格影响计算：
 
 ```latex
-$```latex
-$\text{Price Impact} = \frac{\Delta P}{P} = \frac{\Delta x}{x + \Delta x}$
+$\text{Price Impact} = \frac{\Delta P}{P} = \frac{\Delta x}{x + \Delta x}
 ```$
-```
 
 ### 3.2.3 滑点保护
 
 滑点保护：
 
 ```latex
-$```latex
-$\text{Slippage} = \frac{\text{Expected Price} - \text{Actual Price}}{\text{Expected Price}}$
+$\text{Slippage} = \frac{\text{Expected Price} - \text{Actual Price}}{\text{Expected Price}}
 ```$
-```
 
 ## 3.3 借贷协议
 
@@ -119,30 +109,24 @@ $\text{Slippage} = \frac{\text{Expected Price} - \text{Actual Price}}{\text{Expe
 借贷协议状态：
 
 ```latex
-$```latex
-$Loan = (Collateral, Debt, CollateralRatio, LiquidationThreshold)$
+$Loan = (Collateral, Debt, CollateralRatio, LiquidationThreshold)
 ```$
-```
 
 ### 3.3.2 抵押率计算
 
 抵押率：
 
 ```latex
-$```latex
-$\text{Collateral Ratio} = \frac{\text{Collateral Value}}{\text{Debt Value}}$
+$\text{Collateral Ratio} = \frac{\text{Collateral Value}}{\text{Debt Value}}
 ```$
-```
 
 ### 3.3.3 清算机制
 
 清算条件：
 
 ```latex
-$```latex
-$\text{Collateral Ratio} < \text{Liquidation Threshold}$
+$\text{Collateral Ratio} < \text{Liquidation Threshold}
 ```$
-```
 
 ## 3.4 收益聚合器
 
@@ -151,18 +135,16 @@ $\text{Collateral Ratio} < \text{Liquidation Threshold}$
 年化收益率：
 
 ```latex
-$```latex
-$APY = \left(1 + \frac{r}{n}\right)^n - 1$
+$APY = \left(1 + \frac{r}{n}\right)^n - 1
 ```$
-```
 
 其中：
 
 - ```latex
-$r$
+r
 ```: 名义利率
 - ```latex
-$n$
+n
 ```: 复利次数
 
 ### 3.4.2 策略优化
@@ -170,15 +152,13 @@ $n$
 策略收益：
 
 ```latex
-$```latex
-$\text{Strategy Return} = \sum_{i=1}^n w_i \times R_i$
+$\text{Strategy Return} = \sum_{i=1}^n w_i \times R_i
 ```$
-```
 
 其中 ```latex
-$w_i$
+w_i
 ``` 是权重，```latex
-$R_i$
+R_i
 ``` 是各策略收益率。
 
 ## 3.5 Go语言实现

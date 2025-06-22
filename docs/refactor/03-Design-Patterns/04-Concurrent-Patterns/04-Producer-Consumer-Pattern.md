@@ -73,30 +73,30 @@
 ### 2.1 基本概念
 
 设 ```latex
-$P$
+P
 ``` 为生产者集合，```latex
-$C$
+C
 ``` 为消费者集合，```latex
-$B$
+B
 ``` 为缓冲区集合，```latex
-$D$
+D
 ``` 为数据集合。
 
 **定义 2.1** (生产者)
 
 ```latex
 生产者是一个三元组 ```latex
-$(p, buffer, rate)$
+(p, buffer, rate)
 ```，其中：
 
 - ```latex
-$p \in P$
+p \in P
 ``` 是生产者实例
 - ```latex
-$buffer \in B$
+buffer \in B
 ``` 是目标缓冲区
 - ```latex
-$rate$
+rate
 ``` 是生产速率
 ```
 
@@ -104,17 +104,17 @@ $rate$
 
 ```latex
 消费者是一个三元组 ```latex
-$(c, buffer, rate)$
+(c, buffer, rate)
 ```，其中：
 
 - ```latex
-$c \in C$
+c \in C
 ``` 是消费者实例
 - ```latex
-$buffer \in B$
+buffer \in B
 ``` 是源缓冲区
 - ```latex
-$rate$
+rate
 ``` 是消费速率
 ```
 
@@ -122,20 +122,20 @@ $rate$
 
 ```latex
 缓冲区是一个四元组 ```latex
-$(b, capacity, items, mutex)$
+(b, capacity, items, mutex)
 ```，其中：
 
 - ```latex
-$b \in B$
+b \in B
 ``` 是缓冲区实例
 - ```latex
-$capacity$
+capacity
 ``` 是缓冲区容量
 - ```latex
-$items \subseteq D$
+items \subseteq D
 ``` 是缓冲区中的数据项
 - ```latex
-$mutex$
+mutex
 ``` 是互斥锁
 ```
 
@@ -145,9 +145,9 @@ $mutex$
 
 ```latex
 对于生产者 ```latex
-$p$
+p
 ``` 和数据项 ```latex
-$d$
+d
 ```：
 $$produce(p, d) = \begin{cases}
 enqueue(buffer, d) & \text{if } |items| < capacity \\
@@ -159,15 +159,13 @@ block(p) & \text{otherwise}
 
 ```latex
 对于消费者 ```latex
-$c$
+c
 ```：
 
-```latex
-$$consume(c) = \begin{cases}
+$consume(c) = \begin{cases}
 dequeue(buffer) & \text{if } |items| > 0 \\
 block(c) & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}$
 
 ```
 
@@ -175,15 +173,15 @@ block(c) & \text{otherwise}
 
 ```latex
 对于缓冲区 ```latex
-$b$
+b
 ``` 和数据项 ```latex
-$d$
+d
 ```：
 $```latex
-$enqueue(b, d) = acquire(mutex) \land add(items, d) \land release(mutex)$
+enqueue(b, d) = acquire(mutex) \land add(items, d) \land release(mutex)
 ```$
 $```latex
-$dequeue(b) = acquire(mutex) \land remove(items) \land release(mutex)$
+dequeue(b) = acquire(mutex) \land remove(items) \land release(mutex)
 ```$
 ```
 
@@ -193,21 +191,21 @@ $dequeue(b) = acquire(mutex) \land remove(items) \land release(mutex)$
 
 缓冲区满的条件：
 $```latex
-$full(buffer) \Leftrightarrow |items| = capacity$
+full(buffer) \Leftrightarrow |items| = capacity
 ```$
 
 **定义 2.5** (空缓冲区)
 
 缓冲区空的条件：
 $```latex
-$empty(buffer) \Leftrightarrow |items| = 0$
+empty(buffer) \Leftrightarrow |items| = 0
 ```$
 
 **定理 2.1** (线程安全)
 
 生产者-消费者模式保证线程安全，当且仅当：
 $```latex
-$\forall p_1, p_2 \in P, \forall c_1, c_2 \in C: \text{所有操作都通过互斥锁保护}$
+\forall p_1, p_2 \in P, \forall c_1, c_2 \in C: \text{所有操作都通过互斥锁保护}
 ```$
 
 ---
@@ -221,13 +219,13 @@ $\forall p_1, p_2 \in P, \forall c_1, c_2 \in C: \text{所有操作都通过互�
 **定义 3.1** (M/M/1/K队列)
 
 - 到达服从泊松分布，到达率为 ```latex
-$\lambda$
+\lambda
 ``` (生产速率)
 - 服务时间服从指数分布，服务率为 ```latex
-$\mu$
+\mu
 ``` (消费速率)
 - 系统容量为 ```latex
-$K$
+K
 ``` (缓冲区大小)
 - 单服务窗口
 
@@ -235,21 +233,21 @@ $K$
 
 系统利用率：
 $```latex
-$\rho = \frac{\lambda}{\mu}$
+\rho = \frac{\lambda}{\mu}
 ```$
 
 **定理 3.2** (阻塞概率)
 当 ```latex
-$\rho \neq 1$
+\rho \neq 1
 ``` 时，阻塞概率：
 $```latex
-$P_B = \frac{(1-\rho)\rho^K}{1-\rho^{K+1}}$
+P_B = \frac{(1-\rho)\rho^K}{1-\rho^{K+1}}
 ```$
 
 **定理 3.3** (平均队列长度)
 平均队列长度：
 $```latex
-$L = \frac{\rho}{1-\rho} - \frac{(K+1)\rho^{K+1}}{1-\rho^{K+1}}$
+L = \frac{\rho}{1-\rho} - \frac{(K+1)\rho^{K+1}}{1-\rho^{K+1}}
 ```$
 
 ### 3.2 性能分析
@@ -257,23 +255,23 @@ $L = \frac{\rho}{1-\rho} - \frac{(K+1)\rho^{K+1}}{1-\rho^{K+1}}$
 **定义 3.2** (吞吐量)
 系统吞吐量：
 $```latex
-$Throughput = \lambda(1-P_B)$
+Throughput = \lambda(1-P_B)
 ```$
 
 **定义 3.3** (平均等待时间)
 平均等待时间：
 $```latex
-$W = \frac{L}{\lambda(1-P_B)}$
+W = \frac{L}{\lambda(1-P_B)}
 ```$
 
 **定理 3.4** (最优缓冲区大小)
 对于给定的 ```latex
-$\lambda$
+\lambda
 ``` 和 ```latex
-$\mu$
+\mu
 ```，最优缓冲区大小：
 $```latex
-$K_{opt} = \log_{\rho}(\frac{1}{P_{target}})$
+K_{opt} = \log_{\rho}(\frac{1}{P_{target}})
 ```$
 
 ---
@@ -1158,28 +1156,28 @@ func main() {
 ### 6.1 时间复杂度
 
 - **生产操作**: ```latex
-$O(1)$
+O(1)
 ```
 - **消费操作**: ```latex
-$O(1)$
+O(1)
 ```
 - **缓冲区操作**: ```latex
-$O(1)$
+O(1)
 ```
 - **同步操作**: ```latex
-$O(1)$
+O(1)
 ```
 
 ### 6.2 空间复杂度
 
 - **缓冲区**: ```latex
-$O(capacity)$
+O(capacity)
 ```
 - **生产者**: ```latex
-$O(1)$
+O(1)
 ``` 每个生产者
 - **消费者**: ```latex
-$O(1)$
+O(1)
 ``` 每个消费者
 
 ### 6.3 性能优化建议

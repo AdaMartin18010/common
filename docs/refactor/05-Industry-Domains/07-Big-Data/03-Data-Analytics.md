@@ -21,34 +21,34 @@
 
 **定义 1.1** (数据分析函数)
 数据分析函数 ```latex
-$f: D \rightarrow A$
+f: D \rightarrow A
 ``` 将数据集 ```latex
-$D$
+D
 ``` 映射到分析结果 ```latex
-$A$
+A
 ```：
 
 $```latex
-$f(D) = \text{analyze}(D, \text{method}, \text{params})$
+f(D) = \text{analyze}(D, \text{method}, \text{params})
 ```$
 
 其中 ```latex
-$\text{method}$
+\text{method}
 ``` 是分析方法，```latex
-$\text{params}$
+\text{params}
 ``` 是参数集合。
 
 **定理 1.1** (分析一致性)
 对于数据集 ```latex
-$D$
+D
 ``` 和分析方法 ```latex
-$m$
+m
 ```，如果 ```latex
-$D_1 \subseteq D_2$
+D_1 \subseteq D_2
 ```，则：
 
 $```latex
-$f(D_1, m) \subseteq f(D_2, m)$
+f(D_1, m) \subseteq f(D_2, m)
 ```$
 
 ### 1.2 分析框架
@@ -123,7 +123,7 @@ func (ba *BaseAnalyzer) GetMetrics() map[string]float64 {
 描述性统计是对数据集基本特征的量化描述：
 
 $```latex
-$\text{DescriptiveStats}(D) = \{\text{mean}, \text{median}, \text{mode}, \text{variance}, \text{skewness}, \text{kurtosis}\}$
+\text{DescriptiveStats}(D) = \{\text{mean}, \text{median}, \text{mode}, \text{variance}, \text{skewness}, \text{kurtosis}\}
 ```$
 
 ```go
@@ -414,15 +414,15 @@ func (ia *InferentialAnalyzer) normalCDF(x float64) float64 {
 
 **定义 3.1** (监督学习)
 监督学习是从标记数据中学习映射函数 ```latex
-$f: X \rightarrow Y$
+f: X \rightarrow Y
 ```：
 
 $```latex
-$\text{SupervisedLearning}(D) = \arg\min_f \sum_{(x,y) \in D} L(f(x), y)$
+\text{SupervisedLearning}(D) = \arg\min_f \sum_{(x,y) \in D} L(f(x), y)
 ```$
 
 其中 ```latex
-$L$
+L
 ``` 是损失函数。
 
 ```go
@@ -766,19 +766,19 @@ func (km *KMeans) GetCentroids() []map[string]float64 {
 
 **定义 4.1** (关联规则)
 关联规则是形如 ```latex
-$X \rightarrow Y$
+X \rightarrow Y
 ``` 的规则，其中 ```latex
-$X$
+X
 ``` 和 ```latex
-$Y$
+Y
 ``` 是项集：
 
 $```latex
-$\text{Support}(X) = \frac{|\{t \in T : X \subseteq t\}|}{|T|}$
+\text{Support}(X) = \frac{|\{t \in T : X \subseteq t\}|}{|T|}
 ```$
 
 $```latex
-$\text{Confidence}(X \rightarrow Y) = \frac{\text{Support}(X \cup Y)}{\text{Support}(X)}$
+\text{Confidence}(X \rightarrow Y) = \frac{\text{Support}(X \cup Y)}{\text{Support}(X)}
 ```$
 
 ```go

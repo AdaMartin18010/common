@@ -30,13 +30,13 @@
 其中：
 
 - ```latex
-$x$
+x
 ``` 是参数
 - ```latex
-$e$
+e
 ``` 是表达式
 - ```latex
-$\lambda$
+\lambda
 ``` 表示函数抽象
 
 ### 纯函数定义
@@ -48,9 +48,9 @@ f: A \rightarrow B
 ```
 
 对于任意输入 ```latex
-$a \in A$
+a \in A
 ```，输出 ```latex
-$f(a) \in B$
+f(a) \in B
 ``` 是确定的，且没有副作用。
 
 ### 函数组合
@@ -62,9 +62,9 @@ $f(a) \in B$
 ```
 
 其中 ```latex
-$f$
+f
 ``` 和 ```latex
-$g$
+g
 ``` 是可组合的函数。
 
 ## 核心概念

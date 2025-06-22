@@ -9,53 +9,53 @@
 ### 1.2 形式化定义
 
 设 ```latex
-$S$
+S
 ``` 为服务集合，```latex
-$I$
+I
 ``` 为服务实例集合，```latex
-$N$
+N
 ``` 为网络节点集合，则服务发现模式可形式化为：
 
 $```latex
-$SD = (S, I, N, R, D)$
+SD = (S, I, N, R, D)
 ```$
 
 其中：
 
 - ```latex
-$R: S \rightarrow 2^I$
+R: S \rightarrow 2^I
 ``` 为注册函数，将服务映射到其实例集合
 - ```latex
-$D: S \rightarrow 2^I$
+D: S \rightarrow 2^I
 ``` 为发现函数，返回服务的可用实例集合
 
 ### 1.3 数学性质
 
 **定理 1.1**: 服务发现的一致性
 对于任意服务 ```latex
-$s \in S$
+s \in S
 ```，如果实例 ```latex
-$i \in I$
+i \in I
 ``` 已注册，则 ```latex
-$i \in D(s)$
+i \in D(s)
 ``` 当且仅当 ```latex
-$i$
+i
 ``` 健康且可达。
 
 **证明**:
 假设 ```latex
-$i \in R(s)$
+i \in R(s)
 ``` 且 ```latex
-$i$
+i
 ``` 健康可达，根据服务发现算法，```latex
-$i$
+i
 ``` 会被包含在 ```latex
-$D(s)$
+D(s)
 ``` 中。
 反之，如果 ```latex
-$i \notin D(s)$
+i \notin D(s)
 ```，则 ```latex
-$i$
+i
 ``` 要么未注册，要么不健康或不可达。
 
 ## 2. 架构模式
@@ -619,34 +619,34 @@ func (p *ServiceDiscoveryProxy) forwardData(dst net.Conn, src net.Conn) {
 ### 4.1 时间复杂度
 
 - **注册**: ```latex
-$O(1)$
+O(1)
 ```
 - **注销**: ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 为服务实例数量
 - **发现**: ```latex
-$O(1)$
+O(1)
 ```（带缓存）
 - **健康检查**: ```latex
-$O(n)$
+O(n)
 ```
 
 ### 4.2 空间复杂度
 
 - **内存注册中心**: ```latex
-$O(s \times i)$
+O(s \times i)
 ```，其中 ```latex
-$s$
+s
 ``` 为服务数量，```latex
-$i$
+i
 ``` 为平均实例数量
 - **客户端缓存**: ```latex
-$O(s \times i)$
+O(s \times i)
 ```
 - **代理缓存**: ```latex
-$O(s \times i)$
+O(s \times i)
 ```
 
 ### 4.3 一致性分析

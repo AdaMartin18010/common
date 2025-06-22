@@ -10,54 +10,54 @@
 
 **定义 1.1** (创建型模式)
 创建型模式是一个三元组 ```latex
-$\mathcal{C} = (F, P, \phi)$
+\mathcal{C} = (F, P, \phi)
 ```，其中：
 
 - ```latex
-$F$
+F
 ``` 是工厂函数集合
 - ```latex
-$P$
+P
 ``` 是产品类型集合  
 - ```latex
-$\phi: F \rightarrow P$
+\phi: F \rightarrow P
 ``` 是工厂到产品的映射函数
 
 **公理 1.1** (创建型模式公理)
 对于任意创建型模式 ```latex
-$\mathcal{C} = (F, P, \phi)$
+\mathcal{C} = (F, P, \phi)
 ```：
 
 1. **存在性**: ```latex
-$\forall p \in P, \exists f \in F: \phi(f) = p$
+\forall p \in P, \exists f \in F: \phi(f) = p
 ```
 2. **唯一性**: ```latex
-$\forall f_1, f_2 \in F: \phi(f_1) = \phi(f_2) \Rightarrow f_1 = f_2$
+\forall f_1, f_2 \in F: \phi(f_1) = \phi(f_2) \Rightarrow f_1 = f_2
 ```
 3. **封闭性**: ```latex
-$F$
+F
 ``` 和 ```latex
-$P$
+P
 ``` 在模式操作下封闭
 
 ### 2. 模式分类的形式化
 
 **定义 1.2** (模式分类)
 设 ```latex
-$\mathcal{P}$
+\mathcal{P}
 ``` 为所有设计模式的集合，创建型模式集合 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 满足：
 $```latex
-$\mathcal{C} = \{p \in \mathcal{P} \mid \text{type}(p) = \text{creational}\}$
+\mathcal{C} = \{p \in \mathcal{P} \mid \text{type}(p) = \text{creational}\}
 ```$
 
 **定理 1.1** (模式分类的完备性)
 创建型模式集合 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 是完备的，即：
 $```latex
-$\forall p \in \mathcal{P}: \text{type}(p) = \text{creational} \Leftrightarrow p \in \mathcal{C}$
+\forall p \in \mathcal{P}: \text{type}(p) = \text{creational} \Leftrightarrow p \in \mathcal{C}
 ```$
 
 ## 核心模式
@@ -69,14 +69,14 @@ $\forall p \in \mathcal{P}: \text{type}(p) = \text{creational} \Leftrightarrow p
 
 **形式化定义**:
 设 ```latex
-$T$
+T
 ``` 为类型，单例模式定义为函数：
 $```latex
-$S: \text{Unit} \rightarrow T$
+S: \text{Unit} \rightarrow T
 ```$
 满足：
 $```latex
-$\forall x, y \in \text{Unit}: S(x) = S(y)$
+\forall x, y \in \text{Unit}: S(x) = S(y)
 ```$
 
 **Go 语言实现**:
@@ -183,17 +183,17 @@ func TestSingletonThreadSafety() {
 **定理 1.2** (单例模式的唯一性)
 对于任意单例模式实现，满足：
 $```latex
-$\forall x, y: \text{GetInstance}(x) = \text{GetInstance}(y)$
+\forall x, y: \text{GetInstance}(x) = \text{GetInstance}(y)
 ```$
 
 **证明**:
 
 1. 设 ```latex
-$x, y$
+x, y
 ``` 为任意调用
 2. 由于 `sync.Once` 的保证，`GetInstance` 最多执行一次初始化
 3. 因此 ```latex
-$\text{GetInstance}(x) = \text{GetInstance}(y)$
+\text{GetInstance}(x) = \text{GetInstance}(y)
 ```
 4. 证毕。
 
@@ -204,15 +204,15 @@ $\text{GetInstance}(x) = \text{GetInstance}(y)$
 
 **形式化定义**:
 设 ```latex
-$P$
+P
 ``` 为产品类型集合，```latex
-$C$
+C
 ``` 为创建者类型集合，工厂方法模式定义为：
 $```latex
-$F: C \times \text{Config} \rightarrow P$
+F: C \times \text{Config} \rightarrow P
 ```$
 其中 ```latex
-$\text{Config}$
+\text{Config}
 ``` 是配置参数集合。
 
 **Go 语言实现**:
@@ -391,15 +391,15 @@ func ExampleFactoryMethod() {
 **定理 1.3** (工厂方法的可扩展性)
 工厂方法模式支持开闭原则：
 $```latex
-$\forall c \in C, \forall p \in P: \exists f \in F: f(c) = p$
+\forall c \in C, \forall p \in P: \exists f \in F: f(c) = p
 ```$
 
 **证明**:
 
 1. 设 ```latex
-$c$
+c
 ``` 为任意创建者，```latex
-$p$
+p
 ``` 为任意产品
 2. 通过实现新的具体创建者，可以创建新的产品类型
 3. 无需修改现有代码，满足开闭原则
@@ -412,13 +412,13 @@ $p$
 
 **形式化定义**:
 设 ```latex
-$\mathcal{P} = \{P_1, P_2, \ldots, P_n\}$
+\mathcal{P} = \{P_1, P_2, \ldots, P_n\}
 ``` 为产品族集合，抽象工厂模式定义为：
 $```latex
-$F: \text{Family} \rightarrow \prod_{i=1}^{n} P_i$
+F: \text{Family} \rightarrow \prod_{i=1}^{n} P_i
 ```$
 其中 ```latex
-$\text{Family}$
+\text{Family}
 ``` 是产品族标识符集合。
 
 **Go 语言实现**:
@@ -615,12 +615,12 @@ func ExampleAbstractFactory() {
 
 **形式化定义**:
 设 ```latex
-$P$
+P
 ``` 为产品类型，```latex
-$B$
+B
 ``` 为建造者类型，建造者模式定义为：
 $```latex
-$B \times \text{Config}_1 \times \text{Config}_2 \times \ldots \times \text{Config}_n \rightarrow P$
+B \times \text{Config}_1 \times \text{Config}_2 \times \ldots \times \text{Config}_n \rightarrow P
 ```$
 
 **Go 语言实现**:
@@ -791,14 +791,14 @@ func ExampleBuilder() {
 
 **形式化定义**:
 设 ```latex
-$P$
+P
 ``` 为原型类型，原型模式定义为：
 $```latex
-$\text{Clone}: P \rightarrow P$
+\text{Clone}: P \rightarrow P
 ```$
 满足：
 $```latex
-$\forall p \in P: \text{Clone}(p) \neq p \land \text{DeepEqual}(\text{Clone}(p), p)$
+\forall p \in P: \text{Clone}(p) \neq p \land \text{DeepEqual}(\text{Clone}(p), p)
 ```$
 
 **Go 语言实现**:
@@ -916,30 +916,30 @@ func ExamplePrototype() {
 
 **定义 1.8** (模式关系)
 设 ```latex
-$\mathcal{P}$
+\mathcal{P}
 ``` 为所有创建型模式的集合，模式关系 ```latex
-$R \subseteq \mathcal{P} \times \mathcal{P}$
+R \subseteq \mathcal{P} \times \mathcal{P}
 ``` 定义为：
 $```latex
-$(p_1, p_2) \in R \Leftrightarrow p_1 \text{ 可以组合或替代 } p_2$
+(p_1, p_2) \in R \Leftrightarrow p_1 \text{ 可以组合或替代 } p_2
 ```$
 
 **定理 1.4** (模式组合的传递性)
 模式组合关系是传递的：
 $```latex
-$\forall p_1, p_2, p_3 \in \mathcal{P}: (p_1, p_2) \in R \land (p_2, p_3) \in R \Rightarrow (p_1, p_3) \in R$
+\forall p_1, p_2, p_3 \in \mathcal{P}: (p_1, p_2) \in R \land (p_2, p_3) \in R \Rightarrow (p_1, p_3) \in R
 ```$
 
 ### 2. 模式等价性
 
 **定义 1.9** (模式等价)
 两个创建型模式 ```latex
-$p_1, p_2$
+p_1, p_2
 ``` 等价，记作 ```latex
-$p_1 \equiv p_2$
+p_1 \equiv p_2
 ```，当且仅当：
 $```latex
-$\forall \text{context}: \text{result}(p_1, \text{context}) = \text{result}(p_2, \text{context})$
+\forall \text{context}: \text{result}(p_1, \text{context}) = \text{result}(p_2, \text{context})
 ```$
 
 ## 性能分析

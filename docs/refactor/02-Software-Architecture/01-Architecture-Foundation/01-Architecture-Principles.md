@@ -84,73 +84,73 @@ graph TB
 ### 2.1 基本定义
 
 设 ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 为组件集合，```latex
-$\mathcal{L}$
+\mathcal{L}
 ``` 为连接器集合，```latex
-$\mathcal{I}$
+\mathcal{I}
 ``` 为接口集合。
 
 **定义 2.1** (软件架构)
 软件架构是一个五元组 ```latex
-$(\mathcal{C}, \mathcal{L}, \mathcal{I}, \mathcal{T}, \mathcal{P})$
+(\mathcal{C}, \mathcal{L}, \mathcal{I}, \mathcal{T}, \mathcal{P})
 ```，其中：
 
 - ```latex
-$\mathcal{C} = \{C_1, C_2, \ldots, C_n\}$
+\mathcal{C} = \{C_1, C_2, \ldots, C_n\}
 ``` 是组件集合
 - ```latex
-$\mathcal{L} = \{L_1, L_2, \ldots, L_m\}$
+\mathcal{L} = \{L_1, L_2, \ldots, L_m\}
 ``` 是连接器集合
 - ```latex
-$\mathcal{I} = \{I_1, I_2, \ldots, I_k\}$
+\mathcal{I} = \{I_1, I_2, \ldots, I_k\}
 ``` 是接口集合
 - ```latex
-$\mathcal{T}: \mathcal{C} \times \mathcal{C} \rightarrow \mathcal{L}$
+\mathcal{T}: \mathcal{C} \times \mathcal{C} \rightarrow \mathcal{L}
 ``` 是拓扑函数
 - ```latex
-$\mathcal{P}: \mathcal{C} \cup \mathcal{L} \rightarrow \mathcal{I}^*$
+\mathcal{P}: \mathcal{C} \cup \mathcal{L} \rightarrow \mathcal{I}^*
 ``` 是属性函数
 
 ### 2.2 形式化规范
 
 **公理 2.1** (组件连接性)
 对于任意组件 ```latex
-$C_i, C_j \in \mathcal{C}$
+C_i, C_j \in \mathcal{C}
 ```，如果存在连接器 ```latex
-$L \in \mathcal{L}$
+L \in \mathcal{L}
 ``` 连接它们，则：
 
 $```latex
-$\mathcal{T}(C_i, C_j) = L \Rightarrow \exists I_i, I_j \in \mathcal{I}: I_i \in \mathcal{P}(C_i) \land I_j \in \mathcal{P}(C_j)$
+\mathcal{T}(C_i, C_j) = L \Rightarrow \exists I_i, I_j \in \mathcal{I}: I_i \in \mathcal{P}(C_i) \land I_j \in \mathcal{P}(C_j)
 ```$
 
 **公理 2.2** (接口兼容性)
 对于任意连接器 ```latex
-$L \in \mathcal{L}$
+L \in \mathcal{L}
 ``` 和其连接的组件 ```latex
-$C_i, C_j \in \mathcal{C}$
+C_i, C_j \in \mathcal{C}
 ```：
 
 $```latex
-$\mathcal{T}(C_i, C_j) = L \Rightarrow \text{compatible}(\mathcal{P}(C_i), \mathcal{P}(C_j))$
+\mathcal{T}(C_i, C_j) = L \Rightarrow \text{compatible}(\mathcal{P}(C_i), \mathcal{P}(C_j))
 ```$
 
 ### 2.3 架构约束定义
 
 **定义 2.2** (架构约束)
 架构约束是一个三元组 ```latex
-$(\mathcal{R}, \mathcal{V}, \mathcal{E})$
+(\mathcal{R}, \mathcal{V}, \mathcal{E})
 ```，其中：
 
 - ```latex
-$\mathcal{R}$
+\mathcal{R}
 ``` 是约束规则集合
 - ```latex
-$\mathcal{V}$
+\mathcal{V}
 ``` 是验证函数集合
 - ```latex
-$\mathcal{E}$
+\mathcal{E}
 ``` 是执行函数集合
 
 ## 3. 数学基础
@@ -159,19 +159,19 @@ $\mathcal{E}$
 
 **定理 3.1** (架构连通性)
 设 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 为架构图，其中 ```latex
-$V = \mathcal{C}$
+V = \mathcal{C}
 ``` 是组件集合，```latex
-$E = \mathcal{L}$
+E = \mathcal{L}
 ``` 是连接器集合，则：
 
 $```latex
-$\text{connectivity}(G) = \min_{S \subset V} \frac{|E(S, V-S)|}{|S|}$
+\text{connectivity}(G) = \min_{S \subset V} \frac{|E(S, V-S)|}{|S|}
 ```$
 
 其中 ```latex
-$E(S, V-S)$
+E(S, V-S)
 ``` 是割集。
 
 **证明**:
@@ -184,24 +184,24 @@ $E(S, V-S)$
 
 **定理 3.2** (架构复杂度)
 设 ```latex
-$A$
+A
 ``` 为软件架构，```latex
-$n$
+n
 ``` 为组件数量，```latex
-$m$
+m
 ``` 为连接器数量，则架构复杂度为：
 
 $```latex
-$C(A) = O(n \log n + m)$
+C(A) = O(n \log n + m)
 ```$
 
 **证明**:
 
 1. 组件间的交互复杂度为 ```latex
-$O(n \log n)$
+O(n \log n)
 ```
 2. 连接器的管理复杂度为 ```latex
-$O(m)$
+O(m)
 ```
 3. 总复杂度为两者的和
 
@@ -209,15 +209,15 @@ $O(m)$
 
 **定理 3.3** (架构信息熵)
 设 ```latex
-$A$
+A
 ``` 为软件架构，```latex
-$p_i$
+p_i
 ``` 为第 ```latex
-$i$
+i
 ``` 个组件的使用概率，则架构信息熵为：
 
 $```latex
-$H(A) = -\sum_{i=1}^{n} p_i \log p_i$
+H(A) = -\sum_{i=1}^{n} p_i \log p_i
 ```$
 
 **证明**:
@@ -249,22 +249,22 @@ $H(A) = -\sum_{i=1}^{n} p_i \log p_i$
 
 **可用性 (Availability)**
 $```latex
-$A = \frac{MTTF}{MTTF + MTTR}$
+A = \frac{MTTF}{MTTF + MTTR}
 ```$
 
 **性能 (Performance)**
 $```latex
-$P = \frac{1}{\sum_{i=1}^{n} \frac{1}{P_i}}$
+P = \frac{1}{\sum_{i=1}^{n} \frac{1}{P_i}}
 ```$
 
 **可扩展性 (Scalability)**
 $```latex
-$S = \frac{\Delta \text{Capacity}}{\Delta \text{Resources}}$
+S = \frac{\Delta \text{Capacity}}{\Delta \text{Resources}}
 ```$
 
 **可维护性 (Maintainability)**
 $```latex
-$M = \frac{\text{Functionality}}{\text{Complexity}}$
+M = \frac{\text{Functionality}}{\text{Complexity}}
 ```$
 
 ## 5. Go语言实现
@@ -1249,20 +1249,20 @@ func TestArchitecture(t *testing.T) {
 ### 10.4 数学总结
 
 软件架构通过形式化定义 ```latex
-$(\mathcal{C}, \mathcal{L}, \mathcal{I}, \mathcal{T}, \mathcal{P})$
+(\mathcal{C}, \mathcal{L}, \mathcal{I}, \mathcal{T}, \mathcal{P})
 ``` 实现了系统的结构化，其中：
 
 - **组件连接性**: ```latex
-$\mathcal{T}(C_i, C_j) = L \Rightarrow \exists I_i, I_j \in \mathcal{I}$
+\mathcal{T}(C_i, C_j) = L \Rightarrow \exists I_i, I_j \in \mathcal{I}
 ```
 - **接口兼容性**: ```latex
-$\text{compatible}(\mathcal{P}(C_i), \mathcal{P}(C_j))$
+\text{compatible}(\mathcal{P}(C_i), \mathcal{P}(C_j))
 ```
 - **架构复杂度**: ```latex
-$C(A) = O(n \log n + m)$
+C(A) = O(n \log n + m)
 ```
 - **信息熵**: ```latex
-$H(A) = -\sum_{i=1}^{n} p_i \log p_i$
+H(A) = -\sum_{i=1}^{n} p_i \log p_i
 ```
 
 这种架构在Go语言中通过接口、泛型和函数式编程得到了优雅的实现，既保持了类型安全，又提供了良好的扩展性。

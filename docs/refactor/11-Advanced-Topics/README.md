@@ -86,12 +86,12 @@
 ```latex
 // 量子态表示
 ```latex
-$|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$
+|\psi\rangle = \alpha|0\rangle + \beta|1\rangle
 ```
 
 // 量子门操作
 ```latex
-$U|\psi\rangle = |\psi'\rangle$
+U|\psi\rangle = |\psi'\rangle
 ```
 
 // 边缘计算延迟

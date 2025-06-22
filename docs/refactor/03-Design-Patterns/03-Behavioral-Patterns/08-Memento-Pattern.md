@@ -72,33 +72,33 @@
 ### 2.1 备忘录定义
 
 设 ```latex
-$O$
+O
 ``` 为原发器集合，```latex
-$M$
+M
 ``` 为备忘录集合，```latex
-$S$
+S
 ``` 为状态集合，则备忘录模式可形式化为：
 
 $```latex
-$\text{Memento Pattern} = (O, M, S, \text{save}, \text{restore})$
+\text{Memento Pattern} = (O, M, S, \text{save}, \text{restore})
 ```$
 
 其中：
 
 - ```latex
-$O = \{o_1, o_2, ..., o_n\}$
+O = \{o_1, o_2, ..., o_n\}
 ``` 为原发器集合
 - ```latex
-$M = \{m_1, m_2, ..., m_m\}$
+M = \{m_1, m_2, ..., m_m\}
 ``` 为备忘录集合
 - ```latex
-$S = \{s_1, s_2, ..., s_k\}$
+S = \{s_1, s_2, ..., s_k\}
 ``` 为状态集合
 - ```latex
-$\text{save}: O \rightarrow M$
+\text{save}: O \rightarrow M
 ``` 为保存函数
 - ```latex
-$\text{restore}: O \times M \rightarrow O$
+\text{restore}: O \times M \rightarrow O
 ``` 为恢复函数
 
 ### 2.2 备忘录接口定义
@@ -171,25 +171,25 @@ func generateID() string {
 备忘录模式基于状态机的概念：
 
 $```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```$
 
 其中：
 
 - ```latex
-$Q$
+Q
 ``` 为状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 为输入字母表（操作集合）
 - ```latex
-$\delta$
+\delta
 ``` 为状态转移函数
 - ```latex
-$q_0$
+q_0
 ``` 为初始状态
 - ```latex
-$F$
+F
 ``` 为接受状态集合
 
 ### 3.2 函数式编程
@@ -197,10 +197,10 @@ $F$
 备忘录体现了函数式编程的不可变性：
 
 $```latex
-$f: S \rightarrow S'$
+f: S \rightarrow S'
 ```$
 $```latex
-$g: S' \rightarrow S$
+g: S' \rightarrow S
 ```$
 
 ### 3.3 时间序列理论
@@ -208,13 +208,13 @@ $g: S' \rightarrow S$
 备忘录可以建模为时间序列：
 
 $```latex
-$T = (s_1, s_2, ..., s_n)$
+T = (s_1, s_2, ..., s_n)
 ```$
 
 其中 ```latex
-$s_i$
+s_i
 ``` 为时间点 ```latex
-$i$
+i
 ``` 的状态。
 
 ## 4. 模式结构
@@ -1395,30 +1395,30 @@ func (sc *SafeCaretaker) SaveMementoSafe(memento Memento) MementoResult {
 
 **证明**：
 设 ```latex
-$O$
+O
 ``` 为原发器，```latex
-$M$
+M
 ``` 为备忘录，```latex
-$S$
+S
 ``` 为状态。
 
 对于原发器的内部状态 ```latex
-$S$
+S
 ```，备忘录 ```latex
-$M$
+M
 ``` 通过接口访问状态：
 
 $```latex
-$M = \text{CreateMemento}(O)$
+M = \text{CreateMemento}(O)
 ```$
 $```latex
-$O' = \text{RestoreFromMemento}(O, M)$
+O' = \text{RestoreFromMemento}(O, M)
 ```$
 
 其中 ```latex
-$O'$
+O'
 ``` 为恢复后的原发器，状态为 ```latex
-$S$
+S
 ```。
 
 由于备忘录只通过接口访问状态，不直接访问内部实现，因此满足封装原则。

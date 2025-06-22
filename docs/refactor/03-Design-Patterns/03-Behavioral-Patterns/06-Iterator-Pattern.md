@@ -72,33 +72,33 @@
 ### 2.1 迭代器定义
 
 设 ```latex
-$A$
+A
 ``` 为聚合对象集合，```latex
-$I$
+I
 ``` 为迭代器集合，```latex
-$E$
+E
 ``` 为元素集合，则迭代器模式可形式化为：
 
 $```latex
-$\text{Iterator Pattern} = (A, I, E, \text{next}, \text{hasNext})$
+\text{Iterator Pattern} = (A, I, E, \text{next}, \text{hasNext})
 ```$
 
 其中：
 
 - ```latex
-$A = \{a_1, a_2, ..., a_n\}$
+A = \{a_1, a_2, ..., a_n\}
 ``` 为聚合对象集合
 - ```latex
-$I = \{i_1, i_2, ..., i_m\}$
+I = \{i_1, i_2, ..., i_m\}
 ``` 为迭代器集合
 - ```latex
-$E$
+E
 ``` 为元素集合
 - ```latex
-$\text{next}: I \rightarrow E$
+\text{next}: I \rightarrow E
 ``` 为下一个元素函数
 - ```latex
-$\text{hasNext}: I \rightarrow \text{bool}$
+\text{hasNext}: I \rightarrow \text{bool}
 ``` 为是否有下一个元素函数
 
 ### 2.2 迭代器接口定义
@@ -155,11 +155,11 @@ func (i *BaseIterator[T]) GetIndex() int {
 迭代器模式基于序列的概念：
 
 $```latex
-$S = (e_1, e_2, ..., e_n)$
+S = (e_1, e_2, ..., e_n)
 ```$
 
 其中 ```latex
-$e_i$
+e_i
 ``` 为序列中的元素。
 
 ### 3.2 函数式编程
@@ -167,13 +167,13 @@ $e_i$
 迭代器体现了函数式编程的惰性求值：
 
 $```latex
-$f: A \rightarrow B$
+f: A \rightarrow B
 ```$
 $```latex
-$g: B \rightarrow C$
+g: B \rightarrow C
 ```$
 $```latex
-$h = g \circ f: A \rightarrow C$
+h = g \circ f: A \rightarrow C
 ```$
 
 ### 3.3 状态机理论
@@ -181,25 +181,25 @@ $h = g \circ f: A \rightarrow C$
 迭代器可以建模为状态机：
 
 $```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```$
 
 其中：
 
 - ```latex
-$Q$
+Q
 ``` 为状态集合（当前位置）
 - ```latex
-$\Sigma$
+\Sigma
 ``` 为输入字母表（操作集合）
 - ```latex
-$\delta$
+\delta
 ``` 为状态转移函数
 - ```latex
-$q_0$
+q_0
 ``` 为初始状态（开始位置）
 - ```latex
-$F$
+F
 ``` 为接受状态集合（结束位置）
 
 ## 4. 模式结构
@@ -1377,31 +1377,31 @@ func (si *SafeIterator[T]) NextSafe() IteratorResult[T] {
 
 **证明**：
 设 ```latex
-$I$
+I
 ``` 为现有迭代器集合，```latex
-$I'$
+I'
 ``` 为新增迭代器集合，```latex
-$A$
+A
 ``` 为聚合对象。
 
 对于任意 ```latex
-$i \in I'$
+i \in I'
 ```，由于 ```latex
-$i$
+i
 ``` 实现了迭代器接口 ```latex
-$P$
+P
 ```，且 ```latex
-$A$
+A
 ``` 依赖于 ```latex
-$P$
+P
 ``` 而非具体实现，因此：
 
 $```latex
-$A \circ i \text{ 是有效的}$
+A \circ i \text{ 是有效的}
 ```$
 
 且不需要修改 ```latex
-$A$
+A
 ``` 的代码，因此满足开闭原则。
 
 **证毕**。

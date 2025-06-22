@@ -41,23 +41,23 @@
 #### 1.1 形式化定义
 
 工作流可以表示为五元组 ```latex
-$W = \{A, T, D, R, C\}$
+W = \{A, T, D, R, C\}
 ```，其中：
 
 - ```latex
-$A = \{a_1, a_2, ..., a_n\}$
+A = \{a_1, a_2, ..., a_n\}
 ```：活动集合 (Activities)
 - ```latex
-$T \subseteq A \times A$
+T \subseteq A \times A
 ```：活动间转移关系 (Transitions)
 - ```latex
-$D = \{d_1, d_2, ..., d_m\}$
+D = \{d_1, d_2, ..., d_m\}
 ```：数据对象集合 (Data Objects)
 - ```latex
-$R = \{r_1, r_2, ..., r_k\}$
+R = \{r_1, r_2, ..., r_k\}
 ```：资源集合 (Resources)
 - ```latex
-$C = \{c_1, c_2, ..., c_l\}$
+C = \{c_1, c_2, ..., c_l\}
 ```：约束条件集合 (Constraints)
 
 #### 1.2 WfMC定义
@@ -120,28 +120,28 @@ $C = \{c_1, c_2, ..., c_l\}$
    - **特征**：高度结构化，重复性强，规则严格
    - **示例**：银行贷款审批、保险理赔流程、制造生产线
    - **形式化表示**：```latex
-$W_{prod} = \{A_{fixed}, T_{strict}, D_{structured}, R_{defined}, C_{rigid}\}$
+W_{prod} = \{A_{fixed}, T_{strict}, D_{structured}, R_{defined}, C_{rigid}\}
 ```
 
 2. **管理型工作流 (Administrative Workflow)**
    - **特征**：半结构化，规则相对固定但允许一定弹性
    - **示例**：企业报销、请假审批、项目审批
    - **形式化表示**：```latex
-$W_{admin} = \{A_{semi}, T_{regular}, D_{semi}, R_{org}, C_{flexible}\}$
+W_{admin} = \{A_{semi}, T_{regular}, D_{semi}, R_{org}, C_{flexible}\}
 ```
 
 3. **协同型工作流 (Collaborative Workflow)**
    - **特征**：结构松散，强调人员协作
    - **示例**：产品研发、创意设计、团队协作
    - **形式化表示**：```latex
-$W_{collab} = \{A_{dynamic}, T_{adaptive}, D_{unstructured}, R_{team}, C_{minimal}\}$
+W_{collab} = \{A_{dynamic}, T_{adaptive}, D_{unstructured}, R_{team}, C_{minimal}\}
 ```
 
 4. **临时型工作流 (Ad-hoc Workflow)**
    - **特征**：非结构化，针对特定场景即时定义
    - **示例**：危机管理、突发事件处理、临时任务
    - **形式化表示**：```latex
-$W_{adhoc} = \{A_{flexible}, T_{dynamic}, D_{varying}, R_{assigned}, C_{loose}\}$
+W_{adhoc} = \{A_{flexible}, T_{dynamic}, D_{varying}, R_{assigned}, C_{loose}\}
 ```
 
 #### 3.2 按控制流分类
@@ -149,7 +149,7 @@ $W_{adhoc} = \{A_{flexible}, T_{dynamic}, D_{varying}, R_{assigned}, C_{loose}\}
 1. **顺序工作流 (Sequential Workflow)**
    - **特征**：活动按严格顺序执行
    - **形式化**：```latex
-$A_1 \rightarrow A_2 \rightarrow ... \rightarrow A_n$
+A_1 \rightarrow A_2 \rightarrow ... \rightarrow A_n
 ```
    - **示例**：线性审批流程、串行处理任务
 
@@ -157,7 +157,7 @@ $A_1 \rightarrow A_2 \rightarrow ... \rightarrow A_n$
    - **特征**：多个活动可同时执行
    - **操作**：AND-Split与AND-Join
    - **形式化**：```latex
-$A_1 \rightarrow (A_2 \parallel A_3 \parallel ... \parallel A_m) \rightarrow A_n$
+A_1 \rightarrow (A_2 \parallel A_3 \parallel ... \parallel A_m) \rightarrow A_n
 ```
    - **示例**：并行审批、并发处理
 
@@ -165,14 +165,14 @@ $A_1 \rightarrow (A_2 \parallel A_3 \parallel ... \parallel A_m) \rightarrow A_n
    - **特征**：基于条件选择执行路径
    - **操作**：OR-Split与OR-Join
    - **形式化**：```latex
-$A_1 \rightarrow (A_2 | A_3 | ... | A_m) \rightarrow A_n$
+A_1 \rightarrow (A_2 | A_3 | ... | A_m) \rightarrow A_n
 ```
    - **示例**：条件分支、决策流程
 
 4. **迭代工作流 (Iterative Workflow)**
    - **特征**：包含循环执行的活动
    - **形式化**：```latex
-$A_1 \rightarrow A_2 \rightarrow ... \rightarrow A_i \rightarrow (A_j \rightarrow ... \rightarrow A_i)^* \rightarrow ... \rightarrow A_n$
+A_1 \rightarrow A_2 \rightarrow ... \rightarrow A_i \rightarrow (A_j \rightarrow ... \rightarrow A_i)^* \rightarrow ... \rightarrow A_n
 ```
    - **示例**：循环审批、重复处理
 

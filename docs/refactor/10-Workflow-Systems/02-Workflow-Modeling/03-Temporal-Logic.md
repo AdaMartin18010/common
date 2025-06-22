@@ -40,99 +40,99 @@
 **定义 1.1** (时态逻辑): 时态逻辑是用于描述系统随时间变化行为的逻辑系统。
 
 **定义 1.2** (时间点): 时间点是时间轴上的一个瞬间，用 ```latex
-$t \in T$
+t \in T
 ``` 表示，其中 ```latex
-$T$
+T
 ``` 是时间集合。
 
 **定义 1.3** (时间路径): 时间路径是时间点的序列 ```latex
-$\pi = t_0, t_1, t_2, \ldots$
+\pi = t_0, t_1, t_2, \ldots
 ```，表示系统的时间演化。
 
 **定义 1.4** (状态): 状态是系统在某个时间点的完整描述，用 ```latex
-$s \in S$
+s \in S
 ``` 表示，其中 ```latex
-$S$
+S
 ``` 是状态集合。
 
 ### 1.2 时间结构
 
 **定义 1.5** (时间结构): 时间结构是三元组 ```latex
-$\mathcal{T} = (T, <, \sim)$
+\mathcal{T} = (T, <, \sim)
 ```，其中：
 
 - ```latex
-$T$
+T
 ``` 是时间点集合
 - ```latex
-$<$
+<
 ``` 是时间顺序关系
 - ```latex
-$\sim$
+\sim
 ``` 是时间等价关系
 
 **定义 1.6** (线性时间): 线性时间结构满足：
 
 - 全序性：```latex
-$\forall t_1, t_2 \in T: t_1 < t_2 \lor t_2 < t_1 \lor t_1 = t_2$
+\forall t_1, t_2 \in T: t_1 < t_2 \lor t_2 < t_1 \lor t_1 = t_2
 ```
 - 传递性：```latex
-$\forall t_1, t_2, t_3 \in T: t_1 < t_2 \land t_2 < t_3 \Rightarrow t_1 < t_3$
+\forall t_1, t_2, t_3 \in T: t_1 < t_2 \land t_2 < t_3 \Rightarrow t_1 < t_3
 ```
 - 反自反性：```latex
-$\forall t \in T: \neg(t < t)$
+\forall t \in T: \neg(t < t)
 ```
 
 **定义 1.7** (分支时间): 分支时间结构满足：
 
 - 偏序性：```latex
-$\forall t_1, t_2, t_3 \in T: t_1 < t_2 \land t_2 < t_3 \Rightarrow t_1 < t_3$
+\forall t_1, t_2, t_3 \in T: t_1 < t_2 \land t_2 < t_3 \Rightarrow t_1 < t_3
 ```
 - 反自反性：```latex
-$\forall t \in T: \neg(t < t)$
+\forall t \in T: \neg(t < t)
 ```
 - 树结构：任意两个时间点都有共同的前缀
 
 ### 1.3 语义解释
 
 **定义 1.8** (解释函数): 解释函数 ```latex
-$I: AP \times T \rightarrow \{true, false\}$
+I: AP \times T \rightarrow \{true, false\}
 ``` 将原子命题映射到时间点上的真值。
 
 **定义 1.9** (模型): 时态逻辑模型是三元组 ```latex
-$\mathcal{M} = (\mathcal{T}, I, s_0)$
+\mathcal{M} = (\mathcal{T}, I, s_0)
 ```，其中：
 
 - ```latex
-$\mathcal{T}$
+\mathcal{T}
 ``` 是时间结构
 - ```latex
-$I$
+I
 ``` 是解释函数
 - ```latex
-$s_0$
+s_0
 ``` 是初始状态
 
 **定义 1.10** (满足关系): 满足关系 ```latex
-$\models$
+\models
 ``` 定义公式在模型中的真值：
 
 - ```latex
-$\mathcal{M}, t \models p$
+\mathcal{M}, t \models p
 ``` 当且仅当 ```latex
-$I(p, t) = true$
+I(p, t) = true
 ```
 - ```latex
-$\mathcal{M}, t \models \neg \phi$
+\mathcal{M}, t \models \neg \phi
 ``` 当且仅当 ```latex
-$\mathcal{M}, t \not\models \phi$
+\mathcal{M}, t \not\models \phi
 ```
 - ```latex
-$\mathcal{M}, t \models \phi \land \psi$
+\mathcal{M}, t \models \phi \land \psi
 ``` 当且仅当 ```latex
-$\mathcal{M}, t \models \phi$
+\mathcal{M}, t \models \phi
 ``` 且 ```latex
-$\mathcal{M}, t \models \psi$
+\mathcal{M}, t \models \psi
 ```
 
 ## 2. 线性时态逻辑
@@ -141,169 +141,169 @@ $\mathcal{M}, t \models \psi$
 
 **定义 2.1** (LTL语法): 线性时态逻辑的语法定义为：
 $```latex
-$\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \phi \mid \phi \mathbf{R} \phi$
+\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid \mathbf{X} \phi \mid \mathbf{F} \phi \mid \mathbf{G} \phi \mid \phi \mathbf{U} \phi \mid \phi \mathbf{R} \phi
 ```$
 
 其中：
 
 - ```latex
-$p \in AP$
+p \in AP
 ``` 是原子命题
 - ```latex
-$\mathbf{X} \phi$
+\mathbf{X} \phi
 ``` 表示"下一个状态满足 ```latex
-$\phi$
+\phi
 ```"
 - ```latex
-$\mathbf{F} \phi$
+\mathbf{F} \phi
 ``` 表示"将来某个状态满足 ```latex
-$\phi$
+\phi
 ```"
 - ```latex
-$\mathbf{G} \phi$
+\mathbf{G} \phi
 ``` 表示"所有将来状态都满足 ```latex
-$\phi$
+\phi
 ```"
 - ```latex
-$\phi_1 \mathbf{U} \phi_2$
+\phi_1 \mathbf{U} \phi_2
 ``` 表示"```latex
-$\phi_1$
+\phi_1
 ``` 成立直到 ```latex
-$\phi_2$
+\phi_2
 ``` 成立"
 - ```latex
-$\phi_1 \mathbf{R} \phi_2$
+\phi_1 \mathbf{R} \phi_2
 ``` 表示"```latex
-$\phi_2$
+\phi_2
 ``` 成立直到 ```latex
-$\phi_1$
+\phi_1
 ``` 成立"
 
 ### 2.2 LTL语义
 
 **定义 2.2** (LTL语义): 对于路径 ```latex
-$\pi = s_0, s_1, s_2, \ldots$
+\pi = s_0, s_1, s_2, \ldots
 ``` 和位置 ```latex
-$i \geq 0$
+i \geq 0
 ```：
 
 $```latex
-$\pi, i \models p \Leftrightarrow p \in L(s_i)$
+\pi, i \models p \Leftrightarrow p \in L(s_i)
 ```$
 
 $```latex
-$\pi, i \models \neg \phi \Leftrightarrow \pi, i \not\models \phi$
+\pi, i \models \neg \phi \Leftrightarrow \pi, i \not\models \phi
 ```$
 
 $```latex
-$\pi, i \models \phi \land \psi \Leftrightarrow \pi, i \models \phi \text{ and } \pi, i \models \psi$
+\pi, i \models \phi \land \psi \Leftrightarrow \pi, i \models \phi \text{ and } \pi, i \models \psi
 ```$
 
 $```latex
-$\pi, i \models \mathbf{X} \phi \Leftrightarrow \pi, i+1 \models \phi$
+\pi, i \models \mathbf{X} \phi \Leftrightarrow \pi, i+1 \models \phi
 ```$
 
 $```latex
-$\pi, i \models \mathbf{F} \phi \Leftrightarrow \exists j \geq i: \pi, j \models \phi$
+\pi, i \models \mathbf{F} \phi \Leftrightarrow \exists j \geq i: \pi, j \models \phi
 ```$
 
 $```latex
-$\pi, i \models \mathbf{G} \phi \Leftrightarrow \forall j \geq i: \pi, j \models \phi$
+\pi, i \models \mathbf{G} \phi \Leftrightarrow \forall j \geq i: \pi, j \models \phi
 ```$
 
 $```latex
-$\pi, i \models \phi \mathbf{U} \psi \Leftrightarrow \exists j \geq i: \pi, j \models \psi \text{ and } \forall k \in [i, j): \pi, k \models \phi$
+\pi, i \models \phi \mathbf{U} \psi \Leftrightarrow \exists j \geq i: \pi, j \models \psi \text{ and } \forall k \in [i, j): \pi, k \models \phi
 ```$
 
 $```latex
-$\pi, i \models \phi \mathbf{R} \psi \Leftrightarrow \forall j \geq i: \pi, j \models \psi \text{ or } \exists k \in [i, j): \pi, k \models \phi$
+\pi, i \models \phi \mathbf{R} \psi \Leftrightarrow \forall j \geq i: \pi, j \models \psi \text{ or } \exists k \in [i, j): \pi, k \models \phi
 ```$
 
 ### 2.3 LTL性质
 
 **定义 2.3** (安全性): 安全性性质表示"坏事永远不会发生"，形式为 ```latex
-$\mathbf{G} \neg bad$
+\mathbf{G} \neg bad
 ```。
 
 **定义 2.4** (活性): 活性性质表示"好事最终会发生"，形式为 ```latex
-$\mathbf{F} good$
+\mathbf{F} good
 ```。
 
 **定义 2.5** (公平性): 公平性性质表示"如果条件持续满足，则结果最终发生"，形式为 ```latex
-$\mathbf{G} \mathbf{F} condition \rightarrow \mathbf{G} \mathbf{F} result$
+\mathbf{G} \mathbf{F} condition \rightarrow \mathbf{G} \mathbf{F} result
 ```。
 
 **定理 2.1** (LTL等价性): 以下等价关系成立：
 
 - ```latex
-$\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$
+\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi
 ```
 - ```latex
-$\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi$
+\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi
 ```
 - ```latex
-$\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)$
+\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)
 ```
 
 **证明**:
 
 1. ```latex
-$\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$
+\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi
 ```：
    - ```latex
-$\mathbf{F} \phi$
+\mathbf{F} \phi
 ``` 表示存在将来状态满足 ```latex
-$\phi$
+\phi
 ```
    - ```latex
-$\mathbf{G} \neg \phi$
+\mathbf{G} \neg \phi
 ``` 表示所有将来状态都不满足 ```latex
-$\phi$
+\phi
 ```
    - 因此 ```latex
-$\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$
+\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi
 ```
 
 2. ```latex
-$\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi$
+\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi
 ```：
    - ```latex
-$\mathbf{G} \phi$
+\mathbf{G} \phi
 ``` 表示所有将来状态都满足 ```latex
-$\phi$
+\phi
 ```
    - ```latex
-$\mathbf{F} \neg \phi$
+\mathbf{F} \neg \phi
 ``` 表示存在将来状态不满足 ```latex
-$\phi$
+\phi
 ```
    - 因此 ```latex
-$\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi$
+\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi
 ```
 
 3. ```latex
-$\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)$
+\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)
 ```：
    - ```latex
-$\phi \mathbf{R} \psi$
+\phi \mathbf{R} \psi
 ``` 表示 ```latex
-$\psi$
+\psi
 ``` 成立直到 ```latex
-$\phi$
+\phi
 ``` 成立
    - ```latex
-$\neg \phi \mathbf{U} \neg \psi$
+\neg \phi \mathbf{U} \neg \psi
 ``` 表示 ```latex
-$\neg \phi$
+\neg \phi
 ``` 成立直到 ```latex
-$\neg \psi$
+\neg \psi
 ``` 成立
    - 因此 ```latex
-$\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)$
+\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)
 ```
 
 ```latex
-$\square$
+\square
 ```
 
 ## 3. 分支时态逻辑
@@ -312,71 +312,71 @@ $\square$
 
 **定义 3.1** (CTL语法): 计算树逻辑的语法定义为：
 $```latex
-$\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid \mathbf{AX} \phi \mid \mathbf{EX} \phi \mid \mathbf{AF} \phi \mid \mathbf{EF} \phi \mid \mathbf{AG} \phi \mid \mathbf{EG} \phi \mid \mathbf{A}[\phi \mathbf{U} \psi] \mid \mathbf{E}[\phi \mathbf{U} \psi]$
+\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \phi \lor \phi \mid \phi \rightarrow \phi \mid \mathbf{AX} \phi \mid \mathbf{EX} \phi \mid \mathbf{AF} \phi \mid \mathbf{EF} \phi \mid \mathbf{AG} \phi \mid \mathbf{EG} \phi \mid \mathbf{A}[\phi \mathbf{U} \psi] \mid \mathbf{E}[\phi \mathbf{U} \psi]
 ```$
 
 其中：
 
 - ```latex
-$\mathbf{A}$
+\mathbf{A}
 ``` 表示"对所有路径"
 - ```latex
-$\mathbf{E}$
+\mathbf{E}
 ``` 表示"存在路径"
 - ```latex
-$\mathbf{X}, \mathbf{F}, \mathbf{G}, \mathbf{U}$
+\mathbf{X}, \mathbf{F}, \mathbf{G}, \mathbf{U}
 ``` 是路径量词
 
 ### 3.2 CTL语义
 
 **定义 3.2** (CTL语义): 对于状态 ```latex
-$s$
+s
 ``` 和公式 ```latex
-$\phi$
+\phi
 ```：
 
 $```latex
-$s \models p \Leftrightarrow p \in L(s)$
+s \models p \Leftrightarrow p \in L(s)
 ```$
 
 $```latex
-$s \models \neg \phi \Leftrightarrow s \not\models \phi$
+s \models \neg \phi \Leftrightarrow s \not\models \phi
 ```$
 
 $```latex
-$s \models \phi \land \psi \Leftrightarrow s \models \phi \text{ and } s \models \psi$
+s \models \phi \land \psi \Leftrightarrow s \models \phi \text{ and } s \models \psi
 ```$
 
 $```latex
-$s \models \mathbf{AX} \phi \Leftrightarrow \forall \pi: \pi[1] \models \phi$
+s \models \mathbf{AX} \phi \Leftrightarrow \forall \pi: \pi[1] \models \phi
 ```$
 
 $```latex
-$s \models \mathbf{EX} \phi \Leftrightarrow \exists \pi: \pi[1] \models \phi$
+s \models \mathbf{EX} \phi \Leftrightarrow \exists \pi: \pi[1] \models \phi
 ```$
 
 $```latex
-$s \models \mathbf{AF} \phi \Leftrightarrow \forall \pi: \exists i: \pi[i] \models \phi$
+s \models \mathbf{AF} \phi \Leftrightarrow \forall \pi: \exists i: \pi[i] \models \phi
 ```$
 
 $```latex
-$s \models \mathbf{EF} \phi \Leftrightarrow \exists \pi: \exists i: \pi[i] \models \phi$
+s \models \mathbf{EF} \phi \Leftrightarrow \exists \pi: \exists i: \pi[i] \models \phi
 ```$
 
 $```latex
-$s \models \mathbf{AG} \phi \Leftrightarrow \forall \pi: \forall i: \pi[i] \models \phi$
+s \models \mathbf{AG} \phi \Leftrightarrow \forall \pi: \forall i: \pi[i] \models \phi
 ```$
 
 $```latex
-$s \models \mathbf{EG} \phi \Leftrightarrow \exists \pi: \forall i: \pi[i] \models \phi$
+s \models \mathbf{EG} \phi \Leftrightarrow \exists \pi: \forall i: \pi[i] \models \phi
 ```$
 
 $```latex
-$s \models \mathbf{A}[\phi \mathbf{U} \psi] \Leftrightarrow \forall \pi: \exists i: \pi[i] \models \psi \text{ and } \forall j < i: \pi[j] \models \phi$
+s \models \mathbf{A}[\phi \mathbf{U} \psi] \Leftrightarrow \forall \pi: \exists i: \pi[i] \models \psi \text{ and } \forall j < i: \pi[j] \models \phi
 ```$
 
 $```latex
-$s \models \mathbf{E}[\phi \mathbf{U} \psi] \Leftrightarrow \exists \pi: \exists i: \pi[i] \models \psi \text{ and } \forall j < i: \pi[j] \models \phi$
+s \models \mathbf{E}[\phi \mathbf{U} \psi] \Leftrightarrow \exists \pi: \exists i: \pi[i] \models \psi \text{ and } \forall j < i: \pi[j] \models \phi
 ```$
 
 ### 3.3 CTL性质
@@ -384,16 +384,16 @@ $s \models \mathbf{E}[\phi \mathbf{U} \psi] \Leftrightarrow \exists \pi: \exists
 **定义 3.3** (CTL等价性): 以下等价关系成立：
 
 - ```latex
-$\mathbf{AF} \phi \equiv \mathbf{A}[\top \mathbf{U} \phi]$
+\mathbf{AF} \phi \equiv \mathbf{A}[\top \mathbf{U} \phi]
 ```
 - ```latex
-$\mathbf{EF} \phi \equiv \mathbf{E}[\top \mathbf{U} \phi]$
+\mathbf{EF} \phi \equiv \mathbf{E}[\top \mathbf{U} \phi]
 ```
 - ```latex
-$\mathbf{AG} \phi \equiv \neg \mathbf{EF} \neg \phi$
+\mathbf{AG} \phi \equiv \neg \mathbf{EF} \neg \phi
 ```
 - ```latex
-$\mathbf{EG} \phi \equiv \neg \mathbf{AF} \neg \phi$
+\mathbf{EG} \phi \equiv \neg \mathbf{AF} \neg \phi
 ```
 
 **定理 3.1** (CTL表达能力): CTL可以表达所有状态性质，但不能表达所有路径性质。
@@ -401,15 +401,15 @@ $\mathbf{EG} \phi \equiv \neg \mathbf{AF} \neg \phi$
 **证明**:
 
 1. CTL可以表达状态性质：通过状态量词 ```latex
-$\mathbf{A}$
+\mathbf{A}
 ``` 和 ```latex
-$\mathbf{E}$
+\mathbf{E}
 ```
 2. CTL不能表达路径性质：例如 ```latex
-$\mathbf{F} \mathbf{G} p$
+\mathbf{F} \mathbf{G} p
 ``` 在CTL中没有对应表达
 3. 因此CTL表达能力有限。```latex
-$\square$
+\square
 ```
 
 ## 4. CTL*逻辑
@@ -420,12 +420,12 @@ $\square$
 
 状态公式：
 $```latex
-$\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \mathbf{A} \psi \mid \mathbf{E} \psi$
+\phi ::= p \mid \neg \phi \mid \phi \land \phi \mid \mathbf{A} \psi \mid \mathbf{E} \psi
 ```$
 
 路径公式：
 $```latex
-$\psi ::= \phi \mid \neg \psi \mid \psi \land \psi \mid \mathbf{X} \psi \mid \mathbf{F} \psi \mid \mathbf{G} \psi \mid \psi \mathbf{U} \psi$
+\psi ::= \phi \mid \neg \psi \mid \psi \land \psi \mid \mathbf{X} \psi \mid \mathbf{F} \psi \mid \mathbf{G} \psi \mid \psi \mathbf{U} \psi
 ```$
 
 ### 4.2 CTL*语义
@@ -434,32 +434,32 @@ $\psi ::= \phi \mid \neg \psi \mid \psi \land \psi \mid \mathbf{X} \psi \mid \ma
 
 状态公式语义：
 $```latex
-$s \models \mathbf{A} \psi \Leftrightarrow \forall \pi: \pi[0] = s \Rightarrow \pi \models \psi$
+s \models \mathbf{A} \psi \Leftrightarrow \forall \pi: \pi[0] = s \Rightarrow \pi \models \psi
 ```$
 
 $```latex
-$s \models \mathbf{E} \psi \Leftrightarrow \exists \pi: \pi[0] = s \land \pi \models \psi$
+s \models \mathbf{E} \psi \Leftrightarrow \exists \pi: \pi[0] = s \land \pi \models \psi
 ```$
 
 路径公式语义：
 $```latex
-$\pi \models \phi \Leftrightarrow \pi[0] \models \phi$
+\pi \models \phi \Leftrightarrow \pi[0] \models \phi
 ```$
 
 $```latex
-$\pi \models \mathbf{X} \psi \Leftrightarrow \pi[1:] \models \psi$
+\pi \models \mathbf{X} \psi \Leftrightarrow \pi[1:] \models \psi
 ```$
 
 $```latex
-$\pi \models \mathbf{F} \psi \Leftrightarrow \exists i: \pi[i:] \models \psi$
+\pi \models \mathbf{F} \psi \Leftrightarrow \exists i: \pi[i:] \models \psi
 ```$
 
 $```latex
-$\pi \models \mathbf{G} \psi \Leftrightarrow \forall i: \pi[i:] \models \psi$
+\pi \models \mathbf{G} \psi \Leftrightarrow \forall i: \pi[i:] \models \psi
 ```$
 
 $```latex
-$\pi \models \psi_1 \mathbf{U} \psi_2 \Leftrightarrow \exists i: \pi[i:] \models \psi_2 \land \forall j < i: \pi[j:] \models \psi_1$
+\pi \models \psi_1 \mathbf{U} \psi_2 \Leftrightarrow \exists i: \pi[i:] \models \psi_2 \land \forall j < i: \pi[j:] \models \psi_1
 ```$
 
 ### 4.3 CTL*性质
@@ -467,21 +467,21 @@ $\pi \models \psi_1 \mathbf{U} \psi_2 \Leftrightarrow \exists i: \pi[i:] \models
 **定义 4.3** (CTL*表达能力): CTL*是LTL和CTL的超集，可以表达所有LTL和CTL公式。
 
 **定理 4.1** (CTL*等价性): 对于CTL*公式 ```latex
-$\phi$
+\phi
 ```，存在等价的LTL公式当且仅当 ```latex
-$\phi$
+\phi
 ``` 不包含状态量词。
 
 **证明**:
 
 1. 如果 ```latex
-$\phi$
+\phi
 ``` 不包含状态量词，则它是纯路径公式，等价于LTL公式
 2. 如果 ```latex
-$\phi$
+\phi
 ``` 包含状态量词，则它不能表示为LTL公式
 3. 因此等价性成立。```latex
-$\square$
+\square
 ```
 
 ## 5. 工作流时态逻辑
@@ -490,22 +490,22 @@ $\square$
 
 **定义 5.1** (工作流安全性): 工作流安全性性质表示工作流不会进入错误状态：
 $```latex
-$\mathbf{G} \neg error$
+\mathbf{G} \neg error
 ```$
 
 **定义 5.2** (工作流活性): 工作流活性性质表示工作流最终会完成：
 $```latex
-$\mathbf{F} completed$
+\mathbf{F} completed
 ```$
 
 **定义 5.3** (工作流公平性): 工作流公平性性质表示如果条件满足，则活动最终会执行：
 $```latex
-$\mathbf{G} \mathbf{F} condition \rightarrow \mathbf{G} \mathbf{F} executed$
+\mathbf{G} \mathbf{F} condition \rightarrow \mathbf{G} \mathbf{F} executed
 ```$
 
 **定义 5.4** (工作流响应性): 工作流响应性性质表示如果请求发生，则响应最终会发生：
 $```latex
-$\mathbf{G}(request \rightarrow \mathbf{F} response)$
+\mathbf{G}(request \rightarrow \mathbf{F} response)
 ```$
 
 ### 5.2 验证方法
@@ -621,20 +621,20 @@ func computeEU(model KripkeModel, leftResult, rightResult map[string]bool) map[s
 ### 5.3 模型检验
 
 **定义 5.6** (Kripke模型): Kripke模型是四元组 ```latex
-$\mathcal{M} = (S, S_0, R, L)$
+\mathcal{M} = (S, S_0, R, L)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是状态集合
 - ```latex
-$S_0 \subseteq S$
+S_0 \subseteq S
 ``` 是初始状态集合
 - ```latex
-$R \subseteq S \times S$
+R \subseteq S \times S
 ``` 是转移关系
 - ```latex
-$L: S \rightarrow 2^{AP}$
+L: S \rightarrow 2^{AP}
 ``` 是标记函数
 
 **算法 5.2** (LTL模型检验):
@@ -1077,59 +1077,59 @@ type FairnessResult struct {
 ### 7.1 可满足性定理
 
 **定理 7.1** (LTL可满足性): LTL公式 ```latex
-$\phi$
+\phi
 ``` 可满足当且仅当存在无限路径 ```latex
-$\pi$
+\pi
 ``` 使得 ```latex
-$\pi \models \phi$
+\pi \models \phi
 ```。
 
 **证明**:
 
 1. 必要性：如果 ```latex
-$\phi$
+\phi
 ``` 可满足，则存在模型 ```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 和路径 ```latex
-$\pi$
+\pi
 ``` 使得 ```latex
-$\mathcal{M}, \pi \models \phi$
+\mathcal{M}, \pi \models \phi
 ```
 2. 充分性：如果存在路径 ```latex
-$\pi$
+\pi
 ``` 使得 ```latex
-$\pi \models \phi$
+\pi \models \phi
 ```，则构造模型 ```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 使得 ```latex
-$\mathcal{M}, \pi \models \phi$
+\mathcal{M}, \pi \models \phi
 ```
 3. 因此可满足性定理成立。```latex
-$\square$
+\square
 ```
 
 ### 7.2 有效性定理
 
 **定理 7.2** (CTL有效性): CTL公式 ```latex
-$\phi$
+\phi
 ``` 有效当且仅当对于所有模型 ```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 和所有状态 ```latex
-$s$
+s
 ```，有 ```latex
-$\mathcal{M}, s \models \phi$
+\mathcal{M}, s \models \phi
 ```。
 
 **证明**:
 
 1. 必要性：如果 ```latex
-$\phi$
+\phi
 ``` 有效，则对于任意模型和状态都满足
 2. 充分性：如果对于所有模型和状态都满足，则 ```latex
-$\phi$
+\phi
 ``` 有效
 3. 因此有效性定理成立。```latex
-$\square$
+\square
 ```
 
 ### 7.3 等价性定理
@@ -1137,74 +1137,74 @@ $\square$
 **定理 7.3** (时态逻辑等价性): 以下等价关系成立：
 
 - ```latex
-$\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$
+\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi
 ```
 - ```latex
-$\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi$
+\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi
 ```
 - ```latex
-$\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)$
+\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)
 ```
 
 **证明**:
 
 1. ```latex
-$\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$
+\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi
 ```：
    - ```latex
-$\mathbf{F} \phi$
+\mathbf{F} \phi
 ``` 表示存在将来状态满足 ```latex
-$\phi$
+\phi
 ```
    - ```latex
-$\mathbf{G} \neg \phi$
+\mathbf{G} \neg \phi
 ``` 表示所有将来状态都不满足 ```latex
-$\phi$
+\phi
 ```
    - 因此 ```latex
-$\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi$
+\mathbf{F} \phi \equiv \neg \mathbf{G} \neg \phi
 ```
 
 2. ```latex
-$\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi$
+\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi
 ```：
    - ```latex
-$\mathbf{G} \phi$
+\mathbf{G} \phi
 ``` 表示所有将来状态都满足 ```latex
-$\phi$
+\phi
 ```
    - ```latex
-$\mathbf{F} \neg \phi$
+\mathbf{F} \neg \phi
 ``` 表示存在将来状态不满足 ```latex
-$\phi$
+\phi
 ```
    - 因此 ```latex
-$\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi$
+\mathbf{G} \phi \equiv \neg \mathbf{F} \neg \phi
 ```
 
 3. ```latex
-$\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)$
+\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)
 ```：
    - ```latex
-$\phi \mathbf{R} \psi$
+\phi \mathbf{R} \psi
 ``` 表示 ```latex
-$\psi$
+\psi
 ``` 成立直到 ```latex
-$\phi$
+\phi
 ``` 成立
    - ```latex
-$\neg \phi \mathbf{U} \neg \psi$
+\neg \phi \mathbf{U} \neg \psi
 ``` 表示 ```latex
-$\neg \phi$
+\neg \phi
 ``` 成立直到 ```latex
-$\neg \psi$
+\neg \psi
 ``` 成立
    - 因此 ```latex
-$\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)$
+\phi \mathbf{R} \psi \equiv \neg(\neg \phi \mathbf{U} \neg \psi)
 ```
 
 ```latex
-$\square$
+\square
 ```
 
 ---

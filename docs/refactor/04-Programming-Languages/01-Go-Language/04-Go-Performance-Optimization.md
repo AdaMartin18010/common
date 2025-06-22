@@ -22,20 +22,20 @@
 **定义 1.1.1 (性能优化)** 性能优化是通过系统性的方法改进程序执行效率的过程，目标是在满足功能需求的前提下，最大化吞吐量、最小化延迟、优化资源利用率。
 
 **公理 1.1.1 (Amdahl定律)** 对于并行化程序，整体加速比 ```latex
-$S$
+S
 ``` 满足：
 $```latex
-$S = \frac{1}{(1-p) + \frac{p}{n}}$
+S = \frac{1}{(1-p) + \frac{p}{n}}
 ```$
 其中 ```latex
-$p$
+p
 ``` 是可并行化的比例，```latex
-$n$
+n
 ``` 是处理器数量。
 
 **定理 1.1.1 (性能瓶颈定理)** 在系统性能优化中，瓶颈效应决定了整体性能上限：
 $```latex
-$\text{Performance} = \min(\text{CPU}, \text{Memory}, \text{I/O}, \text{Network})$
+\text{Performance} = \min(\text{CPU}, \text{Memory}, \text{I/O}, \text{Network})
 ```$
 
 ### 1.2 性能指标

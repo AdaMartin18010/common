@@ -35,16 +35,16 @@
 **形式化表达**:
 
 - 元模型：```latex
-$\mathcal{M} = (\mathcal{E}, \mathcal{R}, \mathcal{C})$
+\mathcal{M} = (\mathcal{E}, \mathcal{R}, \mathcal{C})
 ```
 - 其中 ```latex
-$\mathcal{E}$
+\mathcal{E}
 ``` 是架构元素集合
 - ```latex
-$\mathcal{R}$
+\mathcal{R}
 ``` 是关系集合
 - ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 是约束集合
 
 ### 1.2 核心元素
@@ -61,16 +61,16 @@ $\mathcal{C}$
 **定义 1.3**: 架构关系类型
 
 1. **组合关系**: ```latex
-$comp \subseteq \mathcal{E} \times \mathcal{E}$
+comp \subseteq \mathcal{E} \times \mathcal{E}
 ```
 2. **依赖关系**: ```latex
-$dep \subseteq \mathcal{E} \times \mathcal{E}$
+dep \subseteq \mathcal{E} \times \mathcal{E}
 ```
 3. **关联关系**: ```latex
-$assoc \subseteq \mathcal{E} \times \mathcal{E}$
+assoc \subseteq \mathcal{E} \times \mathcal{E}
 ```
 4. **实现关系**: ```latex
-$impl \subseteq \mathcal{E} \times \mathcal{E}$
+impl \subseteq \mathcal{E} \times \mathcal{E}
 ```
 
 ## 2. 形式化定义
@@ -80,75 +80,75 @@ $impl \subseteq \mathcal{E} \times \mathcal{E}$
 **定义 2.1**: 架构元素的形式化定义
 
 $```latex
-$\mathcal{E} = \mathcal{C} \cup \mathcal{I} \cup \mathcal{P} \cup \mathcal{D}$
+\mathcal{E} = \mathcal{C} \cup \mathcal{I} \cup \mathcal{P} \cup \mathcal{D}
 ```$
 
 其中：
 
 - ```latex
-$\mathcal{C}$
+\mathcal{C}
 ```: 组件集合
 - ```latex
-$\mathcal{I}$
+\mathcal{I}
 ```: 接口集合
 - ```latex
-$\mathcal{P}$
+\mathcal{P}
 ```: 端口集合
 - ```latex
-$\mathcal{D}$
+\mathcal{D}
 ```: 数据集合
 
 **定义 2.2**: 组件定义
 
 组件 ```latex
-$c \in \mathcal{C}$
+c \in \mathcal{C}
 ``` 是一个五元组：
 
 $```latex
-$c = (id, type, interfaces, properties, behavior)$
+c = (id, type, interfaces, properties, behavior)
 ```$
 
 其中：
 
 - ```latex
-$id$
+id
 ```: 组件唯一标识符
 - ```latex
-$type$
+type
 ```: 组件类型
 - ```latex
-$interfaces$
+interfaces
 ```: 接口集合
 - ```latex
-$properties$
+properties
 ```: 属性集合
 - ```latex
-$behavior$
+behavior
 ```: 行为描述
 
 **定义 2.3**: 接口定义
 
 接口 ```latex
-$i \in \mathcal{I}$
+i \in \mathcal{I}
 ``` 是一个四元组：
 
 $```latex
-$i = (id, type, operations, constraints)$
+i = (id, type, operations, constraints)
 ```$
 
 其中：
 
 - ```latex
-$id$
+id
 ```: 接口唯一标识符
 - ```latex
-$type$
+type
 ```: 接口类型 (provided/required)
 - ```latex
-$operations$
+operations
 ```: 操作集合
 - ```latex
-$constraints$
+constraints
 ```: 约束集合
 
 ### 2.2 架构关系
@@ -156,54 +156,54 @@ $constraints$
 **定义 2.4**: 架构关系的形式化定义
 
 $```latex
-$\mathcal{R} = \mathcal{R}_{comp} \cup \mathcal{R}_{dep} \cup \mathcal{R}_{assoc} \cup \mathcal{R}_{impl}$
+\mathcal{R} = \mathcal{R}_{comp} \cup \mathcal{R}_{dep} \cup \mathcal{R}_{assoc} \cup \mathcal{R}_{impl}
 ```$
 
 **定义 2.5**: 组合关系
 
 组合关系 ```latex
-$r_{comp} \in \mathcal{R}_{comp}$
+r_{comp} \in \mathcal{R}_{comp}
 ``` 定义为：
 
 $```latex
-$r_{comp} = (parent, child, cardinality)$
+r_{comp} = (parent, child, cardinality)
 ```$
 
 其中：
 
 - ```latex
-$parent \in \mathcal{E}$
+parent \in \mathcal{E}
 ```: 父元素
 - ```latex
-$child \in \mathcal{E}$
+child \in \mathcal{E}
 ```: 子元素
 - ```latex
-$cardinality$
+cardinality
 ```: 基数约束
 
 **定义 2.6**: 依赖关系
 
 依赖关系 ```latex
-$r_{dep} \in \mathcal{R}_{dep}$
+r_{dep} \in \mathcal{R}_{dep}
 ``` 定义为：
 
 $```latex
-$r_{dep} = (source, target, type, strength)$
+r_{dep} = (source, target, type, strength)
 ```$
 
 其中：
 
 - ```latex
-$source \in \mathcal{E}$
+source \in \mathcal{E}
 ```: 源元素
 - ```latex
-$target \in \mathcal{E}$
+target \in \mathcal{E}
 ```: 目标元素
 - ```latex
-$type$
+type
 ```: 依赖类型
 - ```latex
-$strength$
+strength
 ```: 依赖强度
 
 ### 2.3 架构约束
@@ -211,23 +211,23 @@ $strength$
 **定义 2.7**: 架构约束的形式化定义
 
 约束 ```latex
-$c \in \mathcal{C}$
+c \in \mathcal{C}
 ``` 是一个三元组：
 
 $```latex
-$c = (scope, condition, action)$
+c = (scope, condition, action)
 ```$
 
 其中：
 
 - ```latex
-$scope$
+scope
 ```: 约束作用域
 - ```latex
-$condition$
+condition
 ```: 约束条件
 - ```latex
-$action$
+action
 ```: 违反约束时的动作
 
 **定义 2.8**: 常见约束类型
@@ -244,23 +244,23 @@ $action$
 **定义 3.1**: 逻辑视图
 
 逻辑视图 ```latex
-$V_{logical}$
+V_{logical}
 ``` 定义为：
 
 $```latex
-$V_{logical} = (\mathcal{E}_{logical}, \mathcal{R}_{logical}, \mathcal{C}_{logical})$
+V_{logical} = (\mathcal{E}_{logical}, \mathcal{R}_{logical}, \mathcal{C}_{logical})
 ```$
 
 其中：
 
 - ```latex
-$\mathcal{E}_{logical}$
+\mathcal{E}_{logical}
 ```: 逻辑元素集合
 - ```latex
-$\mathcal{R}_{logical}$
+\mathcal{R}_{logical}
 ```: 逻辑关系集合
 - ```latex
-$\mathcal{C}_{logical}$
+\mathcal{C}_{logical}
 ```: 逻辑约束集合
 
 **定义 3.2**: 逻辑元素
@@ -277,23 +277,23 @@ $\mathcal{C}_{logical}$
 **定义 3.3**: 物理视图
 
 物理视图 ```latex
-$V_{physical}$
+V_{physical}
 ``` 定义为：
 
 $```latex
-$V_{physical} = (\mathcal{E}_{physical}, \mathcal{R}_{physical}, \mathcal{C}_{physical})$
+V_{physical} = (\mathcal{E}_{physical}, \mathcal{R}_{physical}, \mathcal{C}_{physical})
 ```$
 
 其中：
 
 - ```latex
-$\mathcal{E}_{physical}$
+\mathcal{E}_{physical}
 ```: 物理元素集合
 - ```latex
-$\mathcal{R}_{physical}$
+\mathcal{R}_{physical}
 ```: 物理关系集合
 - ```latex
-$\mathcal{C}_{physical}$
+\mathcal{C}_{physical}
 ```: 物理约束集合
 
 **定义 3.4**: 物理元素
@@ -310,23 +310,23 @@ $\mathcal{C}_{physical}$
 **定义 3.5**: 部署视图
 
 部署视图 ```latex
-$V_{deployment}$
+V_{deployment}
 ``` 定义为：
 
 $```latex
-$V_{deployment} = (\mathcal{E}_{deployment}, \mathcal{R}_{deployment}, \mathcal{C}_{deployment})$
+V_{deployment} = (\mathcal{E}_{deployment}, \mathcal{R}_{deployment}, \mathcal{C}_{deployment})
 ```$
 
 其中：
 
 - ```latex
-$\mathcal{E}_{deployment}$
+\mathcal{E}_{deployment}
 ```: 部署元素集合
 - ```latex
-$\mathcal{R}_{deployment}$
+\mathcal{R}_{deployment}
 ```: 部署关系集合
 - ```latex
-$\mathcal{C}_{deployment}$
+\mathcal{C}_{deployment}
 ```: 部署约束集合
 
 ## 4. Go语言实现

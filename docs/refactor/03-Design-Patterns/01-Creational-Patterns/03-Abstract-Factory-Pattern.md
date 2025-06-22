@@ -62,37 +62,37 @@
 ### 2.1 集合论定义
 
 设 ```latex
-$P$
+P
 ``` 为产品集合，```latex
-$F$
+F
 ``` 为工厂集合，```latex
-$PF$
+PF
 ``` 为产品族集合，则抽象工厂模式满足：
 
 $```latex
-$\forall pf \in PF, \exists f \in F : pf = \{p \mid p \in P \land \text{createProduct}(f, p)\}$
+\forall pf \in PF, \exists f \in F : pf = \{p \mid p \in P \land \text{createProduct}(f, p)\}
 ```$
 
 其中 ```latex
-$\text{createProduct}: F \times P \rightarrow P$
+\text{createProduct}: F \times P \rightarrow P
 ``` 为抽象工厂方法。
 
 ### 2.2 函数式定义
 
 定义抽象工厂函数族 ```latex
-$\mathcal{AF} = \{af_f : PF \rightarrow P^+ \mid f \in F\}$
+\mathcal{AF} = \{af_f : PF \rightarrow P^+ \mid f \in F\}
 ```，满足：
 
 $```latex
-$af_f(pf) = \{p \mid p \in pf \land \text{compatible}(p, pf)\}$
+af_f(pf) = \{p \mid p \in pf \land \text{compatible}(p, pf)\}
 ```$
 
 其中 ```latex
-$\text{compatible}(p, pf)$
+\text{compatible}(p, pf)
 ``` 表示产品 ```latex
-$p$
+p
 ``` 与产品族 ```latex
-$pf$
+pf
 ``` 兼容。
 
 ### 2.3 类型论定义
@@ -100,13 +100,13 @@ $pf$
 在类型论中，抽象工厂模式可以表示为：
 
 $```latex
-$\text{AbstractFactory} = \Pi_{f:F} \Sigma_{pf:PF} \Pi_{p:pf} \text{Product}(p)$
+\text{AbstractFactory} = \Pi_{f:F} \Sigma_{pf:PF} \Pi_{p:pf} \text{Product}(p)
 ```$
 
 其中 ```latex
-$\text{Product}(p)$
+\text{Product}(p)
 ``` 表示产品 ```latex
-$p$
+p
 ``` 的类型。
 
 ---
@@ -120,13 +120,13 @@ $p$
 **证明**:
 
 1. 设 ```latex
-$pf_1, pf_2$
+pf_1, pf_2
 ``` 为两个不同的产品族
 2. 对于任意产品 ```latex
-$p_1 \in pf_1, p_2 \in pf_2$
+p_1 \in pf_1, p_2 \in pf_2
 ```
 3. 抽象工厂确保 ```latex
-$\text{compatible}(p_1, pf_1) \land \text{compatible}(p_2, pf_2)$
+\text{compatible}(p_1, pf_1) \land \text{compatible}(p_2, pf_2)
 ```
 4. 因此产品族内部一致性得证
 
@@ -137,10 +137,10 @@ $\text{compatible}(p_1, pf_1) \land \text{compatible}(p_2, pf_2)$
 **证明**:
 
 1. 设现有工厂集合 ```latex
-$F = \{f_1, f_2, \ldots, f_n\}$
+F = \{f_1, f_2, \ldots, f_n\}
 ```
 2. 添加新工厂 ```latex
-$f_{n+1}$
+f_{n+1}
 ``` 时，只需实现相同的抽象接口
 3. 不需要修改现有代码
 4. 因此满足开闭原则
@@ -640,22 +640,22 @@ func BenchmarkAbstractFactory(b *testing.B) {
 ### 5.1 时间复杂度
 
 - **创建产品**: ```latex
-$O(1)$
+O(1)
 ```
 - **工厂创建**: ```latex
-$O(1)$
+O(1)
 ```
 - **产品查找**: ```latex
-$O(1)$
+O(1)
 ``` (使用map)
 
 ### 5.2 空间复杂度
 
 - **工厂存储**: ```latex
-$O(n)$
+O(n)
 ``` (n为工厂数量)
 - **产品存储**: ```latex
-$O(m)$
+O(m)
 ``` (m为产品数量)
 
 ### 5.3 性能优化

@@ -9,19 +9,19 @@
 ### 数学定义
 
 设 ```latex
-$S = \{s_1, s_2, ..., s_n\}$
+S = \{s_1, s_2, ..., s_n\}
 ``` 为子系统集合，外观 ```latex
-$F$
+F
 ``` 定义为：
 
 $```latex
-$F: S \rightarrow \text{UnifiedInterface}$
+F: S \rightarrow \text{UnifiedInterface}
 ```$
 
 对于任意子系统 ```latex
-$s_i \in S$
+s_i \in S
 ```，外观函数 ```latex
-$F$
+F
 ``` 提供统一的访问方式。
 
 ### 类型理论定义
@@ -29,7 +29,7 @@ $F$
 在类型理论中，外观模式可以表示为：
 
 $```latex
-$\frac{\Gamma \vdash s_i : S_i \quad \Gamma \vdash F : \prod_{i=1}^n S_i \rightarrow T}{\Gamma \vdash F(s_1, s_2, ..., s_n) : T}$
+\frac{\Gamma \vdash s_i : S_i \quad \Gamma \vdash F : \prod_{i=1}^n S_i \rightarrow T}{\Gamma \vdash F(s_1, s_2, ..., s_n) : T}
 ```$
 
 ## Go语言实现
@@ -176,15 +176,15 @@ func (c *ComputerFacade) Shutdown() {
 **证明**:
 
 1. 设 ```latex
-$S = \{s_1, s_2, ..., s_n\}$
+S = \{s_1, s_2, ..., s_n\}
 ``` 为子系统集合
 2. 外观函数 ```latex
-$F: S \rightarrow \text{UnifiedInterface}$
+F: S \rightarrow \text{UnifiedInterface}
 ```
 3. 客户端只需要与 ```latex
-$F$
+F
 ``` 交互，而不需要直接与 ```latex
-$S$
+S
 ``` 中的每个子系统交互
 4. 因此外观模式简化了系统交互复杂度
 
@@ -195,21 +195,21 @@ $S$
 **证明**:
 
 1. 设 ```latex
-$C$
+C
 ``` 为客户端，```latex
-$S$
+S
 ``` 为子系统集合
 2. 没有外观时，```latex
-$C$
+C
 ``` 直接依赖 ```latex
-$S$
+S
 ``` 中的每个元素
 3. 有外观 ```latex
-$F$
+F
 ``` 时，```latex
-$C$
+C
 ``` 只依赖 ```latex
-$F$
+F
 ```
 4. 因此外观模式降低了耦合度
 

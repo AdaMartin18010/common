@@ -45,16 +45,16 @@
 **定义 1.1** (代码生成器): 代码生成器是一个函数：
 
 $```latex
-$\mathcal{G}: \text{AST} \rightarrow \text{TargetCode}$
+\mathcal{G}: \text{AST} \rightarrow \text{TargetCode}
 ```$
 
 其中：
 
 - ```latex
-$\text{AST}$
+\text{AST}
 ``` 是抽象语法树
 - ```latex
-$\text{TargetCode}$
+\text{TargetCode}
 ``` 是目标代码
 
 ### 1.2 目标代码类型
@@ -76,15 +76,15 @@ $\text{TargetCode}$
 ### 2.1 代码生成函数
 
 **定义 2.1** (代码生成函数): 对于表达式 ```latex
-$e$
+e
 ```，代码生成函数定义为：
 
 $```latex
-$\mathcal{G}[\![e]\!]: \text{Env} \rightarrow \text{Code} \times \text{Reg}$
+\mathcal{G}[\![e]\!]: \text{Env} \rightarrow \text{Code} \times \text{Reg}
 ```$
 
 其中 ```latex
-$\text{Reg}$
+\text{Reg}
 ``` 是寄存器集合。
 
 ### 2.2 指令选择
@@ -92,7 +92,7 @@ $\text{Reg}$
 **定义 2.2** (指令选择): 指令选择函数：
 
 $```latex
-$\mathcal{I}: \text{IR} \rightarrow \text{Instructions}$
+\mathcal{I}: \text{IR} \rightarrow \text{Instructions}
 ```$
 
 ### 2.3 寄存器分配
@@ -100,7 +100,7 @@ $\mathcal{I}: \text{IR} \rightarrow \text{Instructions}$
 **定义 2.3** (寄存器分配): 寄存器分配函数：
 
 $```latex
-$\mathcal{R}: \text{Vars} \rightarrow \text{Regs}$
+\mathcal{R}: \text{Vars} \rightarrow \text{Regs}
 ```$
 
 ---
@@ -1288,13 +1288,13 @@ func ExampleFunctionCall() {
 ### 7.1 代码生成正确性
 
 **定理 7.1** (代码生成正确性): 如果代码生成器 ```latex
-$\mathcal{G}$
+\mathcal{G}
 ``` 正确实现，则对于任意AST ```latex
-$T$
+T
 ```，生成的代码 ```latex
-$C = \mathcal{G}(T)$
+C = \mathcal{G}(T)
 ``` 与 ```latex
-$T$
+T
 ``` 语义等价。
 
 **证明**: 使用结构归纳法。
@@ -1302,17 +1302,17 @@ $T$
 **基础情况**: 对于基本表达式（字面量、变量），代码生成直接对应。
 
 **归纳步骤**: 对于复合表达式，代码生成保持语义等价性。```latex
-$\square$
+\square
 ```
 
 ### 7.2 优化定理
 
 **定理 7.2** (优化正确性): 如果优化变换 ```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 保持语义等价，则优化后的代码与原始代码语义等价。
 
 **证明**: 每个优化遍都保持语义等价性，因此组合后的优化也保持语义等价。```latex
-$\square$
+\square
 ```
 
 ### 7.3 性能分析
@@ -1320,7 +1320,7 @@ $\square$
 **定理 7.3** (性能改进): 指令调度可以改善程序的执行性能。
 
 **证明**: 通过减少流水线停顿和资源冲突，指令调度可以提高指令级并行性。```latex
-$\square$
+\square
 ```
 
 ---

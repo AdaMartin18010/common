@@ -10,47 +10,47 @@
 
 **定义 1.1** (组件代数)
 组件代数是一个六元组 ```latex
-$\mathcal{C} = (C, \Sigma, \mathcal{I}, \mathcal{O}, \circ, \oplus)$
+\mathcal{C} = (C, \Sigma, \mathcal{I}, \mathcal{O}, \circ, \oplus)
 ```，其中：
 
 - ```latex
-$C$
+C
 ``` 是组件集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是接口集合
 - ```latex
-$\mathcal{I}$
+\mathcal{I}
 ``` 是输入接口映射
 - ```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 是输出接口映射
 - ```latex
-$\circ$
+\circ
 ``` 是组合操作
 - ```latex
-$\oplus$
+\oplus
 ``` 是并行操作
 
 **定理 1.1** (组件组合性)
 对于任意组件 ```latex
-$c_1, c_2 \in C$
+c_1, c_2 \in C
 ```，如果 ```latex
-$\mathcal{O}(c_1) \cap \mathcal{I}(c_2) \neq \emptyset$
+\mathcal{O}(c_1) \cap \mathcal{I}(c_2) \neq \emptyset
 ```，则存在组合 ```latex
-$c_1 \circ c_2$
+c_1 \circ c_2
 ```。
 
 **证明**:
 
 1. 由于接口兼容，存在接口映射 ```latex
-$f: \mathcal{O}(c_1) \rightarrow \mathcal{I}(c_2)$
+f: \mathcal{O}(c_1) \rightarrow \mathcal{I}(c_2)
 ```
 2. 组合操作 ```latex
-$\circ$
+\circ
 ``` 定义了接口连接
 3. 因此 ```latex
-$c_1 \circ c_2$
+c_1 \circ c_2
 ``` 是良定义的
 
 ### 1.2 组件类型系统
@@ -151,20 +151,20 @@ type Lifecycle interface {
 
 **定义 2.1** (基础组件)
 基础组件是一个四元组 ```latex
-$c = (id, \mathcal{I}, \mathcal{O}, \mathcal{B})$
+c = (id, \mathcal{I}, \mathcal{O}, \mathcal{B})
 ```，其中：
 
 - ```latex
-$id$
+id
 ``` 是组件标识符
 - ```latex
-$\mathcal{I}$
+\mathcal{I}
 ``` 是输入接口集合
 - ```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 是输出接口集合
 - ```latex
-$\mathcal{B}$
+\mathcal{B}
 ``` 是组件行为
 
 ```go
@@ -283,23 +283,23 @@ func (dl *DefaultLifecycle) Destroy(ctx context.Context) error {
 
 **定义 2.2** (复合组件)
 复合组件是一个五元组 ```latex
-$cc = (id, \mathcal{C}, \mathcal{I}, \mathcal{O}, \mathcal{W})$
+cc = (id, \mathcal{C}, \mathcal{I}, \mathcal{O}, \mathcal{W})
 ```，其中：
 
 - ```latex
-$id$
+id
 ``` 是组件标识符
 - ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 是子组件集合
 - ```latex
-$\mathcal{I}$
+\mathcal{I}
 ``` 是外部输入接口
 - ```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 是外部输出接口
 - ```latex
-$\mathcal{W}$
+\mathcal{W}
 ``` 是组件间连接关系
 
 ```go
@@ -486,21 +486,21 @@ type PropertyDefinition struct {
 
 **定义 3.2** (接口兼容性)
 接口 ```latex
-$I_1$
+I_1
 ``` 与接口 ```latex
-$I_2$
+I_2
 ``` 兼容，当且仅当：
 
 1. ```latex
-$I_1$
+I_1
 ``` 的所有方法在 ```latex
-$I_2$
+I_2
 ``` 中都有对应的方法
 2. 对应方法的签名兼容
 3. ```latex
-$I_1$
+I_1
 ``` 的所有属性在 ```latex
-$I_2$
+I_2
 ``` 中都有对应的属性
 
 ```go

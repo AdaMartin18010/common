@@ -32,16 +32,16 @@
 
 **定义 1.2**: 质量属性度量
 质量属性度量是一个函数 ```latex
-$M: A \rightarrow \mathbb{R}$
+M: A \rightarrow \mathbb{R}
 ```，将架构 ```latex
-$A$
+A
 ``` 映射到实数值。
 
 **定义 1.3**: 质量属性约束
 质量属性约束是一个不等式 ```latex
-$M(A) \geq T$
+M(A) \geq T
 ```，其中 ```latex
-$T$
+T
 ``` 是阈值。
 
 ### 1.2 分类
@@ -55,17 +55,17 @@ $T$
 
 **定义 1.5**: 度量框架
 度量框架是一个三元组 ```latex
-$(M, W, S)$
+(M, W, S)
 ```，其中：
 
 - ```latex
-$M$
+M
 ``` 是度量函数集合
 - ```latex
-$W$
+W
 ``` 是权重函数
 - ```latex
-$S$
+S
 ``` 是评分函数
 
 ## 2. 功能性质量属性
@@ -77,7 +77,7 @@ $S$
 
 **度量 2.1**: 正确性度量
 $```latex
-$Correctness(A) = \frac{|CorrectBehaviors(A)|}{|TotalBehaviors(A)|}$
+Correctness(A) = \frac{|CorrectBehaviors(A)|}{|TotalBehaviors(A)|}
 ```$
 
 ### 2.2 完整性
@@ -87,7 +87,7 @@ $Correctness(A) = \frac{|CorrectBehaviors(A)|}{|TotalBehaviors(A)|}$
 
 **度量 2.2**: 完整性度量
 $```latex
-$Completeness(A) = \frac{|ImplementedFeatures(A)|}{|RequiredFeatures(A)|}$
+Completeness(A) = \frac{|ImplementedFeatures(A)|}{|RequiredFeatures(A)|}
 ```$
 
 ### 2.3 一致性
@@ -104,7 +104,7 @@ $Completeness(A) = \frac{|ImplementedFeatures(A)|}{|RequiredFeatures(A)|}$
 
 **度量 3.1**: 性能度量
 $```latex
-$Performance(A) = \frac{1}{ResponseTime(A)}$
+Performance(A) = \frac{1}{ResponseTime(A)}
 ```$
 
 ### 3.2 可扩展性
@@ -114,7 +114,7 @@ $Performance(A) = \frac{1}{ResponseTime(A)}$
 
 **度量 3.2**: 可扩展性度量
 $```latex
-$Scalability(A) = \frac{Throughput(A, Load_2) - Throughput(A, Load_1)}{Load_2 - Load_1}$
+Scalability(A) = \frac{Throughput(A, Load_2) - Throughput(A, Load_1)}{Load_2 - Load_1}
 ```$
 
 ### 3.3 可维护性
@@ -124,7 +124,7 @@ $Scalability(A) = \frac{Throughput(A, Load_2) - Throughput(A, Load_1)}{Load_2 - 
 
 **度量 3.3**: 可维护性度量
 $```latex
-$Maintainability(A) = \frac{1}{Complexity(A)}$
+Maintainability(A) = \frac{1}{Complexity(A)}
 ```$
 
 ### 3.4 可靠性
@@ -134,22 +134,22 @@ $Maintainability(A) = \frac{1}{Complexity(A)}$
 
 **度量 3.4**: 可靠性度量
 $```latex
-$Reliability(A) = \frac{MTBF(A)}{MTBF(A) + MTTR(A)}$
+Reliability(A) = \frac{MTBF(A)}{MTBF(A) + MTTR(A)}
 ```$
 
 ## 4. 质量属性权衡
 
 **定义 4.1**: 权衡矩阵
 权衡矩阵 ```latex
-$T$
+T
 ``` 是一个 ```latex
-$n \times n$
+n \times n
 ``` 矩阵，其中 ```latex
-$T_{ij}$
+T_{ij}
 ``` 表示属性 ```latex
-$i$
+i
 ``` 和 ```latex
-$j$
+j
 ``` 之间的权衡关系。
 
 ## 5. Go语言实现

@@ -9,29 +9,29 @@ API网关模式是微服务架构中的核心组件，作为所有客户端请�
 ### 1.2 形式化定义
 
 设 ```latex
-$C$
+C
 ``` 为客户端集合，```latex
-$S$
+S
 ``` 为服务集合，```latex
-$R$
+R
 ``` 为请求集合，```latex
-$P$
+P
 ``` 为策略集合，则API网关可形式化为：
 
 $```latex
-$AG = (C, S, R, P, \rho, \alpha, \tau)$
+AG = (C, S, R, P, \rho, \alpha, \tau)
 ```$
 
 其中：
 
 - ```latex
-$\rho: R \rightarrow S$
+\rho: R \rightarrow S
 ``` 为路由函数
 - ```latex
-$\alpha: R \rightarrow \{true, false\}$
+\alpha: R \rightarrow \{true, false\}
 ``` 为认证函数
 - ```latex
-$\tau: R \rightarrow R'$
+\tau: R \rightarrow R'
 ``` 为转换函数
 
 ### 1.3 架构模式

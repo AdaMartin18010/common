@@ -9,27 +9,27 @@
 ### 数学定义
 
 设 ```latex
-$T$
+T
 ``` 为目标接口，```latex
-$A$
+A
 ``` 为适配器，```latex
-$S$
+S
 ``` 为源对象，适配器模式满足以下公理：
 
 $```latex
-$\forall s \in S, \exists a \in A: \text{adapt}(s) \rightarrow T$
+\forall s \in S, \exists a \in A: \text{adapt}(s) \rightarrow T
 ```$
 
 **形式化约束**：
 
 - **接口转换**: ```latex
-$\forall t \in T: \exists s \in S: \text{map}(s, t)$
+\forall t \in T: \exists s \in S: \text{map}(s, t)
 ```
 - **功能保持**: ```latex
-$\text{function}(s) \iff \text{function}(\text{adapt}(s))$
+\text{function}(s) \iff \text{function}(\text{adapt}(s))
 ```
 - **透明性**: ```latex
-$\text{client}(t) \land \text{use}(a) \implies \text{unaware}(s)$
+\text{client}(t) \land \text{use}(a) \implies \text{unaware}(s)
 ```
 
 ### 类型理论定义
@@ -275,21 +275,21 @@ func (a *LoggerAdapter) Warn(message string) {
 ### 定理1: 适配器模式保持接口一致性
 
 **陈述**: 如果适配器 ```latex
-$A$
+A
 ``` 正确实现了从源接口到目标接口的映射，那么客户端可以透明地使用目标接口。
 
 **证明**:
 
 1. 设 ```latex
-$f: I_{\text{source}} \rightarrow I_{\text{target}}$
+f: I_{\text{source}} \rightarrow I_{\text{target}}
 ``` 为适配器函数
 2. 对于任意 ```latex
-$x \in I_{\text{source}}$
+x \in I_{\text{source}}
 ```，```latex
-$f(x) \in I_{\text{target}}$
+f(x) \in I_{\text{target}}
 ```
 3. 客户端调用 ```latex
-$f(x)$
+f(x)
 ``` 时，实际执行的是源接口的方法
 4. 因此适配器实现了接口的透明转换
 
@@ -300,17 +300,17 @@ $f(x)$
 **证明**:
 
 1. 设 ```latex
-$A_1: I_1 \rightarrow I_2$
+A_1: I_1 \rightarrow I_2
 ``` 和 ```latex
-$A_2: I_2 \rightarrow I_3$
+A_2: I_2 \rightarrow I_3
 ``` 为两个适配器
 2. 组合适配器 ```latex
-$A_2 \circ A_1: I_1 \rightarrow I_3$
+A_2 \circ A_1: I_1 \rightarrow I_3
 ```
 3. 对于任意 ```latex
-$x \in I_1$
+x \in I_1
 ```，```latex
-$(A_2 \circ A_1)(x) = A_2(A_1(x))$
+(A_2 \circ A_1)(x) = A_2(A_1(x))
 ```
 4. 因此适配器组合满足结合律
 

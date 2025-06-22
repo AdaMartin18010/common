@@ -26,21 +26,21 @@
 课程可以用有向无环图(DAG)表示：
 
 $```latex
-$C = (V, E, w, \tau)$
+C = (V, E, w, \tau)
 ```$
 
 其中：
 - ```latex
-$V$
+V
 ``` 是学习单元集合
 - ```latex
-$E$
+E
 ``` 是学习依赖关系
 - ```latex
-$w: E \rightarrow \mathbb{R}^+$
+w: E \rightarrow \mathbb{R}^+
 ``` 是权重函数
 - ```latex
-$\tau: V \rightarrow \mathbb{R}^+$
+\tau: V \rightarrow \mathbb{R}^+
 ``` 是时间估计函数
 
 #### 学习目标层次结构
@@ -48,11 +48,11 @@ $\tau: V \rightarrow \mathbb{R}^+$
 学习目标遵循布鲁姆分类法：
 
 $```latex
-$\mathcal{O} = \{O_1, O_2, ..., O_n\}$
+\mathcal{O} = \{O_1, O_2, ..., O_n\}
 ```$
 
 每个目标 ```latex
-$O_i$
+O_i
 ``` 包含：
 - 认知层次：记忆、理解、应用、分析、评价、创造
 - 技能领域：认知、情感、心理运动
@@ -65,24 +65,24 @@ $O_i$
 ADDIE模型包含五个阶段：
 
 $```latex
-$ADDIE = \langle A, D, D, I, E \rangle$
+ADDIE = \langle A, D, D, I, E \rangle
 ```$
 
 其中：
 - ```latex
-$A$
+A
 ``` (Analysis): 需求分析
 - ```latex
-$D$
+D
 ``` (Design): 教学设计
 - ```latex
-$D$
+D
 ``` (Development): 内容开发
 - ```latex
-$I$
+I
 ``` (Implementation): 实施部署
 - ```latex
-$E$
+E
 ``` (Evaluation): 评估改进
 
 ## 系统架构
@@ -1084,7 +1084,7 @@ func (r *CourseRepository) ListCoursesOptimized(ctx context.Context, req ListCou
         }
         if req.Filter.Search != "" {
             match["```latex
-$text"] = bson.M{"$
+text"] = bson.M{"
 ```search": req.Filter.Search}
         }
     }

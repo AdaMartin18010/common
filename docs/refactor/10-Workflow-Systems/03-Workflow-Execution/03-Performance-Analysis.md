@@ -21,57 +21,51 @@
 
 **定义 1.1.1** (响应时间)
 工作流的响应时间 ```latex
-$T_{response}$
+T_{response}
 ``` 定义为从工作流启动到完成的总时间：
 
 ```latex
-$```latex
-$T_{response} = T_{startup} + T_{execution} + T_{cleanup}$
+$T_{response} = T_{startup} + T_{execution} + T_{cleanup}
 ```$
-```
 
 其中：
 
 - ```latex
-$T_{startup}$
+T_{startup}
 ```: 启动时间
 - ```latex
-$T_{execution}$
+T_{execution}
 ```: 执行时间
 - ```latex
-$T_{cleanup}$
+T_{cleanup}
 ```: 清理时间
 
 **定义 1.1.2** (吞吐量)
 工作流的吞吐量 ```latex
-$\lambda$
+\lambda
 ``` 定义为单位时间内完成的工作流实例数：
 
 ```latex
-$```latex
-$\lambda = \frac{N_{completed}}{T_{period}}$
+$\lambda = \frac{N_{completed}}{T_{period}}
 ```$
-```
 
 其中：
 
 - ```latex
-$N_{completed}$
+N_{completed}
 ```: 完成的工作流实例数
 - ```latex
-$T_{period}$
+T_{period}
 ```: 观察时间周期
 
 **定义 1.1.3** (资源利用率)
 资源利用率 ```latex
-$\rho$
+\rho
 ``` 定义为资源实际使用时间与总时间的比值：
 
 ```latex
-$```latex
-$\rho = \frac{T_{used}}{T_{total}}$
+$\rho = \frac{T_{used}}{T_{total}}
 ```$
-```
 
 ### 1.2 性能模型
 
@@ -79,75 +73,73 @@ $\rho = \frac{T_{used}}{T_{total}}$
 
 **定理 1.2.1** (Little's Law)
 对于稳态系统，系统中的平均工作流数量 ```latex
-$L$
+L
 ``` 等于到达率 ```latex
-$\lambda$
+\lambda
 ``` 与平均响应时间 ```latex
-$W$
+W
 ``` 的乘积：
 
 ```latex
-$```latex
-$L = \lambda W$
+$L = \lambda W
 ```$
-```
 
 **证明**:
 设 ```latex
-$N(t)$
+N(t)
 ``` 为时刻 ```latex
-$t$
+t
 ``` 系统中的工作流数量，```latex
-$A(t)$
+A(t)
 ``` 为到时刻 ```latex
-$t$
+t
 ``` 的累计到达数，```latex
-$D(t)$
+D(t)
 ``` 为到时刻 ```latex
-$t$
+t
 ``` 的累计离开数。
 
 则：
 $```latex
-$N(t) = A(t) - D(t)$
+N(t) = A(t) - D(t)
 ```$
 
 在时间区间 ```latex
-$[0, T]$
+[0, T]
 ``` 内，平均系统负载为：
 $```latex
-$L = \frac{1}{T} \int_0^T N(t) dt$
+L = \frac{1}{T} \int_0^T N(t) dt
 ```$
 
 平均响应时间为：
 $```latex
-$W = \frac{\int_0^T N(t) dt}{A(T)}$
+W = \frac{\int_0^T N(t) dt}{A(T)}
 ```$
 
 当 ```latex
-$T \to \infty$
+T \to \infty
 ``` 时，到达率 ```latex
-$\lambda = \lim_{T \to \infty} \frac{A(T)}{T}$
+\lambda = \lim_{T \to \infty} \frac{A(T)}{T}
 ```，因此：
 $```latex
-$L = \lambda W$
+L = \lambda W
 ```$
 
 #### 1.2.2 网络流模型
 
 **定义 1.2.1** (工作流网络)
 工作流网络 ```latex
-$G = (V, E, c)$
+G = (V, E, c)
 ``` 是一个有向图，其中：
 
 - ```latex
-$V$
+V
 ```: 节点集合（任务节点）
 - ```latex
-$E$
+E
 ```: 边集合（数据流）
 - ```latex
-$c: E \to \mathbb{R}^+$
+c: E \to \mathbb{R}^+
 ```: 容量函数（处理能力）
 
 **定理 1.2.2** (最大流最小割定理)
@@ -161,30 +153,30 @@ $c: E \to \mathbb{R}^+$
 
 **定义 2.1.1** (工作流状态)
 工作流状态 ```latex
-$S = (s_1, s_2, ..., s_n)$
+S = (s_1, s_2, ..., s_n)
 ``` 表示各任务节点的执行状态，其中 ```latex
-$s_i \in \{idle, running, completed, failed\}$
+s_i \in \{idle, running, completed, failed\}
 ```。
 
 **定义 2.1.2** (状态转移概率)
 状态转移概率矩阵 ```latex
-$P = [p_{ij}]$
+P = [p_{ij}]
 ``` 定义从状态 ```latex
-$i$
+i
 ``` 到状态 ```latex
-$j$
+j
 ``` 的转移概率。
 
 **定理 2.1.1** (稳态概率)
 对于不可约的马尔可夫链，存在唯一的稳态概率分布 ```latex
-$\pi$
+\pi
 ``` 满足：
 
 $```latex
-$\pi P = \pi$
+\pi P = \pi
 ```$
 $```latex
-$\sum_{i} \pi_i = 1$
+\sum_{i} \pi_i = 1
 ```$
 
 ### 2.2 Petri网性能模型
@@ -193,38 +185,38 @@ $\sum_{i} \pi_i = 1$
 
 **定义 2.2.1** (时间Petri网)
 时间Petri网 ```latex
-$TPN = (P, T, F, M_0, \tau)$
+TPN = (P, T, F, M_0, \tau)
 ``` 其中：
 
 - ```latex
-$P$
+P
 ```: 库所集合
 - ```latex
-$T$
+T
 ```: 变迁集合
 - ```latex
-$F$
+F
 ```: 流关系
 - ```latex
-$M_0$
+M_0
 ```: 初始标识
 - ```latex
-$\tau: T \to \mathbb{R}^+ \times \mathbb{R}^+$
+\tau: T \to \mathbb{R}^+ \times \mathbb{R}^+
 ```: 时间区间函数
 
 **定义 2.2.2** (可达性图)
 时间Petri网的可达性图 ```latex
-$RG = (V, E, \tau)$
+RG = (V, E, \tau)
 ``` 其中：
 
 - ```latex
-$V$
+V
 ```: 可达标识集合
 - ```latex
-$E$
+E
 ```: 变迁关系
 - ```latex
-$\tau: E \to \mathbb{R}^+$
+\tau: E \to \mathbb{R}^+
 ```: 时间标签
 
 ## 3. 性能分析算法
@@ -288,22 +280,22 @@ func CriticalPath(workflow *Workflow) []Task {
 
 **定义 3.1.1** (松弛时间)
 任务 ```latex
-$t$
+t
 ``` 的松弛时间 ```latex
-$slack(t)$
+slack(t)
 ``` 定义为：
 
 $```latex
-$slack(t) = LS(t) - ES(t)$
+slack(t) = LS(t) - ES(t)
 ```$
 
 其中：
 
 - ```latex
-$LS(t)$
+LS(t)
 ```: 最晚开始时间
 - ```latex
-$ES(t)$
+ES(t)
 ```: 最早开始时间
 
 **定理 3.1.1** (关键路径性质)
@@ -348,31 +340,31 @@ func calculateUtilization(task *Task) float64 {
 
 **定义 3.2.1** (资源竞争度)
 资源 ```latex
-$r$
+r
 ``` 的竞争度 ```latex
-$C(r)$
+C(r)
 ``` 定义为：
 
 $```latex
-$C(r) = \frac{\sum_{t \in T_r} w(t)}{c(r)}$
+C(r) = \frac{\sum_{t \in T_r} w(t)}{c(r)}
 ```$
 
 其中：
 
 - ```latex
-$T_r$
+T_r
 ```: 使用资源 ```latex
-$r$
+r
 ``` 的任务集合
 - ```latex
-$w(t)$
+w(t)
 ```: 任务 ```latex
-$t$
+t
 ``` 的工作量
 - ```latex
-$c(r)$
+c(r)
 ```: 资源 ```latex
-$r$
+r
 ``` 的容量
 
 ## 4. 性能优化策略
@@ -431,20 +423,20 @@ func (wrrs *WeightedRoundRobinStrategy) SelectWorker(workers []Worker, task *Tas
 
 **定义 4.1.1** (自适应因子)
 自适应因子 ```latex
-$\alpha(t)$
+\alpha(t)
 ``` 定义为：
 
 $```latex
-$\alpha(t) = \frac{\lambda_{current}(t)}{\lambda_{target}}$
+\alpha(t) = \frac{\lambda_{current}(t)}{\lambda_{target}}
 ```$
 
 其中：
 
 - ```latex
-$\lambda_{current}(t)$
+\lambda_{current}(t)
 ```: 当前吞吐量
 - ```latex
-$\lambda_{target}$
+\lambda_{target}
 ```: 目标吞吐量
 
 ### 4.2 缓存优化
@@ -507,19 +499,19 @@ func (lru *LRUPolicy) Demote(key string, level *CacheLevel) {
 
 **定理 4.2.1** (缓存命中率)
 对于LRU缓存，命中率 ```latex
-$h$
+h
 ``` 与缓存大小 ```latex
-$C$
+C
 ``` 的关系为：
 
 $```latex
-$h = 1 - \frac{1}{C + 1}$
+h = 1 - \frac{1}{C + 1}
 ```$
 
 **证明**:
 设访问模式为均匀分布，则：
 $```latex
-$h = \frac{C}{C + 1} = 1 - \frac{1}{C + 1}$
+h = \frac{C}{C + 1} = 1 - \frac{1}{C + 1}
 ```$
 
 ### 4.3 并行化优化
@@ -576,18 +568,18 @@ func (pe *ParallelExecutor) executeTask(task Task) Result {
 
 **定义 4.3.1** (数据分片)
 数据分片 ```latex
-$S = \{s_1, s_2, ..., s_n\}$
+S = \{s_1, s_2, ..., s_n\}
 ``` 将数据集 ```latex
-$D$
+D
 ``` 划分为 ```latex
-$n$
+n
 ``` 个不相交的子集：
 
 $```latex
-$D = \bigcup_{i=1}^n s_i$
+D = \bigcup_{i=1}^n s_i
 ```$
 $```latex
-$s_i \cap s_j = \emptyset, \forall i \neq j$
+s_i \cap s_j = \emptyset, \forall i \neq j
 ```$
 
 **算法 4.3.2** (数据并行处理)

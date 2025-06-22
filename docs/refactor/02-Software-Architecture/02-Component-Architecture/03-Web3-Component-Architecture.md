@@ -49,41 +49,41 @@ Web3组件架构是专门为去中心化应用(DeFi)、智能合约、区块链�
 
 **定义 1.1.1 (Web3组件)**
 Web3组件是一个五元组 ```latex
-$C_{web3} = (S, I, B, C, W)$
+C_{web3} = (S, I, B, C, W)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是组件状态集合 (State Set)
 - ```latex
-$I$
+I
 ``` 是组件接口集合 (Interface Set)
 - ```latex
-$B$
+B
 ``` 是组件行为集合 (Behavior Set)
 - ```latex
-$C$
+C
 ``` 是链交互集合 (Chain Interaction Set)
 - ```latex
-$W$
+W
 ``` 是钱包集成集合 (Wallet Integration Set)
 
 **定义 1.1.2 (智能合约组件)**
 智能合约组件是一个四元组 ```latex
-$C_{contract} = (address, abi, methods, events)$
+C_{contract} = (address, abi, methods, events)
 ```，其中：
 
 - ```latex
-$address$
+address
 ``` 是合约地址
 - ```latex
-$abi$
+abi
 ``` 是应用二进制接口
 - ```latex
-$methods$
+methods
 ``` 是可调用方法集合
 - ```latex
-$events$
+events
 ``` 是事件集合
 
 ### 1.2 架构层次
@@ -115,29 +115,29 @@ graph TB
 
 **公理 2.1.1 (Web3组件组合)**
 对于任意两个Web3组件 ```latex
-$C_1$
+C_1
 ``` 和 ```latex
-$C_2$
+C_2
 ```，其组合满足：
 $```latex
-$(C_1 \otimes C_2) \otimes C_3 = C_1 \otimes (C_2 \otimes C_3)$
+(C_1 \otimes C_2) \otimes C_3 = C_1 \otimes (C_2 \otimes C_3)
 ```$
 
 **定理 2.1.1 (交易原子性)**
 Web3组件的交易操作具有原子性：
 $```latex
-$\forall t \in T: \text{Commit}(t) \lor \text{Rollback}(t)$
+\forall t \in T: \text{Commit}(t) \lor \text{Rollback}(t)
 ```$
 
 **证明**：
 
 ```latex
 设 ```latex
-$t$
+t
 ``` 为交易，```latex
-$S$
+S
 ``` 为状态，```latex
-$S'$
+S'
 ``` 为新状态：
 $$S' = \begin{cases}
 S & \text{if } \text{Rollback}(t) \\
@@ -150,7 +150,7 @@ S & \text{if } \text{Rollback}(t) \\
 **定义 2.2.1 (状态一致性)**
 Web3组件的状态一致性定义为：
 $```latex
-$C(S_1, S_2) = \forall x \in \text{Shared}(S_1, S_2): S_1(x) = S_2(x)$
+C(S_1, S_2) = \forall x \in \text{Shared}(S_1, S_2): S_1(x) = S_2(x)
 ```$
 
 ---

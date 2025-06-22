@@ -5,27 +5,27 @@
 ### 1.1 数学定义
 
 设 ```latex
-$S$
+S
 ``` 为主题接口，```latex
-$P$
+P
 ``` 为代理集合，```latex
-$R$
+R
 ``` 为真实对象集合，代理模式满足以下公理：
 
 $```latex
-$\forall s \in S, \exists p \in P, \exists r \in R: \text{proxy}(p, r) \rightarrow \text{control}(p, s)$
+\forall s \in S, \exists p \in P, \exists r \in R: \text{proxy}(p, r) \rightarrow \text{control}(p, s)
 ```$
 
 **形式化约束**：
 
 - **接口一致性**: ```latex
-$\text{interface}(p) = \text{interface}(s) = \text{interface}(r)$
+\text{interface}(p) = \text{interface}(s) = \text{interface}(r)
 ```
 - **访问控制**: ```latex
-$\text{access}(p, s) \implies \text{control}(p, \text{operation}(s))$
+\text{access}(p, s) \implies \text{control}(p, \text{operation}(s))
 ```
 - **延迟加载**: ```latex
-$\text{load}(r) \iff \text{first\_access}(p, r)$
+\text{load}(r) \iff \text{first\_access}(p, r)
 ```
 
 ### 1.2 类型理论定义

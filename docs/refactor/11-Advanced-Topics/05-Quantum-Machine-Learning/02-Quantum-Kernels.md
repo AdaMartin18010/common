@@ -9,24 +9,22 @@
 ### 2.1.1 量子特征映射定义
 
 量子特征映射 ```latex
-$\phi_q$
+\phi_q
 ``` 将经典数据 ```latex
-$x \in \mathbb{R}^d$
+x \in \mathbb{R}^d
 ``` 映射到量子态 ```latex
-$|\phi_q(x)\rangle$
+|\phi_q(x)\rangle
 ```：
 
 ```latex
-$```latex
-$\phi_q: \mathbb{R}^d \rightarrow \mathcal{H}_q$
+$\phi_q: \mathbb{R}^d \rightarrow \mathcal{H}_q
 ```$
 $```latex
-$x \mapsto |\phi_q(x)\rangle$
+x \mapsto |\phi_q(x)\rangle
 ```$
-```
 
 其中 ```latex
-$\mathcal{H}_q$
+\mathcal{H}_q
 ``` 是量子希尔伯特空间。
 
 ### 2.1.2 量子编码策略
@@ -36,78 +34,64 @@ $\mathcal{H}_q$
 角度编码将经典数据编码为量子旋转角度：
 
 ```latex
-$```latex
-$|\phi_q(x)\rangle = \bigotimes_{i=1}^n R_y(x_i)|0\rangle$
+$|\phi_q(x)\rangle = \bigotimes_{i=1}^n R_y(x_i)|0\rangle
 ```$
-```
 
 #### 2.1.2.2 振幅编码
 
 振幅编码将经典数据编码为量子态振幅：
 
 ```latex
-$```latex
-$|\phi_q(x)\rangle = \sum_{i=1}^{2^n} \frac{x_i}{\|x\|}|i\rangle$
+$|\phi_q(x)\rangle = \sum_{i=1}^{2^n} \frac{x_i}{\|x\|}|i\rangle
 ```$
-```
 
 #### 2.1.2.3 量子随机特征
 
 量子随机特征映射：
 
 ```latex
-$```latex
-$|\phi_q(x)\rangle = \frac{1}{\sqrt{M}}\sum_{i=1}^M e^{i\omega_i^T x}|i\rangle$
+$|\phi_q(x)\rangle = \frac{1}{\sqrt{M}}\sum_{i=1}^M e^{i\omega_i^T x}|i\rangle
 ```$
-```
 
 ## 2.2 量子核函数
 
 ### 2.2.1 量子核函数定义
 
 量子核函数 ```latex
-$K_q$
+K_q
 ``` 定义为两个量子特征映射的内积：
 
 ```latex
-$```latex
-$K_q(x, x') = |\langle\phi_q(x)|\phi_q(x')\rangle|^2$
+$K_q(x, x') = |\langle\phi_q(x)|\phi_q(x')\rangle|^2
 ```$
-```
 
 ### 2.2.2 量子核函数性质
 
 #### 2.2.2.1 对称性
 
 ```latex
-$```latex
-$K_q(x, x') = K_q(x', x)$
+$K_q(x, x') = K_q(x', x)
 ```$
-```
 
 #### 2.2.2.2 正定性
 
 对于任意 ```latex
-$x_1, x_2, \ldots, x_n$
+x_1, x_2, \ldots, x_n
 ``` 和 ```latex
-$c_1, c_2, \ldots, c_n$
+c_1, c_2, \ldots, c_n
 ```：
 
 ```latex
-$```latex
-$\sum_{i,j=1}^n c_i c_j K_q(x_i, x_j) \geq 0$
+$\sum_{i,j=1}^n c_i c_j K_q(x_i, x_j) \geq 0
 ```$
-```
 
 #### 2.2.2.3 量子优势
 
 量子核函数可以计算经典上难以计算的内积：
 
 ```latex
-$```latex
-$K_q(x, x') = |\langle\phi_q(x)|\phi_q(x')\rangle|^2 = \left|\sum_{i=1}^{2^n} \frac{x_i x'_i}{\|x\| \|x'\|}\right|^2$
+$K_q(x, x') = |\langle\phi_q(x)|\phi_q(x')\rangle|^2 = \left|\sum_{i=1}^{2^n} \frac{x_i x'_i}{\|x\| \|x'\|}\right|^2
 ```$
-```
 
 ## 2.3 量子支持向量机
 
@@ -116,34 +100,28 @@ $K_q(x, x') = |\langle\phi_q(x)|\phi_q(x')\rangle|^2 = \left|\sum_{i=1}^{2^n} \f
 量子支持向量机的优化问题：
 
 ```latex
-$```latex
-$\min_{\alpha} \frac{1}{2}\sum_{i,j=1}^n \alpha_i \alpha_j y_i y_j K_q(x_i, x_j) - \sum_{i=1}^n \alpha_i$
+$\min_{\alpha} \frac{1}{2}\sum_{i,j=1}^n \alpha_i \alpha_j y_i y_j K_q(x_i, x_j) - \sum_{i=1}^n \alpha_i
 ```$
-```
 
 约束条件：
 
 ```latex
-$```latex
-$\sum_{i=1}^n \alpha_i y_i = 0$
+$\sum_{i=1}^n \alpha_i y_i = 0
 ```$
 $```latex
-$0 \leq \alpha_i \leq C, \quad i = 1, 2, \ldots, n$
+0 \leq \alpha_i \leq C, \quad i = 1, 2, \ldots, n
 ```$
-```
 
 ### 2.3.2 量子SVM决策函数
 
 决策函数：
 
 ```latex
-$```latex
-$f(x) = \text{sign}\left(\sum_{i=1}^n \alpha_i y_i K_q(x_i, x) + b\right)$
+$f(x) = \text{sign}\left(\sum_{i=1}^n \alpha_i y_i K_q(x_i, x) + b\right)
 ```$
-```
 
 其中 ```latex
-$b$
+b
 ``` 是偏置项。
 
 ## 2.4 Go语言实现
@@ -504,27 +482,25 @@ func QuantumKernelClassification() {
 
 **定理 2.1** (量子核函数正定性)
 量子核函数 ```latex
-$K_q(x, x') = |\langle\phi_q(x)|\phi_q(x')\rangle|^2$
+K_q(x, x') = |\langle\phi_q(x)|\phi_q(x')\rangle|^2
 ``` 是正定的。
 
 **证明**：
 对于任意 ```latex
-$x_1, x_2, \ldots, x_n$
+x_1, x_2, \ldots, x_n
 ``` 和 ```latex
-$c_1, c_2, \ldots, c_n$
+c_1, c_2, \ldots, c_n
 ```：
 
 ```latex
-$```latex
-$\sum_{i,j=1}^n c_i c_j K_q(x_i, x_j) = \sum_{i,j=1}^n c_i c_j |\langle\phi_q(x_i)|\phi_q(x_j)\rangle|^2$
+$\sum_{i,j=1}^n c_i c_j K_q(x_i, x_j) = \sum_{i,j=1}^n c_i c_j |\langle\phi_q(x_i)|\phi_q(x_j)\rangle|^2
 ```$
 $```latex
-$= \sum_{i,j=1}^n c_i c_j \langle\phi_q(x_i)|\phi_q(x_j)\rangle \langle\phi_q(x_j)|\phi_q(x_i)\rangle$
+= \sum_{i,j=1}^n c_i c_j \langle\phi_q(x_i)|\phi_q(x_j)\rangle \langle\phi_q(x_j)|\phi_q(x_i)\rangle
 ```$
 $```latex
-$= \left|\sum_{i=1}^n c_i |\phi_q(x_i)\rangle\right|^2 \geq 0$
+= \left|\sum_{i=1}^n c_i |\phi_q(x_i)\rangle\right|^2 \geq 0
 ```$
-```
 
 ### 2.6.2 量子优势
 

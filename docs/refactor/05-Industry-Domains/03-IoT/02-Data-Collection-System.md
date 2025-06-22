@@ -66,40 +66,40 @@
 
 **定义 2.1.1** (数据采集系统)
 数据采集系统是一个五元组 ```latex
-$DCS = (S, P, T, Q, M)$
+DCS = (S, P, T, Q, M)
 ```，其中：
 
 - ```latex
-$S = \{s_1, s_2, ..., s_n\}$
+S = \{s_1, s_2, ..., s_n\}
 ``` 是传感器集合
 - ```latex
-$P = \{p_1, p_2, ..., p_m\}$
+P = \{p_1, p_2, ..., p_m\}
 ``` 是处理器集合
 - ```latex
-$T = \{t_1, t_2, ..., t_k\}$
+T = \{t_1, t_2, ..., t_k\}
 ``` 是传输通道集合
 - ```latex
-$Q = \{q_1, q_2, ..., q_l\}$
+Q = \{q_1, q_2, ..., q_l\}
 ``` 是队列集合
 - ```latex
-$M = \{m_1, m_2, ..., m_p\}$
+M = \{m_1, m_2, ..., m_p\}
 ``` 是存储介质集合
 
 ### 2.2 数据流定义
 
 **定义 2.1.2** (数据流)
 数据流是一个三元组 ```latex
-$DF = (D, R, F)$
+DF = (D, R, F)
 ```，其中：
 
 - ```latex
-$D = \{d_1, d_2, ..., d_n\}$
+D = \{d_1, d_2, ..., d_n\}
 ``` 是数据点集合
 - ```latex
-$R: D \rightarrow \mathbb{R}^m$
+R: D \rightarrow \mathbb{R}^m
 ``` 是数据映射函数
 - ```latex
-$F: \mathbb{R}^m \rightarrow \mathbb{R}^k$
+F: \mathbb{R}^m \rightarrow \mathbb{R}^k
 ``` 是处理函数
 
 ### 2.3 性能指标定义
@@ -107,25 +107,25 @@ $F: \mathbb{R}^m \rightarrow \mathbb{R}^k$
 **定义 2.1.3** (吞吐量)
 系统吞吐量定义为：
 $```latex
-$\Theta = \lim_{T \to \infty} \frac{N(T)}{T}$
+\Theta = \lim_{T \to \infty} \frac{N(T)}{T}
 ```$
 其中 ```latex
-$N(T)$
+N(T)
 ``` 是在时间 ```latex
-$T$
+T
 ``` 内处理的数据点数量。
 
 **定义 2.1.4** (延迟)
 系统延迟定义为：
 $```latex
-$L = \frac{1}{N} \sum_{i=1}^{N} (t_{i,out} - t_{i,in})$
+L = \frac{1}{N} \sum_{i=1}^{N} (t_{i,out} - t_{i,in})
 ```$
 其中 ```latex
-$t_{i,in}$
+t_{i,in}
 ``` 和 ```latex
-$t_{i,out}$
+t_{i,out}
 ``` 分别是数据点 ```latex
-$i$
+i
 ``` 的输入和输出时间。
 
 ## 3. 数学基础
@@ -134,51 +134,51 @@ $i$
 
 **定理 3.1.1** (Little's Law)
 在稳态条件下，队列中的平均等待时间 ```latex
-$W$
+W
 ```、平均队列长度 ```latex
-$L$
+L
 ``` 和平均到达率 ```latex
-$\lambda$
+\lambda
 ``` 满足：
 $```latex
-$L = \lambda W$
+L = \lambda W
 ```$
 
 **证明**:
 设 ```latex
-$N(t)$
+N(t)
 ``` 为时刻 ```latex
-$t$
+t
 ``` 队列中的顾客数，```latex
-$A(t)$
+A(t)
 ``` 为到时刻 ```latex
-$t$
+t
 ``` 为止到达的顾客总数，```latex
-$D(t)$
+D(t)
 ``` 为到时刻 ```latex
-$t$
+t
 ``` 为止离开的顾客总数。
 
 在稳态条件下：
 $```latex
-$\lim_{t \to \infty} \frac{A(t)}{t} = \lambda$
+\lim_{t \to \infty} \frac{A(t)}{t} = \lambda
 ```$
 $```latex
-$\lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = L$
+\lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = L
 ```$
 
 对于每个顾客 ```latex
-$i$
+i
 ```，其等待时间为 ```latex
-$W_i$
+W_i
 ```，则：
 $```latex
-$\sum_{i=1}^{A(t)} W_i = \int_0^t N(\tau) d\tau$
+\sum_{i=1}^{A(t)} W_i = \int_0^t N(\tau) d\tau
 ```$
 
 因此：
 $```latex
-$L = \lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = \lim_{t \to \infty} \frac{1}{t} \sum_{i=1}^{A(t)} W_i = \lambda W$
+L = \lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = \lim_{t \to \infty} \frac{1}{t} \sum_{i=1}^{A(t)} W_i = \lambda W
 ```$
 
 ### 3.2 数据压缩理论
@@ -186,35 +186,35 @@ $L = \lim_{t \to \infty} \frac{1}{t} \int_0^t N(\tau) d\tau = \lim_{t \to \infty
 **定理 3.1.2** (香农信息论)
 对于离散无记忆信源，其熵定义为：
 $```latex
-$H(X) = -\sum_{i=1}^{n} p_i \log_2 p_i$
+H(X) = -\sum_{i=1}^{n} p_i \log_2 p_i
 ```$
 
 其中 ```latex
-$p_i$
+p_i
 ``` 是符号 ```latex
-$x_i$
+x_i
 ``` 出现的概率。
 
 **推论 3.1.1** (数据压缩下界)
 任何无损压缩算法的平均码长 ```latex
-$L$
+L
 ``` 满足：
 $```latex
-$L \geq H(X)$
+L \geq H(X)
 ```$
 
 ### 3.3 采样理论
 
 **定理 3.1.3** (奈奎斯特采样定理)
 如果信号 ```latex
-$x(t)$
+x(t)
 ``` 的频谱限制在 ```latex
-$[-f_m, f_m]$
+[-f_m, f_m]
 ``` 范围内，则采样频率 ```latex
-$f_s$
+f_s
 ``` 必须满足：
 $```latex
-$f_s > 2f_m$
+f_s > 2f_m
 ```$
 
 才能完全重构原信号。
@@ -280,17 +280,17 @@ sequenceDiagram
 
 **定义 5.1.1** (数据采集器)
 数据采集器是一个函数 ```latex
-$C: S \times T \rightarrow D$
+C: S \times T \rightarrow D
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是传感器集合
 - ```latex
-$T$
+T
 ``` 是时间域
 - ```latex
-$D$
+D
 ``` 是数据域
 
 **算法 5.1.1** (数据采集算法)
@@ -312,34 +312,34 @@ $D$
 
 **定义 5.1.2** (数据处理器)
 数据处理器是一个函数 ```latex
-$P: D \times F \rightarrow D'$
+P: D \times F \rightarrow D'
 ```，其中：
 
 - ```latex
-$D$
+D
 ``` 是输入数据集合
 - ```latex
-$F$
+F
 ``` 是处理函数集合
 - ```latex
-$D'$
+D'
 ``` 是输出数据集合
 
 ### 5.3 数据存储管理器
 
 **定义 5.1.3** (数据存储管理器)
 数据存储管理器是一个函数 ```latex
-$M: D \times S \rightarrow B$
+M: D \times S \rightarrow B
 ```，其中：
 
 - ```latex
-$D$
+D
 ``` 是数据集合
 - ```latex
-$S$
+S
 ``` 是存储策略
 - ```latex
-$B$
+B
 ``` 是存储结果
 
 ## 6. Go语言实现
@@ -936,41 +936,41 @@ func main() {
 
 **定理 7.1.1** (Amdahl定律)
 系统加速比 ```latex
-$S$
+S
 ``` 定义为：
 $```latex
-$S = \frac{1}{(1-p) + \frac{p}{n}}$
+S = \frac{1}{(1-p) + \frac{p}{n}}
 ```$
 
 其中 ```latex
-$p$
+p
 ``` 是可并行化的部分比例，```latex
-$n$
+n
 ``` 是处理器数量。
 
 **证明**:
 设 ```latex
-$T_1$
+T_1
 ``` 是串行执行时间，```latex
-$T_n$
+T_n
 ``` 是并行执行时间。
 $```latex
-$T_1 = T_{serial} + T_{parallel}$
+T_1 = T_{serial} + T_{parallel}
 ```$
 $```latex
-$T_n = T_{serial} + \frac{T_{parallel}}{n}$
+T_n = T_{serial} + \frac{T_{parallel}}{n}
 ```$
 
 因此：
 $```latex
-$S = \frac{T_1}{T_n} = \frac{T_{serial} + T_{parallel}}{T_{serial} + \frac{T_{parallel}}{n}}$
+S = \frac{T_1}{T_n} = \frac{T_{serial} + T_{parallel}}{T_{serial} + \frac{T_{parallel}}{n}}
 ```$
 
 设 ```latex
-$p = \frac{T_{parallel}}{T_1}$
+p = \frac{T_{parallel}}{T_1}
 ```，则：
 $```latex
-$S = \frac{1}{(1-p) + \frac{p}{n}}$
+S = \frac{1}{(1-p) + \frac{p}{n}}
 ```$
 
 ### 7.2 内存优化
@@ -997,20 +997,20 @@ $S = \frac{1}{(1-p) + \frac{p}{n}}$
 
 **定理 7.1.2** (网络延迟优化)
 对于 ```latex
-$n$
+n
 ``` 个节点的网络，最小延迟为：
 $```latex
-$L_{min} = \max_{i,j} \frac{d_{ij}}{c_{ij}}$
+L_{min} = \max_{i,j} \frac{d_{ij}}{c_{ij}}
 ```$
 
 其中 ```latex
-$d_{ij}$
+d_{ij}
 ``` 是节点 ```latex
-$i$
+i
 ``` 和 ```latex
-$j$
+j
 ``` 之间的距离，```latex
-$c_{ij}$
+c_{ij}
 ``` 是传输速度。
 
 ## 8. 安全机制
@@ -1019,24 +1019,24 @@ $c_{ij}$
 
 **定义 8.1.1** (数据加密)
 数据加密函数 ```latex
-$E: M \times K \rightarrow C$
+E: M \times K \rightarrow C
 ``` 满足：
 $```latex
-$E(m, k) = c$
+E(m, k) = c
 ```$
 
 其中 ```latex
-$M$
+M
 ``` 是明文空间，```latex
-$K$
+K
 ``` 是密钥空间，```latex
-$C$
+C
 ``` 是密文空间。
 
 **定理 8.1.1** (AES加密安全性)
 AES加密算法在已知明文攻击下的安全性为：
 $```latex
-$P[攻击成功] \leq \frac{1}{2^{128}}$
+P[攻击成功] \leq \frac{1}{2^{128}}
 ```$
 
 ### 8.2 身份认证
@@ -1065,16 +1065,14 @@ $P[攻击成功] \leq \frac{1}{2^{128}}$
 
 **定义 8.1.2** (访问控制矩阵)
 访问控制矩阵 ```latex
-$A$
+A
 ``` 是一个 ```latex
-$m \times n$
+m \times n
 ``` 矩阵，其中：
-```latex
-$$A[i,j] = \begin{cases}
+$A[i,j] = \begin{cases}
 1 & \text{如果主体 } i \text{ 对对象 } j \text{ 有访问权限} \\
 0 & \text{否则}
-\end{cases}$$
-```
+\end{cases}$
 
 ## 9. 总结
 

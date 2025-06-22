@@ -26,16 +26,16 @@
 其中：
 
 - ```latex
-$\mathcal{P}$
+\mathcal{P}
 ``` 是前置条件集合
 - ```latex
-$\mathcal{Q}$
+\mathcal{Q}
 ``` 是后置条件集合  
 - ```latex
-$\mathcal{R}$
+\mathcal{R}
 ``` 是推理规则集合
 - ```latex
-$\vdash$
+\vdash
 ``` 是推导关系
 
 ### 1.2 核心概念
@@ -47,11 +47,11 @@ $\vdash$
 ```
 
 表示：如果前置条件 ```latex
-$P$
+P
 ``` 成立，执行程序 ```latex
-$C$
+C
 ``` 后，后置条件 ```latex
-$Q$
+Q
 ``` 成立。
 
 #### 1.2.2 正确性分类
@@ -157,7 +157,7 @@ func (cr *ConditionalRule) IsValid() bool {
 ```
 
 其中 ```latex
-$P$
+P
 ``` 是循环不变式。
 
 **Go语言实现**：
@@ -224,9 +224,9 @@ func (wr *WhileRule) ProveTermination() bool {
 ```
 
 其中 ```latex
-$H_k$
+H_k
 ``` 是循环的 ```latex
-$k$
+k
 ``` 次展开。
 
 **Go语言实现**：
@@ -543,13 +543,13 @@ func (hlv *HoareLogicVerifier) implies(P, Q string) bool {
 其中：
 
 - ```latex
-$\mathcal{A}$
+\mathcal{A}
 ``` 是公理集合
 - ```latex
-$\mathcal{R}$
+\mathcal{R}
 ``` 是推理规则集合
 - ```latex
-$\vdash$
+\vdash
 ``` 是推导关系
 
 ### 7.2 证明构造

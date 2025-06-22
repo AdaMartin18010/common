@@ -28,25 +28,25 @@ P ::= \mathbf{0} \mid \alpha.P \mid P_1 + P_2 \mid P_1 \mid P_2 \mid P \backslas
 其中：
 
 - ```latex
-$\mathbf{0}$
+\mathbf{0}
 ``` 是空进程
 - ```latex
-$\alpha.P$
+\alpha.P
 ``` 是前缀操作
 - ```latex
-$P_1 + P_2$
+P_1 + P_2
 ``` 是选择
 - ```latex
-$P_1 \mid P_2$
+P_1 \mid P_2
 ``` 是并行组合
 - ```latex
-$P \backslash L$
+P \backslash L
 ``` 是限制
 - ```latex
-$P[f]$
+P[f]
 ``` 是重命名
 - ```latex
-$A$
+A
 ``` 是进程标识符
 
 **Go语言实现**：
@@ -356,16 +356,16 @@ func (ccp *ChoiceCSPProcess) Alphabet() []string {
 其中：
 
 - ```latex
-$\mathcal{C}$
+\mathcal{C}
 ``` 是通道集合
 - ```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 是消息集合
 - ```latex
-$\mathcal{S}$
+\mathcal{S}
 ``` 是状态集合
 - ```latex
-$\rightarrow_c$
+\rightarrow_c
 ``` 是通道转移关系
 
 **Go语言实现**：
@@ -513,16 +513,16 @@ func (ac *AsynchronousChannel) Receive() (interface{}, bool) {
 其中：
 
 - ```latex
-$\mathcal{P}$
+\mathcal{P}
 ``` 是进程集合
 - ```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 是消息集合
 - ```latex
-$\mathcal{N}$
+\mathcal{N}
 ``` 是网络拓扑
 - ```latex
-$\rightarrow_m$
+\rightarrow_m
 ``` 是消息传递转移关系
 
 **Go语言实现**：
@@ -611,16 +611,16 @@ func (n *Network) IsConnected(from, to string) bool {
 其中：
 
 - ```latex
-$\mathcal{L}$
+\mathcal{L}
 ``` 是锁集合
 - ```latex
-$\mathcal{P}$
+\mathcal{P}
 ``` 是进程集合
 - ```latex
-$\mathcal{S}$
+\mathcal{S}
 ``` 是状态集合
 - ```latex
-$\rightarrow_l$
+\rightarrow_l
 ``` 是锁操作转移关系
 
 **Go语言实现**：
@@ -769,10 +769,10 @@ func (cv *ConditionVariable) Broadcast() bool {
 其中：
 
 - ```latex
-$V = P \cup R$
+V = P \cup R
 ``` 是顶点集合（进程和资源）
 - ```latex
-$E = E_p \cup E_r$
+E = E_p \cup E_r
 ``` 是边集合（分配边和请求边）
 
 **Go语言实现**：
@@ -878,10 +878,10 @@ func (dd *DeadlockDetector) canProcessComplete(processID string, work map[string
 其中：
 
 - ```latex
-$P$
+P
 ``` 是进程集合
 - ```latex
-$E$
+E
 ``` 是等待关系集合
 
 **Go语言实现**：

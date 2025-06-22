@@ -74,33 +74,33 @@
 ### 2.1 模式结构定义
 
 设 ```latex
-$C$
+C
 ``` 为命令集合，```latex
-$I$
+I
 ``` 为调用者集合，```latex
-$R$
+R
 ``` 为接收者集合，则命令模式可形式化为：
 
 $```latex
-$\text{Command Pattern} = (C, I, R, \text{execute}, \text{undo})$
+\text{Command Pattern} = (C, I, R, \text{execute}, \text{undo})
 ```$
 
 其中：
 
 - ```latex
-$C = \{c_1, c_2, ..., c_n\}$
+C = \{c_1, c_2, ..., c_n\}
 ``` 为命令集合
 - ```latex
-$I$
+I
 ``` 为调用者类
 - ```latex
-$R = \{r_1, r_2, ..., r_n\}$
+R = \{r_1, r_2, ..., r_n\}
 ``` 为接收者集合
 - ```latex
-$\text{execute}: C \rightarrow \text{Result}$
+\text{execute}: C \rightarrow \text{Result}
 ``` 为执行函数
 - ```latex
-$\text{undo}: C \rightarrow \text{Result}$
+\text{undo}: C \rightarrow \text{Result}
 ``` 为撤销函数
 
 ### 2.2 命令接口定义
@@ -160,13 +160,13 @@ func (i *Invoker) UndoLast() error {
 命令模式基于函数式编程的高阶函数和闭包概念：
 
 $```latex
-$f: A \rightarrow B$
+f: A \rightarrow B
 ```$
 $```latex
-$g: B \rightarrow C$
+g: B \rightarrow C
 ```$
 $```latex
-$h = g \circ f: A \rightarrow C$
+h = g \circ f: A \rightarrow C
 ```$
 
 ### 3.2 状态机理论
@@ -174,25 +174,25 @@ $h = g \circ f: A \rightarrow C$
 命令模式可以建模为状态机：
 
 $```latex
-$S = (Q, \Sigma, \delta, q_0, F)$
+S = (Q, \Sigma, \delta, q_0, F)
 ```$
 
 其中：
 
 - ```latex
-$Q$
+Q
 ``` 为状态集合（系统状态）
 - ```latex
-$\Sigma$
+\Sigma
 ``` 为输入字母表（命令集合）
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ``` 为状态转移函数
 - ```latex
-$q_0$
+q_0
 ``` 为初始状态
 - ```latex
-$F$
+F
 ``` 为接受状态集合
 
 ### 3.3 队列理论
@@ -200,11 +200,11 @@ $F$
 命令队列遵循先进先出（FIFO）原则：
 
 $```latex
-$\text{Queue} = (E, \text{enqueue}, \text{dequeue})$
+\text{Queue} = (E, \text{enqueue}, \text{dequeue})
 ```$
 
 其中 ```latex
-$E$
+E
 ``` 为元素集合。
 
 ## 4. 模式结构
@@ -1183,31 +1183,31 @@ func (i *Invoker) ExecuteCommandsSafe() []CommandResult {
 
 **证明**：
 设 ```latex
-$C$
+C
 ``` 为现有命令集合，```latex
-$C'$
+C'
 ``` 为新增命令集合，```latex
-$I$
+I
 ``` 为调用者类。
 
 对于任意 ```latex
-$c \in C'$
+c \in C'
 ```，由于 ```latex
-$c$
+c
 ``` 实现了命令接口 ```latex
-$P$
+P
 ```，且 ```latex
-$I$
+I
 ``` 依赖于 ```latex
-$P$
+P
 ``` 而非具体实现，因此：
 
 $```latex
-$I \circ c \text{ 是有效的}$
+I \circ c \text{ 是有效的}
 ```$
 
 且不需要修改 ```latex
-$I$
+I
 ``` 的代码，因此满足开闭原则。
 
 **证毕**。

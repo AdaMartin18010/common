@@ -9,23 +9,23 @@
 ### 数学定义
 
 设 ```latex
-$I$
+I
 ``` 为内部状态集合，```latex
-$E$
+E
 ``` 为外部状态集合，享元 ```latex
-$F$
+F
 ``` 定义为：
 
 $```latex
-$F: I \times E \rightarrow \text{Object}$
+F: I \times E \rightarrow \text{Object}
 ```$
 
 对于任意内部状态 ```latex
-$i \in I$
+i \in I
 ``` 和外部状态 ```latex
-$e \in E$
+e \in E
 ```，享元函数 ```latex
-$F$
+F
 ``` 创建对象。
 
 ### 类型理论定义
@@ -33,7 +33,7 @@ $F$
 在类型理论中，享元模式可以表示为：
 
 $```latex
-$\frac{\Gamma \vdash i : I \quad \Gamma \vdash e : E \quad \Gamma \vdash F : I \times E \rightarrow T}{\Gamma \vdash F(i, e) : T}$
+\frac{\Gamma \vdash i : I \quad \Gamma \vdash e : E \quad \Gamma \vdash F : I \times E \rightarrow T}{\Gamma \vdash F(i, e) : T}
 ```$
 
 ## Go语言实现
@@ -402,18 +402,18 @@ func (p *ConnectionPool) GetConnectionCount() int {
 **证明**:
 
 1. 设 ```latex
-$n$
+n
 ``` 为对象数量，```latex
-$m$
+m
 ``` 为内部状态数量
 2. 不使用享元模式：内存使用 = ```latex
-$O(n \times m)$
+O(n \times m)
 ```
 3. 使用享元模式：内存使用 = ```latex
-$O(m) + O(n)$
+O(m) + O(n)
 ```
 4. 当 ```latex
-$n \gg m$
+n \gg m
 ``` 时，享元模式显著减少内存使用
 
 ### 定理2: 享元模式保持对象一致性
@@ -423,17 +423,17 @@ $n \gg m$
 **证明**:
 
 1. 设 ```latex
-$F$
+F
 ``` 为享元工厂，```latex
-$i$
+i
 ``` 为内部状态
 2. 对于任意 ```latex
-$F(i, e_1)$
+F(i, e_1)
 ``` 和 ```latex
-$F(i, e_2)$
+F(i, e_2)
 ```
 3. 两个对象共享相同的内部状态 ```latex
-$i$
+i
 ```
 4. 因此它们具有一致的行为
 

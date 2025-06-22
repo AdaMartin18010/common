@@ -5,27 +5,27 @@
 ### 1.1 数学定义
 
 设 ```latex
-$C$
+C
 ``` 为组件集合，```latex
-$L$
+L
 ``` 为叶子节点集合，```latex
-$N$
+N
 ``` 为复合节点集合，组合模式满足以下公理：
 
 $```latex
-$\forall c \in C: c \in L \lor c \in N$
+\forall c \in C: c \in L \lor c \in N
 ```$
 
 **形式化约束**：
 
 - **统一接口**: ```latex
-$\forall c \in C: \text{interface}(c) = \text{Component}$
+\forall c \in C: \text{interface}(c) = \text{Component}
 ```
 - **递归结构**: ```latex
-$\forall n \in N: \text{children}(n) \subseteq C$
+\forall n \in N: \text{children}(n) \subseteq C
 ```
 - **叶子约束**: ```latex
-$\forall l \in L: \text{children}(l) = \emptyset$
+\forall l \in L: \text{children}(l) = \emptyset
 ```
 
 ### 1.2 类型理论定义

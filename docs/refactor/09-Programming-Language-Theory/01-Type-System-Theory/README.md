@@ -55,11 +55,11 @@
 ### 1.1 类型定义
 
 **定义 1.1** (类型): 类型 ```latex
-$T$
+T
 ``` 是值的集合 ```latex
-$V_T$
+V_T
 ``` 和操作集合 ```latex
-$O_T$
+O_T
 ``` 的二元组：
 
 ```latex
@@ -69,14 +69,14 @@ T = (V_T, O_T)
 其中：
 
 - ```latex
-$V_T$
+V_T
 ``` 是类型 ```latex
-$T$
+T
 ``` 的值域
 - ```latex
-$O_T$
+O_T
 ``` 是类型 ```latex
-$T$
+T
 ``` 支持的操作集合
 
 ### 1.2 基本类型
@@ -84,26 +84,26 @@ $T$
 **定义 1.2** (基本类型): 基本类型是语言预定义的类型，包括：
 
 - **布尔类型**: ```latex
-$\text{Bool} = (\{\text{true}, \text{false}\}, \{\land, \lor, \neg\})$
+\text{Bool} = (\{\text{true}, \text{false}\}, \{\land, \lor, \neg\})
 ```
 - **整数类型**: ```latex
-$\text{Int} = (\mathbb{Z}, \{+, -, \times, \div, \mod\})$
+\text{Int} = (\mathbb{Z}, \{+, -, \times, \div, \mod\})
 ```
 - **浮点类型**: ```latex
-$\text{Float} = (\mathbb{R}, \{+, -, \times, \div\})$
+\text{Float} = (\mathbb{R}, \{+, -, \times, \div\})
 ```
 - **字符串类型**: ```latex
-$\text{String} = (\Sigma^*, \{\text{concat}, \text{length}, \text{substring}\})$
+\text{String} = (\Sigma^*, \{\text{concat}, \text{length}, \text{substring}\})
 ```
 
 ### 1.3 类型关系
 
 **定义 1.3** (子类型关系): 类型 ```latex
-$S$
+S
 ``` 是类型 ```latex
-$T$
+T
 ``` 的子类型，记作 ```latex
-$S \leq T$
+S \leq T
 ```，如果：
 
 ```latex
@@ -111,11 +111,11 @@ V_S \subseteq V_T \land O_S \supseteq O_T
 ```
 
 **定义 1.4** (类型等价): 类型 ```latex
-$S$
+S
 ``` 和 ```latex
-$T$
+T
 ``` 等价，记作 ```latex
-$S \equiv T$
+S \equiv T
 ```，如果：
 
 ```latex
@@ -125,7 +125,7 @@ S \leq T \land T \leq S
 ### 1.4 类型环境
 
 **定义 1.5** (类型环境): 类型环境 ```latex
-$\Gamma$
+\Gamma
 ``` 是从变量到类型的映射：
 
 ```latex
@@ -139,11 +139,11 @@ $\Gamma$
 ```
 
 表示在环境 ```latex
-$\Gamma$
+\Gamma
 ``` 下，表达式 ```latex
-$e$
+e
 ``` 具有类型 ```latex
-$T$
+T
 ```。
 
 ## 2. 类型推导 (Type Inference)
@@ -171,11 +171,11 @@ $T$
 ### 2.2 统一算法
 
 **定义 2.1** (类型方程): 类型方程的形式为 ```latex
-$T_1 = T_2$
+T_1 = T_2
 ```，其中 ```latex
-$T_1$
+T_1
 ``` 和 ```latex
-$T_2$
+T_2
 ``` 是类型表达式。
 
 **算法 2.1** (Robinson统一算法):
@@ -268,9 +268,9 @@ func occursIn(v *TypeVar, t TypeExpr) bool {
 ### 2.3 Hindley-Milner类型系统
 
 **定义 2.2** (多态类型): 多态类型的形式为 ```latex
-$\forall \alpha. T$
+\forall \alpha. T
 ```，其中 ```latex
-$\alpha$
+\alpha
 ``` 是类型变量。
 
 **算法 2.2** (Hindley-Milner类型推导):
@@ -370,21 +370,21 @@ func (ti *TypeInferrer) instantiate(polyType TypeExpr) TypeExpr {
 **定义 3.1** (类型安全): 语言是类型安全的，如果所有类型正确的程序都不会产生运行时类型错误。
 
 **定理 3.1** (进展定理): 如果 ```latex
-$\vdash e: T$
+\vdash e: T
 ``` 且 ```latex
-$e$
+e
 ``` 不是值，则存在 ```latex
-$e'$
+e'
 ``` 使得 ```latex
-$e \rightarrow e'$
+e \rightarrow e'
 ```。
 
 **定理 3.2** (保持定理): 如果 ```latex
-$\vdash e: T$
+\vdash e: T
 ``` 且 ```latex
-$e \rightarrow e'$
+e \rightarrow e'
 ```，则 ```latex
-$\vdash e': T$
+\vdash e': T
 ```。
 
 ### 3.2 类型安全证明
@@ -392,7 +392,7 @@ $\vdash e': T$
 **证明 3.1** (进展定理证明):
 
 1. 对表达式 ```latex
-$e$
+e
 ``` 的结构进行归纳
 2. 对于每种表达式形式，证明要么是值，要么可以继续求值
 3. 利用类型推导规则确保类型一致性
@@ -473,7 +473,7 @@ func (rtc *RuntimeTypeChecker) SafeCall(fn interface{}, args ...interface{}) ([]
 ### 4.1 依赖类型
 
 **定义 4.1** (依赖类型): 依赖类型是依赖于值的类型，形式为 ```latex
-$\Pi x: A. B(x)$
+\Pi x: A. B(x)
 ```。
 
 ```go
@@ -942,9 +942,9 @@ func (tsp *TypeSafetyProver) provePreservation(expr Expr) error {
 ### 7.1 类型检查复杂度
 
 **定理 7.1**: 简单类型检查的时间复杂度为 ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是表达式的大小。
 
 **证明**:
@@ -952,23 +952,23 @@ $n$
 1. 每个节点最多被访问一次
 2. 每个节点的类型检查操作是常数时间
 3. 总体时间复杂度为 ```latex
-$O(n)$
+O(n)
 ```
 
 ### 7.2 类型推导复杂度
 
 **定理 7.2**: Hindley-Milner类型推导的时间复杂度为 ```latex
-$O(n^3)$
+O(n^3)
 ```。
 
 **证明**:
 
 1. 统一算法的时间复杂度为 ```latex
-$O(n^2)$
+O(n^2)
 ```
 2. 每个节点可能需要统一操作
 3. 总体时间复杂度为 ```latex
-$O(n^3)$
+O(n^3)
 ```
 
 ### 7.3 性能优化

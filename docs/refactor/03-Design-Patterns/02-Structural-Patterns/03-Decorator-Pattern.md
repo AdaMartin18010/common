@@ -9,25 +9,25 @@
 ### 数学定义
 
 设 ```latex
-$C$
+C
 ``` 为组件接口，装饰器 ```latex
-$D$
+D
 ``` 定义为：
 
 $```latex
-$D: C \rightarrow C$
+D: C \rightarrow C
 ```$
 
 对于任意组件 ```latex
-$c \in C$
+c \in C
 ```，有 ```latex
-$D(c) \in C$
+D(c) \in C
 ```。
 
 装饰器组合满足结合律：
 
 $```latex
-$(D_1 \circ D_2) \circ D_3 = D_1 \circ (D_2 \circ D_3)$
+(D_1 \circ D_2) \circ D_3 = D_1 \circ (D_2 \circ D_3)
 ```$
 
 ### 类型理论定义
@@ -35,7 +35,7 @@ $(D_1 \circ D_2) \circ D_3 = D_1 \circ (D_2 \circ D_3)$
 在类型理论中，装饰器模式可以表示为：
 
 $```latex
-$\frac{\Gamma \vdash c : C \quad \Gamma \vdash D : C \rightarrow C}{\Gamma \vdash D(c) : C}$
+\frac{\Gamma \vdash c : C \quad \Gamma \vdash D : C \rightarrow C}{\Gamma \vdash D(c) : C}
 ```$
 
 ## Go语言实现
@@ -341,15 +341,15 @@ func (d *CacheDecorator) GetData(key string) (string, error) {
 **证明**:
 
 1. 设 ```latex
-$D_1, D_2, D_3$
+D_1, D_2, D_3
 ``` 为装饰器，```latex
-$C$
+C
 ``` 为组件
 2. ```latex
-$(D_1 \circ D_2) \circ D_3(C) = D_1(D_2(D_3(C)))$
+(D_1 \circ D_2) \circ D_3(C) = D_1(D_2(D_3(C)))
 ```
 3. ```latex
-$D_1 \circ (D_2 \circ D_3)(C) = D_1(D_2(D_3(C)))$
+D_1 \circ (D_2 \circ D_3)(C) = D_1(D_2(D_3(C)))
 ```
 4. 因此装饰器组合满足结合律
 
@@ -360,19 +360,19 @@ $D_1 \circ (D_2 \circ D_3)(C) = D_1(D_2(D_3(C)))$
 **证明**:
 
 1. 设 ```latex
-$C$
+C
 ``` 为组件接口，```latex
-$D$
+D
 ``` 为装饰器
 2. 对于任意方法 ```latex
-$m \in C$
+m \in C
 ```，```latex
-$D$
+D
 ``` 必须实现 ```latex
-$m$
+m
 ```
 3. 装饰器可以调用原组件的 ```latex
-$m$
+m
 ``` 方法
 4. 因此装饰器保持了原接口的完整性
 

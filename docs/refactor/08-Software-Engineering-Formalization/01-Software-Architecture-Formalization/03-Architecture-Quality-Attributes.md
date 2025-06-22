@@ -35,17 +35,17 @@
 软件架构质量属性是衡量软件系统非功能性需求的指标，包括可用性、性能、可维护性、安全性等。
 
 **定义 1.1**: 质量属性 ```latex
-$Q$
+Q
 ``` 是一个函数 ```latex
-$Q: \mathcal{A} \rightarrow \mathbb{R}$
+Q: \mathcal{A} \rightarrow \mathbb{R}
 ```，其中 ```latex
-$\mathcal{A}$
+\mathcal{A}
 ``` 是架构空间，```latex
-$\mathbb{R}$
+\mathbb{R}
 ``` 是实数集。
 
 **定义 1.2**: 质量属性向量 ```latex
-$\mathbf{Q} = (Q_1, Q_2, \ldots, Q_n)$
+\mathbf{Q} = (Q_1, Q_2, \ldots, Q_n)
 ``` 表示架构的多个质量属性。
 
 ### 1.2 质量属性分类
@@ -67,17 +67,17 @@ $\mathbf{Q} = (Q_1, Q_2, \ldots, Q_n)$
 ### 1.3 质量属性关系
 
 **定义 1.4**: 质量属性之间的关系矩阵 ```latex
-$R = [r_{ij}]$
+R = [r_{ij}]
 ```，其中：
 
 - ```latex
-$r_{ij} = +1$
+r_{ij} = +1
 ``` 表示正相关
 - ```latex
-$r_{ij} = -1$
+r_{ij} = -1
 ``` 表示负相关
 - ```latex
-$r_{ij} = 0$
+r_{ij} = 0
 ``` 表示无关
 
 ## 2. 形式化定义
@@ -85,76 +85,76 @@ $r_{ij} = 0$
 ### 2.1 可用性定义
 
 **定义 2.1**: 系统可用性 ```latex
-$A$
+A
 ``` 定义为：
 $```latex
-$A = \frac{MTTF}{MTTF + MTTR}$
+A = \frac{MTTF}{MTTF + MTTR}
 ```$
 
 其中：
 
 - ```latex
-$MTTF$
+MTTF
 ``` 是平均无故障时间 (Mean Time To Failure)
 - ```latex
-$MTTR$
+MTTR
 ``` 是平均修复时间 (Mean Time To Repair)
 
 **定义 2.2**: 系统可靠性 ```latex
-$R(t)$
+R(t)
 ``` 定义为：
 $```latex
-$R(t) = e^{-\lambda t}$
+R(t) = e^{-\lambda t}
 ```$
 
 其中 ```latex
-$\lambda$
+\lambda
 ``` 是故障率。
 
 ### 2.2 性能定义
 
 **定义 2.3**: 系统响应时间 ```latex
-$T$
+T
 ``` 定义为：
 $```latex
-$T = T_{processing} + T_{network} + T_{queue}$
+T = T_{processing} + T_{network} + T_{queue}
 ```$
 
 **定义 2.4**: 系统吞吐量 ```latex
-$X$
+X
 ``` 定义为：
 $```latex
-$X = \frac{N}{T}$
+X = \frac{N}{T}
 ```$
 
 其中 ```latex
-$N$
+N
 ``` 是处理的请求数，```latex
-$T$
+T
 ``` 是总时间。
 
 ### 2.3 可维护性定义
 
 **定义 2.5**: 可维护性指数 ```latex
-$M$
+M
 ``` 定义为：
 $```latex
-$M = \alpha \cdot C + \beta \cdot D + \gamma \cdot V$
+M = \alpha \cdot C + \beta \cdot D + \gamma \cdot V
 ```$
 
 其中：
 
 - ```latex
-$C$
+C
 ``` 是圈复杂度
 - ```latex
-$D$
+D
 ``` 是依赖度
 - ```latex
-$V$
+V
 ``` 是变更影响度
 - ```latex
-$\alpha, \beta, \gamma$
+\alpha, \beta, \gamma
 ``` 是权重系数
 
 ## 3. Go语言实现
@@ -1037,13 +1037,13 @@ func (cna *CloudNativeApplication) OptimizeForScalability() {
 
 **定理 5.1** (串联系统可用性): 对于串联系统，总可用性为：
 $```latex
-$A_{total} = \prod_{i=1}^{n} A_i$
+A_{total} = \prod_{i=1}^{n} A_i
 ```$
 
 其中 ```latex
-$A_i$
+A_i
 ``` 是第 ```latex
-$i$
+i
 ``` 个组件的可用性。
 
 **证明**:
@@ -1054,13 +1054,13 @@ $i$
 
 **定理 5.2** (并联系统可用性): 对于并联系统，总可用性为：
 $```latex
-$A_{total} = 1 - \prod_{i=1}^{n} (1 - A_i)$
+A_{total} = 1 - \prod_{i=1}^{n} (1 - A_i)
 ```$
 
 其中 ```latex
-$A_i$
+A_i
 ``` 是第 ```latex
-$i$
+i
 ``` 个组件的可用性。
 
 **证明**:
@@ -1068,26 +1068,26 @@ $i$
 1. 并联系统只要有一个组件正常工作即可
 2. 系统不可用的概率为所有组件都不可用的概率
 3. 因此总可用性为 ```latex
-$1$
+1
 ``` 减去所有组件不可用概率的乘积
 
 ### 5.2 性能定理
 
 **定理 5.3** (Little定律): 在稳定状态下：
 $```latex
-$L = \lambda W$
+L = \lambda W
 ```$
 
 其中：
 
 - ```latex
-$L$
+L
 ``` 是系统中的平均请求数
 - ```latex
-$\lambda$
+\lambda
 ``` 是到达率
 - ```latex
-$W$
+W
 ``` 是平均等待时间
 
 **证明**:
@@ -1098,16 +1098,16 @@ $W$
 
 **定理 5.4** (响应时间公式): 系统响应时间为：
 $```latex
-$T = T_0 + \frac{\rho}{1-\rho} \cdot T_0$
+T = T_0 + \frac{\rho}{1-\rho} \cdot T_0
 ```$
 
 其中：
 
 - ```latex
-$T_0$
+T_0
 ``` 是服务时间
 - ```latex
-$\rho$
+\rho
 ``` 是系统利用率
 
 **证明**:
@@ -1119,12 +1119,12 @@ $\rho$
 ### 5.3 权衡定理
 
 **定理 5.5** (质量属性权衡): 对于任意两个质量属性 ```latex
-$Q_i$
+Q_i
 ``` 和 ```latex
-$Q_j$
+Q_j
 ```，存在权衡关系：
 $```latex
-$\frac{\partial Q_i}{\partial Q_j} \leq 0$
+\frac{\partial Q_i}{\partial Q_j} \leq 0
 ```$
 
 **证明**:

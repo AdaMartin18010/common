@@ -36,22 +36,22 @@
 模态逻辑是研究"必然性"和"可能性"等模态概念的逻辑分支。在软件工程中，模态逻辑用于描述系统的动态行为和状态转换。
 
 **定义 1.1**: 模态逻辑语言 ```latex
-$\mathcal{L}$
+\mathcal{L}
 ``` 由以下部分组成：
 
 - 命题变元集合 ```latex
-$P = \{p, q, r, \ldots\}$
+P = \{p, q, r, \ldots\}
 ```
 - 逻辑连接词：```latex
-$\neg, \land, \lor, \rightarrow, \leftrightarrow$
+\neg, \land, \lor, \rightarrow, \leftrightarrow
 ```
 - 模态算子：```latex
-$\Box$
+\Box
 ``` (必然), ```latex
-$\Diamond$
+\Diamond
 ``` (可能)
 - 括号：```latex
-$(, )$
+(, )
 ```
 
 ### 1.2 模态算子
@@ -59,33 +59,33 @@ $(, )$
 **定义 1.2**: 模态算子的语义：
 
 - ```latex
-$\Box \phi$
+\Box \phi
 ``` 表示"必然 ```latex
-$\phi$
+\phi
 ```"
 - ```latex
-$\Diamond \phi$
+\Diamond \phi
 ``` 表示"可能 ```latex
-$\phi$
+\phi
 ```"
 - 关系：```latex
-$\Diamond \phi \equiv \neg \Box \neg \phi$
+\Diamond \phi \equiv \neg \Box \neg \phi
 ```
 
 ### 1.3 可能世界语义学
 
 **定义 1.3**: 克里普克模型 ```latex
-$M = (W, R, V)$
+M = (W, R, V)
 ``` 其中：
 
 - ```latex
-$W$
+W
 ``` 是可能世界集合
 - ```latex
-$R \subseteq W \times W$
+R \subseteq W \times W
 ``` 是可达关系
 - ```latex
-$V: P \rightarrow 2^W$
+V: P \rightarrow 2^W
 ``` 是赋值函数
 
 ## 2. 形式化定义
@@ -95,27 +95,26 @@ $V: P \rightarrow 2^W$
 **定义 2.1**: 模态公式的归纳定义：
 
 $```latex
-$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \phi \rightarrow \psi \mid \Box \phi \mid \Diamond \phi$
+\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \phi \rightarrow \psi \mid \Box \phi \mid \Diamond \phi
 ```$
 
 其中 ```latex
-$p \in P$
+p \in P
 ``` 是命题变元。
 
 ### 2.2 语义定义
 
 **定义 2.2**: 在模型 ```latex
-$M = (W, R, V)$
+M = (W, R, V)
 ``` 中，世界 ```latex
-$w \in W$
+w \in W
 ``` 满足公式 ```latex
-$\phi$
+\phi
 ```，记作 ```latex
-$M, w \models \phi$
+M, w \models \phi
 ```：
 
-```latex
-$$
+$
 begin{align}
 M, w &\models p \text{ 当且仅当 } w \in V(p) \\
 M, w &\models \neg \phi \text{ 当且仅当 } M, w \not\models \phi \\
@@ -123,8 +122,7 @@ M, w &\models \phi \land \psi \text{ 当且仅当 } M, w \models \phi \text{ 且
 M, w &\models \Box \phi \text{ 当且仅当 } \forall v \in W: wRv \Rightarrow M, v \models \phi \\
 M, w &\models \Diamond \phi \text{ 当且仅当 } \exists v \in W: wRv \land M, v \models \phi
 \end{align}
-$$
-```
+$
 
 ### 2.3 公理系统
 
@@ -133,25 +131,25 @@ $$
 **公理**:
 
 - (K) ```latex
-$\Box(\phi \rightarrow \psi) \rightarrow (\Box \phi \rightarrow \Box \psi)$
+\Box(\phi \rightarrow \psi) \rightarrow (\Box \phi \rightarrow \Box \psi)
 ```
 - (Dual) ```latex
-$\Diamond \phi \leftrightarrow \neg \Box \neg \phi$
+\Diamond \phi \leftrightarrow \neg \Box \neg \phi
 ```
 
 **推理规则**:
 
 - (MP) 从 ```latex
-$\phi$
+\phi
 ``` 和 ```latex
-$\phi \rightarrow \psi$
+\phi \rightarrow \psi
 ``` 推出 ```latex
-$\psi$
+\psi
 ```
 - (Nec) 从 ```latex
-$\phi$
+\phi
 ``` 推出 ```latex
-$\Box \phi$
+\Box \phi
 ```
 
 ## 3. Go语言实现
@@ -555,39 +553,39 @@ func (sa *SoftwareArchitecture) VerifyArchitecture(property Formula) bool {
 ### 5.1 完备性定理
 
 **定理 5.1** (K系统完备性): 对于任意公式 ```latex
-$\phi$
+\phi
 ```，如果 ```latex
-$\phi$
+\phi
 ``` 在所有克里普克模型中有效，则 ```latex
-$\phi$
+\phi
 ``` 在系统K中可证。
 
 **证明**:
 
 1. 假设 ```latex
-$\phi$
+\phi
 ``` 在系统K中不可证
 2. 构造典范模型 ```latex
-$M^c = (W^c, R^c, V^c)$
+M^c = (W^c, R^c, V^c)
 ```
 3. 证明 ```latex
-$M^c, w \not\models \phi$
+M^c, w \not\models \phi
 ``` 对于某个 ```latex
-$w \in W^c$
+w \in W^c
 ```
 4. 这与 ```latex
-$\phi$
+\phi
 ``` 在所有模型中有效矛盾
 5. 因此 ```latex
-$\phi$
+\phi
 ``` 在系统K中可证
 
 ### 5.2 可靠性定理
 
 **定理 5.2** (K系统可靠性): 对于任意公式 ```latex
-$\phi$
+\phi
 ```，如果在系统K中可证，则 ```latex
-$\phi$
+\phi
 ``` 在所有克里普克模型中有效。
 
 **证明**:

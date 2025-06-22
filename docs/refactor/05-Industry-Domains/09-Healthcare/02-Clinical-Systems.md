@@ -127,11 +127,11 @@ func (s *EMRService) CreateEMR(patientID string, demographics *Demographics) (*E
     query := `
         INSERT INTO emr (id, patient_id, demographics, created_at, updated_at, status)
         VALUES (```latex
-$1, $
+1,
 ```2, ```latex
-$3, $
+3,
 ```4, ```latex
-$5, $
+5,
 ```6)
     `
     
@@ -232,11 +232,11 @@ func (s *EMRService) AddClinicalNote(emrID string, note *ClinicalNote) error {
     query := `
         INSERT INTO clinical_notes (id, emr_id, type, author, content, created_at, updated_at)
         VALUES (```latex
-$1, $
+1,
 ```2, ```latex
-$3, $
+3,
 ```4, ```latex
-$5, $
+5,
 ```6, $7)
     `
     
@@ -517,9 +517,9 @@ func (dic *DrugInteractionChecker) getInteraction(drug1, drug2 string) (*DrugInt
         SELECT id, drug1, drug2, severity, description, mechanism, management, evidence, references
         FROM drug_interactions 
         WHERE (drug1 = ```latex
-$1 AND drug2 = $
+1 AND drug2 =
 ```2) OR (drug1 = ```latex
-$2 AND drug2 = $
+2 AND drug2 =
 ```1)
     `
     

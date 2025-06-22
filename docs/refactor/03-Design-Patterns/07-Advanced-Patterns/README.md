@@ -41,11 +41,11 @@
 
 **定理 1** (模式组合性)
 如果模式 ```latex
-$P_1$
+P_1
 ``` 和 ```latex
-$P_2$
+P_2
 ``` 是正交的，则它们的组合 ```latex
-$P_1 \circ P_2$
+P_1 \circ P_2
 ``` 也是有效的模式。
 
 ### 组合理论
@@ -60,13 +60,13 @@ $P_1 \circ P_2$
 对于模式冲突，存在以下解决策略：
 
 - 优先级策略：```latex
-$P_1 > P_2$
+P_1 > P_2
 ```
 - 折中策略：```latex
-$P_1 \cap P_2$
+P_1 \cap P_2
 ```
 - 分离策略：```latex
-$P_1 \oplus P_2$
+P_1 \oplus P_2
 ```
 
 ### 演化理论
@@ -75,13 +75,13 @@ $P_1 \oplus P_2$
 模式演化是模式随时间的变化过程，包括：
 
 - 模式变异：```latex
-$P \to P'$
+P \to P'
 ```
 - 模式选择：```latex
-$P_1, P_2, \ldots, P_n \to P_i$
+P_1, P_2, \ldots, P_n \to P_i
 ```
 - 模式传播：```latex
-$P \to P \circ P \circ \ldots \circ P$
+P \to P \circ P \circ \ldots \circ P
 ```
 
 ## 模式分类
@@ -92,13 +92,13 @@ $P \to P \circ P \circ \ldots \circ P$
 架构模式定义了系统的基本结构组织方式，包括：
 
 - 分层架构：```latex
-$L_1 \to L_2 \to \ldots \to L_n$
+L_1 \to L_2 \to \ldots \to L_n
 ```
 - 微服务架构：```latex
-$S_1 \oplus S_2 \oplus \ldots \oplus S_n$
+S_1 \oplus S_2 \oplus \ldots \oplus S_n
 ```
 - 事件驱动架构：```latex
-$E_1 \to E_2 \to \ldots \to E_n$
+E_1 \to E_2 \to \ldots \to E_n
 ```
 
 ### 集成模式
@@ -107,13 +107,13 @@ $E_1 \to E_2 \to \ldots \to E_n$
 集成模式定义了系统间交互的方式，包括：
 
 - 消息队列：```latex
-$P \to Q \to C$
+P \to Q \to C
 ```
 - API网关：```latex
-$C \to G \to S$
+C \to G \to S
 ```
 - 服务网格：```latex
-$S_1 \leftrightarrow M \leftrightarrow S_2$
+S_1 \leftrightarrow M \leftrightarrow S_2
 ```
 
 ### 优化模式
@@ -122,13 +122,13 @@ $S_1 \leftrightarrow M \leftrightarrow S_2$
 优化模式关注系统性能优化，包括：
 
 - 缓存模式：```latex
-$R \to C \to S$
+R \to C \to S
 ```
 - 连接池：```latex
-$P = \{c_1, c_2, \ldots, c_n\}$
+P = \{c_1, c_2, \ldots, c_n\}
 ```
 - 负载均衡：```latex
-$L \to \{S_1, S_2, \ldots, S_n\}$
+L \to \{S_1, S_2, \ldots, S_n\}
 ```
 
 ### 安全模式
@@ -137,13 +137,13 @@ $L \to \{S_1, S_2, \ldots, S_n\}$
 安全模式确保系统的安全性，包括：
 
 - 认证模式：```latex
-$U \to A \to S$
+U \to A \to S
 ```
 - 授权模式：```latex
-$R \to P \to A$
+R \to P \to A
 ```
 - 加密模式：```latex
-$D \to E \to T$
+D \to E \to T
 ```
 
 ## 模块结构

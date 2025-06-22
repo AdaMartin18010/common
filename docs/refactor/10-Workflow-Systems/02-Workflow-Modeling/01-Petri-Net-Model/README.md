@@ -41,23 +41,23 @@ Petri网是描述并发系统的经典形式化工具，特别适用于工作流
 #### 1.1 Petri网定义
 
 Petri网是一个五元组 ```latex
-$N = (P, T, F, W, M_0)$
+N = (P, T, F, W, M_0)
 ```，其中：
 
 - ```latex
-$P = \{p_1, p_2, ..., p_n\}$
+P = \{p_1, p_2, ..., p_n\}
 ```：库所集合 (Places)
 - ```latex
-$T = \{t_1, t_2, ..., t_m\}$
+T = \{t_1, t_2, ..., t_m\}
 ```：变迁集合 (Transitions)
 - ```latex
-$F \subseteq (P \times T) \cup (T \times P)$
+F \subseteq (P \times T) \cup (T \times P)
 ```：流关系 (Flow Relation)
 - ```latex
-$W: F \rightarrow \mathbb{N}^+$
+W: F \rightarrow \mathbb{N}^+
 ```：权重函数 (Weight Function)
 - ```latex
-$M_0: P \rightarrow \mathbb{N}$
+M_0: P \rightarrow \mathbb{N}
 ```：初始标识 (Initial Marking)
 
 #### 1.2 图形表示
@@ -72,29 +72,29 @@ Petri网用图形表示：
 #### 1.3 激发规则
 
 变迁 ```latex
-$t$
+t
 ``` 在标识 ```latex
-$M$
+M
 ``` 下可激发的条件：
 
 1. ```latex
-$\forall p \in \bullet t: M(p) \geq W(p, t)$
+\forall p \in \bullet t: M(p) \geq W(p, t)
 ```
 2. 激发后产生新标识 ```latex
-$M'$
+M'
 ```：
    - ```latex
-$M'(p) = M(p) - W(p, t)$
+M'(p) = M(p) - W(p, t)
 ``` 如果 ```latex
-$p \in \bullet t$
+p \in \bullet t
 ```
    - ```latex
-$M'(p) = M(p) + W(t, p)$
+M'(p) = M(p) + W(t, p)
 ``` 如果 ```latex
-$p \in t \bullet$
+p \in t \bullet
 ```
    - ```latex
-$M'(p) = M(p)$
+M'(p) = M(p)
 ``` 其他情况
 
 ### 2. WF-net模型
@@ -104,17 +104,17 @@ $M'(p) = M(p)$
 工作流Petri网 (WF-net) 是具有以下特性的Petri网：
 
 1. **存在唯一的源库所i**：```latex
-$\bullet i = \emptyset$
+\bullet i = \emptyset
 ```
 2. **存在唯一的汇库所o**：```latex
-$o \bullet = \emptyset$
+o \bullet = \emptyset
 ```
 3. **网络中每个节点都在从i到o的路径上**
 
 #### 2.2 WF-net健全性
 
 WF-net ```latex
-$N$
+N
 ``` 是健全的当且仅当：
 
 1. **可达性**：从初始标识可达终态标识
@@ -124,22 +124,22 @@ $N$
 
 形式化定义：
 ```latex
-$\text{sound}(N) \Leftrightarrow \text{live}(N) \land \text{bounded}(N) \land \text{complete}(N)$
+\text{sound}(N) \Leftrightarrow \text{live}(N) \land \text{bounded}(N) \land \text{complete}(N)
 ```
 
 #### 2.3 WF-net性质验证
 
 - **可达性**：```latex
-$M_0 \rightarrow^* M_f$
+M_0 \rightarrow^* M_f
 ```
 - **活性**：```latex
-$\forall t \in T: \Box \Diamond \text{enabled}(t)$
+\forall t \in T: \Box \Diamond \text{enabled}(t)
 ```
 - **有界性**：```latex
-$\forall p \in P: \exists k \in \mathbb{N}: M(p) \leq k$
+\forall p \in P: \exists k \in \mathbb{N}: M(p) \leq k
 ```
 - **安全性**：```latex
-$\Box \neg \text{deadlock}$
+\Box \neg \text{deadlock}
 ```
 
 ### 3. 工作流模式建模
@@ -147,7 +147,7 @@ $\Box \neg \text{deadlock}$
 #### 3.1 顺序模式
 
 顺序模式 ```latex
-$A \rightarrow B \rightarrow C$
+A \rightarrow B \rightarrow C
 ``` 的Petri网表示：
 
 ```latex
@@ -157,19 +157,19 @@ p_1 \xrightarrow{t_A} p_2 \xrightarrow{t_B} p_3 \xrightarrow{t_C} p_4
 其中：
 
 - ```latex
-$p_1$
+p_1
 ```：开始库所
 - ```latex
-$p_4$
+p_4
 ```：结束库所
 - ```latex
-$t_A, t_B, t_C$
+t_A, t_B, t_C
 ```：对应活动A、B、C的变迁
 
 #### 3.2 并行模式
 
 并行模式 ```latex
-$A \parallel B$
+A \parallel B
 ``` 的Petri网表示：
 
 ```latex
@@ -182,19 +182,19 @@ p_4 \parallel p_5 \xrightarrow{t_{join}} p_6
 其中：
 
 - ```latex
-$t_{split}$
+t_{split}
 ```：AND-split变迁
 - ```latex
-$t_{join}$
+t_{join}
 ```：AND-join变迁
 - ```latex
-$p_2, p_3$
+p_2, p_3
 ```：并行分支库所
 
 #### 3.3 选择模式
 
 选择模式 ```latex
-$A | B$
+A | B
 ``` 的Petri网表示：
 
 ```latex
@@ -207,17 +207,17 @@ p_4 | p_5 \xrightarrow{t_{merge}} p_6
 其中：
 
 - ```latex
-$t_{choice}$
+t_{choice}
 ```：OR-split变迁
 - ```latex
-$t_{merge}$
+t_{merge}
 ```：OR-join变迁
 - 选择基于条件或概率
 
 #### 3.4 循环模式
 
 循环模式 ```latex
-$A \rightarrow (B \rightarrow A)^* \rightarrow C$
+A \rightarrow (B \rightarrow A)^* \rightarrow C
 ``` 的Petri网表示：
 
 ```latex
@@ -229,13 +229,13 @@ p_3 \xrightarrow{t_{exit}} p_4 \xrightarrow{t_C} p_5
 其中：
 
 - ```latex
-$t_{loop}$
+t_{loop}
 ```：循环变迁
 - ```latex
-$t_{exit}$
+t_{exit}
 ```：退出变迁
 - 循环条件在 ```latex
-$t_{loop}$
+t_{loop}
 ``` 中定义
 
 ### 4. Petri网分析

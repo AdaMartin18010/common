@@ -77,25 +77,25 @@
 ### 2.1 系统模型
 
 设分布式系统 ```latex
-$S = \{n_1, n_2, ..., n_n\}$
+S = \{n_1, n_2, ..., n_n\}
 ``` 由 ```latex
-$n$
+n
 ``` 个节点组成。
 
 **定义 2.1 (领导者选举问题)**
 给定分布式系统 ```latex
-$S$
+S
 ```，领导者选举算法需要满足以下性质：
 
 1. **唯一性**: ```latex
-$\forall t \in T, |L(t)| \leq 1$
+\forall t \in T, |L(t)| \leq 1
 ```，其中 ```latex
-$L(t)$
+L(t)
 ``` 是时刻 ```latex
-$t$
+t
 ``` 的领导者集合
 2. **存在性**: ```latex
-$\forall t \in T, \text{if } S \text{ is connected at } t, \text{then } |L(t)| = 1$
+\forall t \in T, \text{if } S \text{ is connected at } t, \text{then } |L(t)| = 1
 ```
 3. **稳定性**: 一旦选举出领导者，在领导者未失效前不会改变
 
@@ -103,15 +103,13 @@ $\forall t \in T, \text{if } S \text{ is connected at } t, \text{then } |L(t)| =
 
 **定理 2.1 (领导者选举正确性)**
 算法 ```latex
-$A$
+A
 ``` 是正确的领导者选举算法，当且仅当：
 
-```latex
-$$\forall t \in T: \begin{cases}
+$\forall t \in T: \begin{cases}
 \text{Safety: } |L_A(t)| \leq 1 \\
 \text{Liveness: } \text{if } S \text{ is connected at } t, \text{then } |L_A(t)| = 1
-\end{cases}$$
-```
+\end{cases}$
 
 **证明**:
 
@@ -124,44 +122,44 @@ $$\forall t \in T: \begin{cases}
 
 **定义 3.1 (通信图)**
 分布式系统的通信图 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 是一个无向图，其中：
 
 - ```latex
-$V = \{n_1, n_2, ..., n_n\}$
+V = \{n_1, n_2, ..., n_n\}
 ``` 表示节点集合
 - ```latex
-$E \subseteq V \times V$
+E \subseteq V \times V
 ``` 表示通信链路集合
 
 **定义 3.2 (连通性)**
 系统在时刻 ```latex
-$t$
+t
 ``` 是连通的，当且仅当通信图 ```latex
-$G(t)$
+G(t)
 ``` 是连通图。
 
 ### 3.2 时间复杂性分析
 
 **定理 3.1 (选举时间下界)**
 在异步分布式系统中，任何领导者选举算法的最坏情况时间复杂度为 ```latex
-$\Omega(n)$
+\Omega(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是节点数量。
 
 **证明**:
 考虑最坏情况：所有节点同时开始选举，且网络延迟最大。每个节点至少需要与所有其他节点通信一次，因此时间复杂度为 ```latex
-$\Omega(n)$
+\Omega(n)
 ```。
 
 ### 3.3 消息复杂性分析
 
 **定理 3.2 (消息复杂度)**
 在 ```latex
-$n$
+n
 ``` 个节点的系统中，领导者选举的消息复杂度为 ```latex
-$\Omega(n)$
+\Omega(n)
 ```。
 
 ## 4. 核心概念
@@ -203,10 +201,10 @@ type Term uint64
 3. 否则，等待来自更高优先级节点的消息
 
 **时间复杂度**: ```latex
-$O(n)$
+O(n)
 ```
 **消息复杂度**: ```latex
-$O(n^2)$
+O(n^2)
 ```
 
 #### 5.1.2 Ring算法
@@ -219,10 +217,10 @@ $O(n^2)$
 4. 最大ID的节点成为领导者
 
 **时间复杂度**: ```latex
-$O(n)$
+O(n)
 ```
 **消息复杂度**: ```latex
-$O(n)$
+O(n)
 ```
 
 ### 5.2 基于共识的算法
@@ -237,10 +235,10 @@ $O(n)$
 4. 领导者定期发送心跳维持权威
 
 **时间复杂度**: ```latex
-$O(\log n)$
+O(\log n)
 ``` (期望)
 **消息复杂度**: ```latex
-$O(n)$
+O(n)
 ```
 
 ## 6. Go语言实现
@@ -864,23 +862,23 @@ func main() {
 ### 7.2 空间复杂度分析
 
 所有算法的空间复杂度都是 ```latex
-$O(n)$
+O(n)
 ```，主要用于存储节点信息和投票记录。
 
 ### 7.3 网络延迟影响
 
 **定理 7.1 (网络延迟影响)**
 在网络延迟为 ```latex
-$d$
+d
 ``` 的系统中，领导者选举的最坏情况时间为 ```latex
-$O(nd)$
+O(nd)
 ```。
 
 **证明**:
 在最坏情况下，选举消息需要遍历所有节点，每个消息的延迟为 ```latex
-$d$
+d
 ```，因此总时间为 ```latex
-$O(nd)$
+O(nd)
 ```。
 
 ## 8. 应用场景

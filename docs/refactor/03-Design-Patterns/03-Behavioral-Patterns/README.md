@@ -9,46 +9,46 @@
 ### 行为型模式的形式化描述
 
 设 ```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 为对象的集合，```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 为消息的集合，```latex
-$\mathcal{I}$
+\mathcal{I}
 ``` 为交互的集合。
 
 **定义 1.1** (行为型模式)
 行为型模式是一个四元组 ```latex
-$(\mathcal{O}, \mathcal{M}, \mathcal{I}, \mathcal{B})$
+(\mathcal{O}, \mathcal{M}, \mathcal{I}, \mathcal{B})
 ```，其中：
 
 - ```latex
-$\mathcal{O}$
+\mathcal{O}
 ``` 是参与模式的对象集合
 - ```latex
-$\mathcal{M}$
+\mathcal{M}
 ``` 是对象间传递的消息集合
 - ```latex
-$\mathcal{I}$
+\mathcal{I}
 ``` 是对象间的交互关系集合
 - ```latex
-$\mathcal{B}$
+\mathcal{B}
 ``` 是行为约束集合
 
 **公理 1.1** (行为一致性)
 对于任意行为型模式 ```latex
-$P = (\mathcal{O}, \mathcal{M}, \mathcal{I}, \mathcal{B})$
+P = (\mathcal{O}, \mathcal{M}, \mathcal{I}, \mathcal{B})
 ```，必须满足：
 $```latex
-$\forall o_1, o_2 \in \mathcal{O}, \forall m \in \mathcal{M}: \text{send}(o_1, m, o_2) \Rightarrow \text{receive}(o_2, m)$
+\forall o_1, o_2 \in \mathcal{O}, \forall m \in \mathcal{M}: \text{send}(o_1, m, o_2) \Rightarrow \text{receive}(o_2, m)
 ```$
 
 **定理 1.1** (行为可组合性)
 如果 ```latex
-$P_1 = (\mathcal{O}_1, \mathcal{M}_1, \mathcal{I}_1, \mathcal{B}_1)$
+P_1 = (\mathcal{O}_1, \mathcal{M}_1, \mathcal{I}_1, \mathcal{B}_1)
 ``` 和 ```latex
-$P_2 = (\mathcal{O}_2, \mathcal{M}_2, \mathcal{I}_2, \mathcal{B}_2)$
+P_2 = (\mathcal{O}_2, \mathcal{M}_2, \mathcal{I}_2, \mathcal{B}_2)
 ``` 都是有效的行为型模式，那么它们的组合 ```latex
-$P_1 \circ P_2$
+P_1 \circ P_2
 ``` 也是有效的行为型模式。
 
 ## 模式分类
@@ -107,26 +107,26 @@ graph TD
 
 **定义 1.2** (观察者模式)
 观察者模式是一个四元组 ```latex
-$(\text{Subject}, \text{Observer}, \text{ConcreteSubject}, \text{ConcreteObserver})$
+(\text{Subject}, \text{Observer}, \text{ConcreteSubject}, \text{ConcreteObserver})
 ```，其中：
 
 - ```latex
-$\text{Subject}$
+\text{Subject}
 ```: 主题接口，维护观察者列表并通知观察者
 - ```latex
-$\text{Observer}$
+\text{Observer}
 ```: 观察者接口，定义更新方法
 - ```latex
-$\text{ConcreteSubject}$
+\text{ConcreteSubject}
 ```: 具体主题，实现通知机制
 - ```latex
-$\text{ConcreteObserver}$
+\text{ConcreteObserver}
 ```: 具体观察者，实现更新逻辑
 
 **公理 1.2** (观察者一致性)
 对于任意观察者模式，必须满足：
 $```latex
-$\forall s \in \text{Subject}, \forall o \in \text{Observer}: \text{notify}(s) \Rightarrow \text{update}(o)$
+\forall s \in \text{Subject}, \forall o \in \text{Observer}: \text{notify}(s) \Rightarrow \text{update}(o)
 ```$
 
 ### 1.2 Go语言实现
@@ -284,13 +284,13 @@ func (a *AsyncNewsAgency) SetNews(news string) {
 ### 1.3 性能分析
 
 **时间复杂度**: ```latex
-$O(n)$
+O(n)
 ``` - 通知所有观察者
 **空间复杂度**: ```latex
-$O(n)$
+O(n)
 ``` - 存储观察者列表
 **并发复杂度**: ```latex
-$O(1)$
+O(1)
 ``` - 使用读写锁和channel
 
 ## 2. 策略模式 (Strategy Pattern)
@@ -299,26 +299,26 @@ $O(1)$
 
 **定义 1.3** (策略模式)
 策略模式是一个四元组 ```latex
-$(\text{Context}, \text{Strategy}, \text{ConcreteStrategy}, \text{Client})$
+(\text{Context}, \text{Strategy}, \text{ConcreteStrategy}, \text{Client})
 ```，其中：
 
 - ```latex
-$\text{Context}$
+\text{Context}
 ```: 上下文，维护策略引用
 - ```latex
-$\text{Strategy}$
+\text{Strategy}
 ```: 策略接口，定义算法接口
 - ```latex
-$\text{ConcreteStrategy}$
+\text{ConcreteStrategy}
 ```: 具体策略，实现具体算法
 - ```latex
-$\text{Client}$
+\text{Client}
 ```: 客户端，使用上下文
 
 **定理 1.2** (策略可替换性)
 在策略模式中，策略可以动态替换：
 $```latex
-$\forall s_1, s_2 \in \text{Strategy}: \text{replace}(s_1, s_2) \Rightarrow \text{behavior}(s_1) \neq \text{behavior}(s_2)$
+\forall s_1, s_2 \in \text{Strategy}: \text{replace}(s_1, s_2) \Rightarrow \text{behavior}(s_1) \neq \text{behavior}(s_2)
 ```$
 
 ### 2.2 Go语言实现
@@ -485,29 +485,29 @@ func (f *PaymentStrategyFactory) CreateStrategy(name string) (PaymentStrategy, e
 
 **定义 1.4** (命令模式)
 命令模式是一个五元组 ```latex
-$(\text{Command}, \text{ConcreteCommand}, \text{Invoker}, \text{Receiver}, \text{Client})$
+(\text{Command}, \text{ConcreteCommand}, \text{Invoker}, \text{Receiver}, \text{Client})
 ```，其中：
 
 - ```latex
-$\text{Command}$
+\text{Command}
 ```: 命令接口，定义执行方法
 - ```latex
-$\text{ConcreteCommand}$
+\text{ConcreteCommand}
 ```: 具体命令，实现具体操作
 - ```latex
-$\text{Invoker}$
+\text{Invoker}
 ```: 调用者，调用命令执行
 - ```latex
-$\text{Receiver}$
+\text{Receiver}
 ```: 接收者，执行具体操作
 - ```latex
-$\text{Client}$
+\text{Client}
 ```: 客户端，创建命令
 
 **公理 1.3** (命令可撤销性)
 命令模式支持撤销操作：
 $```latex
-$\forall c \in \text{Command}: \text{execute}(c) \Rightarrow \text{undo}(c)$
+\forall c \in \text{Command}: \text{execute}(c) \Rightarrow \text{undo}(c)
 ```$
 
 ### 3.2 Go语言实现
@@ -692,26 +692,26 @@ func (m *MacroCommand) GetName() string {
 
 **定义 1.5** (状态模式)
 状态模式是一个四元组 ```latex
-$(\text{Context}, \text{State}, \text{ConcreteState}, \text{Client})$
+(\text{Context}, \text{State}, \text{ConcreteState}, \text{Client})
 ```，其中：
 
 - ```latex
-$\text{Context}$
+\text{Context}
 ```: 上下文，维护当前状态
 - ```latex
-$\text{State}$
+\text{State}
 ```: 状态接口，定义状态行为
 - ```latex
-$\text{ConcreteState}$
+\text{ConcreteState}
 ```: 具体状态，实现状态行为
 - ```latex
-$\text{Client}$
+\text{Client}
 ```: 客户端，使用上下文
 
 **定理 1.3** (状态转换一致性)
 状态模式中的状态转换必须一致：
 $```latex
-$\forall s_1, s_2 \in \text{State}: \text{transition}(s_1, s_2) \Rightarrow \text{valid}(s_1, s_2)$
+\forall s_1, s_2 \in \text{State}: \text{transition}(s_1, s_2) \Rightarrow \text{valid}(s_1, s_2)
 ```$
 
 ### 4.2 Go语言实现
@@ -885,26 +885,26 @@ func (s *StateMachine) GetCurrentState() string {
 
 **定义 1.6** (责任链模式)
 责任链模式是一个四元组 ```latex
-$(\text{Handler}, \text{ConcreteHandler}, \text{Request}, \text{Client})$
+(\text{Handler}, \text{ConcreteHandler}, \text{Request}, \text{Client})
 ```，其中：
 
 - ```latex
-$\text{Handler}$
+\text{Handler}
 ```: 处理器接口，定义处理方法和后继者
 - ```latex
-$\text{ConcreteHandler}$
+\text{ConcreteHandler}
 ```: 具体处理器，实现具体处理逻辑
 - ```latex
-$\text{Request}$
+\text{Request}
 ```: 请求对象，包含请求信息
 - ```latex
-$\text{Client}$
+\text{Client}
 ```: 客户端，发起请求
 
 **公理 1.4** (责任链完整性)
 责任链必须能够处理所有请求：
 $```latex
-$\forall r \in \text{Request}: \exists h \in \text{Handler}: \text{canHandle}(h, r)$
+\forall r \in \text{Request}: \exists h \in \text{Handler}: \text{canHandle}(h, r)
 ```$
 
 ### 5.2 Go语言实现
@@ -1104,39 +1104,39 @@ func (t *ThreadSafeChain) Handle(request *Request) error {
 | 模式 | 时间复杂度 | 空间复杂度 | 并发复杂度 |
 |------|------------|------------|------------|
 | 观察者 | ```latex
-$O(n)$
+O(n)
 ``` | ```latex
-$O(n)$
+O(n)
 ``` | ```latex
-$O(1)$
+O(1)
 ``` |
 | 策略 | ```latex
-$O(1)$
+O(1)
 ``` | ```latex
-$O(1)$
+O(1)
 ``` | ```latex
-$O(1)$
+O(1)
 ``` |
 | 命令 | ```latex
-$O(1)$
+O(1)
 ``` | ```latex
-$O(n)$
+O(n)
 ``` | ```latex
-$O(1)$
+O(1)
 ``` |
 | 状态 | ```latex
-$O(1)$
+O(1)
 ``` | ```latex
-$O(1)$
+O(1)
 ``` | ```latex
-$O(1)$
+O(1)
 ``` |
 | 责任链 | ```latex
-$O(n)$
+O(n)
 ``` | ```latex
-$O(n)$
+O(n)
 ``` | ```latex
-$O(1)$
+O(1)
 ``` |
 
 ## 应用场景
@@ -1179,13 +1179,13 @@ $O(1)$
 所有行为型模式都满足以下性质：
 
 1. **消息传递完整性**: ```latex
-$\forall m \in \mathcal{M}: \text{delivered}(m)$
+\forall m \in \mathcal{M}: \text{delivered}(m)
 ```
 2. **行为一致性**: ```latex
-$\forall o \in \mathcal{O}: \text{behavior-consistent}(o)$
+\forall o \in \mathcal{O}: \text{behavior-consistent}(o)
 ```
 3. **交互正确性**: ```latex
-$\forall i \in \mathcal{I}: \text{interaction-correct}(i)$
+\forall i \in \mathcal{I}: \text{interaction-correct}(i)
 ```
 
 **证明**:

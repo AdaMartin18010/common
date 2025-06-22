@@ -18,37 +18,37 @@
 #### 1.1.1 词法分析定义
 
 词法分析是一个函数 ```latex
-$L: \Sigma^* \rightarrow T^*$
+L: \Sigma^* \rightarrow T^*
 ```，其中：
 
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是输入字母表
 - ```latex
-$T$
+T
 ``` 是标记集合
 - ```latex
-$L$
+L
 ``` 将输入字符串映射为标记序列
 
 对于任意输入字符串 ```latex
-$s \in \Sigma^*$
+s \in \Sigma^*
 ```，词法分析器产生唯一的标记序列。
 
 #### 1.1.2 标记定义
 
 标记是一个三元组 ```latex
-$(type, value, position)$
+(type, value, position)
 ```，其中：
 
 - ```latex
-$type$
+type
 ``` 是标记类型
 - ```latex
-$value$
+value
 ``` 是标记值
 - ```latex
-$position$
+position
 ``` 是位置信息
 
 ```go
@@ -115,49 +115,47 @@ func (tt TokenType) String() string {
 正则表达式语法：
 
 ```latex
-$```latex
-$R ::= \varepsilon \mid a \mid R_1 \cdot R_2 \mid R_1 + R_2 \mid R^*$
+$R ::= \varepsilon \mid a \mid R_1 \cdot R_2 \mid R_1 + R_2 \mid R^*
 ```$
-```
 
 其中：
 
 - ```latex
-$\varepsilon$
+\varepsilon
 ``` 是空字符串
 - ```latex
-$a$
+a
 ``` 是字母表中的符号
 - ```latex
-$\cdot$
+\cdot
 ``` 是连接操作
 - ```latex
-$+$
++
 ``` 是选择操作
 - ```latex
-$*$
+*
 ``` 是Kleene星号
 
 #### 1.2.2 有限自动机
 
 确定性有限自动机是一个五元组 ```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$Q$
+Q
 ```: 状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ```: 输入字母表
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ```: 状态转移函数
 - ```latex
-$q_0 \in Q$
+q_0 \in Q
 ```: 初始状态
 - ```latex
-$F \subseteq Q$
+F \subseteq Q
 ```: 接受状态集合
 
 ## 3. 有限自动机
@@ -166,55 +164,55 @@ $F \subseteq Q$
 
 **定义 2.1** (DFA)
 确定性有限自动机是一个五元组 ```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$Q$
+Q
 ``` 是状态集合
 - ```latex
-$\Sigma$
+\Sigma
 ``` 是输入字母表
 - ```latex
-$\delta: Q \times \Sigma \rightarrow Q$
+\delta: Q \times \Sigma \rightarrow Q
 ``` 是转移函数
 - ```latex
-$q_0 \in Q$
+q_0 \in Q
 ``` 是初始状态
 - ```latex
-$F \subseteq Q$
+F \subseteq Q
 ``` 是接受状态集合
 
 **定理 2.1** (DFA接受性)
 DFA ```latex
-$M$
+M
 ``` 接受字符串 ```latex
-$w$
+w
 ```，当且仅当存在状态序列 ```latex
-$q_0, q_1, \ldots, q_n$
+q_0, q_1, \ldots, q_n
 ``` 使得：
 
 1. ```latex
-$q_0$
+q_0
 ``` 是初始状态
 2. ```latex
-$\delta(q_i, w_i) = q_{i+1}$
+\delta(q_i, w_i) = q_{i+1}
 ``` 对于 ```latex
-$0 \leq i < n$
+0 \leq i < n
 ```
 3. ```latex
-$q_n \in F$
+q_n \in F
 ```
 
 ### 3.2 非确定性有限自动机
 
 **定义 2.2** (NFA)
 非确定性有限自动机是一个五元组 ```latex
-$M = (Q, \Sigma, \delta, q_0, F)$
+M = (Q, \Sigma, \delta, q_0, F)
 ```，其中：
 
 - ```latex
-$\delta: Q \times \Sigma \rightarrow 2^Q$
+\delta: Q \times \Sigma \rightarrow 2^Q
 ``` 是转移函数
 - 其他定义与DFA相同
 

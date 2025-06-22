@@ -9,35 +9,35 @@
 ### 1.2 形式化定义
 
 设 ```latex
-$S$
+S
 ``` 为服务状态集合，```latex
-$T$
+T
 ``` 为时间集合，```latex
-$F$
+F
 ``` 为故障函数，则熔断器模式可形式化为：
 
 $```latex
-$CB = (S, T, F, \tau, \lambda, \mu)$
+CB = (S, T, F, \tau, \lambda, \mu)
 ```$
 
 其中：
 
 - ```latex
-$S = \{CLOSED, OPEN, HALF_OPEN\}$
+S = \{CLOSED, OPEN, HALF_OPEN\}
 ``` 为状态集合
 - ```latex
-$F: T \rightarrow \{0, 1\}$
+F: T \rightarrow \{0, 1\}
 ``` 为故障函数，```latex
-$F(t) = 1$
+F(t) = 1
 ``` 表示故障
 - ```latex
-$\tau$
+\tau
 ``` 为超时阈值
 - ```latex
-$\lambda$
+\lambda
 ``` 为故障阈值
 - ```latex
-$\mu$
+\mu
 ``` 为恢复阈值
 
 ### 1.3 状态转换
@@ -56,9 +56,9 @@ stateDiagram-v2
 
 **定理 2.1**: 熔断器的稳定性
 对于任意时间 ```latex
-$t \in T$
+t \in T
 ```，熔断器状态 ```latex
-$s(t) \in S$
+s(t) \in S
 ``` 是确定的，且状态转换是单调的。
 
 **证明**:
@@ -611,40 +611,40 @@ func (d *CircuitBreakerDecorator) GetMetrics() Metrics {
 ### 4.1 时间复杂度
 
 - **状态检查**: ```latex
-$O(1)$
+O(1)
 ```
 - **结果记录**: ```latex
-$O(1)$
+O(1)
 ```
 - **滑动窗口统计**: ```latex
-$O(b)$
+O(b)
 ```，其中 ```latex
-$b$
+b
 ``` 为桶数量
 - **状态转换**: ```latex
-$O(1)$
+O(1)
 ```
 
 ### 4.2 空间复杂度
 
 - **基本熔断器**: ```latex
-$O(1)$
+O(1)
 ```
 - **滑动窗口熔断器**: ```latex
-$O(b)$
+O(b)
 ```，其中 ```latex
-$b$
+b
 ``` 为桶数量
 
 ### 4.3 故障隔离效果
 
 **定理 4.1**: 故障隔离效果
 当熔断器处于 OPEN 状态时，系统响应时间从 ```latex
-$T_{service}$
+T_{service}
 ``` 降低到 ```latex
-$T_{circuit}$
+T_{circuit}
 ```，其中 ```latex
-$T_{circuit} \ll T_{service}$
+T_{circuit} \ll T_{service}
 ```。
 
 **证明**:

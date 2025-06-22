@@ -20,37 +20,33 @@
 
 **定义 1.1.1** (云服务层次)
 云服务层次 ```latex
-$L$
+L
 ``` 定义为三层结构：
 
 ```latex
-$```latex
-$L = \{IaaS, PaaS, SaaS\}$
+$L = \{IaaS, PaaS, SaaS\}
 ```$
-```
 
 其中：
 
 - ```latex
-$IaaS$
+IaaS
 ```: 基础设施即服务
 - ```latex
-$PaaS$
+PaaS
 ```: 平台即服务  
 - ```latex
-$SaaS$
+SaaS
 ```: 软件即服务
 
 **定义 1.1.2** (服务依赖关系)
 服务依赖关系 ```latex
-$D$
+D
 ``` 定义为：
 
 ```latex
-$```latex
-$D = \{(SaaS, PaaS), (PaaS, IaaS)\}$
+$D = \{(SaaS, PaaS), (PaaS, IaaS)\}
 ```$
-```
 
 表示上层服务依赖于下层服务。
 
@@ -60,31 +56,29 @@ $D = \{(SaaS, PaaS), (PaaS, IaaS)\}$
 
 **定义 1.2.1** (资源分配)
 资源分配 ```latex
-$A$
+A
 ``` 是一个三元组 ```latex
-$(R, U, C)$
+(R, U, C)
 ```，其中：
 
 - ```latex
-$R$
+R
 ```: 资源集合
 - ```latex
-$U$
+U
 ```: 用户集合
 - ```latex
-$C: R \times U \to \mathbb{R}^+$
+C: R \times U \to \mathbb{R}^+
 ```: 分配函数
 
 **定理 1.2.1** (资源分配最优性)
 对于资源分配问题，存在最优分配 ```latex
-$A^*$
+A^*
 ``` 使得：
 
 ```latex
-$```latex
-$\sum_{r \in R} \sum_{u \in U} C(r, u) \cdot A^*(r, u)$
+$\sum_{r \in R} \sum_{u \in U} C(r, u) \cdot A^*(r, u)
 ```$
-```
 
 达到最大值。
 
@@ -92,31 +86,27 @@ $\sum_{r \in R} \sum_{u \in U} C(r, u) \cdot A^*(r, u)$
 
 **定义 1.2.2** (负载均衡)
 负载均衡函数 ```latex
-$LB$
+LB
 ``` 定义为：
 
 ```latex
-$```latex
-$LB(S) = \frac{\max_{i} L_i - \min_{i} L_i}{\max_{i} L_i}$
+$LB(S) = \frac{\max_{i} L_i - \min_{i} L_i}{\max_{i} L_i}
 ```$
-```
 
 其中 ```latex
-$L_i$
+L_i
 ``` 是服务器 ```latex
-$i$
+i
 ``` 的负载。
 
 **定理 1.2.2** (负载均衡收敛性)
 对于一致性哈希负载均衡，当节点数量 ```latex
-$n \to \infty$
+n \to \infty
 ``` 时：
 
 ```latex
-$```latex
-$\lim_{n \to \infty} LB(S) = 0$
+$\lim_{n \to \infty} LB(S) = 0
 ```$
-```
 
 ## 2. 弹性计算模型
 
@@ -126,19 +116,17 @@ $\lim_{n \to \infty} LB(S) = 0$
 
 **定义 2.1.1** (扩缩容触发条件)
 扩缩容触发条件 ```latex
-$T$
+T
 ``` 定义为：
 
-```latex
-$$T = \begin{cases}
+$T = \begin{cases}
 \text{scale-up} & \text{if } \rho > \rho_{high} \\
 \text{scale-down} & \text{if } \rho < \rho_{low} \\
 \text{no-action} & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}$
 
 其中 ```latex
-$\rho$
+\rho
 ``` 是资源利用率。
 
 **算法 2.1.1** (自动扩缩容算法)

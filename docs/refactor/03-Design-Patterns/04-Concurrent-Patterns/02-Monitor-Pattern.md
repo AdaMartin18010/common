@@ -72,91 +72,91 @@
 ### 2.1 基本概念
 
 设 ```latex
-$M$
+M
 ``` 为管程集合，```latex
-$R$
+R
 ``` 为共享资源集合，```latex
-$T$
+T
 ``` 为线程集合，```latex
-$C$
+C
 ``` 为条件变量集合。
 
 **定义 2.1** (管程)
 管程是一个五元组 ```latex
-$(m, r, mutex, cv, methods)$
+(m, r, mutex, cv, methods)
 ```，其中：
 
 - ```latex
-$m \in M$
+m \in M
 ``` 是管程实例
 - ```latex
-$r \in R$
+r \in R
 ``` 是共享资源
 - ```latex
-$mutex$
+mutex
 ``` 是互斥锁
 - ```latex
-$cv \subseteq C$
+cv \subseteq C
 ``` 是条件变量集合
 - ```latex
-$methods$
+methods
 ``` 是访问方法集合
 
 **定义 2.2** (条件变量)
 条件变量是一个三元组 ```latex
-$(cv, wait\_queue, signal\_queue)$
+(cv, wait\_queue, signal\_queue)
 ```，其中：
 
 - ```latex
-$cv \in C$
+cv \in C
 ``` 是条件变量实例
 - ```latex
-$wait\_queue$
+wait\_queue
 ``` 是等待队列
 - ```latex
-$signal\_queue$
+signal\_queue
 ``` 是信号队列
 
 ### 2.2 操作语义
 
 **公理 2.1** (进入管程)
 对于管程 ```latex
-$m$
+m
 ``` 和线程 ```latex
-$t$
+t
 ```：
 $```latex
-$enter(m, t) = acquire(mutex)$
+enter(m, t) = acquire(mutex)
 ```$
 
 **公理 2.2** (离开管程)
 对于管程 ```latex
-$m$
+m
 ``` 和线程 ```latex
-$t$
+t
 ```：
 $```latex
-$leave(m, t) = release(mutex)$
+leave(m, t) = release(mutex)
 ```$
 
 **公理 2.3** (等待条件)
 对于条件变量 ```latex
-$cv$
+cv
 ``` 和线程 ```latex
-$t$
+t
 ```：
 $```latex
-$wait(cv, t) = release(mutex) \land block(t) \land enqueue(wait\_queue, t)$
+wait(cv, t) = release(mutex) \land block(t) \land enqueue(wait\_queue, t)
 ```$
 
 **公理 2.4** (信号条件)
 对于条件变量 ```latex
-$cv$
+cv
 ``` 和线程 ```latex
-$t$
+t
 ```：
 $```latex
-$signal(cv, t) = dequeue(wait\_queue) \land unblock(t) \land acquire(mutex)$
+signal(cv, t) = dequeue(wait\_queue) \land unblock(t) \land acquire(mutex)
 ```$
 
 ### 2.3 安全性保证
@@ -164,26 +164,26 @@ $signal(cv, t) = dequeue(wait\_queue) \land unblock(t) \land acquire(mutex)$
 **定理 2.1** (互斥性)
 管程模式保证互斥性，当且仅当：
 $```latex
-$\forall t_1, t_2 \in T: \text{如果 } t_1 \text{ 和 } t_2 \text{ 同时访问管程，则 } t_1 = t_2$
+\forall t_1, t_2 \in T: \text{如果 } t_1 \text{ 和 } t_2 \text{ 同时访问管程，则 } t_1 = t_2
 ```$
 
 **证明**:
 
 1. 每个管程有一个互斥锁 ```latex
-$mutex$
+mutex
 ```
 2. 进入管程必须获取锁：```latex
-$enter(m, t) = acquire(mutex)$
+enter(m, t) = acquire(mutex)
 ```
 3. 离开管程必须释放锁：```latex
-$leave(m, t) = release(mutex)$
+leave(m, t) = release(mutex)
 ```
 4. 因此保证了互斥性
 
 **定理 2.2** (条件同步)
 管程模式保证条件同步，当且仅当：
 $```latex
-$\forall cv \in C: \text{wait和signal操作配对使用}$
+\forall cv \in C: \text{wait和signal操作配对使用}
 ```$
 
 ---
@@ -197,7 +197,7 @@ $\forall cv \in C: \text{wait和signal操作配对使用}$
 
 **定理 3.1** (互斥算法复杂度)
 管程模式的互斥算法复杂度为 ```latex
-$O(1)$
+O(1)
 ```。
 
 **证明**:
@@ -205,7 +205,7 @@ $O(1)$
 - 锁的获取和释放都是常数时间操作
 - 条件变量的等待和信号也是常数时间操作
 - 因此总复杂度为 ```latex
-$O(1)$
+O(1)
 ```
 
 ### 3.2 死锁避免
@@ -216,7 +216,7 @@ $O(1)$
 **定理 3.2** (死锁避免)
 管程模式天然避免死锁，当且仅当：
 $```latex
-$\text{不存在循环等待条件}$
+\text{不存在循环等待条件}
 ```$
 
 **证明**:
@@ -910,35 +910,35 @@ func main() {
 ### 6.1 时间复杂度
 
 - **进入管程**: ```latex
-$O(1)$
+O(1)
 ```
 - **离开管程**: ```latex
-$O(1)$
+O(1)
 ```
 - **等待条件**: ```latex
-$O(1)$
+O(1)
 ```
 - **发送信号**: ```latex
-$O(1)$
+O(1)
 ```
 - **广播信号**: ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是等待线程数
 
 ### 6.2 空间复杂度
 
 - **管程对象**: ```latex
-$O(1)$
+O(1)
 ```
 - **条件变量**: ```latex
-$O(1)$
+O(1)
 ``` 每个条件
 - **等待队列**: ```latex
-$O(n)$
+O(n)
 ```，其中 ```latex
-$n$
+n
 ``` 是等待线程数
 
 ### 6.3 性能优化建议

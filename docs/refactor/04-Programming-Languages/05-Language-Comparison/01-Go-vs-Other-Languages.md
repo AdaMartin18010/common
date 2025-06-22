@@ -5,23 +5,23 @@
 ### 1.1.1 语言比较维度
 
 **定义 1.1** (语言比较): 语言比较是一个五元组 ```latex
-$\mathcal{C} = (L, M, P, S, E)$
+\mathcal{C} = (L, M, P, S, E)
 ```，其中：
 
 - ```latex
-$L$
+L
 ``` 是语言集合 (Languages)
 - ```latex
-$M$
+M
 ``` 是度量标准集合 (Metrics)
 - ```latex
-$P$
+P
 ``` 是性能指标集合 (Performance)
 - ```latex
-$S$
+S
 ``` 是语法特性集合 (Syntax)
 - ```latex
-$E$
+E
 ``` 是生态系统集合 (Ecosystem)
 
 **比较维度**:
@@ -33,21 +33,21 @@ $E$
 ### 1.1.2 评估模型
 
 **定义 1.2** (语言评估): 语言评估是一个函数 ```latex
-$E: L \times M \rightarrow \mathbb{R}$
+E: L \times M \rightarrow \mathbb{R}
 ```，其中：
 
 - ```latex
-$L$
+L
 ``` 是语言集合
 - ```latex
-$M$
+M
 ``` 是度量标准集合
 - ```latex
-$E(l, m)$
+E(l, m)
 ``` 表示语言 ```latex
-$l$
+l
 ``` 在度量标准 ```latex
-$m$
+m
 ``` 下的得分
 
 ## 1.2 Go vs Java 比较

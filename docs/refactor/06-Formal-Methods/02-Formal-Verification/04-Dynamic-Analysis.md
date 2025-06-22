@@ -8,14 +8,14 @@
 
 **形式化定义**：
 设 ```latex
-$P$
+P
 ``` 为程序，```latex
-$T$
+T
 ``` 为执行轨迹，动态分析函数 ```latex
-$D: P \times T \rightarrow R$
+D: P \times T \rightarrow R
 ``` 满足：
 $```latex
-$D(P, T) = \{r \in R | r = \text{analyze}(t), t \in T\}$
+D(P, T) = \{r \in R | r = \text{analyze}(t), t \in T\}
 ```$
 
 ### 1.2 理论基础
@@ -24,13 +24,13 @@ $D(P, T) = \{r \in R | r = \text{analyze}(t), t \in T\}$
 
 **执行轨迹** 是程序执行过程中状态变化的序列：
 $```latex
-$T = \langle s_0, s_1, ..., s_n \rangle$
+T = \langle s_0, s_1, ..., s_n \rangle
 ```$
 
 其中 ```latex
-$s_i$
+s_i
 ``` 是程序在时刻 ```latex
-$i$
+i
 ``` 的状态。
 
 ## 2. 性能分析
@@ -43,16 +43,16 @@ $i$
 
 **形式化定义**：
 设 ```latex
-$C$
+C
 ``` 为计数器集合，```latex
-$V(c, t)$
+V(c, t)
 ``` 为计数器 ```latex
-$c$
+c
 ``` 在时刻 ```latex
-$t$
+t
 ``` 的值，则：
 $```latex
-$\text{Performance}(P) = \sum_{c \in C} w_c \cdot V(c, t_{end})$
+\text{Performance}(P) = \sum_{c \in C} w_c \cdot V(c, t_{end})
 ```$
 
 #### 2.1.2 Go语言实现
@@ -156,12 +156,12 @@ func (p *Profiler) GetResults() map[string]interface{} {
 
 **形式化定义**：
 设 ```latex
-$M(t)$
+M(t)
 ``` 为时刻 ```latex
-$t$
+t
 ``` 的内存使用量，内存泄漏检测函数：
 $```latex
-$\text{Leak}(t_1, t_2) = M(t_2) - M(t_1) - \text{ExpectedGrowth}(t_1, t_2)$
+\text{Leak}(t_1, t_2) = M(t_2) - M(t_1) - \text{ExpectedGrowth}(t_1, t_2)
 ```$
 
 #### 3.1.2 Go语言实现
@@ -240,12 +240,12 @@ func (mld *MemoryLeakDetector) GetMemoryGrowth() uint64 {
 
 **形式化定义**：
 设 ```latex
-$G$
+G
 ``` 为goroutine集合，```latex
-$R$
+R
 ``` 为资源集合，死锁检测函数：
 $```latex
-$\text{Deadlock}(G, R) = \exists C \subseteq G: \text{CircularWait}(C, R)$
+\text{Deadlock}(G, R) = \exists C \subseteq G: \text{CircularWait}(C, R)
 ```$
 
 #### 4.1.2 Go语言实现

@@ -48,14 +48,14 @@ const (
 
 **证明**:
 设云端处理延迟为 ```latex
-$T_{cloud}$
+T_{cloud}
 ```，网络传输延迟为 ```latex
-$T_{network}$
+T_{network}
 ```，边缘处理延迟为 ```latex
-$T_{edge}$
+T_{edge}
 ```，则：
 $```latex
-$T_{total} = T_{edge} + T_{network\_edge} \ll T_{cloud} + T_{network\_cloud}$
+T_{total} = T_{edge} + T_{network\_edge} \ll T_{cloud} + T_{network\_cloud}
 ```$
 
 ### 11.8.3.2.2 Go实现边缘架构

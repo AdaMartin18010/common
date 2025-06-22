@@ -39,7 +39,7 @@
 ### 1.1 工作流
 
 **定义 1.1** (工作流): 工作流是一个有向图 ```latex
-$W = (N, E, \lambda)$
+W = (N, E, \lambda)
 ```，其中：
 
 ```latex
@@ -47,17 +47,17 @@ W = (N, E, \lambda)
 ```
 
 - ```latex
-$N$
+N
 ``` 是节点集合，表示活动
 - ```latex
-$E \subseteq N \times N$
+E \subseteq N \times N
 ``` 是边集合，表示控制流
 - ```latex
-$\lambda: N \rightarrow \Sigma$
+\lambda: N \rightarrow \Sigma
 ``` 是标签函数，将节点映射到活动类型
 
 **定义 1.2** (工作流实例): 工作流实例是工作流的一个执行，表示为 ```latex
-$I = (W, s, \tau)$
+I = (W, s, \tau)
 ```，其中：
 
 ```latex
@@ -65,19 +65,19 @@ I = (W, s, \tau)
 ```
 
 - ```latex
-$W$
+W
 ``` 是工作流定义
 - ```latex
-$s: N \rightarrow \{active, completed, failed\}$
+s: N \rightarrow \{active, completed, failed\}
 ``` 是状态函数
 - ```latex
-$\tau: N \rightarrow \mathbb{R}^+$
+\tau: N \rightarrow \mathbb{R}^+
 ``` 是时间戳函数
 
 ### 1.2 活动
 
 **定义 1.3** (活动): 活动是工作流中的基本执行单元，表示为 ```latex
-$A = (id, type, input, output, behavior)$
+A = (id, type, input, output, behavior)
 ```，其中：
 
 ```latex
@@ -85,19 +85,19 @@ A = (id, type, input, output, behavior)
 ```
 
 - ```latex
-$id$
+id
 ``` 是唯一标识符
 - ```latex
-$type \in \{task, subprocess, gateway\}$
+type \in \{task, subprocess, gateway\}
 ``` 是活动类型
 - ```latex
-$input$
+input
 ``` 是输入数据模式
 - ```latex
-$output$
+output
 ``` 是输出数据模式
 - ```latex
-$behavior$
+behavior
 ``` 是执行行为描述
 
 **活动类型分类**:
@@ -109,7 +109,7 @@ $behavior$
 ### 1.3 转换
 
 **定义 1.4** (转换): 转换是活动之间的连接，表示为 ```latex
-$T = (from, to, condition, action)$
+T = (from, to, condition, action)
 ```，其中：
 
 ```latex
@@ -117,16 +117,16 @@ T = (from, to, condition, action)
 ```
 
 - ```latex
-$from$
+from
 ``` 是源活动
 - ```latex
-$to$
+to
 ``` 是目标活动
 - ```latex
-$condition$
+condition
 ``` 是转换条件
 - ```latex
-$action$
+action
 ``` 是转换动作
 
 **转换类型**:
@@ -154,7 +154,7 @@ S_W = \prod_{A \in N} \text{State}_A
 ### 2.1 顺序执行
 
 **定义 2.1** (顺序执行): 活动 ```latex
-$A_1, A_2, \ldots, A_n$
+A_1, A_2, \ldots, A_n
 ``` 的顺序执行定义为：
 
 ```latex
@@ -170,7 +170,7 @@ $A_1, A_2, \ldots, A_n$
 ### 2.2 并行执行
 
 **定义 2.2** (并行执行): 活动 ```latex
-$A_1, A_2, \ldots, A_n$
+A_1, A_2, \ldots, A_n
 ``` 的并行执行定义为：
 
 ```latex
@@ -192,11 +192,11 @@ A_1 \parallel A_2 = A_2 \parallel A_1
 ### 2.3 条件分支
 
 **定义 2.3** (条件分支): 基于条件 ```latex
-$c$
+c
 ``` 在活动 ```latex
-$A_1$
+A_1
 ``` 和 ```latex
-$A_2$
+A_2
 ``` 之间选择：
 
 ```latex
@@ -212,9 +212,9 @@ $A_2$
 ### 2.4 循环
 
 **定义 2.4** (循环): 活动 ```latex
-$A$
+A
 ``` 在条件 ```latex
-$c$
+c
 ``` 下重复执行：
 
 ```latex
@@ -232,9 +232,9 @@ $c$
 ### 3.1 数据传递
 
 **定义 3.1** (数据传递): 从活动 ```latex
-$A_1$
+A_1
 ``` 到活动 ```latex
-$A_2$
+A_2
 ``` 的数据传递定义为：
 
 ```latex
@@ -242,13 +242,13 @@ $A_2$
 ```
 
 其中 ```latex
-$\sigma$
+\sigma
 ``` 是数据转换函数。
 
 ### 3.2 数据转换
 
 **定义 3.2** (数据转换): 数据转换函数 ```latex
-$\sigma: D_1 \rightarrow D_2$
+\sigma: D_1 \rightarrow D_2
 ``` 满足：
 
 ```latex
@@ -264,7 +264,7 @@ $\sigma: D_1 \rightarrow D_2$
 ```
 
 其中 ```latex
-$\oplus$
+\oplus
 ``` 是聚合操作符。
 
 ## 4. 异常处理概念
@@ -272,7 +272,7 @@ $\oplus$
 ### 4.1 错误处理
 
 **定义 4.1** (错误处理): 活动 ```latex
-$A$
+A
 ``` 的错误处理定义为：
 
 ```latex
@@ -280,17 +280,17 @@ $A$
 ```
 
 其中 ```latex
-$E$
+E
 ``` 是错误处理活动，```latex
-$\oplus$
+\oplus
 ``` 表示错误处理组合。
 
 ### 4.2 补偿机制
 
 **定义 4.2** (补偿): 活动 ```latex
-$A$
+A
 ``` 的补偿活动 ```latex
-$\bar{A}$
+\bar{A}
 ``` 满足：
 
 ```latex
@@ -298,13 +298,13 @@ A \circ \bar{A} \sim \text{skip}
 ```
 
 其中 ```latex
-$\sim$
+\sim
 ``` 表示语义等价。
 
 ### 4.3 重试策略
 
 **定义 4.3** (重试): 活动 ```latex
-$A$
+A
 ``` 的重试策略定义为：
 
 ```latex
@@ -318,82 +318,82 @@ $A$
 | 符号 | 含义 | 定义 |
 |------|------|------|
 | ```latex
-$W$
+W
 ``` | 工作流 | 有向图 ```latex
-$(N, E, \lambda)$
+(N, E, \lambda)
 ``` |
 | ```latex
-$A$
+A
 ``` | 活动 | 执行单元 |
 | ```latex
-$T$
+T
 ``` | 转换 | 活动间连接 |
 | ```latex
-$S$
+S
 ``` | 状态 | 执行状态 |
 | ```latex
-$\circ$
+\circ
 ``` | 顺序组合 | 活动顺序执行 |
 | ```latex
-$\parallel$
+\parallel
 ``` | 并行组合 | 活动并行执行 |
 | ```latex
-$\oplus$
+\oplus
 ``` | 错误处理组合 | 错误处理 |
 | ```latex
-$\sim$
+\sim
 ``` | 语义等价 | 行为等价 |
 
 ### 5.2 公理系统
 
 **公理系统 ```latex
-$\mathcal{A}$
+\mathcal{A}
 ```**:
 
 1. **结合律**:
 
     ```latex
-    (A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)
-    ```
+(A_1 \circ A_2) \circ A_3 = A_1 \circ (A_2 \circ A_3)
+```
 
 2. **交换律**:
 
     ```latex
-    A_1 \parallel A_2 = A_2 \parallel A_1
-    ```
+A_1 \parallel A_2 = A_2 \parallel A_1
+```
 
 3. **分配律**: ```latex
-$A_1 \circ (A_2 \parallel A_3) = (A_1 \circ A_2) \parallel (A_1 \circ A_3)$
+A_1 \circ (A_2 \parallel A_3) = (A_1 \circ A_2) \parallel (A_1 \circ A_3)
 ```
 4. **单位元**: ```latex
-$A \circ \text{skip} = \text{skip} \circ A = A$
+A \circ \text{skip} = \text{skip} \circ A = A
 ```
 5. **幂等律**: ```latex
-$A \parallel A = A$
+A \parallel A = A
 ```
 
 ### 5.3 推理规则
 
 **推理规则 ```latex
-$\mathcal{R}$
+\mathcal{R}
 ```**:
 
 1. **替换规则**: 如果 ```latex
-$A_1 = A_2$
+A_1 = A_2
 ```，则 ```latex
-$C[A_1] = C[A_2]$
+C[A_1] = C[A_2]
 ```
 2. **上下文规则**: 如果 ```latex
-$A_1 \sim A_2$
+A_1 \sim A_2
 ```，则 ```latex
-$C[A_1] \sim C[A_2]$
+C[A_1] \sim C[A_2]
 ```
 3. **组合规则**: 如果 ```latex
-$A_1 \sim A_2$
+A_1 \sim A_2
 ``` 且 ```latex
-$B_1 \sim B_2$
+B_1 \sim B_2
 ```，则 ```latex
-$A_1 \circ B_1 \sim A_2 \circ B_2$
+A_1 \circ B_1 \sim A_2 \circ B_2
 ```
 
 ## 6. Go语言映射

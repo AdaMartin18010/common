@@ -8,21 +8,19 @@
 
 **形式化定义**：
 设 ```latex
-$A$
+A
 ``` 为应用程序集合，```latex
-$T$
+T
 ``` 为威胁集合，```latex
-$V$
+V
 ``` 为漏洞集合。
 应用安全函数 ```latex
-$S: A \times T \times V \rightarrow \{0,1\}$
+S: A \times T \times V \rightarrow \{0,1\}
 ``` 定义为：
-```latex
-$$S(a,t,v) = \begin{cases}
+$S(a,t,v) = \begin{cases}
 1 & \text{if application } a \text{ is secure against threat } t \text{ and vulnerability } v \\
 0 & \text{otherwise}
-\end{cases}$$
-```
+\end{cases}$
 
 ### 3.1.2 应用安全威胁模型
 
@@ -34,7 +32,7 @@ $$S(a,t,v) = \begin{cases}
 
 **威胁概率计算**：
 $```latex
-$P(Attack) = P(Vulnerability) \times P(Exploit) \times P(Impact)$
+P(Attack) = P(Vulnerability) \times P(Exploit) \times P(Impact)
 ```$
 
 ## 3.2 Web应用安全
@@ -161,7 +159,7 @@ func (s *SecureUserService) CreateUser(username, email, password string) error {
 
     // 使用参数化查询
     query := "INSERT INTO users (username, email, password_hash) VALUES (```latex
-$1, $
+1,
 ```2, $3)"
     _, err = s.db.Exec(query, username, email, hashedPassword)
     if err != nil {

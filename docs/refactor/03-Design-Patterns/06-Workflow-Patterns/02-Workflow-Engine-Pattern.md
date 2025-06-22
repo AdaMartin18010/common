@@ -73,52 +73,52 @@
 
 **定义 2.1 (工作流)**
 工作流是一个有向图 ```latex
-$W = (N, E, \lambda, \mu)$
+W = (N, E, \lambda, \mu)
 ```，其中：
 
 - ```latex
-$N$
+N
 ``` 是节点集合（任务、网关、事件）
 - ```latex
-$E \subseteq N \times N$
+E \subseteq N \times N
 ``` 是边集合（控制流）
 - ```latex
-$\lambda: N \rightarrow T$
+\lambda: N \rightarrow T
 ``` 是节点类型函数
 - ```latex
-$\mu: E \rightarrow C$
+\mu: E \rightarrow C
 ``` 是边条件函数
 
 **定义 2.2 (工作流实例)**
 工作流实例是工作流的一个执行实例：
 $```latex
-$I = (W, s, v, h)$
+I = (W, s, v, h)
 ```$
 其中 ```latex
-$s$
+s
 ``` 是当前状态，```latex
-$v$
+v
 ``` 是变量集合，```latex
-$h$
+h
 ``` 是执行历史。
 
 ### 2.2 执行语义
 
 **定义 2.3 (执行步骤)**
 执行步骤是一个三元组 ```latex
-$(n, a, n')$
+(n, a, n')
 ```，表示从节点 ```latex
-$n$
+n
 ``` 执行动作 ```latex
-$a$
+a
 ``` 后到达节点 ```latex
-$n'$
+n'
 ```。
 
 **定义 2.4 (执行路径)**
 执行路径是执行步骤的序列：
 $```latex
-$\pi = \langle (n_0, a_0, n_1), (n_1, a_1, n_2), ..., (n_{k-1}, a_{k-1}, n_k) \rangle$
+\pi = \langle (n_0, a_0, n_1), (n_1, a_1, n_2), ..., (n_{k-1}, a_{k-1}, n_k) \rangle
 ```$
 
 ### 2.3 工作流正确性
@@ -142,14 +142,14 @@ $\pi = \langle (n_0, a_0, n_1), (n_1, a_1, n_2), ..., (n_{k-1}, a_{k-1}, n_k) \r
 
 **定义 3.1 (控制流图)**
 控制流图 ```latex
-$G = (V, E)$
+G = (V, E)
 ``` 是一个有向图，其中：
 
 - ```latex
-$V$
+V
 ``` 是基本块集合
 - ```latex
-$E$
+E
 ``` 是控制流边集合
 
 **定理 3.1 (控制流图性质)**
@@ -159,40 +159,40 @@ $E$
 
 **定义 3.2 (状态转换系统)**
 状态转换系统是一个三元组 ```latex
-$(S, A, \rightarrow)$
+(S, A, \rightarrow)
 ```，其中：
 
 - ```latex
-$S$
+S
 ``` 是状态集合
 - ```latex
-$A$
+A
 ``` 是动作集合
 - ```latex
-$\rightarrow \subseteq S \times A \times S$
+\rightarrow \subseteq S \times A \times S
 ``` 是转换关系
 
 **定理 3.2 (状态可达性)**
 状态 ```latex
-$s'$
+s'
 ``` 从状态 ```latex
-$s$
+s
 ``` 可达，当且仅当存在动作序列 ```latex
-$\sigma$
+\sigma
 ``` 使得 ```latex
-$s \xrightarrow{\sigma} s'$
+s \xrightarrow{\sigma} s'
 ```。
 
 ### 3.3 并发控制
 
 **定义 3.3 (并发执行)**
 两个任务 ```latex
-$t_1$
+t_1
 ``` 和 ```latex
-$t_2$
+t_2
 ``` 可以并发执行，当且仅当：
 $```latex
-$\text{not } (t_1 \rightarrow t_2 \lor t_2 \rightarrow t_1)$
+\text{not } (t_1 \rightarrow t_2 \lor t_2 \rightarrow t_1)
 ```$
 
 **定理 3.3 (并发安全性)**
@@ -231,19 +231,19 @@ type Task interface {
 **定义 4.1 (排他网关)**
 排他网关只选择一个输出分支：
 $```latex
-$|\text{out}(g)| = 1$
+|\text{out}(g)| = 1
 ```$
 
 **定义 4.2 (并行网关)**
 并行网关激活所有输出分支：
 $```latex
-$|\text{out}(g)| = |\text{enabled}(g)|$
+|\text{out}(g)| = |\text{enabled}(g)|
 ```$
 
 **定义 4.3 (包容网关)**
 包容网关激活满足条件的输出分支：
 $```latex
-$|\text{out}(g)| \geq 1$
+|\text{out}(g)| \geq 1
 ```$
 
 ### 4.3 事件类型
@@ -294,19 +294,19 @@ type WorkflowDefinition struct {
 **定义 5.1 (顺序执行)**
 任务按预定义顺序依次执行：
 $```latex
-$\forall i < j: t_i \prec t_j$
+\forall i < j: t_i \prec t_j
 ```$
 
 **定义 5.2 (并行执行)**
 满足条件的任务可以并行执行：
 $```latex
-$t_i \parallel t_j \Leftrightarrow \text{not } (t_i \rightarrow t_j \lor t_j \rightarrow t_i)$
+t_i \parallel t_j \Leftrightarrow \text{not } (t_i \rightarrow t_j \lor t_j \rightarrow t_i)
 ```$
 
 **定义 5.3 (条件执行)**
 任务根据条件决定是否执行：
 $```latex
-$\text{execute}(t) \Leftrightarrow \text{condition}(t, \text{context})$
+\text{execute}(t) \Leftrightarrow \text{condition}(t, \text{context})
 ```$
 
 ## 6. Go语言实现
@@ -983,39 +983,39 @@ func main() {
 
 **定理 7.1 (工作流执行时间复杂度)**
 工作流执行的时间复杂度为 ```latex
-$O(|N| + |E|)$
+O(|N| + |E|)
 ```，其中 ```latex
-$|N|$
+|N|
 ``` 是节点数量，```latex
-$|E|$
+|E|
 ``` 是边数量。
 
 **定理 7.2 (任务调度时间复杂度)**
 任务调度的时间复杂度为 ```latex
-$O(\log n)$
+O(\log n)
 ```，其中 ```latex
-$n$
+n
 ``` 是待执行任务数量。
 
 ### 7.2 空间复杂度
 
 **定理 7.3 (工作流引擎空间复杂度)**
 工作流引擎的空间复杂度为 ```latex
-$O(|W| \times |I|)$
+O(|W| \times |I|)
 ```，其中 ```latex
-$|W|$
+|W|
 ``` 是工作流定义数量，```latex
-$|I|$
+|I|
 ``` 是实例数量。
 
 ### 7.3 并发性能
 
 **定理 7.4 (并发执行性能)**
 在 ```latex
-$k$
+k
 ``` 个处理器上，并发执行的工作流性能提升为：
 $```latex
-$\text{Speedup} = \min(k, \text{parallelism})$
+\text{Speedup} = \min(k, \text{parallelism})
 ```$
 
 ## 8. 应用场景

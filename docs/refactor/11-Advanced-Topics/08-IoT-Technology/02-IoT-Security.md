@@ -53,18 +53,16 @@ IoT安全威胁可以分为以下几类：
 
 **证明**:
 设威胁概率为 ```latex
-$P$
+P
 ```，影响程度为 ```latex
-$I$
+I
 ```，则风险 ```latex
-$R$
+R
 ``` 为：
 
 ```latex
-$```latex
-$R = P \times I$
+$R = P \times I
 ```$
-```
 
 ### 11.8.2.2.2 Go实现威胁分析
 
@@ -140,16 +138,14 @@ func (ta *ThreatAnalyzer) GetHighRiskThreats(threshold float64) []*Threat {
 
 **证明**:
 设单因子认证被破解的概率为 ```latex
-$p$
+p
 ```，则 ```latex
-$n$
+n
 ``` 因子认证被破解的概率为：
 
 ```latex
-$```latex
-$P_{break} = p^n$
+$P_{break} = p^n
 ```$
-```
 
 ### 11.8.2.3.2 Go实现认证系统
 
