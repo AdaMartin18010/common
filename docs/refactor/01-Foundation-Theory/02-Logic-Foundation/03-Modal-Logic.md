@@ -629,4 +629,4 @@ func buildArchitectureModel(arch *SoftwareArchitecture) *KripkeModel {
 - 实时系统验证
 - 安全协议分析
 
-通过Go语言的实现，我们可以将这些理论概念转化为实用的工程工具，为软件工程提供可靠的形式化验证基础。 
+通过Go语言的实现，我们可以将这些理论概念转化为实用的工程工具，为软件工程提供可靠的形式化验证基础。

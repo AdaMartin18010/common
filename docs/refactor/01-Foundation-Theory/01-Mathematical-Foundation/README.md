@@ -874,4 +874,4 @@ func (gd *GradientDescent) computeGradient(f func([]float64) float64, x []float6
 
 9. **计算数学**:
    - Burden, R. L., & Faires, J. D. (2010). *Numerical Analysis*. Cengage Learning.
-   - Nocedal, J., & Wright, S. J. (2006). *Numerical Optimization*. Springer-Verlag. 
+   - Nocedal, J., & Wright, S. J. (2006). *Numerical Optimization*. Springer-Verlag.

@@ -343,4 +343,4 @@ func (es *ExpertSystem) Explain(conclusion string) string {
 - 自动定理证明
 - 人工智能推理
 
-通过Go语言的实现，我们可以将这些理论概念转化为实用的工程解决方案。 
+通过Go语言的实现，我们可以将这些理论概念转化为实用的工程解决方案。

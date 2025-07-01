@@ -690,4 +690,4 @@ func (krs *KnowledgeReasoningSystem) QueryAncestor(person1, person2 string) bool
 - 自动定理证明
 - 形式化方法
 
-通过Go语言的实现，我们可以将这些理论概念转化为实用的工程工具，为软件工程提供强大的逻辑推理能力。 
+通过Go语言的实现，我们可以将这些理论概念转化为实用的工程工具，为软件工程提供强大的逻辑推理能力。
