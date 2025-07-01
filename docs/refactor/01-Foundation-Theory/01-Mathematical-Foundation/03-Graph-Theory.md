@@ -6,7 +6,22 @@
   - [目录](#目录)
   - [1. 基础定义](#1-基础定义)
     - [1.1 图的基本概念](#11-图的基本概念)
+    - [1.2 图的类型](#12-图的类型)
+    - [1.3 图的表示](#13-图的表示)
+  - [2. 图的性质](#2-图的性质)
+    - [2.1 连通性](#21-连通性)
+    - [2.2 路径和回路](#22-路径和回路)
+    - [2.3 树和森林](#23-树和森林)
+  - [3. 图的算法](#3-图的算法)
+    - [3.1 遍历算法](#31-遍历算法)
     - [3.2 最短路径算法](#32-最短路径算法)
+    - [3.3 最小生成树](#33-最小生成树)
+  - [4. 特殊图类](#4-特殊图类)
+    - [4.1 平面图](#41-平面图)
+    - [4.2 欧拉图](#42-欧拉图)
+    - [4.3 哈密顿图](#43-哈密顿图)
+  - [5. Go语言实现](#5-go语言实现)
+    - [5.1 数据结构](#51-数据结构)
     - [5.2 基础算法实现](#52-基础算法实现)
     - [5.3 高级算法实现](#53-高级算法实现)
   - [6. 应用实例](#6-应用实例)
@@ -19,97 +34,41 @@
 
 ### 1.1 图的基本概念
 
-**定义 1.1 (图)**
-图 ```latex
-G = (V, E)
+**定义 1.1** (图)
+图 $G = (V, E)$ 是一个有序对，其中：
 
-``` 是一个有序对，其中：
+- $V$ 是顶点集（vertex set），$V \neq \emptyset$
+- $E$ 是边集（edge set），$E \subseteq V \times V$
 
-- ```latex
-V
-``` 是顶点集（vertex set），```latex
-V \neq \emptyset
-```
+**定义 1.2** (有向图)
+有向图 $G = (V, E)$ 中，边集 $E$ 的元素是有序对 $(u, v)$，表示从顶点 $u$ 到顶点 $v$ 的有向边。
 
-- ```latex
-
-E
-```是边集（edge set），```latex
-E \subseteq V \times V
-
-```
-
-**定义 1.2 (有向图)**
-有向图 ```latex
-G = (V, E)
-``` 中，边集 ```latex
-E
-``` 的元素是有序对 ```latex
-(u, v)
-```，表示从顶点 ```latex
-u
-``` 到顶点 ```latex
-v
-``` 的有向边。
-
-**定义 1.3 (无向图)**
-无向图 ```latex
-G = (V, E)
-``` 中，边集 ```latex
-E
-``` 的元素是无序对 ```latex
-\{u, v\}
-```，表示顶点 ```latex
-u
-``` 和 ```latex
-v
-``` 之间的无向边。
+**定义 1.3** (无向图)
+无向图 $G = (V, E)$ 中，边集 $E$ 的元素是无序对 $\{u, v\}$，表示顶点 $u$ 和 $v$ 之间的无向边。
 
 ### 1.2 图的类型
 
-**定义 1.4 (完全图)**
-完全图 ```latex
-K_n
-``` 是包含 ```latex
-n
-``` 个顶点的图，其中任意两个顶点之间都有一条边。
+**定义 1.4** (完全图)
+完全图 $K_n$ 是包含 $n$ 个顶点的图，其中任意两个顶点之间都有一条边。
 
-**定义 1.5 (二分图)**
-二分图 ```latex
-G = (V_1 \cup V_2, E)
-``` 中，顶点集可以划分为两个不相交的子集 ```latex
-V_1
-``` 和 ```latex
-V_2
-```，使得每条边的两个端点分别属于不同的子集。
+**定义 1.5** (二分图)
+二分图 $G = (V_1 \cup V_2, E)$ 中，顶点集可以划分为两个不相交的子集 $V_1$ 和 $V_2$，使得每条边的两个端点分别属于不同的子集。
 
-**定义 1.6 (加权图)**
-加权图 ```latex
-G = (V, E, w)
-``` 中，每条边 ```latex
-e \in E
-``` 都有一个权重 ```latex
-w(e) \in \mathbb{R}
-```。
+**定义 1.6** (加权图)
+加权图 $G = (V, E, w)$ 中，每条边 $e \in E$ 都有一个权重 $w(e) \in \mathbb{R}$。
 
 ### 1.3 图的表示
 
 **邻接矩阵表示**：
 
-对于图 ```latex
-G = (V, E)
-```，邻接矩阵 ```latex
-A
-``` 是一个 ```latex
-|V| \times |V|
-``` 的矩阵，其中：
+对于图 $G = (V, E)$，邻接矩阵 $A$ 是一个 $|V| \times |V|$ 的矩阵，其中：
 
-$
+$$
 A[i][j] = \begin{cases}
 1 & \text{if } (i,j) \in E \\
 0 & \text{otherwise}
 \end{cases}
-$
+$$
 
 **邻接表表示**：
 每个顶点维护一个包含其邻居顶点的列表。
@@ -118,32 +77,14 @@ $
 
 ### 2.1 连通性
 
-**定义 2.1 (连通图)**
-无向图 ```latex
-G
-``` 是连通的，当且仅当对于任意两个顶点 ```latex
-u, v \in V
-```，存在从 ```latex
-u
-``` 到 ```latex
-v
-``` 的路径。
+**定义 2.1** (连通图)
+无向图 $G$ 是连通的，当且仅当对于任意两个顶点 $u, v \in V$，存在从 $u$ 到 $v$ 的路径。
 
-**定义 2.2 (强连通图)**
-有向图 ```latex
-G
-``` 是强连通的，当且仅当对于任意两个顶点 ```latex
-u, v \in V
-```，存在从 ```latex
-u
-``` 到 ```latex
-v
-``` 的有向路径。
+**定义 2.2** (强连通图)
+有向图 $G$ 是强连通的，当且仅当对于任意两个顶点 $u, v \in V$，存在从 $u$ 到 $v$ 的有向路径。
 
-**定理 2.1 (连通性判定)**
-图 ```latex
-G = (V, E)
-``` 是连通的，当且仅当从任意顶点开始的深度优先搜索或广度优先搜索能够访问所有顶点。
+**定理 2.1** (连通性判定)
+图 $G = (V, E)$ 是连通的，当且仅当从任意顶点开始的深度优先搜索或广度优先搜索能够访问所有顶点。
 
 **证明**：
 
@@ -152,22 +93,16 @@ G = (V, E)
 
 ### 2.2 路径和回路
 
-**定义 2.3 (路径)**
-路径是顶点序列 ```latex
-v_0, v_1, \ldots, v_k
-```，其中 ```latex
-(v_i, v_{i+1}) \in E
-``` 对所有 ```latex
-0 \leq i < k
-``` 成立。
+**定义 2.3** (路径)
+路径是顶点序列 $v_0, v_1, \ldots, v_k$，其中 $(v_i, v_{i+1}) \in E$ 对所有 $0 \leq i < k$ 成立。
 
-**定义 2.4 (简单路径)**
+**定义 2.4** (简单路径)
 简单路径是不包含重复顶点的路径。
 
-**定义 2.5 (回路)**
+**定义 2.5** (回路)
 回路是起点和终点相同的路径。
 
-**定理 2.2 (路径存在性)**
+**定理 2.2** (路径存在性)
 在连通图中，任意两个顶点之间都存在简单路径。
 
 **证明**：
@@ -175,456 +110,222 @@ v_0, v_1, \ldots, v_k
 
 ### 2.3 树和森林
 
-**定义 2.6 (树)**
+**定义 2.6** (树)
 树是连通的无环无向图。
 
-**定义 2.7 (森林)**
+**定义 2.7** (森林)
 森林是多个树的并集。
 
-**定理 2.3 (树的性质)**
-对于包含 ```latex
-n
-``` 个顶点的树 ```latex
-T
-```：
+**定理 2.3** (树的性质)
+对于包含 $n$ 个顶点的树 $T$：
 
-1. ```latex
-T
-``` 有 ```latex
-n-1
-``` 条边
-2. ```latex
-T
-``` 是连通的
-3. ```latex
-T
-``` 是无环的
-4. 任意两个顶点之间有唯一路径
+1. $T$ 有 $n-1$ 条边
+2. $T$ 是连通的
+3. $T$ 中任意两个顶点之间有唯一的简单路径
+4. 删除任意一条边会使图不连通
+5. 添加任意一条边会形成一个环
 
-**证明**：
-使用数学归纳法。对于 ```latex
-n=1
-```，结论显然成立。假设对于 ```latex
-n=k
-``` 成立，考虑 ```latex
-n=k+1
-``` 的树。删除任意一条边，得到两个连通分量，每个都是树，根据归纳假设，总边数为 ```latex
-(k_1-1) + (k_2-1) + 1 = k
-```，其中 ```latex
-k_1 + k_2 = k+1
-```。
-
-## 3. 图算法
+## 3. 图的算法
 
 ### 3.1 遍历算法
 
-**深度优先搜索 (DFS)**：
-
 ```go
-func DFS(graph map[int][]int, start int) []int {
-    visited := make(map[int]bool)
-    result := []int{}
-
-    var dfs func(int)
-    dfs = func(node int) {
-        if visited[node] {
-            return
-        }
-        visited[node] = true
-        result = append(result, node)
-
-        for _, neighbor := range graph[node] {
-            dfs(neighbor)
+// 深度优先搜索
+func DFS(g *Graph, start Vertex, visited map[Vertex]bool) {
+    if visited[start] {
+        return
+    }
+    
+    visited[start] = true
+    fmt.Printf("Visit vertex: %v\n", start)
+    
+    for _, neighbor := range g.Neighbors(start) {
+        if !visited[neighbor] {
+            DFS(g, neighbor, visited)
         }
     }
-
-    dfs(start)
-    return result
 }
-```
 
-**广度优先搜索 (BFS)**：
-
-```go
-func BFS(graph map[int][]int, start int) []int {
-    visited := make(map[int]bool)
-    result := []int{}
-    queue := []int{start}
+// 广度优先搜索
+func BFS(g *Graph, start Vertex) {
+    visited := make(map[Vertex]bool)
+    queue := []Vertex{start}
     visited[start] = true
-
+    
     for len(queue) > 0 {
-        node := queue[0]
+        current := queue[0]
         queue = queue[1:]
-        result = append(result, node)
-
-        for _, neighbor := range graph[node] {
+        fmt.Printf("Visit vertex: %v\n", current)
+        
+        for _, neighbor := range g.Neighbors(current) {
             if !visited[neighbor] {
                 visited[neighbor] = true
                 queue = append(queue, neighbor)
             }
         }
     }
-
-    return result
 }
 ```
 
 ### 3.2 最短路径算法
 
-**Dijkstra算法**：
-
 ```go
-type Edge struct {
-    To     int
-    Weight int
-}
-
-func Dijkstra(graph map[int][]Edge, start int) map[int]int {
-    distances := make(map[int]int)
-    for node := range graph {
-        distances[node] = math.MaxInt32
+// Dijkstra算法
+func Dijkstra(g *WeightedGraph, start Vertex) map[Vertex]float64 {
+    dist := make(map[Vertex]float64)
+    visited := make(map[Vertex]bool)
+    
+    // 初始化距离
+    for v := range g.Vertices() {
+        dist[v] = math.Inf(1)
     }
-    distances[start] = 0
-
-    pq := &PriorityQueue{}
-    heap.Push(pq, &Item{node: start, distance: 0})
-
-    for pq.Len() > 0 {
-        item := heap.Pop(pq).(*Item)
-        node := item.node
-        dist := item.distance
-
-        if dist > distances[node] {
-            continue
-        }
-
-        for _, edge := range graph[node] {
-            newDist := dist + edge.Weight
-            if newDist < distances[edge.To] {
-                distances[edge.To] = newDist
-                heap.Push(pq, &Item{node: edge.To, distance: newDist})
+    dist[start] = 0
+    
+    for len(visited) < len(g.Vertices()) {
+        // 找到未访问的最小距离顶点
+        u := getMinDistVertex(dist, visited)
+        visited[u] = true
+        
+        // 更新邻居距离
+        for _, v := range g.Neighbors(u) {
+            if !visited[v] {
+                newDist := dist[u] + g.Weight(u, v)
+                if newDist < dist[v] {
+                    dist[v] = newDist
+                }
             }
         }
     }
-
-    return distances
+    
+    return dist
 }
 ```
 
-**定理 3.1 (Dijkstra算法正确性)**
-Dijkstra算法能够正确计算从起点到所有其他顶点的最短路径。
-
-**证明**：
-使用反证法。假设存在某个顶点 ```latex
-v
-```，算法计算的距离 ```latex
-d[v]
-``` 不是最短距离。设 ```latex
-d^*[v]
-``` 是真正的最短距离，则 ```latex
-d[v] > d^*[v]
-```。考虑最短路径上的最后一个顶点 ```latex
-u
-```，根据算法的贪心性质，```latex
-d[u] = d^*[u]
-```，这与 ```latex
-d[v] > d^*[v]
-
-``` 矛盾。
-
-### 3.3 最小生成树算法
-
-**Kruskal算法**：
+### 3.3 最小生成树
 
 ```go
-type Edge struct {
-    From   int
-    To     int
-    Weight int
-}
-
-func Kruskal(edges []Edge, n int) []Edge {
-    sort.Slice(edges, func(i, j int) bool {
-        return edges[i].Weight < edges[j].Weight
-    })
-
-    uf := NewUnionFind(n)
-    result := []Edge{}
-
-    for _, edge := range edges {
-        if uf.Find(edge.From) != uf.Find(edge.To) {
-            uf.Union(edge.From, edge.To)
-            result = append(result, edge)
+// Kruskal算法
+func Kruskal(g *WeightedGraph) []Edge {
+    var mst []Edge
+    edges := g.SortedEdges()
+    uf := NewUnionFind(g.Vertices())
+    
+    for _, e := range edges {
+        if !uf.Connected(e.From, e.To) {
+            uf.Union(e.From, e.To)
+            mst = append(mst, e)
         }
     }
+    
+    return mst
+}
 
-    return result
+// Prim算法
+func Prim(g *WeightedGraph, start Vertex) []Edge {
+    var mst []Edge
+    visited := make(map[Vertex]bool)
+    pq := NewPriorityQueue()
+    
+    visited[start] = true
+    for _, e := range g.EdgesFrom(start) {
+        pq.Push(e)
+    }
+    
+    for !pq.Empty() && len(mst) < len(g.Vertices())-1 {
+        e := pq.Pop()
+        if visited[e.To] {
+            continue
+        }
+        
+        visited[e.To] = true
+        mst = append(mst, e)
+        
+        for _, next := range g.EdgesFrom(e.To) {
+            if !visited[next.To] {
+                pq.Push(next)
+            }
+        }
+    }
+    
+    return mst
 }
 ```
 
-**定理 3.2 (Kruskal算法正确性)**
-Kruskal算法能够找到图的最小生成树。
+## 4. 特殊图类
 
-**证明**：
-使用归纳法。假设算法已经选择了 ```latex
-k
-``` 条边，形成森林 ```latex
-F
-```。考虑下一条边 ```latex
-e
-```，如果 ```latex
-e
-``` 连接 ```latex
-F
-``` 中的两个不同连通分量，那么 ```latex
-e
-``` 属于某个最小生成树（根据割性质），因此算法选择 ```latex
-e
+### 4.1 平面图
 
-``` 是正确的。
+**定义 4.1** (平面图)
+平面图是可以在平面上画出的图，使得边只在顶点处相交。
 
-## 4. 形式化定义
+**定理 4.1** (欧拉公式)
+对于连通平面图 $G$，设 $v$ 是顶点数，$e$ 是边数，$f$ 是面数，则：
+$$v - e + f = 2$$
 
-### 4.1 图的数学定义
+### 4.2 欧拉图
 
-**定义 4.1 (图的同构)**
-两个图 ```latex
-G_1 = (V_1, E_1)
-``` 和 ```latex
-G_2 = (V_2, E_2)
-``` 是同构的，当且仅当存在双射 ```latex
-f: V_1 \rightarrow V_2
-```，使得 ```latex
-(u, v) \in E_1
-``` 当且仅当 ```latex
-(f(u), f(v)) \in E_2
-```。
+**定义 4.2** (欧拉路径)
+欧拉路径是遍历图中每条边恰好一次的路径。
 
-**定义 4.2 (图的补图)**
-图 ```latex
-G = (V, E)
-``` 的补图是 ```latex
-G^c = (V, E^c)
-```，其中 ```latex
-E^c = V \times V \setminus E
-```。
+**定义 4.3** (欧拉回路)
+欧拉回路是遍历图中每条边恰好一次的回路。
 
-**定义 4.3 (图的度)**
-顶点 ```latex
-v
-``` 的度 ```latex
-deg(v)
-``` 是与 ```latex
-v
-``` 相邻的顶点数量。
+**定理 4.2** (欧拉图判定)
+无向图存在欧拉回路的充要条件是：图是连通的，且每个顶点的度数都是偶数。
 
-**定理 4.1 (握手定理)**
-对于图 ```latex
-G = (V, E)
-```，```latex
-\sum_{v \in V} deg(v) = 2|E|
-```。
+### 4.3 哈密顿图
 
-**证明**：
-每条边贡献给两个顶点的度，因此所有顶点的度之和等于边数的两倍。
+**定义 4.4** (哈密顿路径)
+哈密顿路径是经过图中每个顶点恰好一次的路径。
 
-### 4.2 图的性质定理
-
-**定理 4.2 (欧拉回路存在性)**
-连通图 ```latex
-G
-``` 存在欧拉回路，当且仅当所有顶点的度都是偶数。
-
-**证明**：
-
-- **必要性**：欧拉回路经过每条边恰好一次，因此每个顶点被进入和离开的次数相等，度为偶数。
-- **充分性**：使用构造性证明，从任意顶点开始，每次选择未使用的边，直到无法继续，然后回溯并寻找其他路径。
-
-**定理 4.3 (哈密顿回路存在性)**
-对于 ```latex
-n \geq 3
-``` 的完全图 ```latex
-K_n
-```，存在哈密顿回路。
-
-**证明**：
-使用构造性证明。对于顶点 ```latex
-v_1, v_2, \ldots, v_n
-```，路径 ```latex
-v_1 \rightarrow v_2 \rightarrow \cdots \rightarrow v_n \rightarrow v_1
-``` 是一个哈密顿回路。
-
-### 4.3 算法正确性证明
-
-**定理 4.4 (DFS正确性)**
-DFS能够访问从起点可达的所有顶点。
-
-**证明**：
-使用归纳法。对于距离起点为 ```latex
-k
-``` 的顶点，DFS会在访问距离为 ```latex
-k-1
-``` 的顶点后访问它们。
-
-**定理 4.5 (BFS正确性)**
-BFS能够按照距离起点的递增顺序访问所有可达顶点。
-
-**证明**：
-BFS使用队列，确保距离较小的顶点先被访问。
+**定义 4.5** (哈密顿回路)
+哈密顿回路是经过图中每个顶点恰好一次的回路。
 
 ## 5. Go语言实现
 
-### 5.1 图的数据结构
+### 5.1 数据结构
 
 ```go
-// 图的基本接口
+// 图接口
 type Graph interface {
-    AddVertex(v int)
-    AddEdge(from, to int)
-    RemoveVertex(v int)
-    RemoveEdge(from, to int)
-    GetNeighbors(v int) []int
-    GetVertices() []int
-    GetEdges() [][2]int
-    IsConnected() bool
-    HasCycle() bool
+    AddVertex(v Vertex)
+    AddEdge(from, to Vertex)
+    RemoveVertex(v Vertex)
+    RemoveEdge(from, to Vertex)
+    Vertices() []Vertex
+    Edges() []Edge
+    Neighbors(v Vertex) []Vertex
+    HasEdge(from, to Vertex) bool
 }
 
-// 邻接表实现的图
-type AdjacencyListGraph struct {
-    vertices map[int][]int
-    directed bool
+// 加权图接口
+type WeightedGraph interface {
+    Graph
+    SetWeight(from, to Vertex, weight float64)
+    Weight(from, to Vertex) float64
 }
 
-func NewAdjacencyListGraph(directed bool) *AdjacencyListGraph {
-    return &AdjacencyListGraph{
-        vertices: make(map[int][]int),
-        directed: directed,
+// 邻接表实现
+type AdjListGraph struct {
+    vertices map[Vertex]map[Vertex]float64
+}
+
+func NewAdjListGraph() *AdjListGraph {
+    return &AdjListGraph{
+        vertices: make(map[Vertex]map[Vertex]float64),
     }
 }
 
-func (g *AdjacencyListGraph) AddVertex(v int) {
+func (g *AdjListGraph) AddVertex(v Vertex) {
     if _, exists := g.vertices[v]; !exists {
-        g.vertices[v] = []int{}
+        g.vertices[v] = make(map[Vertex]float64)
     }
 }
 
-func (g *AdjacencyListGraph) AddEdge(from, to int) {
+func (g *AdjListGraph) AddEdge(from, to Vertex, weight float64) {
     g.AddVertex(from)
     g.AddVertex(to)
-    g.vertices[from] = append(g.vertices[from], to)
-    if !g.directed {
-        g.vertices[to] = append(g.vertices[to], from)
-    }
-}
-
-func (g *AdjacencyListGraph) GetNeighbors(v int) []int {
-    if neighbors, exists := g.vertices[v]; exists {
-        return neighbors
-    }
-    return []int{}
-}
-
-func (g *AdjacencyListGraph) GetVertices() []int {
-    vertices := make([]int, 0, len(g.vertices))
-    for v := range g.vertices {
-        vertices = append(vertices, v)
-    }
-    return vertices
-}
-
-func (g *AdjacencyListGraph) IsConnected() bool {
-    if len(g.vertices) == 0 {
-        return true
-    }
-
-    visited := make(map[int]bool)
-    var dfs func(int)
-    dfs = func(v int) {
-        visited[v] = true
-        for _, neighbor := range g.GetNeighbors(v) {
-            if !visited[neighbor] {
-                dfs(neighbor)
-            }
-        }
-    }
-
-    // 从任意顶点开始DFS
-    for v := range g.vertices {
-        dfs(v)
-        break
-    }
-
-    return len(visited) == len(g.vertices)
-}
-
-func (g *AdjacencyListGraph) HasCycle() bool {
-    if g.directed {
-        return g.hasDirectedCycle()
-    }
-    return g.hasUndirectedCycle()
-}
-
-func (g *AdjacencyListGraph) hasDirectedCycle() bool {
-    visited := make(map[int]bool)
-    recStack := make(map[int]bool)
-
-    var dfs func(int) bool
-    dfs = func(v int) bool {
-        visited[v] = true
-        recStack[v] = true
-
-        for _, neighbor := range g.GetNeighbors(v) {
-            if !visited[neighbor] {
-                if dfs(neighbor) {
-                    return true
-                }
-            } else if recStack[neighbor] {
-                return true
-            }
-        }
-
-        recStack[v] = false
-        return false
-    }
-
-    for v := range g.vertices {
-        if !visited[v] {
-            if dfs(v) {
-                return true
-            }
-        }
-    }
-    return false
-}
-
-func (g *AdjacencyListGraph) hasUndirectedCycle() bool {
-    visited := make(map[int]bool)
-
-    var dfs func(int, int) bool
-    dfs = func(v, parent int) bool {
-        visited[v] = true
-
-        for _, neighbor := range g.GetNeighbors(v) {
-            if !visited[neighbor] {
-                if dfs(neighbor, v) {
-                    return true
-                }
-            } else if neighbor != parent {
-                return true
-            }
-        }
-        return false
-    }
-
-    for v := range g.vertices {
-        if !visited[v] {
-            if dfs(v, -1) {
-                return true
-            }
-        }
-    }
-    return false
+    g.vertices[from][to] = weight
 }
 ```
 
@@ -632,222 +333,107 @@ func (g *AdjacencyListGraph) hasUndirectedCycle() bool {
 
 ```go
 // 拓扑排序
-func TopologicalSort(graph map[int][]int) ([]int, error) {
-    inDegree := make(map[int]int)
-    for v := range graph {
-        inDegree[v] = 0
+func TopologicalSort(g *Graph) []Vertex {
+    visited := make(map[Vertex]bool)
+    stack := make([]Vertex, 0)
+    
+    var visit func(v Vertex)
+    visit = func(v Vertex) {
+        if visited[v] {
+            return
+        }
+        visited[v] = true
+        
+        for _, neighbor := range g.Neighbors(v) {
+            visit(neighbor)
+        }
+        stack = append([]Vertex{v}, stack...)
     }
-
-    // 计算入度
-    for _, neighbors := range graph {
-        for _, neighbor := range neighbors {
-            inDegree[neighbor]++
+    
+    for _, v := range g.Vertices() {
+        if !visited[v] {
+            visit(v)
         }
     }
-
-    // 使用队列进行拓扑排序
-    queue := []int{}
-    for v, degree := range inDegree {
-        if degree == 0 {
-            queue = append(queue, v)
-        }
-    }
-
-    result := []int{}
-    for len(queue) > 0 {
-        v := queue[0]
-        queue = queue[1:]
-        result = append(result, v)
-
-        for _, neighbor := range graph[v] {
-            inDegree[neighbor]--
-            if inDegree[neighbor] == 0 {
-                queue = append(queue, neighbor)
-            }
-        }
-    }
-
-    if len(result) != len(graph) {
-        return nil, fmt.Errorf("graph contains cycle")
-    }
-
-    return result, nil
+    
+    return stack
 }
 
-// 强连通分量 (Tarjan算法)
-func StronglyConnectedComponents(graph map[int][]int) [][]int {
-    index := 0
-    indices := make(map[int]int)
-    lowLinks := make(map[int]int)
-    onStack := make(map[int]bool)
-    stack := []int{}
-    result := [][]int{}
-
-    var strongConnect func(int)
-    strongConnect = func(v int) {
-        indices[v] = index
-        lowLinks[v] = index
-        index++
-        stack = append(stack, v)
-        onStack[v] = true
-
-        for _, neighbor := range graph[v] {
-            if _, exists := indices[neighbor]; !exists {
-                strongConnect(neighbor)
-                lowLinks[v] = min(lowLinks[v], lowLinks[neighbor])
-            } else if onStack[neighbor] {
-                lowLinks[v] = min(lowLinks[v], indices[neighbor])
-            }
-        }
-
-        if lowLinks[v] == indices[v] {
-            component := []int{}
-            for {
-                w := stack[len(stack)-1]
-                stack = stack[:len(stack)-1]
-                onStack[w] = false
-                component = append(component, w)
-                if w == v {
-                    break
-                }
-            }
-            result = append(result, component)
+// 强连通分量
+func StronglyConnectedComponents(g *Graph) [][]Vertex {
+    var components [][]Vertex
+    visited := make(map[Vertex]bool)
+    stack := make([]Vertex, 0)
+    
+    // 第一次DFS，填充栈
+    for _, v := range g.Vertices() {
+        if !visited[v] {
+            fillOrder(g, v, visited, &stack)
         }
     }
-
-    for v := range graph {
-        if _, exists := indices[v]; !exists {
-            strongConnect(v)
+    
+    // 创建转置图
+    gt := g.Transpose()
+    
+    // 清空访问标记
+    for v := range visited {
+        visited[v] = false
+    }
+    
+    // 第二次DFS，找出强连通分量
+    for len(stack) > 0 {
+        v := stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+        
+        if !visited[v] {
+            var component []Vertex
+            DFSUtil(gt, v, visited, &component)
+            components = append(components, component)
         }
     }
-
-    return result
-}
-
-func min(a, b int) int {
-    if a < b {
-        return a
-    }
-    return b
+    
+    return components
 }
 ```
 
 ### 5.3 高级算法实现
 
 ```go
-// Floyd-Warshall算法 (所有顶点对最短路径)
-func FloydWarshall(graph [][]int) [][]int {
-    n := len(graph)
-    dist := make([][]int, n)
-    for i := range dist {
-        dist[i] = make([]int, n)
-        copy(dist[i], graph[i])
+// A*算法
+func AStar(g *WeightedGraph, start, goal Vertex, heuristic func(Vertex) float64) []Vertex {
+    openSet := NewPriorityQueue()
+    openSet.Push(start, 0)
+    
+    cameFrom := make(map[Vertex]Vertex)
+    gScore := make(map[Vertex]float64)
+    fScore := make(map[Vertex]float64)
+    
+    for v := range g.Vertices() {
+        gScore[v] = math.Inf(1)
+        fScore[v] = math.Inf(1)
     }
-
-    for k := 0; k < n; k++ {
-        for i := 0; i < n; i++ {
-            for j := 0; j < n; j++ {
-                if dist[i][k] != math.MaxInt32 && dist[k][j] != math.MaxInt32 {
-                    if dist[i][k]+dist[k][j] < dist[i][j] {
-                        dist[i][j] = dist[i][k] + dist[k][j]
-                    }
-                }
+    gScore[start] = 0
+    fScore[start] = heuristic(start)
+    
+    for !openSet.Empty() {
+        current := openSet.Pop()
+        if current == goal {
+            return reconstructPath(cameFrom, current)
+        }
+        
+        for _, neighbor := range g.Neighbors(current) {
+            tentativeGScore := gScore[current] + g.Weight(current, neighbor)
+            
+            if tentativeGScore < gScore[neighbor] {
+                cameFrom[neighbor] = current
+                gScore[neighbor] = tentativeGScore
+                fScore[neighbor] = gScore[neighbor] + heuristic(neighbor)
+                openSet.Push(neighbor, fScore[neighbor])
             }
         }
     }
-
-    return dist
-}
-
-// 最大流算法 (Ford-Fulkerson)
-type FlowEdge struct {
-    from   int
-    to     int
-    flow   int
-    capacity int
-}
-
-func MaxFlow(graph map[int][]FlowEdge, source, sink int) int {
-    // 构建残量网络
-    residual := make(map[int][]FlowEdge)
-    for from, edges := range graph {
-        for _, edge := range edges {
-            // 正向边
-            residual[from] = append(residual[from], FlowEdge{
-                from:     from,
-                to:       edge.to,
-                flow:     0,
-                capacity: edge.capacity,
-            })
-            // 反向边
-            residual[edge.to] = append(residual[edge.to], FlowEdge{
-                from:     edge.to,
-                to:       from,
-                flow:     0,
-                capacity: 0,
-            })
-        }
-    }
-
-    maxFlow := 0
-    for {
-        // 使用BFS寻找增广路径
-        path := findAugmentingPath(residual, source, sink)
-        if len(path) == 0 {
-            break
-        }
-
-        // 计算路径上的最小容量
-        minCapacity := math.MaxInt32
-        for i := 0; i < len(path)-1; i++ {
-            edge := findEdge(residual, path[i], path[i+1])
-            if edge.capacity-edge.flow < minCapacity {
-                minCapacity = edge.capacity - edge.flow
-            }
-        }
-
-        // 更新残量网络
-        for i := 0; i < len(path)-1; i++ {
-            updateFlow(residual, path[i], path[i+1], minCapacity)
-        }
-
-        maxFlow += minCapacity
-    }
-
-    return maxFlow
-}
-
-func findAugmentingPath(residual map[int][]FlowEdge, source, sink int) []int {
-    parent := make(map[int]int)
-    visited := make(map[int]bool)
-    queue := []int{source}
-    visited[source] = true
-
-    for len(queue) > 0 {
-        current := queue[0]
-        queue = queue[1:]
-
-        if current == sink {
-            // 重建路径
-            path := []int{}
-            for current != source {
-                path = append([]int{current}, path...)
-                current = parent[current]
-            }
-            path = append([]int{source}, path...)
-            return path
-        }
-
-        for _, edge := range residual[current] {
-            if !visited[edge.to] && edge.capacity > edge.flow {
-                visited[edge.to] = true
-                parent[edge.to] = current
-                queue = append(queue, edge.to)
-            }
-        }
-    }
-
-    return []int{}
+    
+    return nil
 }
 ```
 
@@ -857,90 +443,24 @@ func findAugmentingPath(residual map[int][]FlowEdge, source, sink int) []int {
 
 ```go
 // 网络拓扑分析器
-type NetworkTopologyAnalyzer struct {
-    graph *AdjacencyListGraph
+type NetworkAnalyzer struct {
+    graph *WeightedGraph
 }
 
-func NewNetworkTopologyAnalyzer() *NetworkTopologyAnalyzer {
-    return &NetworkTopologyAnalyzer{
-        graph: NewAdjacencyListGraph(false),
-    }
-}
-
-func (nta *NetworkTopologyAnalyzer) AddConnection(node1, node2 int) {
-    nta.graph.AddEdge(node1, node2)
-}
-
-func (nta *NetworkTopologyAnalyzer) AnalyzeConnectivity() map[string]interface{} {
-    result := make(map[string]interface{})
-
-    // 检查连通性
-    result["is_connected"] = nta.graph.IsConnected()
-
-    // 计算连通分量
-    result["connected_components"] = nta.findConnectedComponents()
-
-    // 计算网络直径
-    result["diameter"] = nta.calculateDiameter()
-
-    // 计算平均度
-    result["average_degree"] = nta.calculateAverageDegree()
-
-    return result
-}
-
-func (nta *NetworkTopologyAnalyzer) findConnectedComponents() [][]int {
-    visited := make(map[int]bool)
-    components := [][]int{}
-
-    var dfs func(int, *[]int)
-    dfs = func(v int, component *[]int) {
-        visited[v] = true
-        *component = append(*component, v)
-
-        for _, neighbor := range nta.graph.GetNeighbors(v) {
-            if !visited[neighbor] {
-                dfs(neighbor, component)
-            }
+func (na *NetworkAnalyzer) FindCriticalPaths() []Edge {
+    var criticalPaths []Edge
+    
+    // 使用最小生成树找出关键路径
+    mst := Kruskal(na.graph)
+    
+    // 分析每条边的重要性
+    for _, edge := range mst {
+        if na.isEdgeCritical(edge) {
+            criticalPaths = append(criticalPaths, edge)
         }
     }
-
-    for v := range nta.graph.vertices {
-        if !visited[v] {
-            component := []int{}
-            dfs(v, &component)
-            components = append(components, component)
-        }
-    }
-
-    return components
-}
-
-func (nta *NetworkTopologyAnalyzer) calculateDiameter() int {
-    vertices := nta.graph.GetVertices()
-    maxDiameter := 0
-
-    for _, start := range vertices {
-        distances := nta.shortestPaths(start)
-        for _, dist := range distances {
-            if dist > maxDiameter && dist != math.MaxInt32 {
-                maxDiameter = dist
-            }
-        }
-    }
-
-    return maxDiameter
-}
-
-func (nta *NetworkTopologyAnalyzer) calculateAverageDegree() float64 {
-    totalDegree := 0
-    vertexCount := len(nta.graph.vertices)
-
-    for v := range nta.graph.vertices {
-        totalDegree += len(nta.graph.GetNeighbors(v))
-    }
-
-    return float64(totalDegree) / float64(vertexCount)
+    
+    return criticalPaths
 }
 ```
 
@@ -949,195 +469,94 @@ func (nta *NetworkTopologyAnalyzer) calculateAverageDegree() float64 {
 ```go
 // 社交网络分析器
 type SocialNetworkAnalyzer struct {
-    graph *AdjacencyListGraph
+    graph *Graph
 }
 
-func NewSocialNetworkAnalyzer() *SocialNetworkAnalyzer {
-    return &SocialNetworkAnalyzer{
-        graph: NewAdjacencyListGraph(false),
+func (sna *SocialNetworkAnalyzer) CalculateCentrality() map[Vertex]float64 {
+    centrality := make(map[Vertex]float64)
+    
+    // 计算每个节点的中心性
+    for v := range sna.graph.Vertices() {
+        // 计算度中心性
+        degreeCentrality := float64(len(sna.graph.Neighbors(v)))
+        
+        // 计算接近中心性
+        closenessCentrality := sna.calculateCloseness(v)
+        
+        // 计算介数中心性
+        betweennessCentrality := sna.calculateBetweenness(v)
+        
+        // 综合评分
+        centrality[v] = (degreeCentrality + closenessCentrality + betweennessCentrality) / 3
     }
-}
-
-func (sna *SocialNetworkAnalyzer) AddFriendship(user1, user2 int) {
-    sna.graph.AddEdge(user1, user2)
-}
-
-func (sna *SocialNetworkAnalyzer) FindInfluentialUsers() []int {
-    // 使用度中心性找出有影响力的用户
-    maxDegree := 0
-    influentialUsers := []int{}
-
-    for v := range sna.graph.vertices {
-        degree := len(sna.graph.GetNeighbors(v))
-        if degree > maxDegree {
-            maxDegree = degree
-            influentialUsers = []int{v}
-        } else if degree == maxDegree {
-            influentialUsers = append(influentialUsers, v)
-        }
-    }
-
-    return influentialUsers
-}
-
-func (sna *SocialNetworkAnalyzer) FindCommunities() [][]int {
-    // 使用标签传播算法发现社区
-    labels := make(map[int]int)
-    for i, v := range sna.graph.GetVertices() {
-        labels[v] = i
-    }
-
-    changed := true
-    for changed {
-        changed = false
-        for v := range sna.graph.vertices {
-            // 计算邻居中最常见的标签
-            labelCount := make(map[int]int)
-            for _, neighbor := range sna.graph.GetNeighbors(v) {
-                labelCount[labels[neighbor]]++
-            }
-
-            // 选择最常见的标签
-            maxCount := 0
-            newLabel := labels[v]
-            for label, count := range labelCount {
-                if count > maxCount {
-                    maxCount = count
-                    newLabel = label
-                }
-            }
-
-            if newLabel != labels[v] {
-                labels[v] = newLabel
-                changed = true
-            }
-        }
-    }
-
-    // 按标签分组
-    communities := make(map[int][]int)
-    for v, label := range labels {
-        communities[label] = append(communities[label], v)
-    }
-
-    result := [][]int{}
-    for _, community := range communities {
-        result = append(result, community)
-    }
-
-    return result
+    
+    return centrality
 }
 ```
 
 ### 6.3 路由算法
 
 ```go
-// 路由表项
-type RoutingEntry struct {
-    Destination int
-    NextHop     int
-    Cost        int
-    Path        []int
+// 路由器
+type Router struct {
+    graph *WeightedGraph
+    routingTable map[Vertex]map[Vertex]Vertex
 }
 
-// 路由算法
-type RoutingAlgorithm struct {
-    graph map[int][]Edge
-}
-
-func NewRoutingAlgorithm() *RoutingAlgorithm {
-    return &RoutingAlgorithm{
-        graph: make(map[int][]Edge),
+func (r *Router) UpdateRoutingTable() {
+    // 使用Floyd-Warshall算法更新路由表
+    dist := make(map[Vertex]map[Vertex]float64)
+    next := make(map[Vertex]map[Vertex]Vertex)
+    
+    // 初始化
+    for u := range r.graph.Vertices() {
+        dist[u] = make(map[Vertex]float64)
+        next[u] = make(map[Vertex]Vertex)
+        for v := range r.graph.Vertices() {
+            dist[u][v] = math.Inf(1)
+            if r.graph.HasEdge(u, v) {
+                dist[u][v] = r.graph.Weight(u, v)
+                next[u][v] = v
+            }
+        }
+        dist[u][u] = 0
+        next[u][u] = u
     }
-}
-
-func (ra *RoutingAlgorithm) AddLink(from, to, cost int) {
-    ra.graph[from] = append(ra.graph[from], Edge{To: to, Weight: cost})
-    ra.graph[to] = append(ra.graph[to], Edge{To: from, Weight: cost})
-}
-
-func (ra *RoutingAlgorithm) ComputeRoutingTable(source int) map[int]RoutingEntry {
-    distances := Dijkstra(ra.graph, source)
-    routingTable := make(map[int]RoutingEntry)
-
-    for dest := range ra.graph {
-        if dest != source {
-            path := ra.findPath(source, dest)
-            nextHop := path[1] if len(path) > 1 else dest
-
-            routingTable[dest] = RoutingEntry{
-                Destination: dest,
-                NextHop:     nextHop,
-                Cost:        distances[dest],
-                Path:        path,
+    
+    // Floyd-Warshall算法
+    for k := range r.graph.Vertices() {
+        for i := range r.graph.Vertices() {
+            for j := range r.graph.Vertices() {
+                if dist[i][k] + dist[k][j] < dist[i][j] {
+                    dist[i][j] = dist[i][k] + dist[k][j]
+                    next[i][j] = next[i][k]
+                }
             }
         }
     }
-
-    return routingTable
-}
-
-func (ra *RoutingAlgorithm) findPath(source, dest int) []int {
-    // 使用Dijkstra算法重建路径
-    distances := make(map[int]int)
-    previous := make(map[int]int)
-
-    for node := range ra.graph {
-        distances[node] = math.MaxInt32
-    }
-    distances[source] = 0
-
-    pq := &PriorityQueue{}
-    heap.Push(pq, &Item{node: source, distance: 0})
-
-    for pq.Len() > 0 {
-        item := heap.Pop(pq).(*Item)
-        node := item.node
-        dist := item.distance
-
-        if dist > distances[node] {
-            continue
-        }
-
-        for _, edge := range ra.graph[node] {
-            newDist := dist + edge.Weight
-            if newDist < distances[edge.To] {
-                distances[edge.To] = newDist
-                previous[edge.To] = node
-                heap.Push(pq, &Item{node: edge.To, distance: newDist})
-            }
-        }
-    }
-
-    // 重建路径
-    path := []int{}
-    current := dest
-    for current != source {
-        path = append([]int{current}, path...)
-        current = previous[current]
-    }
-    path = append([]int{source}, path...)
-
-    return path
+    
+    r.routingTable = next
 }
 ```
 
 ## 总结
 
-图论作为计算机科学的基础理论，在软件工程中有着广泛的应用。本章从数学定义出发，通过形式化证明建立了图论的理论基础，并提供了完整的Go语言实现。
+图论为计算机科学提供了强大的理论基础和实用工具，特别是在以下方面：
 
-主要内容包括：
+1. **网络分析**：
+   - 社交网络分析
+   - 通信网络优化
+   - 路由算法设计
 
-1. **理论基础**：图的定义、性质、定理和证明
-2. **算法实现**：遍历、最短路径、最小生成树等经典算法
-3. **实际应用**：网络分析、社交网络、路由算法等
+2. **算法设计**：
+   - 最短路径算法
+   - 最小生成树算法
+   - 网络流算法
 
-这些内容为后续的软件架构设计、算法分析和系统优化提供了重要的理论基础和实践指导。
+3. **应用领域**：
+   - 交通规划
+   - 资源调度
+   - 电路设计
+   - 生物信息学
 
----
-
-**参考文献**：
-
-1. Cormen, T. H., et al. "Introduction to Algorithms." MIT Press, 2009.
-2. Bondy, J. A., & Murty, U. S. R. "Graph Theory." Springer, 2008.
-3. West, D. B. "Introduction to Graph Theory." Prentice Hall, 2001.
+通过Go语言的实现，我们可以将这些理论概念转化为实用的工程解决方案，为实际问题提供高效的解决方法。 
