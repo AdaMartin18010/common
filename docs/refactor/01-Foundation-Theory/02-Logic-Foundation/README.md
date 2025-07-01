@@ -57,128 +57,38 @@
 **定义 1.4**: 命题逻辑语言
 命题逻辑语言由以下部分组成：
 
-- 命题变元集合 ```latex
-P = \{p, q, r, \ldots\}
-```
-- 逻辑连接词：```latex
-\neg
-```（否定）、```latex
-\wedge
-```（合取）、```latex
-\vee
-```（析取）、```latex
-\rightarrow
-```（蕴含）、```latex
-\leftrightarrow
-```（等价）
-- 辅助符号：```latex
-(
-``` 和 ```latex
-)
-```
+- 命题变元集合 $P = \{p, q, r, \ldots\}$
+- 逻辑连接词：$\neg$（否定）、$\wedge$（合取）、$\vee$（析取）、$\rightarrow$（蕴含）、$\leftrightarrow$（等价）
+- 辅助符号：$($ 和 $)$
 
 **定义 1.5**: 合式公式
 合式公式（well-formed formula）递归定义如下：
 
-1. 每个命题变元 ```latex
-p \in P
-``` 是合式公式
-2. 如果 ```latex
-\phi
-``` 是合式公式，则 ```latex
-\neg\phi
-``` 是合式公式
-3. 如果 ```latex
-\phi
-``` 和 ```latex
-\psi
-``` 是合式公式，则 ```latex
-(\phi \wedge \psi)
-```、```latex
-(\phi \vee \psi)
-```、```latex
-(\phi \rightarrow \psi)
-```、```latex
-(\phi \leftrightarrow \psi)
-``` 是合式公式
+1. 每个命题变元 $p \in P$ 是合式公式
+2. 如果 $\phi$ 是合式公式，则 $\neg\phi$ 是合式公式
+3. 如果 $\phi$ 和 $\psi$ 是合式公式，则 $(\phi \wedge \psi)$、$(\phi \vee \psi)$、$(\phi \rightarrow \psi)$、$(\phi \leftrightarrow \psi)$ 是合式公式
 4. 只有通过上述规则构造的表达式才是合式公式
 
 ### 1.3 语义
 
 **定义 1.6**: 真值赋值
-真值赋值是一个函数 ```latex
-v: P \rightarrow \{T, F\}
-```，其中 ```latex
-T
-``` 表示真，```latex
-F
-``` 表示假。
+真值赋值是一个函数 $v: P \rightarrow \{T, F\}$，其中 $T$ 表示真，$F$ 表示假。
 
 **定义 1.7**: 真值函数
-真值函数 ```latex
-\overline{v}
-``` 递归定义如下：
+真值函数 $\overline{v}$ 递归定义如下：
 
-1. ```latex
-\overline{v}(p) = v(p)
-``` 对于 ```latex
-p \in P
-```
-2. ```latex
-\overline{v}(\neg\phi) = T
-``` 当且仅当 ```latex
-\overline{v}(\phi) = F
-```
-3. ```latex
-\overline{v}(\phi \wedge \psi) = T
-``` 当且仅当 ```latex
-\overline{v}(\phi) = T
-``` 且 ```latex
-\overline{v}(\psi) = T
-```
-4. ```latex
-\overline{v}(\phi \vee \psi) = T
-``` 当且仅当 ```latex
-\overline{v}(\phi) = T
-``` 或 ```latex
-\overline{v}(\psi) = T
-```
-5. ```latex
-\overline{v}(\phi \rightarrow \psi) = T
-``` 当且仅当 ```latex
-\overline{v}(\phi) = F
-``` 或 ```latex
-\overline{v}(\psi) = T
-```
-6. ```latex
-\overline{v}(\phi \leftrightarrow \psi) = T
-``` 当且仅当 ```latex
-\overline{v}(\phi) = \overline{v}(\psi)
-```
+1. $\overline{v}(p) = v(p)$ 对于 $p \in P$
+2. $\overline{v}(\neg\phi) = T$ 当且仅当 $\overline{v}(\phi) = F$
+3. $\overline{v}(\phi \wedge \psi) = T$ 当且仅当 $\overline{v}(\phi) = T$ 且 $\overline{v}(\psi) = T$
+4. $\overline{v}(\phi \vee \psi) = T$ 当且仅当 $\overline{v}(\phi) = T$ 或 $\overline{v}(\psi) = T$
+5. $\overline{v}(\phi \rightarrow \psi) = T$ 当且仅当 $\overline{v}(\phi) = F$ 或 $\overline{v}(\psi) = T$
+6. $\overline{v}(\phi \leftrightarrow \psi) = T$ 当且仅当 $\overline{v}(\phi) = \overline{v}(\psi)$
 
 **定义 1.8**: 重言式、矛盾式和可满足式
 
-- 公式 ```latex
-\phi
-``` 是重言式（tautology），如果对于所有真值赋值 ```latex
-v
-```，```latex
-\overline{v}(\phi) = T
-```
-- 公式 ```latex
-\phi
-``` 是矛盾式（contradiction），如果对于所有真值赋值 ```latex
-v
-```，```latex
-\overline{v}(\phi) = F
-```
-- 公式 ```latex
-\phi
-``` 是可满足式（satisfiable），如果存在真值赋值 ```latex
-v
-``` 使得 ```latex
-\overline{v}(\phi) = T
-```
+- 公式 $\phi$ 是重言式（tautology），如果对于所有真值赋值 $v$，$\overline{v}(\phi) = T$
+- 公式 $\phi$ 是矛盾式（contradiction），如果对于所有真值赋值 $v$，$\overline{v}(\phi) = F$
+- 公式 $\phi$ 是可满足式（satisfiable），如果存在真值赋值 $v$ 使得 $\overline{v}(\phi) = T$
 
 ### 1.4 推理规则
 
@@ -186,19 +96,13 @@ v
 常用的推理规则包括：
 
 1. **假言推理（Modus Ponens）**：
-   $```latex
-\frac{\phi \rightarrow \psi \quad \phi}{\psi}
-```$
+   $$\frac{\phi \rightarrow \psi \quad \phi}{\psi}$$
 
 2. **假言三段论**：
-   $```latex
-\frac{\phi \rightarrow \psi \quad \psi \rightarrow \chi}{\phi \rightarrow \chi}
-```$
+   $$\frac{\phi \rightarrow \psi \quad \psi \rightarrow \chi}{\phi \rightarrow \chi}$$
 
 3. **合取引入**：
-   $```latex
-\frac{\phi \quad \psi}{\phi \wedge \psi}
-```$
+   $$\frac{\phi \quad \psi}{\phi \wedge \psi}$$$
 
 4. **合取消除**：
    $```latex

@@ -33,138 +33,58 @@
 
 范畴论是研究数学结构之间关系的抽象理论。在软件工程中，范畴论为类型系统、函数式编程和软件架构提供了强大的理论基础。
 
-**定义 1.1**: 范畴 ```latex
-\mathcal{C}
-``` 由以下部分组成：
+**定义 1.1**: 范畴 $\mathcal{C}$ 由以下部分组成：
 
-- 对象集合 ```latex
-\text{Ob}(\mathcal{C})
-```
-- 态射集合 ```latex
-\text{Mor}(\mathcal{C})
-```
-- 对每个态射 ```latex
-f: A \rightarrow B
-```，定义域 ```latex
-\text{dom}(f) = A
-``` 和陪域 ```latex
-\text{cod}(f) = B
-```
-- 组合操作 ```latex
-\circ: \text{Mor}(B,C) \times \text{Mor}(A,B) \rightarrow \text{Mor}(A,C)
-```
-- 对每个对象 ```latex
-A
-```，恒等态射 ```latex
-\text{id}_A: A \rightarrow A
-```
+- 对象集合 $\text{Ob}(\mathcal{C})$
+- 态射集合 $\text{Mor}(\mathcal{C})$
+- 对每个态射 $f: A \rightarrow B$，定义域 $\text{dom}(f) = A$ 和陪域 $\text{cod}(f) = B$
+- 组合操作 $\circ: \text{Mor}(B,C) \times \text{Mor}(A,B) \rightarrow \text{Mor}(A,C)$
+- 对每个对象 $A$，恒等态射 $\text{id}_A: A \rightarrow A$
 
 ### 1.2 态射和组合
 
-**定义 1.2**: 态射 ```latex
-f: A \rightarrow B
-``` 和 ```latex
-g: B \rightarrow C
-``` 的组合 ```latex
-g \circ f: A \rightarrow C
-``` 满足：
+**定义 1.2**: 态射 $f: A \rightarrow B$ 和 $g: B \rightarrow C$ 的组合 $g \circ f: A \rightarrow C$ 满足：
 
-- 结合律：```latex
-(h \circ g) \circ f = h \circ (g \circ f)
-```
-- 单位律：```latex
-\text{id}_B \circ f = f = f \circ \text{id}_A
-```
+- 结合律：$(h \circ g) \circ f = h \circ (g \circ f)$
+- 单位律：$\text{id}_B \circ f = f = f \circ \text{id}_A$
 
 ### 1.3 恒等态射
 
-**定义 1.3**: 对每个对象 ```latex
-A
-```，恒等态射 ```latex
-\text{id}_A: A \rightarrow A
-``` 满足：
+**定义 1.3**: 对每个对象 $A$，恒等态射 $\text{id}_A: A \rightarrow A$ 满足：
 
-- 对任意态射 ```latex
-f: A \rightarrow B
-```，有 ```latex
-\text{id}_B \circ f = f
-```
-- 对任意态射 ```latex
-g: C \rightarrow A
-```，有 ```latex
-g \circ \text{id}_A = g
-```
+- 对任意态射 $f: A \rightarrow B$，有 $\text{id}_B \circ f = f$
+- 对任意态射 $g: C \rightarrow A$，有 $g \circ \text{id}_A = g$
 
 ## 2. 形式化定义
 
 ### 2.1 范畴公理
 
-**定义 2.1**: 范畴 ```latex
-\mathcal{C}
-``` 满足以下公理：
+**定义 2.1**: 范畴 $\mathcal{C}$ 满足以下公理：
 
-1. **结合律**: 对任意态射 ```latex
-f: A \rightarrow B
-```, ```latex
-g: B \rightarrow C
-```, ```latex
-h: C \rightarrow D
-```，
-   $```latex
-(h \circ g) \circ f = h \circ (g \circ f)
-```$
+1. **结合律**: 对任意态射 $f: A \rightarrow B$, $g: B \rightarrow C$, $h: C \rightarrow D$，
+   $$(h \circ g) \circ f = h \circ (g \circ f)$$
 
-2. **单位律**: 对任意态射 ```latex
-f: A \rightarrow B
-```，
-   $```latex
-\text{id}_B \circ f = f = f \circ \text{id}_A
-```$
+2. **单位律**: 对任意态射 $f: A \rightarrow B$，
+   $$\text{id}_B \circ f = f = f \circ \text{id}_A$$
 
-3. **封闭性**: 对任意可组合的态射 ```latex
-f
-``` 和 ```latex
-g
-```，```latex
-g \circ f
-``` 存在且唯一
+3. **封闭性**: 对任意可组合的态射 $f$ 和 $g$，$g \circ f$ 存在且唯一
 
 ### 2.2 函子定义
 
-**定义 2.2**: 函子 ```latex
-F: \mathcal{C} \rightarrow \mathcal{D}
-``` 由以下部分组成：
+**定义 2.2**: 函子 $F: \mathcal{C} \rightarrow \mathcal{D}$ 由以下部分组成：
 
-- 对象映射：```latex
-F: \text{Ob}(\mathcal{C}) \rightarrow \text{Ob}(\mathcal{D})
-```
-- 态射映射：```latex
-F: \text{Mor}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{D})
-```
+- 对象映射：$F: \text{Ob}(\mathcal{C}) \rightarrow \text{Ob}(\mathcal{D})$
+- 态射映射：$F: \text{Mor}(\mathcal{C}) \rightarrow \text{Mor}(\mathcal{D})$
 
 满足：
 
-- ```latex
-F(\text{id}_A) = \text{id}_{F(A)}
-```
-- ```latex
-F(g \circ f) = F(g) \circ F(f)
-```
+- $F(\text{id}_A) = \text{id}_{F(A)}$
+- $F(g \circ f) = F(g) \circ F(f)$
 
 ### 2.3 自然变换
 
-**定义 2.3**: 自然变换 ```latex
-\alpha: F \Rightarrow G
-``` 是函子 ```latex
-F, G: \mathcal{C} \rightarrow \mathcal{D}
-``` 之间的映射，对每个对象 ```latex
-A \in \mathcal{C}
-```，给出态射 ```latex
-\alpha_A: F(A) \rightarrow G(A)
-```，满足自然性条件：
-$```latex
-G(f) \circ \alpha_A = \alpha_B \circ F(f)
-```$
+**定义 2.3**: 自然变换 $\alpha: F \Rightarrow G$ 是函子 $F, G: \mathcal{C} \rightarrow \mathcal{D}$ 之间的映射，对每个对象 $A \in \mathcal{C}$，给出态射 $\alpha_A: F(A) \rightarrow G(A)$，满足自然性条件：
+$$G(f) \circ \alpha_A = \alpha_B \circ F(f)$$
 
 ## 3. Go语言实现
 

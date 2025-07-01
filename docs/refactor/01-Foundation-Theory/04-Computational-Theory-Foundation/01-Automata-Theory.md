@@ -35,158 +35,80 @@
 
 有限状态自动机是计算理论的基础模型，用于描述具有有限内存的计算过程。
 
-**定义 1.1**: 确定性有限自动机 (DFA) 是一个五元组 ```latex
-M = (Q, \Sigma, \delta, q_0, F)
-```，其中：
+**定义 1.1**: 确定性有限自动机 (DFA) 是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
 
-- ```latex
-Q
-``` 是有限状态集合
-- ```latex
-\Sigma
-``` 是有限输入字母表
-- ```latex
-\delta: Q \times \Sigma \rightarrow Q
-``` 是转移函数
-- ```latex
-q_0 \in Q
-``` 是初始状态
-- ```latex
-F \subseteq Q
-``` 是接受状态集合
+- $Q$ 是有限状态集合
+- $\Sigma$ 是有限输入字母表
+- $\delta: Q \times \Sigma \rightarrow Q$ 是转移函数
+- $q_0 \in Q$ 是初始状态
+- $F \subseteq Q$ 是接受状态集合
 
 ### 1.2 下推自动机
 
 下推自动机扩展了有限自动机，增加了栈作为辅助存储。
 
-**定义 1.2**: 下推自动机 (PDA) 是一个七元组 ```latex
-M = (Q, \Sigma, \Gamma, \delta, q_0, Z_0, F)
-```，其中：
+**定义 1.2**: 下推自动机 (PDA) 是一个七元组 $M = (Q, \Sigma, \Gamma, \delta, q_0, Z_0, F)$，其中：
 
-- ```latex
-Q
-``` 是有限状态集合
-- ```latex
-\Sigma
-``` 是输入字母表
-- ```latex
-\Gamma
-``` 是栈字母表
-- ```latex
-\delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \rightarrow 2^{Q \times \Gamma^*}
-``` 是转移函数
-- ```latex
-q_0 \in Q
-``` 是初始状态
-- ```latex
-Z_0 \in \Gamma
-``` 是初始栈符号
-- ```latex
-F \subseteq Q
-``` 是接受状态集合
+- $Q$ 是有限状态集合
+- $\Sigma$ 是输入字母表
+- $\Gamma$ 是栈字母表
+- $\delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \rightarrow 2^{Q \times \Gamma^*}$ 是转移函数
+- $q_0 \in Q$ 是初始状态
+- $Z_0 \in \Gamma$ 是初始栈符号
+- $F \subseteq Q$ 是接受状态集合
 
 ### 1.3 图灵机
 
 图灵机是最通用的计算模型，能够模拟任何可计算函数。
 
-**定义 1.3**: 图灵机是一个七元组 ```latex
-M = (Q, \Sigma, \Gamma, \delta, q_0, B, F)
-```，其中：
+**定义 1.3**: 图灵机是一个七元组 $M = (Q, \Sigma, \Gamma, \delta, q_0, B, F)$，其中：
 
-- ```latex
-Q
-``` 是有限状态集合
-- ```latex
-\Sigma
-``` 是输入字母表
-- ```latex
-\Gamma
-``` 是磁带字母表，```latex
-\Sigma \subseteq \Gamma
-```
-- ```latex
-\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{L, R\}
-``` 是转移函数
-- ```latex
-q_0 \in Q
-``` 是初始状态
-- ```latex
-B \in \Gamma \setminus \Sigma
-``` 是空白符号
-- ```latex
-F \subseteq Q
-``` 是接受状态集合
+- $Q$ 是有限状态集合
+- $\Sigma$ 是输入字母表
+- $\Gamma$ 是磁带字母表，$\Sigma \subseteq \Gamma$
+- $\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{L, R\}$ 是转移函数
+- $q_0 \in Q$ 是初始状态
+- $B \in \Gamma \setminus \Sigma$ 是空白符号
+- $F \subseteq Q$ 是接受状态集合
 
 ## 2. 形式化定义
 
 ### 2.1 DFA定义
 
-**定义 2.1**: DFA的扩展转移函数 ```latex
-\hat{\delta}: Q \times \Sigma^* \rightarrow Q
-``` 定义为：
+**定义 2.1**: DFA的扩展转移函数 $\hat{\delta}: Q \times \Sigma^* \rightarrow Q$ 定义为：
 
-$
-\begin{align}
+$$\begin{align}
 \hat{\delta}(q, \epsilon) &= q \\
 \hat{\delta}(q, wa) &= \delta(\hat{\delta}(q, w), a)
-\end{align}
-$
+\end{align}$$
 
-其中 ```latex
-w \in \Sigma^*
-```, ```latex
-a \in \Sigma
-```。
+其中 $w \in \Sigma^*$, $a \in \Sigma$。
 
-**定义 2.2**: DFA接受的语言 ```latex
-L(M) = \{w \in \Sigma^* \mid \hat{\delta}(q_0, w) \in F\}
-```。
+**定义 2.2**: DFA接受的语言 $L(M) = \{w \in \Sigma^* \mid \hat{\delta}(q_0, w) \in F\}$。
 
 ### 2.2 NFA定义
 
-**定义 2.3**: 非确定性有限自动机 (NFA) 是一个五元组 ```latex
-M = (Q, \Sigma, \delta, q_0, F)
-```，其中：
+**定义 2.3**: 非确定性有限自动机 (NFA) 是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$，其中：
 
-- ```latex
-\delta: Q \times (\Sigma \cup \{\epsilon\}) \rightarrow 2^Q
-``` 是转移函数
+- $\delta: Q \times (\Sigma \cup \{\epsilon\}) \rightarrow 2^Q$ 是转移函数
 
-**定义 2.4**: NFA的扩展转移函数 ```latex
-\hat{\delta}: 2^Q \times \Sigma^* \rightarrow 2^Q
-``` 定义为：
+**定义 2.4**: NFA的扩展转移函数 $\hat{\delta}: 2^Q \times \Sigma^* \rightarrow 2^Q$ 定义为：
 
-$
-\begin{align}
+$$\begin{align}
 \hat{\delta}(S, \epsilon) &= S \\
 \hat{\delta}(S, wa) &= \bigcup_{q \in \hat{\delta}(S, w)} \delta(q, a)
-\end{align}
-$
+\end{align}$$
 
 ### 2.3 PDA定义
 
-**定义 2.5**: PDA的配置是一个三元组 ```latex
-(q, w, \gamma)
-```，其中：
+**定义 2.5**: PDA的配置是一个三元组 $(q, w, \gamma)$，其中：
 
-- ```latex
-q \in Q
-``` 是当前状态
-- ```latex
-w \in \Sigma^*
-``` 是剩余输入
-- ```latex
-\gamma \in \Gamma^*
-``` 是栈内容
+- $q \in Q$ 是当前状态
+- $w \in \Sigma^*$ 是剩余输入
+- $\gamma \in \Gamma^*$ 是栈内容
 
-**定义 2.6**: PDA的转移关系 ```latex
-\vdash
-``` 定义为：
-```latex
-(q, aw, Z\gamma) \vdash (p, w, \beta\gamma)
-``` 当且仅当 ```latex
-(p, \beta) \in \delta(q, a, Z)
-```。
+**定义 2.6**: PDA的转移关系 $\vdash$ 定义为：
+$(q, aw, Z\gamma) \vdash (p, w, \beta\gamma)$ 当且仅当 $(p, \beta) \in \delta(q, a, Z)$。
 
 ## 3. Go语言实现
 

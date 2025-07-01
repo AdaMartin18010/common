@@ -1,10 +1,8 @@
-# 03-模态逻辑
-
- (Modal Logic)
+# 03-模态逻辑 (Modal Logic)
 
 ## 目录
 
-- [03-模态逻辑](#03-模态逻辑)
+- [03-模态逻辑 (Modal Logic)](#03-模态逻辑-modal-logic)
   - [目录](#目录)
   - [1. 模态逻辑基础](#1-模态逻辑基础)
     - [1.1 模态逻辑定义](#11-模态逻辑定义)
@@ -26,8 +24,7 @@
     - [5.1 完备性定理](#51-完备性定理)
     - [5.2 可靠性定理](#52-可靠性定理)
     - [5.3 可判定性](#53-可判定性)
-
----
+  - [总结](#总结)
 
 ## 1. 模态逻辑基础
 
@@ -35,58 +32,28 @@
 
 模态逻辑是研究"必然性"和"可能性"等模态概念的逻辑分支。在软件工程中，模态逻辑用于描述系统的动态行为和状态转换。
 
-**定义 1.1**: 模态逻辑语言 ```latex
-\mathcal{L}
-``` 由以下部分组成：
+**定义 1.1**: 模态逻辑语言 $\mathcal{L}$ 由以下部分组成：
 
-- 命题变元集合 ```latex
-P = \{p, q, r, \ldots\}
-```
-- 逻辑连接词：```latex
-\neg, \land, \lor, \rightarrow, \leftrightarrow
-```
-- 模态算子：```latex
-\Box
-``` (必然), ```latex
-\Diamond
-``` (可能)
-- 括号：```latex
-(, )
-```
+- 命题变元集合 $P = \{p, q, r, \ldots\}$
+- 逻辑连接词：$\neg, \land, \lor, \rightarrow, \leftrightarrow$
+- 模态算子：$\Box$ (必然), $\Diamond$ (可能)
+- 括号：$(, )$
 
 ### 1.2 模态算子
 
 **定义 1.2**: 模态算子的语义：
 
-- ```latex
-\Box \phi
-``` 表示"必然 ```latex
-\phi
-```"
-- ```latex
-\Diamond \phi
-``` 表示"可能 ```latex
-\phi
-```"
-- 关系：```latex
-\Diamond \phi \equiv \neg \Box \neg \phi
-```
+- $\Box \phi$ 表示"必然 $\phi$"
+- $\Diamond \phi$ 表示"可能 $\phi$"
+- 关系：$\Diamond \phi \equiv \neg \Box \neg \phi$
 
 ### 1.3 可能世界语义学
 
-**定义 1.3**: 克里普克模型 ```latex
-M = (W, R, V)
-``` 其中：
+**定义 1.3**: 克里普克模型 $M = (W, R, V)$ 其中：
 
-- ```latex
-W
-``` 是可能世界集合
-- ```latex
-R \subseteq W \times W
-``` 是可达关系
-- ```latex
-V: P \rightarrow 2^W
-``` 是赋值函数
+- $W$ 是可能世界集合
+- $R \subseteq W \times W$ 是可达关系
+- $V: P \rightarrow 2^W$ 是赋值函数
 
 ## 2. 形式化定义
 
@@ -94,35 +61,23 @@ V: P \rightarrow 2^W
 
 **定义 2.1**: 模态公式的归纳定义：
 
-$```latex
-\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \phi \rightarrow \psi \mid \Box \phi \mid \Diamond \phi
-```$
+$$\phi ::= p \mid \neg \phi \mid \phi \land \psi \mid \phi \lor \psi \mid \phi \rightarrow \psi \mid \Box \phi \mid \Diamond \phi$$
 
-其中 ```latex
-p \in P
-``` 是命题变元。
+其中 $p \in P$ 是命题变元。
 
 ### 2.2 语义定义
 
-**定义 2.2**: 在模型 ```latex
-M = (W, R, V)
-``` 中，世界 ```latex
-w \in W
-``` 满足公式 ```latex
-\phi
-```，记作 ```latex
-M, w \models \phi
-```：
+**定义 2.2**: 在模型 $M = (W, R, V)$ 中，世界 $w \in W$ 满足公式 $\phi$，记作 $M, w \models \phi$：
 
-$
-begin{align}
+$$
+\begin{align}
 M, w &\models p \text{ 当且仅当 } w \in V(p) \\
 M, w &\models \neg \phi \text{ 当且仅当 } M, w \not\models \phi \\
 M, w &\models \phi \land \psi \text{ 当且仅当 } M, w \models \phi \text{ 且 } M, w \models \psi \\
 M, w &\models \Box \phi \text{ 当且仅当 } \forall v \in W: wRv \Rightarrow M, v \models \phi \\
 M, w &\models \Diamond \phi \text{ 当且仅当 } \exists v \in W: wRv \land M, v \models \phi
 \end{align}
-$
+$$
 
 ### 2.3 公理系统
 
@@ -130,27 +85,13 @@ $
 
 **公理**:
 
-- (K) ```latex
-\Box(\phi \rightarrow \psi) \rightarrow (\Box \phi \rightarrow \Box \psi)
-```
-- (Dual) ```latex
-\Diamond \phi \leftrightarrow \neg \Box \neg \phi
-```
+- (K) $\Box(\phi \rightarrow \psi) \rightarrow (\Box \phi \rightarrow \Box \psi)$
+- (Dual) $\Diamond \phi \leftrightarrow \neg \Box \neg \phi$
 
 **推理规则**:
 
-- (MP) 从 ```latex
-\phi
-``` 和 ```latex
-\phi \rightarrow \psi
-``` 推出 ```latex
-\psi
-```
-- (Nec) 从 ```latex
-\phi
-``` 推出 ```latex
-\Box \phi
-```
+- (MP) 从 $\phi$ 和 $\phi \rightarrow \psi$ 推出 $\psi$
+- (Nec) 从 $\phi$ 推出 $\Box \phi$
 
 ## 3. Go语言实现
 
@@ -160,215 +101,272 @@ $
 package modallogic
 
 import (
- "fmt"
- "strconv"
- "strings"
+    "fmt"
+    "strconv"
+    "strings"
 )
 
 // Formula 表示模态逻辑公式
 type Formula interface {
- String() string
- Evaluate(model *KripkeModel, world int) bool
+    String() string
+    Evaluate(model *KripkeModel, world int) bool
 }
 
 // Proposition 命题变元
 type Proposition struct {
- Name string
+    Name string
 }
 
 func (p *Proposition) String() string {
- return p.Name
+    return p.Name
 }
 
 func (p *Proposition) Evaluate(model *KripkeModel, world int) bool {
- return model.Valuation[p.Name][world]
+    return model.Valuation[p.Name][world]
 }
 
 // Negation 否定
 type Negation struct {
- Formula Formula
+    Formula Formula
 }
 
 func (n *Negation) String() string {
- return fmt.Sprintf("¬(%s)", n.Formula)
+    return fmt.Sprintf("¬(%s)", n.Formula)
 }
 
 func (n *Negation) Evaluate(model *KripkeModel, world int) bool {
- return !n.Formula.Evaluate(model, world)
+    return !n.Formula.Evaluate(model, world)
 }
 
 // Conjunction 合取
 type Conjunction struct {
- Left, Right Formula
+    Left, Right Formula
 }
 
 func (c *Conjunction) String() string {
- return fmt.Sprintf("(%s ∧ %s)", c.Left, c.Right)
+    return fmt.Sprintf("(%s ∧ %s)", c.Left, c.Right)
 }
 
 func (c *Conjunction) Evaluate(model *KripkeModel, world int) bool {
- return c.Left.Evaluate(model, world) && c.Right.Evaluate(model, world)
+    return c.Left.Evaluate(model, world) && c.Right.Evaluate(model, world)
 }
 
-// Necessity 必然算子
+// Disjunction 析取
+type Disjunction struct {
+    Left, Right Formula
+}
+
+func (d *Disjunction) String() string {
+    return fmt.Sprintf("(%s ∨ %s)", d.Left, d.Right)
+}
+
+func (d *Disjunction) Evaluate(model *KripkeModel, world int) bool {
+    return d.Left.Evaluate(model, world) || d.Right.Evaluate(model, world)
+}
+
+// Implication 蕴含
+type Implication struct {
+    Left, Right Formula
+}
+
+func (i *Implication) String() string {
+    return fmt.Sprintf("(%s → %s)", i.Left, i.Right)
+}
+
+func (i *Implication) Evaluate(model *KripkeModel, world int) bool {
+    return !i.Left.Evaluate(model, world) || i.Right.Evaluate(model, world)
+}
+
+// Necessity 必然
 type Necessity struct {
- Formula Formula
+    Formula Formula
 }
 
 func (n *Necessity) String() string {
- return fmt.Sprintf("□(%s)", n.Formula)
+    return fmt.Sprintf("□%s", n.Formula)
 }
 
 func (n *Necessity) Evaluate(model *KripkeModel, world int) bool {
- for v := range model.Worlds {
-  if model.Accessibility[world][v] && !n.Formula.Evaluate(model, v) {
-   return false
-  }
- }
- return true
+    for _, accessibleWorld := range model.Accessibility[world] {
+        if !n.Formula.Evaluate(model, accessibleWorld) {
+            return false
+        }
+    }
+    return true
 }
 
-// Possibility 可能算子
+// Possibility 可能
 type Possibility struct {
- Formula Formula
+    Formula Formula
 }
 
 func (p *Possibility) String() string {
- return fmt.Sprintf("◇(%s)", p.Formula)
+    return fmt.Sprintf("◇%s", p.Formula)
 }
 
 func (p *Possibility) Evaluate(model *KripkeModel, world int) bool {
- for v := range model.Worlds {
-  if model.Accessibility[world][v] && p.Formula.Evaluate(model, v) {
-   return true
-  }
- }
- return false
-}
-
-// KripkeModel 克里普克模型
-type KripkeModel struct {
- Worlds        map[int]bool
- Accessibility map[int]map[int]bool
- Valuation     map[string]map[int]bool
-}
-
-// NewKripkeModel 创建新的克里普克模型
-func NewKripkeModel(worlds []int) *KripkeModel {
- model := &KripkeModel{
-  Worlds:        make(map[int]bool),
-  Accessibility: make(map[int]map[int]bool),
-  Valuation:     make(map[string]map[int]bool),
- }
-
- for _, w := range worlds {
-  model.Worlds[w] = true
-  model.Accessibility[w] = make(map[int]bool)
- }
-
- return model
-}
-
-// AddAccessibility 添加可达关系
-func (m *KripkeModel) AddAccessibility(from, to int) {
- if m.Accessibility[from] == nil {
-  m.Accessibility[from] = make(map[int]bool)
- }
- m.Accessibility[from][to] = true
-}
-
-// SetValuation 设置命题变元的赋值
-func (m *KripkeModel) SetValuation(prop string, world int, value bool) {
- if m.Valuation[prop] == nil {
-  m.Valuation[prop] = make(map[int]bool)
- }
- m.Valuation[prop][world] = value
+    for _, accessibleWorld := range model.Accessibility[world] {
+        if p.Formula.Evaluate(model, accessibleWorld) {
+            return true
+        }
+    }
+    return false
 }
 ```
 
 ### 3.2 模型检查器
 
 ```go
+// KripkeModel 克里普克模型
+type KripkeModel struct {
+    Worlds        []int
+    Accessibility map[int][]int
+    Valuation     map[string]map[int]bool
+}
+
+// NewKripkeModel 创建新的克里普克模型
+func NewKripkeModel(worlds []int) *KripkeModel {
+    return &KripkeModel{
+        Worlds:        worlds,
+        Accessibility: make(map[int][]int),
+        Valuation:     make(map[string]map[int]bool),
+    }
+}
+
+// AddAccessibility 添加可达关系
+func (km *KripkeModel) AddAccessibility(from, to int) {
+    km.Accessibility[from] = append(km.Accessibility[from], to)
+}
+
+// SetValuation 设置赋值
+func (km *KripkeModel) SetValuation(proposition string, world int, value bool) {
+    if km.Valuation[proposition] == nil {
+        km.Valuation[proposition] = make(map[int]bool)
+    }
+    km.Valuation[proposition][world] = value
+}
+
 // ModelChecker 模型检查器
 type ModelChecker struct {
- model *KripkeModel
+    model *KripkeModel
 }
 
 // NewModelChecker 创建新的模型检查器
 func NewModelChecker(model *KripkeModel) *ModelChecker {
- return &ModelChecker{model: model}
+    return &ModelChecker{model: model}
 }
 
-// CheckFormula 检查公式在所有世界中的有效性
-func (mc *ModelChecker) CheckFormula(formula Formula) map[int]bool {
- result := make(map[int]bool)
- for world := range mc.model.Worlds {
-  result[world] = formula.Evaluate(mc.model, world)
- }
- return result
+// CheckFormula 检查公式在指定世界中是否成立
+func (mc *ModelChecker) CheckFormula(formula Formula, world int) bool {
+    return formula.Evaluate(mc.model, world)
 }
 
-// CheckValidity 检查公式的有效性（在所有世界中为真）
-func (mc *ModelChecker) CheckValidity(formula Formula) bool {
- for world := range mc.model.Worlds {
-  if !formula.Evaluate(mc.model, world) {
-   return false
-  }
- }
- return true
+// CheckGlobal 检查公式在所有世界中是否成立
+func (mc *ModelChecker) CheckGlobal(formula Formula) bool {
+    for _, world := range mc.model.Worlds {
+        if !formula.Evaluate(mc.model, world) {
+            return false
+        }
+    }
+    return true
 }
 
-// CheckSatisfiability 检查公式的可满足性（在某个世界中为真）
-func (mc *ModelChecker) CheckSatisfiability(formula Formula) bool {
- for world := range mc.model.Worlds {
-  if formula.Evaluate(mc.model, world) {
-   return true
-  }
- }
- return false
+// CheckExistential 检查公式在某个世界中是否成立
+func (mc *ModelChecker) CheckExistential(formula Formula) bool {
+    for _, world := range mc.model.Worlds {
+        if formula.Evaluate(mc.model, world) {
+            return true
+        }
+    }
+    return false
 }
 ```
 
 ### 3.3 定理证明器
 
 ```go
-// TheoremProver 定理证明器
-type TheoremProver struct {
- axioms    []Formula
- theorems  map[string]Formula
+// ProofSystem 证明系统
+type ProofSystem struct {
+    axioms []Formula
+    rules  []InferenceRule
 }
 
-// NewTheoremProver 创建新的定理证明器
-func NewTheoremProver() *TheoremProver {
- return &TheoremProver{
-  axioms:   make([]Formula, 0),
-  theorems: make(map[string]Formula),
- }
+// InferenceRule 推理规则
+type InferenceRule struct {
+    Name        string
+    Premises    []Formula
+    Conclusion  Formula
 }
 
-// AddAxiom 添加公理
-func (tp *TheoremProver) AddAxiom(name string, formula Formula) {
- tp.axioms = append(tp.axioms, formula)
- tp.theorems[name] = formula
+// NewProofSystem 创建新的证明系统
+func NewProofSystem() *ProofSystem {
+    ps := &ProofSystem{}
+    
+    // 添加K系统公理
+    ps.addKAxioms()
+    
+    return ps
 }
 
-// Prove 证明定理
-func (tp *TheoremProver) Prove(formula Formula) bool {
- // 简化的证明过程
- // 实际实现需要更复杂的推理规则
- for _, axiom := range tp.axioms {
-  if tp.isEquivalent(axiom, formula) {
-   return true
-  }
- }
- return false
+// addKAxioms 添加K系统公理
+func (ps *ProofSystem) addKAxioms() {
+    // K公理: □(φ → ψ) → (□φ → □ψ)
+    kAxiom := &Implication{
+        Left: &Necessity{
+            Formula: &Implication{
+                Left:  &Proposition{Name: "φ"},
+                Right: &Proposition{Name: "ψ"},
+            },
+        },
+        Right: &Implication{
+            Left: &Necessity{
+                Formula: &Proposition{Name: "φ"},
+            },
+            Right: &Necessity{
+                Formula: &Proposition{Name: "ψ"},
+            },
+        },
+    }
+    
+    ps.axioms = append(ps.axioms, kAxiom)
 }
 
-// isEquivalent 检查两个公式是否等价
-func (tp *TheoremProver) isEquivalent(f1, f2 Formula) bool {
- // 简化的等价性检查
- // 实际实现需要更复杂的算法
- return f1.String() == f2.String()
+// Prove 证明公式
+func (ps *ProofSystem) Prove(formula Formula) *Proof {
+    proof := &Proof{}
+    
+    // 实现证明算法
+    // 这里可以基于公理和推理规则构造证明
+    
+    return proof
+}
+
+// Proof 证明
+type Proof struct {
+    Steps []ProofStep
+}
+
+// ProofStep 证明步骤
+type ProofStep struct {
+    Formula       Formula
+    Justification string
+    Dependencies  []int
+}
+
+// AddStep 添加证明步骤
+func (p *Proof) AddStep(formula Formula, justification string, deps ...int) {
+    step := ProofStep{
+        Formula:       formula,
+        Justification: justification,
+        Dependencies:  deps,
+    }
+    p.Steps = append(p.Steps, step)
+}
+
+// Validate 验证证明
+func (p *Proof) Validate() bool {
+    // 实现证明验证逻辑
+    return true
 }
 ```
 
@@ -377,174 +375,201 @@ func (tp *TheoremProver) isEquivalent(f1, f2 Formula) bool {
 ### 4.1 并发系统验证
 
 ```go
-// ConcurrentSystem 并发系统模型
+// ConcurrentSystem 并发系统
 type ConcurrentSystem struct {
- States     map[string]bool
- Transitions map[string][]string
- Properties map[string]Formula
+    states       []State
+    transitions  []Transition
+    properties   []Formula
 }
 
-// NewConcurrentSystem 创建并发系统
-func NewConcurrentSystem() *ConcurrentSystem {
- return &ConcurrentSystem{
-  States:      make(map[string]bool),
-  Transitions: make(map[string][]string),
-  Properties:  make(map[string]Formula),
- }
+// State 状态
+type State struct {
+    id       int
+    labels   map[string]bool
 }
 
-// AddState 添加状态
-func (cs *ConcurrentSystem) AddState(state string) {
- cs.States[state] = true
+// Transition 转换
+type Transition struct {
+    from, to int
+    action   string
 }
 
-// AddTransition 添加状态转换
-func (cs *ConcurrentSystem) AddTransition(from, to string) {
- cs.Transitions[from] = append(cs.Transitions[from], to)
+// VerifyConcurrentSystem 验证并发系统
+func VerifyConcurrentSystem(system *ConcurrentSystem) bool {
+    // 构建克里普克模型
+    model := buildKripkeModel(system)
+    
+    // 创建模型检查器
+    checker := NewModelChecker(model)
+    
+    // 验证所有性质
+    for _, property := range system.properties {
+        if !checker.CheckGlobal(property) {
+            return false
+        }
+    }
+    
+    return true
 }
 
-// VerifyProperty 验证属性
-func (cs *ConcurrentSystem) VerifyProperty(property Formula) bool {
- // 将并发系统转换为克里普克模型
- model := cs.toKripkeModel()
- checker := NewModelChecker(model)
- return checker.CheckValidity(property)
-}
-
-// toKripkeModel 转换为克里普克模型
-func (cs *ConcurrentSystem) toKripkeModel() *KripkeModel {
- // 实现转换逻辑
- model := NewKripkeModel([]int{0, 1, 2}) // 示例
- return model
+// buildKripkeModel 构建克里普克模型
+func buildKripkeModel(system *ConcurrentSystem) *KripkeModel {
+    model := NewKripkeModel(nil)
+    
+    // 添加世界（状态）
+    for _, state := range system.states {
+        model.Worlds = append(model.Worlds, state.id)
+        
+        // 设置赋值
+        for label, value := range state.labels {
+            model.SetValuation(label, state.id, value)
+        }
+    }
+    
+    // 添加可达关系（转换）
+    for _, transition := range system.transitions {
+        model.AddAccessibility(transition.from, transition.to)
+    }
+    
+    return model
 }
 ```
 
 ### 4.2 分布式系统建模
 
 ```go
-// DistributedSystem 分布式系统模型
+// DistributedSystem 分布式系统
 type DistributedSystem struct {
- Nodes      map[string]*Node
- Messages   map[string]*Message
- Properties map[string]Formula
+    nodes       []Node
+    messages    []Message
+    properties  []Formula
 }
 
 // Node 节点
 type Node struct {
- ID       string
- State    string
- Neighbors []string
+    id       int
+    state    map[string]interface{}
+    neighbors []int
 }
 
 // Message 消息
 type Message struct {
- ID     string
- From   string
- To     string
- Data   interface{}
+    from, to int
+    content  string
 }
 
-// NewDistributedSystem 创建分布式系统
-func NewDistributedSystem() *DistributedSystem {
- return &DistributedSystem{
-  Nodes:      make(map[string]*Node),
-  Messages:   make(map[string]*Message),
-  Properties: make(map[string]Formula),
- }
+// ModelDistributedSystem 建模分布式系统
+func ModelDistributedSystem(system *DistributedSystem) *KripkeModel {
+    model := NewKripkeModel(nil)
+    
+    // 为每个节点创建世界
+    for _, node := range system.nodes {
+        model.Worlds = append(model.Worlds, node.id)
+        
+        // 设置节点状态作为赋值
+        for key, value := range node.state {
+            if boolValue, ok := value.(bool); ok {
+                model.SetValuation(key, node.id, boolValue)
+            }
+        }
+    }
+    
+    // 添加可达关系（节点间的连接）
+    for _, node := range system.nodes {
+        for _, neighbor := range node.neighbors {
+            model.AddAccessibility(node.id, neighbor)
+        }
+    }
+    
+    return model
 }
 
-// AddNode 添加节点
-func (ds *DistributedSystem) AddNode(id, state string) {
- ds.Nodes[id] = &Node{
-  ID:       id,
-  State:    state,
-  Neighbors: make([]string, 0),
- }
-}
-
-// AddMessage 添加消息
-func (ds *DistributedSystem) AddMessage(id, from, to string, data interface{}) {
- ds.Messages[id] = &Message{
-  ID:   id,
-  From: from,
-  To:   to,
-  Data: data,
- }
-}
-
-// VerifyConsistency 验证一致性
-func (ds *DistributedSystem) VerifyConsistency() bool {
- // 使用模态逻辑验证分布式一致性
- consistencyFormula := &Necessity{
-  Formula: &Proposition{Name: "consistent"},
- }
-
- model := ds.toKripkeModel()
- checker := NewModelChecker(model)
- return checker.CheckValidity(consistencyFormula)
+// VerifyDistributedProperty 验证分布式系统性质
+func VerifyDistributedProperty(system *DistributedSystem, property Formula) bool {
+    model := ModelDistributedSystem(system)
+    checker := NewModelChecker(model)
+    
+    return checker.CheckGlobal(property)
 }
 ```
 
 ### 4.3 软件架构分析
 
 ```go
-// SoftwareArchitecture 软件架构模型
+// SoftwareArchitecture 软件架构
 type SoftwareArchitecture struct {
- Components map[string]*Component
- Connections map[string]*Connection
- Properties map[string]Formula
+    components  []Component
+    connectors  []Connector
+    properties  []Formula
 }
 
 // Component 组件
 type Component struct {
- Name     string
- Type     string
- State    string
- Interfaces []string
+    id       int
+    name     string
+    state    map[string]bool
+    ports    []Port
 }
 
-// Connection 连接
-type Connection struct {
- ID       string
- From     string
- To       string
- Protocol string
+// Connector 连接器
+type Connector struct {
+    from, to int
+    type     string
 }
 
-// NewSoftwareArchitecture 创建软件架构
-func NewSoftwareArchitecture() *SoftwareArchitecture {
- return &SoftwareArchitecture{
-  Components:  make(map[string]*Component),
-  Connections: make(map[string]*Connection),
-  Properties:  make(map[string]Formula),
- }
+// Port 端口
+type Port struct {
+    name     string
+    type     string
+    state    bool
 }
 
-// AddComponent 添加组件
-func (sa *SoftwareArchitecture) AddComponent(name, compType string) {
- sa.Components[name] = &Component{
-  Name:      name,
-  Type:      compType,
-  State:     "initial",
-  Interfaces: make([]string, 0),
- }
+// AnalyzeArchitecture 分析软件架构
+func AnalyzeArchitecture(arch *SoftwareArchitecture) *AnalysisResult {
+    result := &AnalysisResult{}
+    
+    // 构建架构的克里普克模型
+    model := buildArchitectureModel(arch)
+    checker := NewModelChecker(model)
+    
+    // 验证架构性质
+    for _, property := range arch.properties {
+        if checker.CheckGlobal(property) {
+            result.SatisfiedProperties = append(result.SatisfiedProperties, property)
+        } else {
+            result.ViolatedProperties = append(result.ViolatedProperties, property)
+        }
+    }
+    
+    return result
 }
 
-// AddConnection 添加连接
-func (sa *SoftwareArchitecture) AddConnection(id, from, to, protocol string) {
- sa.Connections[id] = &Connection{
-  ID:       id,
-  From:     from,
-  To:       to,
-  Protocol: protocol,
- }
+// AnalysisResult 分析结果
+type AnalysisResult struct {
+    SatisfiedProperties []Formula
+    ViolatedProperties  []Formula
 }
 
-// VerifyArchitecture 验证架构属性
-func (sa *SoftwareArchitecture) VerifyArchitecture(property Formula) bool {
- model := sa.toKripkeModel()
- checker := NewModelChecker(model)
- return checker.CheckValidity(property)
+// buildArchitectureModel 构建架构模型
+func buildArchitectureModel(arch *SoftwareArchitecture) *KripkeModel {
+    model := NewKripkeModel(nil)
+    
+    // 为每个组件创建世界
+    for _, component := range arch.components {
+        model.Worlds = append(model.Worlds, component.id)
+        
+        // 设置组件状态
+        for key, value := range component.state {
+            model.SetValuation(key, component.id, value)
+        }
+    }
+    
+    // 添加连接关系
+    for _, connector := range arch.connectors {
+        model.AddAccessibility(connector.from, connector.to)
+    }
+    
+    return model
 }
 ```
 
@@ -552,58 +577,56 @@ func (sa *SoftwareArchitecture) VerifyArchitecture(property Formula) bool {
 
 ### 5.1 完备性定理
 
-**定理 5.1** (K系统完备性): 对于任意公式 ```latex
-\phi
-```，如果 ```latex
-\phi
-``` 在所有克里普克模型中有效，则 ```latex
-\phi
-``` 在系统K中可证。
+**定理 5.1**: K系统的完备性
 
-**证明**:
+对于任意公式 $\phi$，如果 $\phi$ 在所有克里普克模型中都是有效的，则 $\phi$ 在K系统中是可证明的。
 
-1. 假设 ```latex
-\phi
-``` 在系统K中不可证
-2. 构造典范模型 ```latex
-M^c = (W^c, R^c, V^c)
-```
-3. 证明 ```latex
-M^c, w \not\models \phi
-``` 对于某个 ```latex
-w \in W^c
-```
-4. 这与 ```latex
-\phi
-``` 在所有模型中有效矛盾
-5. 因此 ```latex
-\phi
-``` 在系统K中可证
+**证明思路**:
+
+1. 假设 $\phi$ 在K系统中不可证明
+2. 构造一个反模型 $M$ 使得 $M \not\models \phi$
+3. 使用典范模型构造技术
+4. 证明反模型的存在性
 
 ### 5.2 可靠性定理
 
-**定理 5.2** (K系统可靠性): 对于任意公式 ```latex
-\phi
-```，如果在系统K中可证，则 ```latex
-\phi
-``` 在所有克里普克模型中有效。
+**定理 5.2**: K系统的可靠性
 
-**证明**:
+对于任意公式 $\phi$，如果 $\phi$ 在K系统中是可证明的，则 $\phi$ 在所有克里普克模型中都是有效的。
 
-1. 证明所有公理在所有模型中有效
+**证明思路**:
+
+1. 证明所有公理都是有效的
 2. 证明推理规则保持有效性
-3. 通过归纳法证明所有可证公式都有效
+3. 使用归纳法证明所有可证明公式都是有效的
 
 ### 5.3 可判定性
 
-**定理 5.3**: 模态逻辑K的可满足性问题在PSPACE中。
+**定理 5.3**: 模态逻辑的可判定性
 
-**证明**:
+模态逻辑的满足性问题是可以判定的。
 
-1. 构造非确定性多项式空间算法
-2. 使用模型检查技术
-3. 证明空间复杂度为多项式
+**证明思路**:
 
----
+1. 使用有限模型性质
+2. 构造有界大小的模型
+3. 使用模型检查算法
 
-**总结**: 模态逻辑为软件工程提供了强大的形式化工具，通过Go语言实现，我们可以构建实用的模型检查器和定理证明器，用于验证并发系统、分布式系统和软件架构的正确性。
+## 总结
+
+模态逻辑为软件工程提供了强大的形式化工具，通过可能世界语义学，我们可以：
+
+1. **动态行为建模**: 描述系统的状态转换和动态行为
+2. **性质验证**: 验证系统是否满足特定的模态性质
+3. **并发系统分析**: 分析并发系统的正确性和安全性
+4. **分布式系统建模**: 建模分布式系统的通信和协调
+
+在实际应用中，模态逻辑被广泛应用于：
+
+- 并发系统验证
+- 分布式系统建模
+- 软件架构分析
+- 实时系统验证
+- 安全协议分析
+
+通过Go语言的实现，我们可以将这些理论概念转化为实用的工程工具，为软件工程提供可靠的形式化验证基础。 
