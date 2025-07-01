@@ -37,239 +37,98 @@
 ### 1.1 概率空间
 
 **定义 1.1**: 概率空间
-概率空间是一个三元组 ```latex
-(\Omega, \mathcal{F}, P)
-```，其中：
+概率空间是一个三元组 $(\Omega, \mathcal{F}, P)$，其中：
 
-- ```latex
-\Omega
-``` 是样本空间（sample space），包含所有可能的结果
-- ```latex
-\mathcal{F}
-``` 是事件域（event space），是 ```latex
-\Omega
-``` 的子集的 ```latex
-\sigma
-```-代数
-- ```latex
-P
-``` 是概率测度（probability measure），```latex
-P: \mathcal{F} \rightarrow [0,1]
-```
+- $\Omega$ 是样本空间（sample space），包含所有可能的结果
+- $\mathcal{F}$ 是事件域（event space），是 $\Omega$ 的子集的 $\sigma$-代数
+- $P$ 是概率测度（probability measure），$P: \mathcal{F} \rightarrow [0,1]$
 
-**定义 1.2**: ```latex
-\sigma
-```-代数
-集合 ```latex
-\mathcal{F}
-``` 是 ```latex
-\sigma
-```-代数，如果满足：
+**定义 1.2**: $\sigma$-代数
+集合 $\mathcal{F}$ 是 $\sigma$-代数，如果满足：
 
-1. ```latex
-\Omega \in \mathcal{F}
-```
-2. 如果 ```latex
-A \in \mathcal{F}
-```，则 ```latex
-A^c \in \mathcal{F}
-```
-3. 如果 ```latex
-A_1, A_2, \ldots \in \mathcal{F}
-```，则 ```latex
-\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}
-```
+1. $\Omega \in \mathcal{F}$
+2. 如果 $A \in \mathcal{F}$，则 $A^c \in \mathcal{F}$
+3. 如果 $A_1, A_2, \ldots \in \mathcal{F}$，则 $\bigcup_{i=1}^{\infty} A_i \in \mathcal{F}$
 
 ### 1.2 随机变量
 
 **定义 1.3**: 随机变量
-随机变量 ```latex
-X
-``` 是从概率空间 ```latex
-(\Omega, \mathcal{F}, P)
-``` 到实数集 ```latex
-\mathbb{R}
-``` 的可测函数：
-$```latex
-X: \Omega \rightarrow \mathbb{R}
-```$
+随机变量 $X$ 是从概率空间 $(\Omega, \mathcal{F}, P)$ 到实数集 $\mathbb{R}$ 的可测函数：
+$$X: \Omega \rightarrow \mathbb{R}$$
 
 **定义 1.4**: 分布函数
-随机变量 ```latex
-X
-``` 的分布函数 ```latex
-F_X: \mathbb{R} \rightarrow [0,1]
-``` 定义为：
-$```latex
-F_X(x) = P(X \leq x)
-```$
+随机变量 $X$ 的分布函数 $F_X: \mathbb{R} \rightarrow [0,1]$ 定义为：
+$$F_X(x) = P(X \leq x)$$
 
 ### 1.3 概率分布
 
 **定义 1.5**: 离散分布
-如果随机变量 ```latex
-X
-``` 只取有限或可数无限个值，则称 ```latex
-X
-``` 为离散随机变量。
+如果随机变量 $X$ 只取有限或可数无限个值，则称 $X$ 为离散随机变量。
 
 **定义 1.6**: 连续分布
-如果随机变量 ```latex
-X
-``` 的分布函数 ```latex
-F_X
-``` 是连续的，则称 ```latex
-X
-``` 为连续随机变量。
+如果随机变量 $X$ 的分布函数 $F_X$ 是连续的，则称 $X$ 为连续随机变量。
 
 ## 2. 概率公理
 
 ### 2.1 Kolmogorov公理
 
 **公理 2.1**: Kolmogorov概率公理
-概率测度 ```latex
-P
-``` 满足以下公理：
+概率测度 $P$ 满足以下公理：
 
-1. **非负性**: 对于所有 ```latex
-A \in \mathcal{F}
-```，```latex
-P(A) \geq 0
-```
-2. **规范性**: ```latex
-P(\Omega) = 1
-```
-3. **可列可加性**: 对于互不相容的事件 ```latex
-A_1, A_2, \ldots
-```，
-   $```latex
-P\left(\bigcup_{i=1}^{\infty} A_i\right) = \sum_{i=1}^{\infty} P(A_i)
-```$
+1. **非负性**: 对于所有 $A \in \mathcal{F}$，$P(A) \geq 0$
+2. **规范性**: $P(\Omega) = 1$
+3. **可列可加性**: 对于互不相容的事件 $A_1, A_2, \ldots$，
+   $$P\left(\bigcup_{i=1}^{\infty} A_i\right) = \sum_{i=1}^{\infty} P(A_i)$$
 
 ### 2.2 基本性质
 
 **定理 2.1**: 概率的基本性质
-对于任意事件 ```latex
-A, B \in \mathcal{F}
-```：
+对于任意事件 $A, B \in \mathcal{F}$：
 
-1. ```latex
-P(\emptyset) = 0
-```
-2. ```latex
-P(A^c) = 1 - P(A)
-```
-3. 如果 ```latex
-A \subseteq B
-```，则 ```latex
-P(A) \leq P(B)
-```
-4. ```latex
-P(A \cup B) = P(A) + P(B) - P(A \cap B)
-```
+1. $P(\emptyset) = 0$
+2. $P(A^c) = 1 - P(A)$
+3. 如果 $A \subseteq B$，则 $P(A) \leq P(B)$
+4. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
 
 **证明**:
 
-1. 由可列可加性，```latex
-P(\emptyset) = P(\emptyset \cup \emptyset \cup \cdots) = P(\emptyset) + P(\emptyset) + \cdots
-```，因此 ```latex
-P(\emptyset) = 0
-```
-2. ```latex
-1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)
-```，因此 ```latex
-P(A^c) = 1 - P(A)
-```
-3. 如果 ```latex
-A \subseteq B
-```，则 ```latex
-B = A \cup (B \setminus A)
-```，因此 ```latex
-P(B) = P(A) + P(B \setminus A) \geq P(A)
-```
-4. ```latex
-A \cup B = A \cup (B \setminus A)
-```，且 ```latex
-A
-``` 和 ```latex
-B \setminus A
-``` 互不相容，因此 ```latex
-P(A \cup B) = P(A) + P(B \setminus A) = P(A) + P(B) - P(A \cap B)
-```
+1. 由可列可加性，$P(\emptyset) = P(\emptyset \cup \emptyset \cup \cdots) = P(\emptyset) + P(\emptyset) + \cdots$，因此 $P(\emptyset) = 0$
+2. $1 = P(\Omega) = P(A \cup A^c) = P(A) + P(A^c)$，因此 $P(A^c) = 1 - P(A)$
+3. 如果 $A \subseteq B$，则 $B = A \cup (B \setminus A)$，因此 $P(B) = P(A) + P(B \setminus A) \geq P(A)$
+4. $A \cup B = A \cup (B \setminus A)$，且 $A$ 和 $B \setminus A$ 互不相容，因此 $P(A \cup B) = P(A) + P(B \setminus A) = P(A) + P(B) - P(A \cap B)$
 
 ## 3. 条件概率与独立性
 
 ### 3.1 条件概率
 
 **定义 3.1**: 条件概率
-对于事件 ```latex
-A, B \in \mathcal{F}
-```，且 ```latex
-P(B) > 0
-```，```latex
-A
-``` 在 ```latex
-B
-``` 条件下的条件概率定义为：
-$```latex
-P(A|B) = \frac{P(A \cap B)}{P(B)}
-```$
+对于事件 $A, B \in \mathcal{F}$，且 $P(B) > 0$，$A$ 在 $B$ 条件下的条件概率定义为：
+$$P(A|B) = \frac{P(A \cap B)}{P(B)}$$
 
 **定理 3.1**: 乘法公式
-对于事件 ```latex
-A_1, A_2, \ldots, A_n
-```，如果 ```latex
-P(A_1 \cap A_2 \cap \cdots \cap A_{n-1}) > 0
-```，则：
-$```latex
-P(A_1 \cap A_2 \cap \cdots \cap A_n) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2) \cdots P(A_n|A_1 \cap A_2 \cap \cdots \cap A_{n-1})
-```$
+对于事件 $A_1, A_2, \ldots, A_n$，如果 $P(A_1 \cap A_2 \cap \cdots \cap A_{n-1}) > 0$，则：
+$$P(A_1 \cap A_2 \cap \cdots \cap A_n) = P(A_1) \cdot P(A_2|A_1) \cdot P(A_3|A_1 \cap A_2) \cdots P(A_n|A_1 \cap A_2 \cap \cdots \cap A_{n-1})$$
 
 ### 3.2 独立性
 
 **定义 3.2**: 独立性
-事件 ```latex
-A
-``` 和 ```latex
-B
-``` 是独立的，如果：
-$```latex
-P(A \cap B) = P(A) \cdot P(B)
-```$
+事件 $A$ 和 $B$ 是独立的，如果：
+$$P(A \cap B) = P(A) \cdot P(B)$$
 
 **定义 3.3**: 条件独立性
-事件 ```latex
-A
-``` 和 ```latex
-B
-``` 在事件 ```latex
-C
-``` 条件下是独立的，如果：
-$```latex
-P(A \cap B|C) = P(A|C) \cdot P(B|C)
-```$
+事件 $A$ 和 $B$ 在事件 $C$ 条件下是独立的，如果：
+$$P(A \cap B|C) = P(A|C) \cdot P(B|C)$$
 
 ### 3.3 贝叶斯定理
 
 **定理 3.2**: 贝叶斯定理
-对于事件 ```latex
-A, B \in \mathcal{F}
-```，且 ```latex
-P(A) > 0, P(B) > 0
-```：
-$```latex
-P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}
-```$
+对于事件 $A, B \in \mathcal{F}$，且 $P(A) > 0, P(B) > 0$：
+$$P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}$$
 
 **证明**:
-由条件概率定义，```latex
-P(A|B) = \frac{P(A \cap B)}{P(B)}
-``` 和 ```latex
-P(B|A) = \frac{P(A \cap B)}{P(A)}
-```
-因此 ```latex
-P(A \cap B) = P(B|A) \cdot P(A)
-```
+由条件概率定义，$P(A|B) = \frac{P(A \cap B)}{P(B)}$ 和 $P(B|A) = \frac{P(A \cap B)}{P(A)}$
+
+因此 $P(A \cap B) = P(B|A) \cdot P(A)$
 代入第一个等式得到贝叶斯定理。
 
 ## 4. 随机变量
@@ -277,184 +136,96 @@ P(A \cap B) = P(B|A) \cdot P(A)
 ### 4.1 离散随机变量
 
 **定义 4.1**: 概率质量函数
-离散随机变量 ```latex
-X
-``` 的概率质量函数 ```latex
-p_X: \mathbb{R} \rightarrow [0,1]
-``` 定义为：
-$```latex
-p_X(x) = P(X = x)
-```$
+离散随机变量 $X$ 的概率质量函数 $p_X: \mathbb{R} \rightarrow [0,1]$ 定义为：
+$$p_X(x) = P(X = x)$$
 
 **性质**:
 
-1. ```latex
-p_X(x) \geq 0
-``` 对于所有 ```latex
-x \in \mathbb{R}
-```
-2. ```latex
-\sum_{x \in \text{range}(X)} p_X(x) = 1
-```
+1. $p_X(x) \geq 0$ 对于所有 $x \in \mathbb{R}$
+2. $\sum_{x \in \text{range}(X)} p_X(x) = 1$
 
 **常见离散分布**:
 
-1. **伯努利分布** ```latex
-X \sim \text{Bernoulli}(p)
-```
-   $p_X(x) = \begin{cases}
+1. **伯努利分布** $X \sim \text{Bernoulli}(p)$
+   $$p_X(x) = \begin{cases}
    p & \text{if } x = 1 \\
    1-p & \text{if } x = 0 \\
    0 & \text{otherwise}
-   \end{cases}$
+   \end{cases}$$
 
-2. **二项分布** ```latex
-X \sim \text{Binomial}(n, p)
-```
-   $```latex
-p_X(x) = \binom{n}{x} p^x (1-p)^{n-x}, \quad x = 0, 1, \ldots, n
-```$
+2. **二项分布** $X \sim \text{Binomial}(n, p)$
+   $$p_X(x) = \binom{n}{x} p^x (1-p)^{n-x}, \quad x = 0, 1, \ldots, n$$
 
-3. **泊松分布** ```latex
-X \sim \text{Poisson}(\lambda)
-```
-   $```latex
-p_X(x) = \frac{e^{-\lambda} \lambda^x}{x!}, \quad x = 0, 1, 2, \ldots
-```$
+3. **泊松分布** $X \sim \text{Poisson}(\lambda)$
+   $$p_X(x) = \frac{e^{-\lambda} \lambda^x}{x!}, \quad x = 0, 1, 2, \ldots$$
 
 ### 4.2 连续随机变量
 
 **定义 4.2**: 概率密度函数
-连续随机变量 ```latex
-X
-``` 的概率密度函数 ```latex
-f_X: \mathbb{R} \rightarrow [0, \infty)
-``` 满足：
-$```latex
-F_X(x) = \int_{-\infty}^x f_X(t) dt
-```$
+连续随机变量 $X$ 的概率密度函数 $f_X: \mathbb{R} \rightarrow [0, \infty)$ 满足：
+$$F_X(x) = \int_{-\infty}^x f_X(t) dt$$
 
 **性质**:
 
-1. ```latex
-f_X(x) \geq 0
-``` 对于所有 ```latex
-x \in \mathbb{R}
-```
-2. ```latex
-\int_{-\infty}^{\infty} f_X(x) dx = 1
-```
+1. $f_X(x) \geq 0$ 对于所有 $x \in \mathbb{R}$
+2. $\int_{-\infty}^{\infty} f_X(x) dx = 1$
 
 **常见连续分布**:
 
-1. **均匀分布** ```latex
-X \sim \text{Uniform}(a, b)
-```
-   $f_X(x) = \begin{cases}
+1. **均匀分布** $X \sim \text{Uniform}(a, b)$
+   $$f_X(x) = \begin{cases}
    \frac{1}{b-a} & \text{if } a \leq x \leq b \\
    0 & \text{otherwise}
-   \end{cases}$
+   \end{cases}$$
 
-2. **正态分布** ```latex
-X \sim \text{Normal}(\mu, \sigma^2)
-```
-   $```latex
-f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
-```$
+2. **正态分布** $X \sim \text{Normal}(\mu, \sigma^2)$
+   $$f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
 
-3. **指数分布** ```latex
-X \sim \text{Exponential}(\lambda)
-```
-   $f_X(x) = \begin{cases}
+3. **指数分布** $X \sim \text{Exponential}(\lambda)$
+   $$f_X(x) = \begin{cases}
    \lambda e^{-\lambda x} & \text{if } x \geq 0 \\
    0 & \text{otherwise}
-   \end{cases}$
+   \end{cases}$$
 
 ### 4.3 期望与方差
 
 **定义 4.3**: 期望
-随机变量 ```latex
-X
-``` 的期望定义为：
+随机变量 $X$ 的期望定义为：
 
-- 离散情况：```latex
-E[X] = \sum_{x} x \cdot p_X(x)
-```
-- 连续情况：```latex
-E[X] = \int_{-\infty}^{\infty} x \cdot f_X(x) dx
-```
+- 离散情况：$E[X] = \sum_{x} x \cdot p_X(x)$
+- 连续情况：$E[X] = \int_{-\infty}^{\infty} x \cdot f_X(x) dx$
 
 **定义 4.4**: 方差
-随机变量 ```latex
-X
-``` 的方差定义为：
-$```latex
-\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2
-```$
+随机变量 $X$ 的方差定义为：
+$$\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2$$
 
 **定理 4.1**: 期望的线性性质
-对于随机变量 ```latex
-X, Y
-``` 和常数 ```latex
-a, b
-```：
-$```latex
-E[aX + bY] = aE[X] + bE[Y]
-```$
+对于随机变量 $X, Y$ 和常数 $a, b$：
+$$E[aX + bY] = aE[X] + bE[Y]$$
 
 **定理 4.2**: 方差的线性性质
-对于独立随机变量 ```latex
-X, Y
-``` 和常数 ```latex
-a, b
-```：
-$```latex
-\text{Var}(aX + bY) = a^2\text{Var}(X) + b^2\text{Var}(Y)
-```$
+对于独立随机变量 $X, Y$ 和常数 $a, b$：
+$$\text{Var}(aX + bY) = a^2\text{Var}(X) + b^2\text{Var}(Y)$$
 
 ## 5. 大数定律与中心极限定理
 
 ### 5.1 大数定律
 
 **定理 5.1**: 弱大数定律
-设 ```latex
-X_1, X_2, \ldots
-``` 是独立同分布的随机变量，期望为 ```latex
-\mu
-```，则对于任意 ```latex
-\epsilon > 0
-```：
-$```latex
-\lim_{n \rightarrow \infty} P\left(\left|\frac{1}{n}\sum_{i=1}^n X_i - \mu\right| > \epsilon\right) = 0
-```$
+设 $X_1, X_2, \ldots$ 是独立同分布的随机变量，期望为 $\mu$，则对于任意 $\epsilon > 0$：
+$$\lim_{n \rightarrow \infty} P\left(\left|\frac{1}{n}\sum_{i=1}^n X_i - \mu\right| > \epsilon\right) = 0$$
 
 **定理 5.2**: 强大数定律
-设 ```latex
-X_1, X_2, \ldots
-``` 是独立同分布的随机变量，期望为 ```latex
-\mu
-```，则：
-$```latex
-P\left(\lim_{n \rightarrow \infty} \frac{1}{n}\sum_{i=1}^n X_i = \mu\right) = 1
-```$
+设 $X_1, X_2, \ldots$ 是独立同分布的随机变量，期望为 $\mu$，则：
+$$P\left(\lim_{n \rightarrow \infty} \frac{1}{n}\sum_{i=1}^n X_i = \mu\right) = 1$$
 
 ### 5.2 中心极限定理
 
 **定理 5.3**: 中心极限定理
-设 ```latex
-X_1, X_2, \ldots
-``` 是独立同分布的随机变量，期望为 ```latex
-\mu
-```，方差为 ```latex
-\sigma^2
-```，则：
-$```latex
-\frac{\sum_{i=1}^n X_i - n\mu}{\sqrt{n}\sigma} \xrightarrow{d} \text{Normal}(0, 1)
-```$
+设 $X_1, X_2, \ldots$ 是独立同分布的随机变量，期望为 $\mu$，方差为 $\sigma^2$，则：
+$$\frac{\sum_{i=1}^n X_i - n\mu}{\sqrt{n}\sigma} \xrightarrow{d} \text{Normal}(0, 1)$$
 
-其中 ```latex
-\xrightarrow{d}
-``` 表示依分布收敛。
+其中 $\xrightarrow{d}$ 表示依分布收敛。
 
 ## 6. Go语言实现
 
