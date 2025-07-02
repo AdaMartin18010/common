@@ -4,31 +4,23 @@
 
 ### 4.1.1 集成模式定义
 
-**定义 4.1** (工作流集成): 工作流集成是一个三元组 ```latex
-\mathcal{I} = (W, S, A)
-```，其中：
+**定义 4.1** (工作流集成): 工作流集成是一个三元组 $$ \mathcal{I} = (W, S, A) $$，其中：
 
-- ```latex
-W
-``` 是工作流系统
-- ```latex
-S
-``` 是外部系统集合
-- ```latex
-A
-``` 是适配器集合
+- $$ W $$ 是工作流系统
+- $$ S $$ 是外部系统集合
+- $$ A $$ 是适配器集合
 
 **集成架构**:
 
-```latex
+$$
 \text{WorkflowIntegration} = \text{AdapterLayer} \times \text{ProtocolLayer} \times \text{DataLayer}
-```
+$$
 
 ### 4.1.2 集成模式分类
 
-```latex
+$$
 \text{IntegrationPatterns} = \text{Synchronous} \cup \text{Asynchronous} \cup \text{EventDriven} \cup \text{MessageBased}
-```
+$$
 
 ## 4.2 系统集成实现
 
@@ -251,161 +243,117 @@ type InsertData struct {
 
 // insertData 插入数据
 func (da *DatabaseAdapter) insertData(data *InsertData) error {
-    // 构建INSERT语句
-    placeholders := make([]string, len(data.Values))
-    for i := range data.Values {
-        placeholders[i] = "?"
-    }
-    
-    query := fmt.Sprintf(
-        "INSERT INTO %s (%s) VALUES (%s)",
+    // 构建插入语句
+    query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
         data.Table,
-        strings.Join(data.Columns, ", "),
-        strings.Join(placeholders, ", "),
-    )
-    
-    // 执行插入
+        strings.Join(data.Columns, ","),
+        strings.Repeat("?,", len(data.Values)-1)+"?")
+        
     _, err := da.db.Exec(query, data.Values...)
-    if err != nil {
-        return fmt.Errorf("failed to insert data: %w", err)
-    }
-    
-    return nil
+    return err
 }
 
 // UpdateData 更新数据
 type UpdateData struct {
-    Table   string                 `json:"table"`
-    Set     map[string]interface{} `json:"set"`
-    Where   map[string]interface{} `json:"where"`
+    Table    string                 `json:"table"`
+    Set      map[string]interface{} `json:"set"`
+    Where    map[string]interface{} `json:"where"`
     Metadata map[string]interface{} `json:"metadata"`
 }
 
 // updateData 更新数据
 func (da *DatabaseAdapter) updateData(data *UpdateData) error {
-    // 构建SET子句
-    setClause := make([]string, 0, len(data.Set))
-    values := make([]interface{}, 0, len(data.Set))
+    // 构建更新语句
+    setClauses := make([]string, 0, len(data.Set))
+    values := make([]interface{}, 0, len(data.Set)+len(data.Where))
     
-    for column, value := range data.Set {
-        setClause = append(setClause, fmt.Sprintf("%s = ?", column))
-        values = append(values, value)
+    for k, v := range data.Set {
+        setClauses = append(setClauses, fmt.Sprintf("%s = ?", k))
+        values = append(values, v)
     }
     
-    // 构建WHERE子句
-    whereClause := make([]string, 0, len(data.Where))
-    for column, value := range data.Where {
-        whereClause = append(whereClause, fmt.Sprintf("%s = ?", column))
-        values = append(values, value)
+    whereClauses := make([]string, 0, len(data.Where))
+    for k, v := range data.Where {
+        whereClauses = append(whereClauses, fmt.Sprintf("%s = ?", k))
+        values = append(values, v)
     }
     
-    query := fmt.Sprintf(
-        "UPDATE %s SET %s WHERE %s",
+    query := fmt.Sprintf("UPDATE %s SET %s WHERE %s",
         data.Table,
-        strings.Join(setClause, ", "),
-        strings.Join(whereClause, " AND "),
-    )
-    
-    // 执行更新
+        strings.Join(setClauses, ", "),
+        strings.Join(whereClauses, " AND "))
+        
     _, err := da.db.Exec(query, values...)
-    if err != nil {
-        return fmt.Errorf("failed to update data: %w", err)
-    }
-    
-    return nil
+    return err
 }
 
 // DeleteData 删除数据
 type DeleteData struct {
-    Table   string                 `json:"table"`
-    Where   map[string]interface{} `json:"where"`
+    Table    string                 `json:"table"`
+    Where    map[string]interface{} `json:"where"`
     Metadata map[string]interface{} `json:"metadata"`
 }
 
 // deleteData 删除数据
 func (da *DatabaseAdapter) deleteData(data *DeleteData) error {
-    // 构建WHERE子句
-    whereClause := make([]string, 0, len(data.Where))
+    // 构建删除语句
+    whereClauses := make([]string, 0, len(data.Where))
     values := make([]interface{}, 0, len(data.Where))
     
-    for column, value := range data.Where {
-        whereClause = append(whereClause, fmt.Sprintf("%s = ?", column))
-        values = append(values, value)
+    for k, v := range data.Where {
+        whereClauses = append(whereClauses, fmt.Sprintf("%s = ?", k))
+        values = append(values, v)
     }
     
-    query := fmt.Sprintf(
-        "DELETE FROM %s WHERE %s",
+    query := fmt.Sprintf("DELETE FROM %s WHERE %s",
         data.Table,
-        strings.Join(whereClause, " AND "),
-    )
-    
-    // 执行删除
+        strings.Join(whereClauses, " AND "))
+        
     _, err := da.db.Exec(query, values...)
-    if err != nil {
-        return fmt.Errorf("failed to delete data: %w", err)
-    }
-    
-    return nil
+    return err
 }
 
 // QueryData 查询数据
 type QueryData struct {
-    Table   string                 `json:"table"`
-    Columns []string               `json:"columns"`
-    Where   map[string]interface{} `json:"where"`
-    OrderBy string                 `json:"order_by"`
-    Limit   int                    `json:"limit"`
-    Metadata map[string]interface{} `json:"metadata"`
+    Table     string                 `json:"table"`
+    Columns   []string               `json:"columns"`
+    Where     map[string]interface{} `json:"where"`
+    ResultChan chan<- *sql.Rows      `json:"-"`
+    Metadata  map[string]interface{} `json:"metadata"`
 }
 
 // queryData 查询数据
 func (da *DatabaseAdapter) queryData(data *QueryData) error {
-    // 构建SELECT语句
-    columns := "*"
-    if len(data.Columns) > 0 {
-        columns = strings.Join(data.Columns, ", ")
+    // 构建查询语句
+    whereClauses := make([]string, 0, len(data.Where))
+    values := make([]interface{}, 0, len(data.Where))
+    
+    for k, v := range data.Where {
+        whereClauses = append(whereClauses, fmt.Sprintf("%s = ?", k))
+        values = append(values, v)
     }
     
-    query := fmt.Sprintf("SELECT %s FROM %s", columns, data.Table)
-    values := make([]interface{}, 0)
-    
-    // 添加WHERE子句
-    if len(data.Where) > 0 {
-        whereClause := make([]string, 0, len(data.Where))
-        for column, value := range data.Where {
-            whereClause = append(whereClause, fmt.Sprintf("%s = ?", column))
-            values = append(values, value)
-        }
-        query += " WHERE " + strings.Join(whereClause, " AND ")
-    }
-    
-    // 添加ORDER BY子句
-    if data.OrderBy != "" {
-        query += " ORDER BY " + data.OrderBy
-    }
-    
-    // 添加LIMIT子句
-    if data.Limit > 0 {
-        query += fmt.Sprintf(" LIMIT %d", data.Limit)
-    }
-    
-    // 执行查询
+    query := fmt.Sprintf("SELECT %s FROM %s WHERE %s",
+        strings.Join(data.Columns, ","),
+        data.Table,
+        strings.Join(whereClauses, " AND "))
+        
     rows, err := da.db.Query(query, values...)
     if err != nil {
-        return fmt.Errorf("failed to query data: %w", err)
+        return err
     }
-    defer rows.Close()
     
-    // 处理结果集
-    // 这里可以根据需要返回结果数据
+    // 将结果发送到通道
+    data.ResultChan <- rows
+    
     return nil
 }
 
-// Receive 接收数据库事件
+// Receive 从数据库接收数据
 func (da *DatabaseAdapter) Receive() (<-chan interface{}, error) {
-    // 数据库适配器通常不主动接收数据
-    // 可以通过轮询或触发器实现
-    return nil, fmt.Errorf("database adapter does not support receive")
+    // 对于数据库适配器，接收操作通常是查询驱动的
+    // 可以实现一个轮询机制或基于事件的触发器
+    return nil, fmt.Errorf("receive operation not directly supported, use query-driven approach")
 }
 ```
 
@@ -415,31 +363,9 @@ func (da *DatabaseAdapter) Receive() (<-chan interface{}, error) {
 // MessageQueueAdapter 消息队列适配器
 type MessageQueueAdapter struct {
     *BaseAdapter
-    producer MessageProducer
-    consumer MessageConsumer
-    queue    string
-}
-
-// MessageProducer 消息生产者接口
-type MessageProducer interface {
-    SendMessage(topic string, message []byte) error
-    Close() error
-}
-
-// MessageConsumer 消息消费者接口
-type MessageConsumer interface {
-    ConsumeMessages(topic string) (<-chan Message, error)
-    Close() error
-}
-
-// Message 消息结构
-type Message struct {
-    ID       string                 `json:"id"`
-    Topic    string                 `json:"topic"`
-    Payload  []byte                 `json:"payload"`
-    Headers  map[string]string      `json:"headers"`
-    Timestamp time.Time             `json:"timestamp"`
-    Metadata map[string]interface{} `json:"metadata"`
+    conn   *amqp.Connection
+    channel *amqp.Channel
+    queue  string
 }
 
 // NewMessageQueueAdapter 创建消息队列适配器
@@ -450,7 +376,7 @@ func NewMessageQueueAdapter(id, name, queue string) *MessageQueueAdapter {
     }
 }
 
-// Connect 连接消息队列
+// Connect 连接到消息队列
 func (mqa *MessageQueueAdapter) Connect() error {
     mqa.mutex.Lock()
     defer mqa.mutex.Unlock()
@@ -459,12 +385,30 @@ func (mqa *MessageQueueAdapter) Connect() error {
         return nil
     }
     
-    // 根据配置创建生产者和消费者
-    // 这里以Redis为例
-    if err := mqa.createRedisConnection(); err != nil {
-        return fmt.Errorf("failed to create Redis connection: %w", err)
+    conn, err := amqp.Dial(mqa.config.Connection.URL)
+    if err != nil {
+        return fmt.Errorf("failed to connect to RabbitMQ: %w", err)
     }
     
+    ch, err := conn.Channel()
+    if err != nil {
+        return fmt.Errorf("failed to open a channel: %w", err)
+    }
+    
+    _, err = ch.QueueDeclare(
+        mqa.queue, // name
+        true,      // durable
+        false,     // delete when unused
+        false,     // exclusive
+        false,     // no-wait
+        nil,       // arguments
+    )
+    if err != nil {
+        return fmt.Errorf("failed to declare a queue: %w", err)
+    }
+    
+    mqa.conn = conn
+    mqa.channel = ch
     mqa.connected = true
     return nil
 }
@@ -478,23 +422,18 @@ func (mqa *MessageQueueAdapter) Disconnect() error {
         return nil
     }
     
-    if mqa.producer != nil {
-        if err := mqa.producer.Close(); err != nil {
-            return fmt.Errorf("failed to close producer: %w", err)
-        }
+    if mqa.channel != nil {
+        mqa.channel.Close()
     }
-    
-    if mqa.consumer != nil {
-        if err := mqa.consumer.Close(); err != nil {
-            return fmt.Errorf("failed to close consumer: %w", err)
-        }
+    if mqa.conn != nil {
+        mqa.conn.Close()
     }
     
     mqa.connected = false
     return nil
 }
 
-// Send 发送消息
+// Send 发送消息到队列
 func (mqa *MessageQueueAdapter) Send(data interface{}) error {
     mqa.mutex.RLock()
     defer mqa.mutex.RUnlock()
@@ -503,21 +442,28 @@ func (mqa *MessageQueueAdapter) Send(data interface{}) error {
         return fmt.Errorf("not connected to message queue")
     }
     
-    // 序列化数据
-    payload, err := json.Marshal(data)
+    body, err := json.Marshal(data)
     if err != nil {
         return fmt.Errorf("failed to marshal data: %w", err)
     }
     
-    // 发送消息
-    if err := mqa.producer.SendMessage(mqa.queue, payload); err != nil {
-        return fmt.Errorf("failed to send message: %w", err)
+    err = mqa.channel.Publish(
+        "",        // exchange
+        mqa.queue, // routing key
+        false,     // mandatory
+        false,     // immediate
+        amqp.Publishing{
+            ContentType: "application/json",
+            Body:        body,
+        })
+    if err != nil {
+        return fmt.Errorf("failed to publish a message: %w", err)
     }
     
     return nil
 }
 
-// Receive 接收消息
+// Receive 从队列接收消息
 func (mqa *MessageQueueAdapter) Receive() (<-chan interface{}, error) {
     mqa.mutex.RLock()
     defer mqa.mutex.RUnlock()
@@ -526,207 +472,238 @@ func (mqa *MessageQueueAdapter) Receive() (<-chan interface{}, error) {
         return nil, fmt.Errorf("not connected to message queue")
     }
     
-    // 创建消息通道
-    messageChan := make(chan interface{}, 100)
+    msgs, err := mqa.channel.Consume(
+        mqa.queue, // queue
+        "",        // consumer
+        true,      // auto-ack
+        false,     // exclusive
+        false,     // no-local
+        false,     // no-wait
+        nil,       // args
+    )
+    if err != nil {
+        return nil, fmt.Errorf("failed to register a consumer: %w", err)
+    }
     
-    // 启动消费者
+    dataChan := make(chan interface{})
     go func() {
-        defer close(messageChan)
-        
-        messages, err := mqa.consumer.ConsumeMessages(mqa.queue)
-        if err != nil {
-            log.Printf("Failed to consume messages: %v", err)
-            return
-        }
-        
-        for msg := range messages {
-            // 反序列化消息
+        for d := range msgs {
             var data interface{}
-            if err := json.Unmarshal(msg.Payload, &data); err != nil {
-                log.Printf("Failed to unmarshal message: %v", err)
-                continue
-            }
-            
-            select {
-            case messageChan <- data:
-            default:
-                log.Printf("Message channel full, dropping message")
+            if err := json.Unmarshal(d.Body, &data); err == nil {
+                dataChan <- data
             }
         }
+        close(dataChan)
     }()
     
-    return messageChan, nil
-}
-
-// createRedisConnection 创建Redis连接
-func (mqa *MessageQueueAdapter) createRedisConnection() error {
-    // 这里实现Redis连接逻辑
-    // 简化实现，实际项目中可以使用Redis客户端库
-    return nil
+    return dataChan, nil
 }
 ```
 
-## 4.3 工作流集成管理器
-
-### 4.3.1 集成管理器实现
+### 4.2.4 API 适配器
 
 ```go
-// IntegrationManager 集成管理器
-type IntegrationManager struct {
-    adapters map[string]IntegrationAdapter
-    mappings map[string]DataMapping
-    mutex    sync.RWMutex
+// APIAdapter API 适配器
+type APIAdapter struct {
+    *BaseAdapter
+    client *http.Client
 }
 
-// NewIntegrationManager 创建集成管理器
-func NewIntegrationManager() *IntegrationManager {
-    return &IntegrationManager{
-        adapters: make(map[string]IntegrationAdapter),
-        mappings: make(map[string]DataMapping),
+// NewAPIAdapter 创建 API 适配器
+func NewAPIAdapter(id, name string) *APIAdapter {
+    return &APIAdapter{
+        BaseAdapter: NewBaseAdapter(id, name, AdapterTypeAPI),
+        client: &http.Client{
+            Timeout: 30 * time.Second,
+        },
     }
 }
 
-// RegisterAdapter 注册适配器
-func (im *IntegrationManager) RegisterAdapter(adapter IntegrationAdapter) error {
-    im.mutex.Lock()
-    defer im.mutex.Unlock()
-    
-    if _, exists := im.adapters[adapter.GetID()]; exists {
-        return fmt.Errorf("adapter already registered: %s", adapter.GetID())
-    }
-    
-    im.adapters[adapter.GetID()] = adapter
+// Connect API 适配器不需要显式连接
+func (aa *APIAdapter) Connect() error {
+    aa.mutex.Lock()
+    defer aa.mutex.Unlock()
+    aa.connected = true
     return nil
 }
 
-// UnregisterAdapter 注销适配器
-func (im *IntegrationManager) UnregisterAdapter(adapterID string) error {
-    im.mutex.Lock()
-    defer im.mutex.Unlock()
-    
-    adapter, exists := im.adapters[adapterID]
-    if !exists {
-        return fmt.Errorf("adapter not found: %s", adapterID)
-    }
-    
-    // 断开连接
-    if err := adapter.Disconnect(); err != nil {
-        return fmt.Errorf("failed to disconnect adapter: %w", err)
-    }
-    
-    delete(im.adapters, adapterID)
+// Disconnect API 适配器不需要显式断开连接
+func (aa *APIAdapter) Disconnect() error {
+    aa.mutex.Lock()
+    defer aa.mutex.Unlock()
+    aa.connected = false
     return nil
 }
 
-// GetAdapter 获取适配器
-func (im *IntegrationManager) GetAdapter(adapterID string) (IntegrationAdapter, error) {
-    im.mutex.RLock()
-    defer im.mutex.RUnlock()
+// Send 发送 API 请求
+func (aa *APIAdapter) Send(data interface{}) error {
+    aa.mutex.RLock()
+    defer aa.mutex.RUnlock()
     
-    adapter, exists := im.adapters[adapterID]
-    if !exists {
-        return nil, fmt.Errorf("adapter not found: %s", adapterID)
+    if !aa.connected {
+        return fmt.Errorf("adapter is not connected")
     }
     
-    return adapter, nil
-}
-
-// SendToAdapter 发送数据到适配器
-func (im *IntegrationManager) SendToAdapter(adapterID string, data interface{}) error {
-    adapter, err := im.GetAdapter(adapterID)
+    reqData, ok := data.(*APIRequestData)
+    if !ok {
+        return fmt.Errorf("unsupported data type for API adapter: %T", data)
+    }
+    
+    // 创建请求
+    var reqBody io.Reader
+    if reqData.Body != nil {
+        bodyBytes, err := json.Marshal(reqData.Body)
+        if err != nil {
+            return fmt.Errorf("failed to marshal request body: %w", err)
+        }
+        reqBody = bytes.NewBuffer(bodyBytes)
+    }
+    
+    req, err := http.NewRequest(reqData.Method, reqData.URL, reqBody)
     if err != nil {
-        return err
+        return fmt.Errorf("failed to create request: %w", err)
     }
     
-    // 应用数据映射
-    mappedData, err := im.applyMapping(adapterID, data)
+    // 设置请求头
+    for k, v := range reqData.Headers {
+        req.Header.Set(k, v)
+    }
+    
+    // 发送请求
+    resp, err := aa.client.Do(req)
     if err != nil {
-        return fmt.Errorf("failed to apply mapping: %w", err)
+        return fmt.Errorf("failed to send request: %w", err)
+    }
+    defer resp.Body.Close()
+    
+    // 处理响应
+    if resp.StatusCode >= 400 {
+        return fmt.Errorf("received error response: %s", resp.Status)
     }
     
-    return adapter.Send(mappedData)
-}
-
-// ReceiveFromAdapter 从适配器接收数据
-func (im *IntegrationManager) ReceiveFromAdapter(adapterID string) (<-chan interface{}, error) {
-    adapter, err := im.GetAdapter(adapterID)
-    if err != nil {
-        return nil, err
-    }
+    // 如果需要，可以处理响应体
     
-    return adapter.Receive()
+    return nil
 }
 
-// applyMapping 应用数据映射
-func (im *IntegrationManager) applyMapping(adapterID string, data interface{}) (interface{}, error) {
-    im.mutex.RLock()
-    mapping, exists := im.mappings[adapterID]
-    im.mutex.RUnlock()
-    
-    if !exists {
-        return data, nil
-    }
-    
-    // 应用输入映射
-    if len(mapping.InputMapping) > 0 {
-        data = im.mapInputData(data, mapping.InputMapping)
-    }
-    
-    // 应用转换器
-    for _, transformer := range mapping.Transformers {
-        data = im.applyTransformer(data, transformer)
-    }
-    
-    return data, nil
+// Receive API 适配器通常不用于接收异步消息
+func (aa *APIAdapter) Receive() (<-chan interface{}, error) {
+    return nil, fmt.Errorf("receive operation not supported for API adapter")
 }
 
-// mapInputData 映射输入数据
-func (im *IntegrationManager) mapInputData(data interface{}, mapping map[string]string) interface{} {
-    // 实现数据映射逻辑
-    // 这里可以根据映射规则转换数据结构
-    return data
-}
-
-// applyTransformer 应用转换器
-func (im *IntegrationManager) applyTransformer(data interface{}, transformer Transformer) interface{} {
-    switch transformer.Type {
-    case "json":
-        return im.transformJSON(data, transformer.Parameters)
-    case "xml":
-        return im.transformXML(data, transformer.Parameters)
-    case "csv":
-        return im.transformCSV(data, transformer.Parameters)
-    default:
-        return data
-    }
-}
-
-// transformJSON JSON转换
-func (im *IntegrationManager) transformJSON(data interface{}, params map[string]interface{}) interface{} {
-    // 实现JSON转换逻辑
-    return data
-}
-
-// transformXML XML转换
-func (im *IntegrationManager) transformXML(data interface{}, params map[string]interface{}) interface{} {
-    // 实现XML转换逻辑
-    return data
-}
-
-// transformCSV CSV转换
-func (im *IntegrationManager) transformCSV(data interface{}, params map[string]interface{}) interface{} {
-    // 实现CSV转换逻辑
-    return data
+// APIRequestData API 请求数据
+type APIRequestData struct {
+    Method  string                 `json:"method"`
+    URL     string                 `json:"url"`
+    Headers map[string]string      `json:"headers"`
+    Body    interface{}            `json:"body"`
+    Metadata map[string]interface{} `json:"metadata"`
 }
 ```
 
-## 4.4 总结
+## 4.3 集成策略与治理
 
-工作流集成模块涵盖了以下核心内容：
+### 4.3.1 数据一致性
 
-1. **集成理论基础**: 形式化定义工作流集成的数学模型
-2. **适配器模式**: 统一的适配器接口和基础实现
-3. **系统集成**: 数据库、消息队列等具体系统的集成方案
-4. **集成管理**: 统一的集成管理器，支持多系统集成
+**最终一致性 (Eventual Consistency)**
 
-这个设计提供了一个完整的工作流集成框架，支持工作流系统与各种外部系统的无缝集成。
+$$
+\forall t > T, \text{read}(x_i, t) = \text{last\_write}(x, t_w)
+$$
+
+其中 $$ T $$ 是一个时间界限。
+
+**CAP 定理**: 在分布式系统中，一致性 (Consistency)、可用性 (Availability)、分区容错性 (Partition tolerance) 最多只能同时满足两个。
+
+```mermaid
+graph TD
+    A[CAP 定理] --> B{选择两个}
+    B --> C[CP: 一致性 + 分区容错]
+    B --> D[AP: 可用性 + 分区容错]
+    B --> E[CA: 一致性 + 可用性]
+    
+    subgraph 分布式系统
+        C --> F[例如: Zookeeper]
+        D --> G[例如: Cassandra]
+        E --> H[例如: 传统数据库]
+    end
+```
+
+### 4.3.2 错误处理与重试
+
+**重试策略 (Retry Policy)**
+
+$$
+\text{Retry}(N, \Delta t, S)
+$$
+
+- $$ N $$: 最大重试次数
+- $$ \Delta t $$: 重试间隔
+- $$ S $$: 重试策略 (例如: 固定间隔，指数退避)
+
+**指数退避 (Exponential Backoff)**
+
+$$
+\Delta t_i = \text{base} \times 2^i
+$$
+
+其中 $$ i $$ 是重试次数。
+
+### 4.3.3 安全与认证
+
+**OAuth 2.0 流程**
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant ClientApp as "客户端应用"
+    participant AuthServer as "授权服务器"
+    participant ResourceServer as "资源服务器"
+
+    User->>ClientApp: 请求访问受保护资源
+    ClientApp->>AuthServer: 请求授权 (携带 client_id, redirect_uri, scope)
+    AuthServer->>User: 要求用户登录并授权
+    User->>AuthServer: 登录并授权
+    AuthServer->>ClientApp: 返回授权码 (authorization_code)
+    ClientApp->>AuthServer: 使用授权码交换访问令牌 (access_token)
+    AuthServer->>ClientApp: 返回 access_token 和 refresh_token
+    ClientApp->>ResourceServer: 携带 access_token 请求资源
+    ResourceServer->>AuthServer: 验证 access_token
+    AuthServer->>ResourceServer: 令牌有效
+    ResourceServer->>ClientApp: 返回受保护资源
+```
+
+### 4.3.4 监控与日志
+
+**监控指标 (Monitoring Metrics)**
+
+- **吞吐量 (Throughput)**: 单位时间处理的请求数
+- **延迟 (Latency)**: 请求响应时间
+- **错误率 (Error Rate)**: 失败请求的比例
+- **饱和度 (Saturation)**: 系统资源的利用率
+
+$$
+\text{Throughput} = \frac{\text{TotalRequests}}{\Delta T}
+$$
+
+$$
+\text{ErrorRate} = \frac{\text{FailedRequests}}{\text{TotalRequests}}
+$$
+
+**日志结构 (Structured Logging)**
+
+```json
+{
+  "timestamp": "2023-10-27T10:00:00Z",
+  "level": "INFO",
+  "service": "workflow-integrator",
+  "adapter_id": "db-adapter-01",
+  "trace_id": "abc-123-xyz-789",
+  "message": "Successfully processed data",
+  "data": {
+    "table": "orders",
+    "operation": "insert",
+    "rows_affected": 1
+  }
+}
+```

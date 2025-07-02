@@ -4,64 +4,36 @@
 
 ### 1.1.1 服务网格形式化定义
 
-**定义 1.1** (服务网格): 服务网格是一个四元组 ```latex
-\mathcal{M} = (P, S, C, R)
-```，其中：
+**定义 1.1** (服务网格): 服务网格是一个四元组 $$ \mathcal{M} = (P, S, C, R) $$，其中：
 
-- ```latex
-P
-``` 是代理集合 (Proxies)
-- ```latex
-S
-``` 是服务集合 (Services)
-- ```latex
-C
-``` 是控制平面 (Control Plane)
-- ```latex
-R
-``` 是路由规则集合 (Routing Rules)
+- $$ P $$ 是代理集合 (Proxies)
+- $$ S $$ 是服务集合 (Services)
+- $$ C $$ 是控制平面 (Control Plane)
+- $$ R $$ 是路由规则集合 (Routing Rules)
 
 **服务网格架构**:
 
-```latex
+$$
 \text{ServiceMesh} = \text{DataPlane} \times \text{ControlPlane}
-```
+$$
 
 其中：
 
-- ```latex
-\text{DataPlane} = \text{Proxy} \times \text{Service}
-```
-- ```latex
-\text{ControlPlane} = \text{Discovery} \times \text{Configuration} \times \text{Policy}
-```
+- $$ \text{DataPlane} = \text{Proxy} \times \text{Service} $$
+- $$ \text{ControlPlane} = \text{Discovery} \times \text{Configuration} \times \text{Policy} $$
 
 ### 1.1.2 服务网格核心概念
 
-**定义 1.2** (服务代理): 服务代理是一个三元组 ```latex
-\text{Proxy} = (I, O, F)
-```，其中：
+**定义 1.2** (服务代理): 服务代理是一个三元组 $$ \text{Proxy} = (I, O, F) $$，其中：
 
-- ```latex
-I
-``` 是输入接口集合
-- ```latex
-O
-``` 是输出接口集合  
-- ```latex
-F
-``` 是过滤器集合
+- $$ I $$ 是输入接口集合
+- $$ O $$ 是输出接口集合  
+- $$ F $$ 是过滤器集合
 
-**定义 1.3** (服务发现): 服务发现是一个函数 ```latex
-\text{Discovery}: \text{ServiceName} \rightarrow \mathcal{P}(\text{Endpoint})
-```，其中：
+**定义 1.3** (服务发现): 服务发现是一个函数 $$ \text{Discovery}: \text{ServiceName} \rightarrow \mathcal{P}(\text{Endpoint}) $$，其中：
 
-- ```latex
-\text{ServiceName}
-``` 是服务名称集合
-- ```latex
-\text{Endpoint}
-``` 是服务端点集合
+- $$ \text{ServiceName} $$ 是服务名称集合
+- $$ \text{Endpoint} $$ 是服务端点集合
 
 ## 1.2 Go语言服务网格实现
 

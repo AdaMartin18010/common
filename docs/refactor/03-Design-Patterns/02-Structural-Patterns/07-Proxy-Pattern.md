@@ -4,29 +4,17 @@
 
 ### 1.1 数学定义
 
-设 ```latex
-S
-``` 为主题接口，```latex
-P
-``` 为代理集合，```latex
-R
-``` 为真实对象集合，代理模式满足以下公理：
+设 $$S$$ 为主题接口，$$P$$ 为代理集合，$$R$$ 为真实对象集合，代理模式满足以下公理：
 
-$```latex
+$$
 \forall s \in S, \exists p \in P, \exists r \in R: \text{proxy}(p, r) \rightarrow \text{control}(p, s)
-```$
+$$
 
 **形式化约束**：
 
-- **接口一致性**: ```latex
-\text{interface}(p) = \text{interface}(s) = \text{interface}(r)
-```
-- **访问控制**: ```latex
-\text{access}(p, s) \implies \text{control}(p, \text{operation}(s))
-```
-- **延迟加载**: ```latex
-\text{load}(r) \iff \text{first\_access}(p, r)
-```
+- **接口一致性**: $$\text{interface}(p) = \text{interface}(s) = \text{interface}(r)$$
+- **访问控制**: $$\text{access}(p, s) \implies \text{control}(p, \text{operation}(s))$$
+- **延迟加载**: $$\text{load}(r) \iff \text{first\_access}(p, r)$$
 
 ### 1.2 类型理论定义
 
@@ -251,29 +239,29 @@ func NewCachingProxy() *CachingProxy {
 
 func (c *CachingProxy) Request() string {
     cacheKey := "request"
-    
+
     c.mutex.RLock()
     if cached, exists := c.cache[cacheKey]; exists {
         c.mutex.RUnlock()
         return fmt.Sprintf("CachingProxy: Cached result - %s", cached)
     }
     c.mutex.RUnlock()
-    
+
     c.mutex.Lock()
     defer c.mutex.Unlock()
-    
+
     // 双重检查
     if cached, exists := c.cache[cacheKey]; exists {
         return fmt.Sprintf("CachingProxy: Cached result - %s", cached)
     }
-    
+
     if c.realSubject == nil {
         c.realSubject = NewRealSubject("caching-proxy")
     }
-    
+
     result := c.realSubject.Request()
     c.cache[cacheKey] = result
-    
+
     return fmt.Sprintf("CachingProxy: Fresh result - %s", result)
 }
 
@@ -292,15 +280,15 @@ func NewLoggingProxy(logger func(string)) *LoggingProxy {
 
 func (l *LoggingProxy) Request() string {
     l.logger(fmt.Sprintf("LoggingProxy: Before request to %s", l.GetID()))
-    
+
     if l.realSubject == nil {
         l.realSubject = NewRealSubject("logging-proxy")
     }
-    
+
     result := l.realSubject.Request()
-    
+
     l.logger(fmt.Sprintf("LoggingProxy: After request, result: %s", result))
-    
+
     return fmt.Sprintf("LoggingProxy: %s", result)
 }
 ```
@@ -323,13 +311,13 @@ func NewRemoteProxy(serverURL string) *RemoteProxy {
 
 func (r *RemoteProxy) Request() string {
     fmt.Printf("RemoteProxy: Sending request to %s\n", r.serverURL)
-    
+
     // 模拟网络请求
     time.Sleep(100 * time.Millisecond)
-    
+
     // 模拟远程响应
     response := fmt.Sprintf("Remote response from %s", r.serverURL)
-    
+
     return fmt.Sprintf("RemoteProxy: %s", response)
 }
 
@@ -350,24 +338,24 @@ func NewSmartProxy() *SmartProxy {
 func (s *SmartProxy) Request() string {
     s.mutex.Lock()
     defer s.mutex.Unlock()
-    
+
     s.accessCount++
     s.lastAccess = time.Now()
-    
+
     if s.realSubject == nil {
         s.realSubject = NewRealSubject("smart-proxy")
     }
-    
+
     result := s.realSubject.Request()
-    
-    return fmt.Sprintf("SmartProxy[access=%d, last=%s]: %s", 
+
+    return fmt.Sprintf("SmartProxy[access=%d, last=%s]: %s",
         s.accessCount, s.lastAccess.Format("15:04:05"), result)
 }
 
 func (s *SmartProxy) GetAccessStats() map[string]interface{} {
     s.mutex.RLock()
     defer s.mutex.RUnlock()
-    
+
     return map[string]interface{}{
         "accessCount": s.accessCount,
         "lastAccess":  s.lastAccess,
@@ -392,21 +380,21 @@ func (c *ConfigurableProxy) Request() string {
     if enabled, exists := c.config["enabled"]; exists && !enabled.(bool) {
         return "ConfigurableProxy: Disabled"
     }
-    
+
     if delay, exists := c.config["delay"]; exists {
         time.Sleep(time.Duration(delay.(int)) * time.Millisecond)
     }
-    
+
     if c.realSubject == nil {
         c.realSubject = NewRealSubject("configurable-proxy")
     }
-    
+
     result := c.realSubject.Request()
-    
+
     if prefix, exists := c.config["prefix"]; exists {
         result = fmt.Sprintf("%s: %s", prefix, result)
     }
-    
+
     return fmt.Sprintf("ConfigurableProxy: %s", result)
 }
 
@@ -424,7 +412,7 @@ package main
 
 import (
     "fmt"
-    
+
     "github.com/your-project/proxy"
 )
 
@@ -433,15 +421,15 @@ func main() {
     proxy := proxy.NewProxy()
     fmt.Printf("Proxy request: %s\n", proxy.Request())
     fmt.Printf("Proxy ID: %s\n", proxy.GetID())
-    
+
     // 使用虚拟代理
     virtualProxy := proxy.NewVirtualProxy()
     fmt.Printf("Virtual proxy: %s\n", virtualProxy.Request())
-    
+
     // 使用保护代理
     protectionProxy := proxy.NewProtectionProxy("user")
     fmt.Printf("User access: %s\n", protectionProxy.Request())
-    
+
     adminProxy := proxy.NewProtectionProxy("admin")
     fmt.Printf("Admin access: %s\n", adminProxy.Request())
 }
@@ -455,15 +443,15 @@ func advancedProxyExample() {
     cachingProxy := proxy.NewCachingProxy()
     fmt.Printf("Caching proxy 1: %s\n", cachingProxy.Request())
     fmt.Printf("Caching proxy 2: %s\n", cachingProxy.Request())
-    
+
     // 日志代理
     logger := func(msg string) {
         fmt.Printf("LOG: %s\n", msg)
     }
-    
+
     loggingProxy := proxy.NewLoggingProxy(logger)
     fmt.Printf("Logging proxy: %s\n", loggingProxy.Request())
-    
+
     // 智能代理
     smartProxy := proxy.NewSmartProxy()
     fmt.Printf("Smart proxy 1: %s\n", smartProxy.Request())
@@ -481,7 +469,7 @@ func configurableProxyExample() {
         {"enabled": false, "prefix": "Disabled"},
         {"enabled": true, "prefix": "Fast", "delay": 0},
     }
-    
+
     for i, config := range configs {
         proxy := proxy.NewConfigurableProxy(config)
         fmt.Printf("Config %d: %s\n", i+1, proxy.Request())
@@ -530,7 +518,7 @@ graph LR
     A[代理模式] --> B[装饰器模式]
     A --> C[适配器模式]
     A --> D[外观模式]
-    
+
     B --> E[功能增强]
     C --> F[接口适配]
     D --> G[接口简化]
@@ -587,19 +575,19 @@ func VerifyProxyConsistency(proxy Subject) bool {
     if proxy == nil {
         return false
     }
-    
+
     // 验证代理实现了主题接口
     result := proxy.Request()
     if result == "" {
         return false
     }
-    
+
     // 验证代理ID
     id := proxy.GetID()
     if id == "" {
         return false
     }
-    
+
     return true
 }
 ```
@@ -611,30 +599,31 @@ func TestAccessControl(t *testing.T) {
     // 测试保护代理
     userProxy := NewProtectionProxy("user")
     adminProxy := NewProtectionProxy("admin")
-    
+
     userResult := userProxy.Request()
     adminResult := adminProxy.Request()
-    
+
     if !contains(userResult, "Access denied") {
         t.Error("User proxy should deny access")
     }
-    
+
     if contains(adminResult, "Access denied") {
         t.Error("Admin proxy should allow access")
     }
 }
 
 func contains(s, substr string) bool {
-    return len(s) >= len(substr) && (s == substr || 
-        (len(s) > len(substr) && (s[:len(substr)] == substr || 
-         s[len(s)-len(substr):] == substr || 
+    return len(s) >= len(substr) && (s == substr ||
+        (len(s) > len(substr) && (s[:len(substr)] == substr ||
+         s[len(s)-len(substr):] == substr ||
          contains(s[1:], substr))))
 }
 ```
 
 ## 9. 总结
 
-代理模式是结构型模式中的重要模式，它通过代理对象控制对真实对象的访问，提供了访问控制、缓存、日志等功能。
+代理模式是结构型模式中的重要模式，它通过代理对象控制对真实对象的访问，提供了访问控制、缓存、日志等功 
+能。
 
 ### 9.1 关键要点
 

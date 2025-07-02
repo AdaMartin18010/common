@@ -20,9 +20,9 @@
 
 **形式化定义**：
 
-```latex
+$$
 F = (I, E, S, M, C)
-```
+$$
 
 其中：
 
@@ -75,15 +75,15 @@ F = (I, E, S, M, C)
 
 **公理 2.1** 内部状态不变性：
 
-```latex
-∀s ∈ S, ∀i ∈ I : s.intrinsic = i ⇒ s.intrinsic = i
-```
+$$
+\forall s \in S, \forall i \in I : s.intrinsic = i \Rightarrow s.intrinsic = i
+$$
 
 **公理 2.2** 外部状态可变性：
 
-```latex
-∀s ∈ S, ∀e ∈ E : s.extrinsic = e ⇒ s.extrinsic ≠ e
-```
+$$
+\forall s \in S, \forall e \in E : s.extrinsic = e \Rightarrow s.extrinsic \neq e
+$$
 
 ### 2.2 享元函数
 
@@ -103,20 +103,18 @@ F = (I, E, S, M, C)
 
 **定理 2.1** 内存节省定理：
 
-```latex
-memory_saved = |I| × (object_size - reference_size)
-```
+$$
+memory_saved = |I| \times (object_size - reference_size)
+$$
 
 **证明**：
 
-```latex
 设每个对象大小为 object_size，引用大小为 reference_size
-共享前总内存：|I| × |E| × object_size
-共享后总内存：|I| × object_size + |E| × reference_size
-节省内存：|I| × |E| × object_size - (|I| × object_size + |E| × reference_size)
-         = |I| × (|E| × object_size - object_size - |E| × reference_size / |I|)
-         ≈ |I| × (object_size - reference_size) (当|E| >> 1时)
-```
+共享前总内存：$|I| \times |E| \times object_size$
+共享后总内存：$|I| \times object_size + |E| \times reference_size$
+节省内存：$|I| \times |E| \times object_size - (|I| \times object_size + |E| \times reference_size)$
+         $= |I| \times (|E| \times object_size - object_size - |E| \times reference_size / |I|)$
+         $\approx |I| \times (object_size - reference_size) (当|E| >> 1时)$
 
 ## 3. 数学基础
 
@@ -124,9 +122,9 @@ memory_saved = |I| × (object_size - reference_size)
 
 **定义 3.1** 享元集合的基数：
 
-```latex
-|S| = |I| ≤ |O|
-```
+$$
+|S| = |I| \le |O|
+$$
 
 其中：
 
@@ -136,9 +134,9 @@ memory_saved = |I| × (object_size - reference_size)
 
 **定理 3.1** 内存效率定理：
 
-```latex
-efficiency = |S| / |O| = |I| / (|I| × |E|) = 1 / |E|
-```
+$$
+efficiency = |S| / |O| = |I| / (|I| \times |E|) = 1 / |E|
+$$
 
 ### 3.2 图论基础
 
@@ -149,45 +147,45 @@ efficiency = |S| / |O| = |I| / (|I| × |E|) = 1 / |E|
 
 **定理 3.2** 享元图的连通性：
 
-```latex
-∀v₁, v₂ ∈ V : ∃path(v₁, v₂) ⇒ v₁.intrinsic = v₂.intrinsic
-```
+$$
+\forall v₁, v₂ \in V : \exists path(v₁, v₂) \Rightarrow v₁.intrinsic = v₂.intrinsic
+$$
 
 ### 3.3 复杂度分析
 
 **定理 3.3** 享元模式的时间复杂度：
 
-```latex
+$$
 T(n) = O(1)  // 获取享元对象
+$$
+$$
 S(n) = O(|I|) // 空间复杂度
-```
+$$
 
 **证明**：
 
-```latex
 获取享元对象：哈希表查找 O(1)
 创建享元对象：最多创建 |I| 个对象
 总时间复杂度：O(1)
 总空间复杂度：O(|I|)
-```
 
 ## 4. 系统架构
 
 ### 4.1 分层架构
 
-```latex
-┌─────────────────────────────────────┐
-│            Client Layer             │
-├─────────────────────────────────────┤
-│         Flyweight Factory           │
-├─────────────────────────────────────┤
-│         Flyweight Pool              │
-├─────────────────────────────────────┤
-│         Concrete Flyweight          │
-├─────────────────────────────────────┤
-│         Context Manager             │
-└─────────────────────────────────────┘
-```
+$$
+\begin{CD}
+\text{Client Layer} \\
+@VVV \\
+\text{Flyweight Factory} \\
+@VVV \\
+\text{Flyweight Pool} \\
+@VVV \\
+\text{Concrete Flyweight} \\
+@VVV \\
+\text{Context Manager}
+\end{CD}
+$$
 
 ### 4.2 组件设计
 

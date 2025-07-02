@@ -4,28 +4,22 @@
 
 ### 1.1 数学定义
 
-设 ```latex
-P
-``` 为原型接口，```latex
-C
-``` 为具体原型类，```latex
-O
-``` 为对象集合，原型模式满足以下公理：
+设 $$ P $$ 为原型接口，$$ C $$ 为具体原型类，$$ O $$ 为对象集合，原型模式满足以下公理：
 
 **原型克隆公理**：
-$```latex
+$$
 \forall p \in P, \exists c \in C: \text{clone}(p) = c \land c \neq p
-```$
+$$
 
 **深度克隆公理**：
-$```latex
+$$
 \forall o_1, o_2 \in O: \text{deep\_clone}(o_1) = o_2 \implies \text{independent}(o_1, o_2)
-```$
+$$
 
 **浅度克隆公理**：
-$```latex
+$$
 \forall o_1, o_2 \in O: \text{shallow\_clone}(o_1) = o_2 \implies \text{shared\_references}(o_1, o_2)
-```$
+$$
 
 ### 1.2 类型理论定义
 
@@ -53,15 +47,9 @@ type ConcretePrototype struct {
 
 **证明**:
 
-1. **避免构造开销**: ```latex
-\text{cost}(\text{clone}) < \text{cost}(\text{new})
-```
-2. **保持状态**: ```latex
-\text{state}(\text{clone}(p)) = \text{state}(p)
-```
-3. **独立性**: ```latex
-\text{modify}(\text{clone}(p)) \not\Rightarrow \text{modify}(p)
-```
+1. **避免构造开销**: $$ \text{cost}(\text{clone}) < \text{cost}(\text{new}) $$
+2. **保持状态**: $$ \text{state}(\text{clone}(p)) = \text{state}(p) $$
+3. **独立性**: $$ \text{modify}(\text{clone}(p)) \not\Rightarrow \text{modify}(p) $$
 
 ```mermaid
 graph TD
