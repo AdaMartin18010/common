@@ -31,27 +31,13 @@
 ### 1.1 基本概念
 
 **定义 1.1**: 字母表 (Alphabet)
-字母表 ```latex
-\Sigma
-``` 是一个有限的符号集合。
+字母表 $\Sigma$ 是一个有限的符号集合。
 
 **定义 1.2**: 字符串 (String)
-字母表 ```latex
-\Sigma
-``` 上的字符串是 ```latex
-\Sigma
-``` 中符号的有限序列。
+字母表 $\Sigma$ 上的字符串是 $\Sigma$ 中符号的有限序列。
 
 **定义 1.3**: 语言 (Language)
-字母表 ```latex
-\Sigma
-``` 上的语言是 ```latex
-\Sigma^*
-``` 的子集，其中 ```latex
-\Sigma^*
-``` 表示 ```latex
-\Sigma
-``` 上所有字符串的集合。
+字母表 $\Sigma$ 上的语言是 $\Sigma^*$ 的子集，其中 $\Sigma^*$ 表示 $\Sigma$ 上所有字符串的集合。
 
 ### 1.2 核心思想
 
@@ -62,44 +48,20 @@
 ### 2.1 数学定义
 
 **定义 2.1**: 字符串操作
-设 ```latex
-w = a_1a_2\ldots a_n
-``` 和 ```latex
-v = b_1b_2\ldots b_m
-``` 是字符串：
+设 $w = a_1a_2\ldots a_n$ 和 $v = b_1b_2\ldots b_m$ 是字符串：
 
-1. **连接**: ```latex
-w \cdot v = a_1a_2\ldots a_nb_1b_2\ldots b_m
-```
-2. **长度**: ```latex
-|w| = n
-```
-3. **空字符串**: ```latex
-\varepsilon
-``` 是长度为0的字符串
-4. **幂**: ```latex
-w^0 = \varepsilon
-```, ```latex
-w^{n+1} = w^n \cdot w
-```
+1. **连接**: $w \cdot v = a_1a_2\ldots a_nb_1b_2\ldots b_m$
+2. **长度**: $|w| = n$
+3. **空字符串**: $\varepsilon$ 是长度为0的字符串
+4. **幂**: $w^0 = \varepsilon$, $w^{n+1} = w^n \cdot w$
 
 **定义 2.2**: 语言操作
-设 ```latex
-L_1, L_2
-``` 是语言：
+设 $L_1, L_2$ 是语言：
 
-1. **并**: ```latex
-L_1 \cup L_2 = \{w \mid w \in L_1 \text{ 或 } w \in L_2\}
-```
-2. **交**: ```latex
-L_1 \cap L_2 = \{w \mid w \in L_1 \text{ 且 } w \in L_2\}
-```
-3. **连接**: ```latex
-L_1 \cdot L_2 = \{w \cdot v \mid w \in L_1, v \in L_2\}
-```
-4. **克林闭包**: ```latex
-L^* = \bigcup_{i=0}^{\infty} L^i
-```
+1. **并**: $L_1 \cup L_2 = \{w \mid w \in L_1 \text{ 或 } w \in L_2\}$
+2. **交**: $L_1 \cap L_2 = \{w \mid w \in L_1 \text{ 且 } w \in L_2\}$
+3. **连接**: $L_1 \cdot L_2 = \{w \cdot v \mid w \in L_1, v \in L_2\}$
+4. **克林闭包**: $L^* = \bigcup_{i=0}^{\infty} L^i$
 
 **定义 2.3**: 乔姆斯基层次结构
 
@@ -173,614 +135,225 @@ type Production struct {
 ### 3.1 定理陈述
 
 **定理 3.1**: 泵引理 (Pumping Lemma)
-设 ```latex
-L
-``` 是正则语言，则存在常数 ```latex
-n
-```，使得对于任意 ```latex
-w \in L
-``` 且 ```latex
-|w| \geq n
-```，存在分解 ```latex
-w = xyz
-```，满足：
+设 $L$ 是正则语言，则存在常数 $n$，使得对于任意 $w \in L$ 且 $|w| \geq n$，存在分解 $w = xyz$，满足：
 
-1. ```latex
-|xy| \leq n
-```
-2. ```latex
-|y| > 0
-```
-3. 对于所有 ```latex
-i \geq 0
-```，```latex
-xy^iz \in L
-```
+1. $|xy| \leq n$
+2. $|y| > 0$
+3. 对于所有 $i \geq 0$，$xy^iz \in L$
 
 **定理 3.2**: 上下文无关语言的泵引理
-设 ```latex
-L
-``` 是上下文无关语言，则存在常数 ```latex
-n
-```，使得对于任意 ```latex
-w \in L
-``` 且 ```latex
-|w| \geq n
-```，存在分解 ```latex
-w = uvxyz
-```，满足：
+设 $L$ 是上下文无关语言，则存在常数 $n$，使得对于任意 $w \in L$ 且 $|w| \geq n$，存在分解 $w = uvxyz$，满足：
 
-1. ```latex
-|vxy| \leq n
-```
-2. ```latex
-|vy| > 0
-```
-3. 对于所有 ```latex
-i \geq 0
-```，```latex
-uv^ixy^iz \in L
-```
+1. $|vxy| \leq n$
+2. $|vy| > 0$
+3. 对于所有 $i \geq 0$，$uv^ixy^iz \in L$
 
 **定理 3.3**: 语言类的包含关系
-$```latex
+$$
 \text{Regular} \subset \text{Context-Free} \subset \text{Context-Sensitive} \subset \text{Recursively-Enumerable}
-```$
+$$
 
 ### 3.2 证明过程
 
 **证明定理 3.1**: 泵引理
 
-设 ```latex
-L
-``` 是正则语言，```latex
-M
-``` 是接受 ```latex
-L
-``` 的DFA，有 ```latex
-n
-``` 个状态。
+设 $L$ 是正则语言，$M$ 是接受 $L$ 的DFA，有 $n$ 个状态。
 
-对于任意 ```latex
-w \in L
-``` 且 ```latex
-|w| \geq n
-```，考虑 ```latex
-M
-``` 在输入 ```latex
-w
-``` 上的计算路径：
-$```latex
-q_0 \xrightarrow{a_1} q_1 \xrightarrow{a_2} q_2 \ldots \xrightarrow{a_n} q_n
-```$
+对于任意 $w \in L$ 且 $|w| \geq n$，考虑 $M$ 在输入 $w$ 时的状态序列：
+$p_0, p_1, \ldots, p_{|w|}$
+其中 $p_0$ 是初始状态，$p_{i+1} = \delta(p_i, w_{i+1})$。
 
-由于 ```latex
-M
-``` 只有 ```latex
-n
-``` 个状态，根据鸽巢原理，在路径 ```latex
-q_0, q_1, \ldots, q_n
-``` 中至少有两个状态相同，设为 ```latex
-q_i = q_j
-```，其中 ```latex
-i < j \leq n
-```。
+由于 $|w| \geq n$，状态序列长度为 $|w|+1 > n$。根据鸽巢原理，序列中必有重复状态。
+设 $p_j = p_k$ 是第一个重复状态，其中 $j < k \leq n$。
 
-设 ```latex
-x = a_1\ldots a_i
-```，```latex
-y = a_{i+1}\ldots a_j
-```，```latex
-z = a_{j+1}\ldots a_m
-```。
+令 $w = xyz$：
+- $x = w_1\ldots w_j$
+- $y = w_{j+1}\ldots w_k$
+- $z = w_{k+1}\ldots w_{|w|}$
 
-则 ```latex
-w = xyz
-```，且：
-
-1. ```latex
-|xy| = j \leq n
-```
-2. ```latex
-|y| = j - i > 0
-```
-3. 对于任意 ```latex
-k \geq 0
-```，```latex
-xy^kz \in L
-```
-
-**证明定理 3.2**: 上下文无关语言的泵引理
-
-设 ```latex
-L
-``` 是上下文无关语言，```latex
-G
-``` 是生成 ```latex
-L
-``` 的乔姆斯基范式文法。
-
-对于足够长的字符串，推导树中必然存在一条路径，其中某个变量 ```latex
-A
-``` 出现两次。利用这个重复可以构造泵引理。
+那么：
+1. $|xy| = k \leq n$
+2. $|y| = k - j > 0$
+3. 对于所有 $i \geq 0$，$M$ 在输入 $xy^iz$ 时，状态序列为：
+   - 从 $p_0$ 经过 $x$ 到达 $p_j$
+   - 经过 $y$ 从 $p_j$ 回到 $p_j$ (循环 $i$ 次)
+   - 从 $p_j=p_k$ 经过 $z$ 到达最终接受状态
+因此，$xy^iz \in L$。
 
 ## 4. Go语言实现
 
 ### 4.1 基础实现
 
 ```go
-package formallanguages
+package formal_languages
 
 import (
-    "fmt"
-    "sync"
-    "strings"
+	"fmt"
+	"sync"
 )
 
 // Alphabet 表示字母表
 type Alphabet struct {
-    Symbols map[string]bool
-    mu      sync.RWMutex
+	Symbols map[rune]bool
+	mu      sync.RWMutex
 }
 
-// NewAlphabet 创建新字母表
-func NewAlphabet(symbols ...string) *Alphabet {
-    alpha := &Alphabet{
-        Symbols: make(map[string]bool),
-    }
-    for _, symbol := range symbols {
-        alpha.Symbols[symbol] = true
-    }
-    return alpha
-}
-
-// AddSymbol 添加符号
-func (a *Alphabet) AddSymbol(symbol string) {
-    a.mu.Lock()
-    defer a.mu.Unlock()
-    a.Symbols[symbol] = true
+// NewAlphabet 创建一个新的字母表
+func NewAlphabet(symbols []rune) *Alphabet {
+	s := make(map[rune]bool)
+	for _, r := range symbols {
+		s[r] = true
+	}
+	return &Alphabet{Symbols: s}
 }
 
 // Contains 检查符号是否在字母表中
-func (a *Alphabet) Contains(symbol string) bool {
-    a.mu.RLock()
-    defer a.mu.RUnlock()
-    return a.Symbols[symbol]
-}
-
-// Size 返回字母表大小
-func (a *Alphabet) Size() int {
-    a.mu.RLock()
-    defer a.mu.RUnlock()
-    return len(a.Symbols)
+func (a *Alphabet) Contains(symbol rune) bool {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	_, ok := a.Symbols[symbol]
+	return ok
 }
 
 // String 表示字符串
 type String struct {
-    Symbols []string
-    Length  int
+	Symbols []rune
 }
 
-// NewString 创建新字符串
-func NewString(symbols ...string) *String {
-    return &String{
-        Symbols: symbols,
-        Length:  len(symbols),
-    }
+// NewString 创建一个新的字符串
+func NewString(s string) *String {
+	return &String{Symbols: []rune(s)}
 }
 
-// Concat 连接字符串
+// Length 返回字符串长度
+func (s *String) Length() int {
+	return len(s.Symbols)
+}
+
+// Concat 连接两个字符串
 func (s *String) Concat(other *String) *String {
-    newSymbols := make([]string, s.Length+other.Length)
-    copy(newSymbols, s.Symbols)
-    copy(newSymbols[s.Length:], other.Symbols)
-    
-    return &String{
-        Symbols: newSymbols,
-        Length:  s.Length + other.Length,
-    }
+	return &String{Symbols: append(s.Symbols, other.Symbols...)}
 }
 
-// Substring 获取子字符串
-func (s *String) Substring(start, end int) *String {
-    if start < 0 || end > s.Length || start >= end {
-        return NewString()
-    }
-    
-    newSymbols := make([]string, end-start)
-    copy(newSymbols, s.Symbols[start:end])
-    
-    return &String{
-        Symbols: newSymbols,
-        Length:  end - start,
-    }
-}
-
-// String 字符串表示
-func (s *String) String() string {
-    return strings.Join(s.Symbols, "")
-}
-
-// Language 表示语言
+// Language 表示语言接口
 type Language interface {
-    Contains(str *String) bool
-    IsEmpty() bool
-    IsFinite() bool
-    Cardinality() int
-    String() string
+	Contains(s *String) bool
 }
 
 // FiniteLanguage 有限语言
 type FiniteLanguage struct {
-    Strings map[string]*String
-    mu      sync.RWMutex
+	Strings map[string]bool
 }
 
-// NewFiniteLanguage 创建有限语言
-func NewFiniteLanguage() *FiniteLanguage {
-    return &FiniteLanguage{
-        Strings: make(map[string]*String),
-    }
-}
-
-// AddString 添加字符串
-func (fl *FiniteLanguage) AddString(str *String) {
-    fl.mu.Lock()
-    defer fl.mu.Unlock()
-    fl.Strings[str.String()] = str
+// NewFiniteLanguage 创建一个新的有限语言
+func NewFiniteLanguage(strings []string) *FiniteLanguage {
+	s := make(map[string]bool)
+	for _, str := range strings {
+		s[str] = true
+	}
+	return &FiniteLanguage{Strings: s}
 }
 
 // Contains 检查字符串是否在语言中
-func (fl *FiniteLanguage) Contains(str *String) bool {
-    fl.mu.RLock()
-    defer fl.mu.RUnlock()
-    _, exists := fl.Strings[str.String()]
-    return exists
-}
-
-// IsEmpty 检查语言是否为空
-func (fl *FiniteLanguage) IsEmpty() bool {
-    fl.mu.RLock()
-    defer fl.mu.RUnlock()
-    return len(fl.Strings) == 0
-}
-
-// IsFinite 检查语言是否有限
-func (fl *FiniteLanguage) IsFinite() bool {
-    return true
-}
-
-// Cardinality 返回语言基数
-func (fl *FiniteLanguage) Cardinality() int {
-    fl.mu.RLock()
-    defer fl.mu.RUnlock()
-    return len(fl.Strings)
-}
-
-// String 字符串表示
-func (fl *FiniteLanguage) String() string {
-    fl.mu.RLock()
-    defer fl.mu.RUnlock()
-    
-    var result []string
-    for str := range fl.Strings {
-        result = append(result, str)
-    }
-    return fmt.Sprintf("{%s}", strings.Join(result, ", "))
-}
-
-// DeterministicFiniteAutomaton 确定有限自动机
-type DeterministicFiniteAutomaton struct {
-    States       map[string]bool
-    Alphabet     *Alphabet
-    Transitions  map[string]map[string]string
-    StartState   string
-    AcceptStates map[string]bool
-    mu           sync.RWMutex
-}
-
-// NewDFA 创建新DFA
-func NewDFA(alphabet *Alphabet) *DeterministicFiniteAutomaton {
-    return &DeterministicFiniteAutomaton{
-        States:       make(map[string]bool),
-        Alphabet:     alphabet,
-        Transitions:  make(map[string]map[string]string),
-        AcceptStates: make(map[string]bool),
-    }
-}
-
-// AddState 添加状态
-func (dfa *DeterministicFiniteAutomaton) AddState(state string) {
-    dfa.mu.Lock()
-    defer dfa.mu.Unlock()
-    dfa.States[state] = true
-    dfa.Transitions[state] = make(map[string]string)
-}
-
-// AddTransition 添加转移
-func (dfa *DeterministicFiniteAutomaton) AddTransition(from, symbol, to string) error {
-    dfa.mu.Lock()
-    defer dfa.mu.Unlock()
-    
-    if !dfa.States[from] || !dfa.States[to] {
-        return fmt.Errorf("invalid states")
-    }
-    
-    if !dfa.Alphabet.Contains(symbol) {
-        return fmt.Errorf("invalid symbol")
-    }
-    
-    dfa.Transitions[from][symbol] = to
-    return nil
-}
-
-// SetStartState 设置初始状态
-func (dfa *DeterministicFiniteAutomaton) SetStartState(state string) error {
-    dfa.mu.Lock()
-    defer dfa.mu.Unlock()
-    
-    if !dfa.States[state] {
-        return fmt.Errorf("invalid start state")
-    }
-    
-    dfa.StartState = state
-    return nil
-}
-
-// AddAcceptState 添加接受状态
-func (dfa *DeterministicFiniteAutomaton) AddAcceptState(state string) error {
-    dfa.mu.Lock()
-    defer dfa.mu.Unlock()
-    
-    if !dfa.States[state] {
-        return fmt.Errorf("invalid accept state")
-    }
-    
-    dfa.AcceptStates[state] = true
-    return nil
-}
-
-// Accepts 检查DFA是否接受字符串
-func (dfa *DeterministicFiniteAutomaton) Accepts(str *String) bool {
-    dfa.mu.RLock()
-    defer dfa.mu.RUnlock()
-    
-    currentState := dfa.StartState
-    
-    for _, symbol := range str.Symbols {
-        if nextState, exists := dfa.Transitions[currentState][symbol]; exists {
-            currentState = nextState
-        } else {
-            return false
-        }
-    }
-    
-    return dfa.AcceptStates[currentState]
-}
-
-// RegularLanguage 正则语言
-type RegularLanguage struct {
-    DFA *DeterministicFiniteAutomaton
-}
-
-// NewRegularLanguage 创建正则语言
-func NewRegularLanguage(dfa *DeterministicFiniteAutomaton) *RegularLanguage {
-    return &RegularLanguage{
-        DFA: dfa,
-    }
-}
-
-// Contains 检查字符串是否在语言中
-func (rl *RegularLanguage) Contains(str *String) bool {
-    return rl.DFA.Accepts(str)
-}
-
-// IsEmpty 检查语言是否为空
-func (rl *RegularLanguage) IsEmpty() bool {
-    // 检查是否存在从初始状态到接受状态的路径
-    return !rl.hasPathToAcceptState(rl.DFA.StartState, make(map[string]bool))
-}
-
-// hasPathToAcceptState 检查是否存在到接受状态的路径
-func (rl *RegularLanguage) hasPathToAcceptState(state string, visited map[string]bool) bool {
-    if visited[state] {
-        return false
-    }
-    
-    visited[state] = true
-    
-    if rl.DFA.AcceptStates[state] {
-        return true
-    }
-    
-    for _, nextState := range rl.DFA.Transitions[state] {
-        if rl.hasPathToAcceptState(nextState, visited) {
-            return true
-        }
-    }
-    
-    return false
-}
-
-// IsFinite 检查语言是否有限
-func (rl *RegularLanguage) IsFinite() bool {
-    // 检查是否存在循环
-    return !rl.hasCycle(rl.DFA.StartState, make(map[string]bool), make(map[string]bool))
-}
-
-// hasCycle 检查是否存在循环
-func (rl *RegularLanguage) hasCycle(state string, visited, recStack map[string]bool) bool {
-    if recStack[state] {
-        return true
-    }
-    
-    if visited[state] {
-        return false
-    }
-    
-    visited[state] = true
-    recStack[state] = true
-    
-    for _, nextState := range rl.DFA.Transitions[state] {
-        if rl.hasCycle(nextState, visited, recStack) {
-            return true
-        }
-    }
-    
-    recStack[state] = false
-    return false
-}
-
-// Cardinality 返回语言基数
-func (rl *RegularLanguage) Cardinality() int {
-    if rl.IsFinite() {
-        // 对于有限语言，可以枚举所有字符串
-        return rl.enumerateStrings()
-    }
-    return -1 // 无限
-}
-
-// enumerateStrings 枚举所有字符串
-func (rl *RegularLanguage) enumerateStrings() int {
-    // 简化的实现，实际应该使用更高效的算法
-    count := 0
-    maxLength := 10 // 限制最大长度
-    
-    for length := 0; length <= maxLength; length++ {
-        count += rl.countStringsOfLength(length)
-    }
-    
-    return count
-}
-
-// countStringsOfLength 计算指定长度的字符串数量
-func (rl *RegularLanguage) countStringsOfLength(length int) int {
-    // 简化的实现
-    if length == 0 {
-        if rl.DFA.AcceptStates[rl.DFA.StartState] {
-            return 1
-        }
-        return 0
-    }
-    
-    count := 0
-    symbols := rl.getAlphabetSymbols()
-    
-    // 生成所有可能的字符串并检查
-    rl.generateAndCheck("", length, symbols, &count)
-    
-    return count
-}
-
-// getAlphabetSymbols 获取字母表符号
-func (rl *RegularLanguage) getAlphabetSymbols() []string {
-    var symbols []string
-    for symbol := range rl.DFA.Alphabet.Symbols {
-        symbols = append(symbols, symbol)
-    }
-    return symbols
-}
-
-// generateAndCheck 生成并检查字符串
-func (rl *RegularLanguage) generateAndCheck(current string, remaining int, symbols []string, count *int) {
-    if remaining == 0 {
-        str := NewString()
-        for _, char := range current {
-            str.Symbols = append(str.Symbols, string(char))
-        }
-        if rl.Contains(str) {
-            *count++
-        }
-        return
-    }
-    
-    for _, symbol := range symbols {
-        rl.generateAndCheck(current+symbol, remaining-1, symbols, count)
-    }
+func (l *FiniteLanguage) Contains(s *String) bool {
+	_, ok := l.Strings[string(s.Symbols)]
+	return ok
 }
 ```
 
 ### 4.2 泛型实现
 
 ```go
-// GenericLanguage 泛型语言
+package formal_languages
+
+import (
+	"sync"
+)
+
+// GenericAlphabet 泛型字母表
+type GenericAlphabet[T comparable] struct {
+	Symbols map[T]bool
+	mu      sync.RWMutex
+}
+
+// NewGenericAlphabet 创建一个新的泛型字母表
+func NewGenericAlphabet[T comparable](symbols []T) *GenericAlphabet[T] {
+	s := make(map[T]bool)
+	for _, sym := range symbols {
+		s[sym] = true
+	}
+	return &GenericAlphabet[T]{Symbols: s}
+}
+
+// Contains 检查符号是否在字母表中
+func (a *GenericAlphabet[T]) Contains(symbol T) bool {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	_, ok := a.Symbols[symbol]
+	return ok
+}
+
+// GenericString 泛型字符串
+type GenericString[T comparable] struct {
+	Symbols []T
+}
+
+// NewGenericString 创建一个新的泛型字符串
+func NewGenericString[T comparable](symbols []T) *GenericString[T] {
+	return &GenericString[T]{Symbols: symbols}
+}
+
+// Length 返回字符串长度
+func (s *GenericString[T]) Length() int {
+	return len(s.Symbols)
+}
+
+// Concat 连接两个泛型字符串
+func (s *GenericString[T]) Concat(other *GenericString[T]) *GenericString[T] {
+	return &GenericString[T]{Symbols: append(s.Symbols, other.Symbols...)}
+}
+
+// GenericLanguage 泛型语言接口
 type GenericLanguage[T comparable] interface {
-    Contains(str []T) bool
-    IsEmpty() bool
-    IsFinite() bool
-    Cardinality() int
-    String() string
-}
-
-// GenericFiniteLanguage 泛型有限语言
-type GenericFiniteLanguage[T comparable] struct {
-    Strings map[string][]T
-    mu      sync.RWMutex
-}
-
-// NewGenericFiniteLanguage 创建泛型有限语言
-func NewGenericFiniteLanguage[T comparable]() *GenericFiniteLanguage[T] {
-    return &GenericFiniteLanguage[T]{
-        Strings: make(map[string][]T),
-    }
-}
-
-// AddString 添加字符串
-func (gfl *GenericFiniteLanguage[T]) AddString(str []T) {
-    gfl.mu.Lock()
-    defer gfl.mu.Unlock()
-    
-    key := gfl.toStringKey(str)
-    gfl.Strings[key] = str
-}
-
-// Contains 检查字符串是否在语言中
-func (gfl *GenericFiniteLanguage[T]) Contains(str []T) bool {
-    gfl.mu.RLock()
-    defer gfl.mu.RUnlock()
-    
-    key := gfl.toStringKey(str)
-    _, exists := gfl.Strings[key]
-    return exists
-}
-
-// toStringKey 将字符串转换为键
-func (gfl *GenericFiniteLanguage[T]) toStringKey(str []T) string {
-    var result []string
-    for _, item := range str {
-        result = append(result, fmt.Sprintf("%v", item))
-    }
-    return strings.Join(result, ",")
+	Contains(s *GenericString[T]) bool
 }
 ```
 
 ### 4.3 并发实现
 
 ```go
-// ConcurrentLanguage 并发语言
-type ConcurrentLanguage struct {
-    Strings sync.Map
+package formal_languages
+
+import "sync"
+
+// ConcurrentFiniteLanguage 并发安全的有限语言
+type ConcurrentFiniteLanguage struct {
+	Strings map[string]bool
+	mu      sync.RWMutex
 }
 
-// NewConcurrentLanguage 创建并发语言
-func NewConcurrentLanguage() *ConcurrentLanguage {
-    return &ConcurrentLanguage{}
+// NewConcurrentFiniteLanguage 创建一个新的并发安全有限语言
+func NewConcurrentFiniteLanguage(strings []string) *ConcurrentFiniteLanguage {
+	s := make(map[string]bool)
+	for _, str := range strings {
+		s[str] = true
+	}
+	return &ConcurrentFiniteLanguage{Strings: s}
 }
 
-// AddString 线程安全添加字符串
-func (cl *ConcurrentLanguage) AddString(str *String) {
-    cl.Strings.Store(str.String(), str)
+// Contains 并发安全地检查字符串是否在语言中
+func (l *ConcurrentFiniteLanguage) Contains(s *String) bool {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	_, ok := l.Strings[string(s.Symbols)]
+	return ok
 }
 
-// Contains 线程安全检查字符串
-func (cl *ConcurrentLanguage) Contains(str *String) bool {
-    _, exists := cl.Strings.Load(str.String())
-    return exists
-}
-
-// Range 遍历所有字符串
-func (cl *ConcurrentLanguage) Range(f func(key, value interface{}) bool) {
-    cl.Strings.Range(f)
+// AddString 并发安全地添加字符串
+func (l *ConcurrentFiniteLanguage) AddString(s string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.Strings[s] = true
 }
 ```
 
@@ -788,233 +361,102 @@ func (cl *ConcurrentLanguage) Range(f func(key, value interface{}) bool) {
 
 ### 5.1 基础示例
 
+**示例**: 定义一个语言 $L = \{ a^n b^n \mid n \geq 1 \}$。这不是正则语言，而是上下文无关语言。
+
 ```go
-// 示例：识别二进制数
-func BinaryNumberExample() {
-    // 创建字母表
-    alphabet := NewAlphabet("0", "1")
-    
-    // 创建DFA
-    dfa := NewDFA(alphabet)
-    
-    // 添加状态
-    dfa.AddState("q0") // 初始状态
-    dfa.AddState("q1") // 接受状态
-    dfa.AddState("q2") // 拒绝状态
-    
-    // 设置初始状态
-    dfa.SetStartState("q0")
-    
-    // 添加接受状态
-    dfa.AddAcceptState("q1")
-    
-    // 添加转移
-    dfa.AddTransition("q0", "0", "q2") // 0开头 -> 拒绝
-    dfa.AddTransition("q0", "1", "q1") // 1开头 -> 接受
-    dfa.AddTransition("q1", "0", "q1") // 继续接受
-    dfa.AddTransition("q1", "1", "q1") // 继续接受
-    dfa.AddTransition("q2", "0", "q2") // 继续拒绝
-    dfa.AddTransition("q2", "1", "q2") // 继续拒绝
-    
-    // 创建语言
-    language := NewRegularLanguage(dfa)
-    
-    // 测试字符串
-    testCases := []*String{
-        NewString("1"),
-        NewString("10"),
-        NewString("101"),
-        NewString("0"),
-        NewString("01"),
+package main
+
+import "fmt"
+
+// IsInAnBn 检查字符串是否属于 {a^n b^n | n >= 1}
+func IsInAnBn(s string) bool {
+    if len(s) == 0 || len(s)%2 != 0 {
+        return false
     }
-    
-    for _, testCase := range testCases {
-        accepted := language.Contains(testCase)
-        fmt.Printf("字符串 '%s' 是否被接受: %v\n", testCase, accepted)
+    n := len(s) / 2
+    for i := 0; i < n; i++ {
+        if s[i] != 'a' {
+            return false
+        }
     }
+    for i := n; i < 2*n; i++ {
+        if s[i] != 'b' {
+            return false
+        }
+    }
+    return true
+}
+
+func main() {
+    fmt.Println(IsInAnBn("ab"))      // true
+    fmt.Println(IsInAnBn("aabb"))   // true
+    fmt.Println(IsInAnBn("aaabbb"))  // true
+    fmt.Println(IsInAnBn("abc"))     // false
+    fmt.Println(IsInAnBn("a"))       // false
+    fmt.Println(IsInAnBn(""))        // false
 }
 ```
 
 ### 5.2 高级示例
 
-```go
-// 示例：语言操作
-func LanguageOperationsExample() {
-    // 创建两个有限语言
-    lang1 := NewFiniteLanguage()
-    lang1.AddString(NewString("a", "b"))
-    lang1.AddString(NewString("a", "b", "c"))
-    
-    lang2 := NewFiniteLanguage()
-    lang2.AddString(NewString("x", "y"))
-    lang2.AddString(NewString("z"))
-    
-    // 语言并集
-    union := NewFiniteLanguage()
-    
-    // 添加lang1的所有字符串
-    lang1.mu.RLock()
-    for _, str := range lang1.Strings {
-        union.AddString(str)
-    }
-    lang1.mu.RUnlock()
-    
-    // 添加lang2的所有字符串
-    lang2.mu.RLock()
-    for _, str := range lang2.Strings {
-        union.AddString(str)
-    }
-    lang2.mu.RUnlock()
-    
-    fmt.Printf("并集语言: %s\n", union)
-    
-    // 语言连接
-    concatenation := NewFiniteLanguage()
-    
-    lang1.mu.RLock()
-    lang2.mu.RLock()
-    for _, str1 := range lang1.Strings {
-        for _, str2 := range lang2.Strings {
-            concatenation.AddString(str1.Concat(str2))
-        }
-    }
-    lang2.mu.RUnlock()
-    lang1.mu.RUnlock()
-    
-    fmt.Printf("连接语言: %s\n", concatenation)
-}
+**示例**: 使用上下文无关文法定义 $L = \{ a^n b^n \mid n \geq 1 \}$
 
-// 示例：正则表达式匹配
-func RegexMatchingExample() {
-    // 创建匹配邮箱的正则语言
-    alphabet := NewAlphabet("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "@", ".", "_")
-    
-    // 简化的邮箱DFA（实际应该更复杂）
-    dfa := NewDFA(alphabet)
-    
-    // 添加状态
-    states := []string{"start", "local", "at", "domain", "dot", "tld", "accept"}
-    for _, state := range states {
-        dfa.AddState(state)
-    }
-    
-    dfa.SetStartState("start")
-    dfa.AddAcceptState("accept")
-    
-    // 添加转移（简化版本）
-    for _, state := range []string{"start", "local"} {
-        for char := 'a'; char <= 'z'; char++ {
-            dfa.AddTransition(state, string(char), "local")
-        }
-    }
-    
-    dfa.AddTransition("local", "@", "at")
-    dfa.AddTransition("at", "a", "domain")
-    dfa.AddTransition("domain", "a", "domain")
-    dfa.AddTransition("domain", ".", "dot")
-    dfa.AddTransition("dot", "c", "tld")
-    dfa.AddTransition("tld", "o", "accept")
-    dfa.AddTransition("accept", "m", "accept")
-    
-    language := NewRegularLanguage(dfa)
-    
-    // 测试邮箱
-    testEmails := []*String{
-        NewString("a", "@", "a", ".", "c", "o", "m"),
-        NewString("test", "@", "example", ".", "c", "o", "m"),
-        NewString("invalid"),
-    }
-    
-    for _, email := range testEmails {
-        valid := language.Contains(email)
-        fmt.Printf("邮箱 '%s' 是否有效: %v\n", email, valid)
-    }
-}
-```
+- **变量**: $S$
+- **终端**: $a, b$
+- **产生式**:
+  1. $S \rightarrow ab$
+  2. $S \rightarrow aSb$
+- **开始符号**: $S$
 
 ## 6. 性能分析
 
 ### 6.1 时间复杂度
 
-- **字符串查找**: ```latex
-O(1)
-``` (哈希表)
-- **DFA接受**: ```latex
-O(n)
-``` 其中 ```latex
-n
-``` 是字符串长度
-- **语言操作**: ```latex
-O(|L_1| \times |L_2|)
-``` (连接)
-- **空性检查**: ```latex
-O(|Q| + |E|)
-``` (图遍历)
+- **DFA/NFA识别**: $O(|w|)$，其中 $|w|$ 是输入字符串的长度。
+- **上下文无关文法解析 (CYK算法)**: $O(|w|^3 \cdot |G|)$，其中 $|G|$ 是文法的大小。
 
 ### 6.2 空间复杂度
 
-- **有限语言**: ```latex
-O(\sum_{w \in L} |w|)
-```
-- **DFA**: ```latex
-O(|Q| \times |\Sigma|)
-```
-- **字符串**: ```latex
-O(n)
-``` 其中 ```latex
-n
-``` 是字符串长度
+- **DFA/NFA**: $O(1)$ (不包括输入)
+- **CYK算法**: $O(|w|^2 \cdot |V|)$，其中 $|V|$ 是变量数量。
 
 ### 6.3 基准测试
 
 ```go
-func BenchmarkLanguageOperations(b *testing.B) {
-    // 创建大型语言
-    language := NewFiniteLanguage()
-    
-    // 添加大量字符串
-    for i := 0; i < 10000; i++ {
-        str := NewString(fmt.Sprintf("string%d", i))
-        language.AddString(str)
+package formal_languages_test
+
+import "testing"
+
+func IsInAnBn(s string) bool {
+    // ... (same as above)
+    if len(s) == 0 || len(s)%2 != 0 {
+		return false
+	}
+	n := len(s) / 2
+	for i := 0; i < n; i++ {
+		if s[i] != 'a' {
+			return false
+		}
+	}
+	for i := n; i < 2*n; i++ {
+		if s[i] != 'b' {
+			return false
+		}
+	}
+	return true
+}
+
+
+func BenchmarkIsInAnBn(b *testing.B) {
+    s := "aaaaabbbbb"
+    for i := 0; i < b.N; i++ {
+        IsInAnBn(s)
     }
-    
-    b.ResetTimer()
-    
-    b.Run("StringLookup", func(b *testing.B) {
-        for i := 0; i < b.N; i++ {
-            str := NewString(fmt.Sprintf("string%d", i%10000))
-            language.Contains(str)
-        }
-    })
-    
-    b.Run("DFAAcceptance", func(b *testing.B) {
-        // 创建简单DFA
-        alphabet := NewAlphabet("0", "1")
-        dfa := NewDFA(alphabet)
-        dfa.AddState("q0")
-        dfa.AddState("q1")
-        dfa.SetStartState("q0")
-        dfa.AddAcceptState("q1")
-        dfa.AddTransition("q0", "0", "q1")
-        dfa.AddTransition("q1", "1", "q1")
-        
-        regLang := NewRegularLanguage(dfa)
-        
-        for i := 0; i < b.N; i++ {
-            str := NewString("0")
-            for j := 0; j < 100; j++ {
-                str.Symbols = append(str.Symbols, "1")
-            }
-            regLang.Contains(str)
-        }
-    })
 }
 ```
 
 ## 7. 参考文献
 
-1. Hopcroft, J. E., Motwani, R., & Ullman, J. D. (2006). *Introduction to Automata Theory, Languages, and Computation*. Pearson Education.
-2. Sipser, M. (2012). *Introduction to the Theory of Computation*. Cengage Learning.
-3. Kozen, D. C. (1997). *Automata and Computability*. Springer-Verlag.
-4. Lewis, H. R., & Papadimitriou, C. H. (1998). *Elements of the Theory of Computation*. Prentice Hall.
-5. Linz, P. (2011). *An Introduction to Formal Languages and Automata*. Jones & Bartlett Learning.
+1. Hopcroft, John E., Rajeev Motwani, and Jeffrey D. Ullman. *Introduction to Automata Theory, Languages, and Computation*. 3rd ed., Pearson, 2006.
+2. Sipser, Michael. *Introduction to the Theory of Computation*. 3rd ed., Cengage Learning, 2012.
+3. Grune, Dick, and Ceriel J.H. Jacobs. *Parsing Techniques: A Practical Guide*. 2nd ed., Springer, 2008. 

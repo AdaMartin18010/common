@@ -9,21 +9,9 @@
     - [1.2 语法](#12-语法)
     - [1.3 语义](#13-语义)
     - [1.4 推理规则](#14-推理规则)
-  - [2. 谓词逻辑 (Predicate Logic)](#2-谓词逻辑-predicate-logic)
-    - [2.1 基本概念](#21-基本概念)
-    - [2.2 语法](#22-语法)
-    - [2.3 语义](#23-语义)
     - [2.4 推理规则](#24-推理规则)
-  - [3. 模态逻辑 (Modal Logic)](#3-模态逻辑-modal-logic)
-    - [3.1 基本概念](#31-基本概念)
-    - [3.2 语法](#32-语法)
-    - [3.3 语义](#33-语义)
     - [3.4 系统](#34-系统)
-  - [4. 时态逻辑 (Temporal Logic)](#4-时态逻辑-temporal-logic)
-    - [4.1 基本概念](#41-基本概念)
-    - [4.2 线性时态逻辑](#42-线性时态逻辑)
     - [4.3 分支时态逻辑](#43-分支时态逻辑)
-    - [4.4 模型检验](#44-模型检验)
   - [5. Go语言实现](#5-go语言实现)
     - [5.1 命题逻辑实现](#51-命题逻辑实现)
     - [5.2 真值表生成](#52-真值表生成)
@@ -107,6 +95,7 @@
 4. **合取消除**：
    $```latex
 \frac{\phi \wedge \psi}{\phi} \quad \frac{\phi \wedge \psi}{\psi}
+
 ```$
 
 5. **析取引入**：
@@ -124,8 +113,11 @@
 1. ```latex
 \neg(\phi \wedge \psi) \equiv \neg\phi \vee \neg\psi
 ```
+
 2. ```latex
+
 \neg(\phi \vee \psi) \equiv \neg\phi \wedge \neg\psi
+
 ```
 
 ## 2. 谓词逻辑 (Predicate Logic)
@@ -166,20 +158,26 @@ f(t_1, \ldots, t_n)
 - 变量集合 ```latex
 V = \{x, y, z, \ldots\}
 ```
+
 - 常量集合 ```latex
 C = \{a, b, c, \ldots\}
+
 ```
 - 函数符号集合 ```latex
 F = \{f, g, h, \ldots\}
 ```
+
 - 谓词符号集合 ```latex
 P = \{P, Q, R, \ldots\}
+
 ```
 - 逻辑连接词：```latex
 \neg, \wedge, \vee, \rightarrow, \leftrightarrow
 ```
+
 - 量词：```latex
 \forall, \exists
+
 ```
 - 辅助符号：```latex
 (
@@ -196,6 +194,7 @@ n
 t_1, \ldots, t_n
 ``` 是项，则 ```latex
 P(t_1, \ldots, t_n)
+
 ``` 是原子公式。
 
 **定义 2.6**: 合式公式
@@ -254,29 +253,56 @@ D
 \models
 ``` 递归定义如下：
 
-1. ```latex
+1. 
+
+```latex
 \mathcal{I}, \sigma \models P(t_1, \ldots, t_n)
-``` 当且仅当 ```latex
+```
+
+当且仅当
+
+```latex
 (t_1^{\mathcal{I},\sigma}, \ldots, t_n^{\mathcal{I},\sigma}) \in P^{\mathcal{I}}
 ```
-2. ```latex
+
+2.
+
+```latex
 \mathcal{I}, \sigma \models \neg\phi
-``` 当且仅当 ```latex
+```
+
+当且仅当
+
+```latex
 \mathcal{I}, \sigma \not\models \phi
 ```
-3. ```latex
+
+3.
+
+```latex
 \mathcal{I}, \sigma \models \phi \wedge \psi
-``` 当且仅当 ```latex
+```
+
+当且仅当
+
+```latex
 \mathcal{I}, \sigma \models \phi
-``` 且 ```latex
+```
+
+且
+
+```latex
 \mathcal{I}, \sigma \models \psi
 ```
+
 4. ```latex
+
 \mathcal{I}, \sigma \models \forall x \phi
 ``` 当且仅当对于所有 ```latex
 d \in D
 ```，```latex
 \mathcal{I}, \sigma[x \mapsto d] \models \phi
+
 ```
 5. ```latex
 \mathcal{I}, \sigma \models \exists x \phi
@@ -294,6 +320,7 @@ d \in D
 1. **全称消除**：
    $```latex
 \frac{\forall x \phi}{\phi[t/x]}
+
 ```$
    其中 ```latex
 t
@@ -310,6 +337,7 @@ t
 2. **全称引入**：
    $```latex
 \frac{\phi}{\forall x \phi}
+
 ```$
    其中 ```latex
 x
@@ -417,10 +445,13 @@ V: W \times P \rightarrow \{T, F\}
 ``` 当且仅当 ```latex
 V(w, p) = T
 ```
+
 2. ```latex
+
 \mathcal{M}, w \models \neg\phi
 ``` 当且仅当 ```latex
 \mathcal{M}, w \not\models \phi
+
 ```
 3. ```latex
 \mathcal{M}, w \models \phi \wedge \psi
@@ -429,7 +460,9 @@ V(w, p) = T
 ``` 且 ```latex
 \mathcal{M}, w \models \psi
 ```
+
 4. ```latex
+
 \mathcal{M}, w \models \Box\phi
 ``` 当且仅当对于所有 ```latex
 w'
@@ -437,6 +470,7 @@ w'
 wRw'
 ```，```latex
 \mathcal{M}, w' \models \phi
+
 ```
 5. ```latex
 \mathcal{M}, w \models \Diamond\phi
@@ -456,6 +490,7 @@ wRw'
 1. **K系统**：最基本的模态逻辑系统
 2. **T系统**：K + ```latex
 \Box\phi \rightarrow \phi
+
 ```（自反性）
 3. **S4系统**：T + ```latex
 \Box\phi \rightarrow \Box\Box\phi
@@ -526,10 +561,13 @@ LTL公式在无限序列 ```latex
 ``` 当且仅当 ```latex
 p \in \pi_0
 ```
+
 2. ```latex
+
 \pi \models \neg\phi
 ``` 当且仅当 ```latex
 \pi \not\models \phi
+
 ```
 3. ```latex
 \pi \models \phi \wedge \psi
@@ -538,10 +576,13 @@ p \in \pi_0
 ``` 且 ```latex
 \pi \models \psi
 ```
+
 4. ```latex
+
 \pi \models X\phi
 ``` 当且仅当 ```latex
 \pi^1 \models \phi
+
 ```
 5. ```latex
 \pi \models G\phi
@@ -550,12 +591,15 @@ i \geq 0
 ```，```latex
 \pi^i \models \phi
 ```
+
 6. ```latex
+
 \pi \models F\phi
 ``` 当且仅当存在 ```latex
 i \geq 0
 ``` 使得 ```latex
 \pi^i \models \phi
+
 ```
 7. ```latex
 \pi \models \phi U\psi
@@ -587,6 +631,7 @@ i \geq 0
 \phi \vee \psi
 ```、```latex
 \phi \rightarrow \psi
+
 ``` 是CTL公式
 3. 如果 ```latex
 \phi

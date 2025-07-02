@@ -2,13 +2,29 @@
 
 ## 目录
 
-1. [基础概念](#1-基础概念)
-2. [算法正确性](#2-算法正确性)
-3. [算法效率](#3-算法效率)
-4. [算法优化](#4-算法优化)
-5. [Go语言实现](#5-go语言实现)
-6. [定理证明](#6-定理证明)
-7. [应用示例](#7-应用示例)
+- [04-算法分析 (Algorithm Analysis)](#04-算法分析-algorithm-analysis)
+  - [目录](#目录)
+  - [1. 基础概念](#1-基础概念)
+    - [1.1 算法分析概述](#11-算法分析概述)
+    - [1.2 基本定义](#12-基本定义)
+  - [2. 算法正确性](#2-算法正确性)
+    - [2.1 循环不变量](#21-循环不变量)
+    - [2.2 递归正确性](#22-递归正确性)
+  - [3. 算法效率](#3-算法效率)
+    - [3.1 渐近分析](#31-渐近分析)
+    - [3.2 主定理 (Master Theorem)](#32-主定理-master-theorem)
+  - [4. 算法设计与优化](#4-算法设计与优化)
+    - [4.1 分治策略](#41-分治策略)
+    - [4.2 动态规划](#42-动态规划)
+    - [4.3 贪心算法](#43-贪心算法)
+  - [5. Go语言实现](#5-go语言实现)
+    - [5.1 算法分析框架](#51-算法分析框架)
+    - [5.2 排序算法分析](#52-排序算法分析)
+    - [5.3 搜索算法分析](#53-搜索算法分析)
+  - [6. 高级主题](#6-高级主题)
+    - [6.1 摊还分析 (Amortized Analysis)](#61-摊还分析-amortized-analysis)
+    - [6.2 概率算法分析](#62-概率算法分析)
+  - [7. 参考文献](#7-参考文献)
 
 ## 1. 基础概念
 
@@ -16,171 +32,94 @@
 
 算法分析是研究算法性能的科学，包括：
 
-- **正确性分析**：算法是否产生正确结果
-- **效率分析**：算法的时间和空间复杂度
-- **最优性分析**：算法是否达到理论最优
-- **稳定性分析**：算法对输入变化的敏感度
+- **正确性分析**：算法是否为所有合法输入产生正确输出。
+- **效率分析**：算法的时间和空间资源消耗。
+- **最优性分析**：算法是否达到了特定问题复杂度的下界。
+- **稳定性分析**：针对排序等算法，相等的元素是否保持原有顺序。
 
 ### 1.2 基本定义
 
 **定义 1.1** (算法)
-
-```latex
-算法是一个有限的计算过程，它接受输入并产生输出，满足：
-
-1. 有限性：算法必须在有限步后终止
-2. 确定性：每个步骤都有明确的定义
-3. 输入：算法有零个或多个输入
-4. 输出：算法有一个或多个输出
-5. 有效性：每个操作都是可执行的
-```
+算法是一个有限的、确定性的、有效的计算过程，它接受输入并产生输出。
+- **有限性**：算法必须在有限步后终止。
+- **确定性**：每个步骤都有明确无歧义的定义。
+- **有效性**：每个操作都必须是可执行的。
 
 **定义 1.2** (算法正确性)
-
-```latex
-算法 A 对于问题 P 是正确的，如果：
-
-对于所有输入 x ∈ I_P，A(x) = P(x)
-其中 I_P 是问题 P 的输入集合，P(x) 是 x 的正确输出
-```
+算法 $A$ 对于问题 $P$ 是正确的，如果对于问题 $P$ 的每一个输入实例 $x$，算法 $A(x)$ 都能终止并给出 $P(x)$ 作为输出。
 
 **定义 1.3** (算法复杂度)
-
-```latex
-设 A 是算法，n 是输入大小：
-
-时间复杂度 T_A(n) = max{t_A(x) | |x| = n}
-空间复杂度 S_A(n) = max{s_A(x) | |x| = n}
-
-其中 t_A(x) 是 A 在输入 x 上的运行时间，s_A(x) 是 A 在输入 x 上使用的空间
-```
+设 $A$ 是一个算法， $n$ 是输入的大小：
+- **时间复杂度 $T_A(n)$**: 在最坏情况下，算法 $A$ 在大小为 $n$ 的任何输入上所需的基本操作次数。
+- **空间复杂度 $S_A(n)$**: 在最坏情况下，算法 $A$ 在大小为 $n$ 的任何输入上所需的最大存储空间。
 
 ## 2. 算法正确性
 
 ### 2.1 循环不变量
 
 **定义 2.1** (循环不变量)
+循环不变量是一个在循环的每次迭代之前和之后都保持为真的断言。证明循环不变量的正确性通常使用数学归纳法，包含三个步骤：
+1.  **初始化 (Initialization)**：在循环第一次迭代开始前，不变量为真。
+2.  **保持 (Maintenance)**：如果在某次迭代开始前不变量为真，那么在下一次迭代开始前它仍然为真。
+3.  **终止 (Termination)**：当循环终止时，不变量（通常与终止条件结合）能帮助我们证明算法的正确性。
 
-```latex
-循环不变量是在循环的每次迭代前后都为真的断言，用于证明循环的正确性。
-
-对于循环 while (condition) { body }，不变量 P 满足：
-1. 初始化：在循环开始前 P 为真
-2. 保持：如果 P 为真且 condition 为真，执行 body 后 P 仍为真
-3. 终止：循环终止时 P 为真且 condition 为假
-```
-
-**定理 2.1** (循环不变量定理)
-
-```latex
-如果 P 是循环 while (condition) { body } 的不变量，且循环终止，则：
-P ∧ ¬condition 在循环结束后为真
-```
+**示例**: 插入排序的循环不变量
+> 在外层 for 循环的每次迭代开始时，子数组 `A[0...j-1]` 包含了原来 `A[0...j-1]` 中的元素，但已排好序。
 
 ### 2.2 递归正确性
 
-**定义 2.2** (递归正确性)
-
-```latex
-递归算法 A 是正确的，如果：
-
-1. 基础情况：对于最小输入，A 产生正确结果
-2. 递归情况：假设 A 对较小输入正确，则 A 对当前输入也正确
-3. 终止性：递归调用最终达到基础情况
-```
-
-**定理 2.2** (数学归纳法)
-
-```latex
-设 P(n) 是关于自然数 n 的断言，如果：
-
-1. P(0) 为真（基础情况）
-2. 对于所有 k ≥ 0，如果 P(k) 为真，则 P(k+1) 为真（归纳步骤）
-
-则对于所有 n ≥ 0，P(n) 为真
-```
+递归算法的正确性通常通过数学归纳法来证明。
+1.  **基础情况 (Base Case)**：证明算法对于最简单的输入（递归的终点）是正确的。
+2.  **归纳假设 (Inductive Hypothesis)**：假设算法对于所有小于当前规模的输入都是正确的。
+3.  **归纳步骤 (Inductive Step)**：证明在归纳假设下，算法对于当前规模的输入也是正确的。
 
 ## 3. 算法效率
 
 ### 3.1 渐近分析
 
-**定义 3.1** (渐近上界)
+**定义 3.1** (渐近上界 $O$-notation)
+$f(n) = O(g(n))$ 表示存在正常数 $c$ 和 $n_0$，使得对所有 $n \geq n_0$，有 $0 \leq f(n) \leq c g(n)$。
 
-```latex
-对于函数 f, g: N → N，我们说 f(n) = O(g(n))，如果存在常数 c > 0 和 n₀ ∈ N，使得对于所有 n ≥ n₀，有：
-f(n) ≤ c · g(n)
-```
+**定义 3.2** (渐近下界 $\Omega$-notation)
+$f(n) = \Omega(g(n))$ 表示存在正常数 $c$ 和 $n_0$，使得对所有 $n \geq n_0$，有 $0 \leq c g(n) \leq f(n)$。
 
-**定义 3.2** (渐近下界)
+**定义 3.3** (紧确界 $\Theta$-notation)
+$f(n) = \Theta(g(n))$ 表示存在正常数 $c_1, c_2$ 和 $n_0$，使得对所有 $n \geq n_0$，有 $0 \leq c_1 g(n) \leq f(n) \leq c_2 g(n)$。
 
-```latex
-对于函数 f, g: N → N，我们说 f(n) = Ω(g(n))，如果存在常数 c > 0 和 n₀ ∈ N，使得对于所有 n ≥ n₀，有：
-f(n) ≥ c · g(n)
-```
+### 3.2 主定理 (Master Theorem)
 
-**定义 3.3** (紧确界)
+主定理为求解形如 $T(n) = aT(n/b) + f(n)$ 的递归式提供了一种"菜谱式"的解决方案，其中 $a \geq 1, b > 1$ 是常数，$f(n)$ 是渐近正函数。
 
-```latex
-对于函数 f, g: N → N，我们说 f(n) = Θ(g(n))，如果：
-f(n) = O(g(n)) 且 f(n) = Ω(g(n))
-```
+1.  如果 $f(n) = O(n^{\log_b a - \epsilon})$ 对某个常数 $\epsilon > 0$ 成立，则 $T(n) = \Theta(n^{\log_b a})$。
+2.  如果 $f(n) = \Theta(n^{\log_b a})$，则 $T(n) = \Theta(n^{\log_b a} \log n)$。
+3.  如果 $f(n) = \Omega(n^{\log_b a + \epsilon})$ 对某个常数 $\epsilon > 0$ 成立，并且对某个常数 $c < 1$ 和所有足够大的 $n$ 有 $a f(n/b) \leq c f(n)$，则 $T(n) = \Theta(f(n))$。
 
-### 3.2 主定理
-
-**定理 3.1** (主定理)
-
-```latex
-设 a ≥ 1, b > 1 是常数，f(n) 是函数，T(n) 由递归关系定义：
-
-T(n) = aT(n/b) + f(n)
-
-其中 n/b 表示 ⌊n/b⌋ 或 ⌈n/b⌉。则：
-
-1. 如果 f(n) = O(n^(log_b a - ε)) 对于某个常数 ε > 0，则 T(n) = Θ(n^(log_b a))
-2. 如果 f(n) = Θ(n^(log_b a))，则 T(n) = Θ(n^(log_b a) log n)
-3. 如果 f(n) = Ω(n^(log_b a + ε)) 对于某个常数 ε > 0，且 af(n/b) ≤ cf(n) 对于某个常数 c < 1 和所有充分大的 n，则 T(n) = Θ(f(n))
-```
-
-## 4. 算法优化
+## 4. 算法设计与优化
 
 ### 4.1 分治策略
 
-**定义 4.1** (分治算法)
+分治算法将问题分解为若干个规模较小的相同问题，递归地解决这些子问题，然后合并其结果。
+- **分解 (Divide)**: 将问题划分为子问题。
+- **解决 (Conquer)**: 递归解决子问题。
+- **合并 (Combine)**: 合并子问题的解。
 
-```latex
-分治算法通过以下步骤解决问题：
-
-1. 分解：将问题分解为更小的子问题
-2. 解决：递归地解决子问题
-3. 合并：将子问题的解合并为原问题的解
-```
-
-**定理 4.1** (分治复杂度)
-
-```latex
-如果分治算法将大小为 n 的问题分解为 a 个大小为 n/b 的子问题，合并步骤需要时间 f(n)，则总复杂度为：
-
-T(n) = aT(n/b) + f(n)
-```
+**示例**: 归并排序, 快速排序。
 
 ### 4.2 动态规划
 
-**定义 4.2** (动态规划)
+动态规划通常用于求解最优化问题，它通过将问题分解为重叠的子问题，并存储子问题的解来避免重复计算。
+- **最优子结构**: 问题的最优解包含了其子问题的最优解。
+- **重叠子问题**: 在求解过程中，许多子问题被反复计算。
 
-```latex
-动态规划通过以下步骤解决优化问题：
+**方法**: 通常采用自底向上的方法（表格法）或带备忘的自顶向下方法。
 
-1. 识别最优子结构：问题的最优解包含子问题的最优解
-2. 定义状态：用状态表示子问题的解
-3. 建立递推关系：用较小状态的解表示较大状态的解
-4. 自底向上求解：按状态大小顺序计算所有状态
-```
+### 4.3 贪心算法
 
-**定理 4.2** (动态规划正确性)
+贪心算法在每一步选择中都采取在当前状态下最好或最优的选择，从而希望能导致全局最好或最优的解。
+- **贪心选择性质**: 可以通过局部最优选择来达到全局最优。
+- **最优子结构**: 一个问题的最优解包含其子问题的最优解。
 
-```latex
-如果动态规划算法满足最优子结构性质，且状态转移正确，则算法产生最优解
-```
+**示例**: 活动选择问题，霍夫曼编码。
 
 ## 5. Go语言实现
 
@@ -190,729 +129,119 @@ T(n) = aT(n/b) + f(n)
 package algorithmanalysis
 
 import (
- "fmt"
- "math"
- "time"
+	"time"
 )
 
-// Algorithm 算法接口
+// Algorithm 定义了可分析算法的接口
 type Algorithm interface {
- Execute(input Input) Result
- Name() string
- Complexity() Complexity
+	Name() string
+	Execute(data interface{}) (result interface{}, steps int)
 }
 
-// Input 输入接口
-type Input interface {
- Size() int
- Data() interface{}
- Validate() bool
-}
-
-// Result 结果接口
-type Result interface {
- Output() interface{}
- Correct() bool
- Time() time.Duration
- Space() int
- Steps() int
-}
-
-// Complexity 复杂度信息
-type Complexity struct {
- TimeComplexity   string
- SpaceComplexity  string
- BestCase         string
- WorstCase        string
- AverageCase      string
-}
-
-// AlgorithmAnalyzer 算法分析器
-type AlgorithmAnalyzer struct {
- Algorithm Algorithm
- Inputs    []Input
- Results   []AnalysisResult
-}
-
-// AnalysisResult 分析结果
+// AnalysisResult 存储单次运行的分析结果
 type AnalysisResult struct {
- InputSize    int
- ExecutionTime time.Duration
- MemoryUsage  int
- StepCount    int
- Correctness  bool
- Performance  PerformanceMetrics
+	InputSize    int
+	Duration     time.Duration
+	Steps        int
+	MemoryUsage  uint64 // in bytes
 }
 
-// PerformanceMetrics 性能指标
-type PerformanceMetrics struct {
- TimePerStep    float64
- MemoryPerUnit  float64
- Efficiency     float64
- Scalability    float64
-}
+// RunAnalysis 运行分析并返回结果
+func RunAnalysis(algo Algorithm, data interface{}, inputSize int) AnalysisResult {
+	// ... 实现内存使用快照 ...
+	startTime := time.Now()
+	_, steps := algo.Execute(data)
+	duration := time.Since(startTime)
+	// ... 实现内存使用快照比较 ...
 
-// LoopInvariant 循环不变量
-type LoopInvariant struct {
- Condition    string
- Description  string
- InitialState interface{}
- Maintained   bool
- Termination  bool
-}
-
-// RecursiveCorrectness 递归正确性
-type RecursiveCorrectness struct {
- BaseCase     bool
- InductiveStep bool
- Termination  bool
- Proof        string
+	return AnalysisResult{
+		InputSize: inputSize,
+		Duration:  duration,
+		Steps:     steps,
+	}
 }
 ```
 
-### 5.2 算法正确性验证
+### 5.2 排序算法分析
 
+**插入排序**
+- **时间复杂度**: $O(n^2)$
+- **空间复杂度**: $O(1)$
+- **实现**:
 ```go
-// CorrectnessVerifier 正确性验证器
-type CorrectnessVerifier struct {
- Algorithm Algorithm
- TestCases  []TestCase
-}
+package sorting
 
-// TestCase 测试用例
-type TestCase struct {
- Input    Input
- Expected interface{}
- Actual   interface{}
- Passed   bool
-}
-
-// VerifyCorrectness 验证算法正确性
-func (cv *CorrectnessVerifier) VerifyCorrectness() bool {
- allPassed := true
- 
- for i, testCase := range cv.TestCases {
-  // 执行算法
-  result := cv.Algorithm.Execute(testCase.Input)
-  testCase.Actual = result.Output()
-  
-  // 检查正确性
-  testCase.Passed = cv.compareResults(testCase.Expected, testCase.Actual)
-  cv.TestCases[i] = testCase
-  
-  if !testCase.Passed {
-   allPassed = false
-   fmt.Printf("测试用例 %d 失败: 期望 %v, 实际 %v\n", 
-    i, testCase.Expected, testCase.Actual)
-  }
- }
- 
- return allPassed
-}
-
-// compareResults 比较结果
-func (cv *CorrectnessVerifier) compareResults(expected, actual interface{}) bool {
- // 简单的相等性比较
- // 实际实现可能需要更复杂的比较逻辑
- return fmt.Sprintf("%v", expected) == fmt.Sprintf("%v", actual)
-}
-
-// VerifyLoopInvariant 验证循环不变量
-func (cv *CorrectnessVerifier) VerifyLoopInvariant(invariant *LoopInvariant) bool {
- // 验证初始化
- if !invariant.InitialState.(bool) {
-  fmt.Println("循环不变量初始化失败")
-  return false
- }
- 
- // 验证保持性
- if !invariant.Maintained {
-  fmt.Println("循环不变量保持性失败")
-  return false
- }
- 
- // 验证终止性
- if !invariant.Termination {
-  fmt.Println("循环不变量终止性失败")
-  return false
- }
- 
- return true
-}
-
-// VerifyRecursiveCorrectness 验证递归正确性
-func (cv *CorrectnessVerifier) VerifyRecursiveCorrectness(correctness *RecursiveCorrectness) bool {
- // 验证基础情况
- if !correctness.BaseCase {
-  fmt.Println("递归基础情况验证失败")
-  return false
- }
- 
- // 验证归纳步骤
- if !correctness.InductiveStep {
-  fmt.Println("递归归纳步骤验证失败")
-  return false
- }
- 
- // 验证终止性
- if !correctness.Termination {
-  fmt.Println("递归终止性验证失败")
-  return false
- }
- 
- return true
+func InsertionSort(arr []int) (sortedArr []int, steps int) {
+	n := len(arr)
+	a := make([]int, n)
+	copy(a, arr)
+	
+	for i := 1; i < n; i++ {
+		key := a[i]
+		j := i - 1
+		steps++ // for the comparison
+		for j >= 0 && a[j] > key {
+			a[j+1] = a[j]
+			j--
+			steps += 2 // for comparison and assignment
+		}
+		a[j+1] = key
+		steps++ // for the assignment
+	}
+	return a, steps
 }
 ```
 
-### 5.3 算法效率分析
+### 5.3 搜索算法分析
 
+**二分搜索**
+- **时间复杂度**: $O(\log n)$
+- **空间复杂度**: $O(1)$ (迭代实现)
+- **实现**:
 ```go
-// EfficiencyAnalyzer 效率分析器
-type EfficiencyAnalyzer struct {
- Algorithm Algorithm
- Inputs    []Input
- Results   []EfficiencyResult
-}
+package searching
 
-// EfficiencyResult 效率分析结果
-type EfficiencyResult struct {
- InputSize     int
- TimeComplexity string
- SpaceComplexity string
- ActualTime    time.Duration
- ActualSpace   int
- Theoretical   TheoreticalComplexity
-}
+func BinarySearch(arr []int, target int) (index int, steps int) {
+	low, high := 0, len(arr)-1
+	
+	for low <= high {
+		steps++ // for the loop condition check
+		mid := low + (high-low)/2
+		steps++ // for calculating mid
 
-// TheoreticalComplexity 理论复杂度
-type TheoreticalComplexity struct {
- TimeBigO    string
- TimeBigOmega string
- TimeBigTheta string
- SpaceBigO   string
-}
+		if arr[mid] == target {
+			return mid, steps
+		}
+		steps++ // for the comparison
 
-// AnalyzeEfficiency 分析算法效率
-func (ea *EfficiencyAnalyzer) AnalyzeEfficiency() {
- ea.Results = make([]EfficiencyResult, 0)
- 
- for _, input := range ea.Inputs {
-  // 执行算法并测量性能
-  start := time.Now()
-  result := ea.Algorithm.Execute(input)
-  duration := time.Since(start)
-  
-  // 分析复杂度
-  theoretical := ea.analyzeTheoreticalComplexity(input.Size())
-  
-  efficiencyResult := EfficiencyResult{
-   InputSize:      input.Size(),
-   TimeComplexity: ea.Algorithm.Complexity().TimeComplexity,
-   SpaceComplexity: ea.Algorithm.Complexity().SpaceComplexity,
-   ActualTime:     duration,
-   ActualSpace:    result.Space(),
-   Theoretical:    theoretical,
-  }
-  
-  ea.Results = append(ea.Results, efficiencyResult)
- }
-}
-
-// analyzeTheoreticalComplexity 分析理论复杂度
-func (ea *EfficiencyAnalyzer) analyzeTheoreticalComplexity(inputSize int) TheoreticalComplexity {
- // 基于算法名称分析理论复杂度
- switch ea.Algorithm.Name() {
- case "LinearSearch":
-  return TheoreticalComplexity{
-   TimeBigO:    "O(n)",
-   TimeBigOmega: "Ω(1)",
-   TimeBigTheta: "Θ(n)",
-   SpaceBigO:   "O(1)",
-  }
- case "BinarySearch":
-  return TheoreticalComplexity{
-   TimeBigO:    "O(log n)",
-   TimeBigOmega: "Ω(1)",
-   TimeBigTheta: "Θ(log n)",
-   SpaceBigO:   "O(1)",
-  }
- case "BubbleSort":
-  return TheoreticalComplexity{
-   TimeBigO:    "O(n²)",
-   TimeBigOmega: "Ω(n)",
-   TimeBigTheta: "Θ(n²)",
-   SpaceBigO:   "O(1)",
-  }
- case "QuickSort":
-  return TheoreticalComplexity{
-   TimeBigO:    "O(n log n)",
-   TimeBigOmega: "Ω(n log n)",
-   TimeBigTheta: "Θ(n log n)",
-   SpaceBigO:   "O(log n)",
-  }
- default:
-  return TheoreticalComplexity{
-   TimeBigO:    "O(1)",
-   TimeBigOmega: "Ω(1)",
-   TimeBigTheta: "Θ(1)",
-   SpaceBigO:   "O(1)",
-  }
- }
-}
-
-// MasterTheorem 主定理分析
-type MasterTheorem struct {
- A int
- B int
- F func(int) float64
-}
-
-// SolveMasterTheorem 求解主定理
-func (mt *MasterTheorem) SolveMasterTheorem(n int) string {
- logBA := math.Log(float64(mt.A)) / math.Log(float64(mt.B))
- fn := mt.F(n)
- 
- // 情况1: f(n) = O(n^(log_b a - ε))
- if fn < math.Pow(float64(n), logBA-0.1) {
-  return fmt.Sprintf("Θ(n^%.2f)", logBA)
- }
- 
- // 情况2: f(n) = Θ(n^(log_b a))
- if math.Abs(fn-math.Pow(float64(n), logBA)) < 0.1 {
-  return fmt.Sprintf("Θ(n^%.2f log n)", logBA)
- }
- 
- // 情况3: f(n) = Ω(n^(log_b a + ε))
- if fn > math.Pow(float64(n), logBA+0.1) {
-  return fmt.Sprintf("Θ(f(n))")
- }
- 
- return "无法确定"
+		if arr[mid] < target {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+		steps++ // for the assignment
+	}
+	
+	return -1, steps // not found
 }
 ```
 
-### 5.4 算法优化
+## 6. 高级主题
 
-```go
-// AlgorithmOptimizer 算法优化器
-type AlgorithmOptimizer struct {
- OriginalAlgorithm Algorithm
- OptimizedAlgorithm Algorithm
- Improvements      []Improvement
-}
+### 6.1 摊还分析 (Amortized Analysis)
 
-// Improvement 改进
-type Improvement struct {
- Type        string
- Description string
- Impact      float64
- TradeOff    string
-}
+摊还分析用于评估一个操作序列的平均时间。它关心的是整个序列的总成本，而不是单个最坏操作的成本。
+- **聚合分析 (Aggregate analysis)**: 确定 $n$ 个操作序列的总成本上界 $T(n)$，则每个操作的摊还成本为 $T(n)/n$。
+- **记账方法 (Accounting method)**: 对不同操作收取不同的费用（摊还成本），多收的费用作为"信用"存起来，用于支付未来成本低于摊还成本的操作。
+- **势能方法 (Potential method)**: 类似于记账方法，但将预付的代价存储为"势能"，势能可以释放以支付未来的操作。
 
-// OptimizeAlgorithm 优化算法
-func (ao *AlgorithmOptimizer) OptimizeAlgorithm() {
- // 分析原始算法
- originalComplexity := ao.OriginalAlgorithm.Complexity()
- 
- // 应用优化策略
- ao.applyOptimizations()
- 
- // 分析优化后的算法
- optimizedComplexity := ao.OptimizedAlgorithm.Complexity()
- 
- // 记录改进
- ao.recordImprovements(originalComplexity, optimizedComplexity)
-}
+### 6.2 概率算法分析
 
-// applyOptimizations 应用优化策略
-func (ao *AlgorithmOptimizer) applyOptimizations() {
- // 根据算法类型应用不同的优化策略
- switch ao.OriginalAlgorithm.Name() {
- case "BubbleSort":
-  ao.OptimizedAlgorithm = &OptimizedBubbleSort{}
- case "LinearSearch":
-  ao.OptimizedAlgorithm = &OptimizedLinearSearch{}
- case "QuickSort":
-  ao.OptimizedAlgorithm = &OptimizedQuickSort{}
- default:
-  ao.OptimizedAlgorithm = ao.OriginalAlgorithm
- }
-}
+用于分析那些行为部分依赖于随机数的算法。我们通常分析其期望运行时间。
+**示例**: 随机化快速排序的期望运行时间为 $O(n \log n)$。
 
-// recordImprovements 记录改进
-func (ao *AlgorithmOptimizer) recordImprovements(original, optimized Complexity) {
- // 时间复杂度改进
- if original.TimeComplexity != optimized.TimeComplexity {
-  improvement := Improvement{
-   Type:        "时间复杂度",
-   Description: fmt.Sprintf("从 %s 改进到 %s", original.TimeComplexity, optimized.TimeComplexity),
-   Impact:      0.5, // 简化的影响评估
-   TradeOff:    "可能增加空间复杂度",
-  }
-  ao.Improvements = append(ao.Improvements, improvement)
- }
- 
- // 空间复杂度改进
- if original.SpaceComplexity != optimized.SpaceComplexity {
-  improvement := Improvement{
-   Type:        "空间复杂度",
-   Description: fmt.Sprintf("从 %s 改进到 %s", original.SpaceComplexity, optimized.SpaceComplexity),
-   Impact:      0.3,
-   TradeOff:    "可能增加时间复杂度",
-  }
-  ao.Improvements = append(ao.Improvements, improvement)
- }
-}
+## 7. 参考文献
 
-// DivideAndConquer 分治算法框架
-type DivideAndConquer struct {
- Divide  func(interface{}) []interface{}
- Conquer func(interface{}) interface{}
- Combine func([]interface{}) interface{}
-}
-
-// Execute 执行分治算法
-func (dc *DivideAndConquer) Execute(input interface{}) interface{} {
- // 基础情况
- if dc.isBaseCase(input) {
-  return dc.Conquer(input)
- }
- 
- // 分解
- subproblems := dc.Divide(input)
- 
- // 递归解决
- solutions := make([]interface{}, len(subproblems))
- for i, subproblem := range subproblems {
-  solutions[i] = dc.Execute(subproblem)
- }
- 
- // 合并
- return dc.Combine(solutions)
-}
-
-// isBaseCase 判断是否为基础情况
-func (dc *DivideAndConquer) isBaseCase(input interface{}) bool {
- // 简化的基础情况判断
- // 实际实现需要根据具体问题定义
- return false
-}
-
-// DynamicProgramming 动态规划框架
-type DynamicProgramming struct {
- StateDefinition func(interface{}) string
- Transition      func(string, interface{}) string
- BaseCase        func(interface{}) interface{}
- Memo            map[string]interface{}
-}
-
-// Execute 执行动态规划算法
-func (dc *DynamicProgramming) Execute(input interface{}) interface{} {
- // 初始化备忘录
- dc.Memo = make(map[string]interface{})
- 
- // 获取初始状态
- initialState := dc.StateDefinition(input)
- 
- // 自底向上求解
- return dc.solve(initialState, input)
-}
-
-// solve 求解状态
-func (dc *DynamicProgramming) solve(state string, input interface{}) interface{} {
- // 检查备忘录
- if result, exists := dc.Memo[state]; exists {
-  return result
- }
- 
- // 基础情况
- if dc.isBaseCase(state) {
-  result := dc.BaseCase(input)
-  dc.Memo[state] = result
-  return result
- }
- 
- // 状态转移
- nextState := dc.Transition(state, input)
- result := dc.solve(nextState, input)
- 
- // 记录结果
- dc.Memo[state] = result
- return result
-}
-
-// isBaseCase 判断是否为基础情况
-func (dc *DynamicProgramming) isBaseCase(state string) bool {
- // 简化的基础情况判断
- return false
-}
-```
-
-## 6. 定理证明
-
-### 6.1 循环不变量定理
-
-**定理 6.1** (循环不变量定理)
-
-```latex
-如果 P 是循环 while (condition) { body } 的不变量，且循环终止，则：
-P ∧ ¬condition 在循环结束后为真
-```
-
-**证明**：
-
-```latex
-使用数学归纳法证明：
-
-基础情况：在循环开始前，P 为真（初始化性质）
-
-归纳步骤：假设在第 k 次迭代前 P 为真
-- 如果 condition 为真，执行 body 后 P 仍为真（保持性质）
-- 如果 condition 为假，循环终止，P ∧ ¬condition 为真
-
-由于循环终止，最终 condition 为假，因此 P ∧ ¬condition 为真
-```
-
-### 6.2 主定理证明
-
-**定理 6.2** (主定理情况1)
-
-```latex
-如果 f(n) = O(n^(log_b a - ε)) 对于某个常数 ε > 0，则 T(n) = Θ(n^(log_b a))
-```
-
-**证明**：
-
-```latex
-设 T(n) = aT(n/b) + f(n)
-
-由于 f(n) = O(n^(log_b a - ε))，存在常数 c > 0，使得：
-f(n) ≤ c · n^(log_b a - ε)
-
-展开递归树：
-T(n) = a^h · T(1) + Σ_{i=0}^{h-1} a^i · f(n/b^i)
-其中 h = log_b n
-
-由于 a^i · f(n/b^i) ≤ a^i · c · (n/b^i)^(log_b a - ε)
-= c · a^i · n^(log_b a - ε) / b^(i(log_b a - ε))
-= c · n^(log_b a - ε) · (a/b^(log_b a - ε))^i
-
-由于 a/b^(log_b a - ε) = a/b^(log_b a) · b^ε = 1 · b^ε > 1
-
-因此 Σ_{i=0}^{h-1} a^i · f(n/b^i) = O(n^(log_b a))
-
-所以 T(n) = Θ(n^(log_b a))
-```
-
-### 6.3 动态规划正确性
-
-**定理 6.3** (动态规划正确性)
-
-```latex
-如果动态规划算法满足最优子结构性质，且状态转移正确，则算法产生最优解
-```
-
-**证明**：
-
-```latex
-使用数学归纳法证明：
-
-基础情况：对于最小状态，算法产生正确结果
-
-归纳步骤：假设对于所有较小状态，算法产生最优解
-对于当前状态，算法通过状态转移从较小状态的最优解计算当前状态的最优解
-由于满足最优子结构性质，当前状态的最优解包含较小状态的最优解
-因此算法产生当前状态的最优解
-
-由数学归纳法，算法对所有状态产生最优解
-```
-
-## 7. 应用示例
-
-### 7.1 排序算法分析
-
-```go
-// SortingAlgorithmAnalysis 排序算法分析
-func SortingAlgorithmAnalysis() {
- // 创建测试输入
- inputs := []Input{
-  &IntArrayInput{data: []int{5, 2, 8, 1, 9, 3, 7, 4, 6}},
-  &IntArrayInput{data: []int{10, 5, 2, 8, 1, 9, 3, 7, 4, 6, 11, 12, 13, 14, 15}},
-  &IntArrayInput{data: []int{20, 10, 5, 2, 8, 1, 9, 3, 7, 4, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19}},
- }
- 
- // 分析冒泡排序
- bubbleSort := &BubbleSort{}
- bubbleAnalyzer := &AlgorithmAnalyzer{
-  Algorithm: bubbleSort,
-  Inputs:    inputs,
- }
- 
- // 验证正确性
- verifier := &CorrectnessVerifier{
-  Algorithm: bubbleSort,
-  TestCases: createSortTestCases(inputs),
- }
- 
- correctness := verifier.VerifyCorrectness()
- fmt.Printf("冒泡排序正确性: %v\n", correctness)
- 
- // 分析效率
- efficiencyAnalyzer := &EfficiencyAnalyzer{
-  Algorithm: bubbleSort,
-  Inputs:    inputs,
- }
- 
- efficiencyAnalyzer.AnalyzeEfficiency()
- fmt.Printf("冒泡排序效率分析完成\n")
-}
-```
-
-### 7.2 搜索算法分析
-
-```go
-// SearchAlgorithmAnalysis 搜索算法分析
-func SearchAlgorithmAnalysis() {
- // 创建测试输入
- inputs := []Input{
-  &IntArrayInput{data: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, target: 5},
-  &IntArrayInput{data: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, target: 8},
-  &IntArrayInput{data: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}, target: 12},
- }
- 
- // 分析二分搜索
- binarySearch := &BinarySearch{}
- 
- // 验证循环不变量
- invariant := &LoopInvariant{
-  Condition:    "left <= right",
-  Description:  "搜索范围始终有效",
-  InitialState: true,
-  Maintained:   true,
-  Termination:  true,
- }
- 
- verifier := &CorrectnessVerifier{Algorithm: binarySearch}
- invariantValid := verifier.VerifyLoopInvariant(invariant)
- fmt.Printf("二分搜索循环不变量: %v\n", invariantValid)
- 
- // 分析效率
- efficiencyAnalyzer := &EfficiencyAnalyzer{
-  Algorithm: binarySearch,
-  Inputs:    inputs,
- }
- 
- efficiencyAnalyzer.AnalyzeEfficiency()
- fmt.Printf("二分搜索效率分析完成\n")
-}
-```
-
-### 7.3 算法优化示例
-
-```go
-// AlgorithmOptimizationExample 算法优化示例
-func AlgorithmOptimizationExample() {
- // 原始算法
- originalAlgorithm := &BubbleSort{}
- 
- // 创建优化器
- optimizer := &AlgorithmOptimizer{
-  OriginalAlgorithm: originalAlgorithm,
- }
- 
- // 执行优化
- optimizer.OptimizeAlgorithm()
- 
- // 显示改进
- fmt.Println("算法优化改进:")
- for _, improvement := range optimizer.Improvements {
-  fmt.Printf("- %s: %s (影响: %.2f, 权衡: %s)\n",
-   improvement.Type, improvement.Description, improvement.Impact, improvement.TradeOff)
- }
- 
- // 分治算法示例
- divideAndConquer := &DivideAndConquer{
-  Divide: func(input interface{}) []interface{} {
-   // 实现分解逻辑
-   return nil
-  },
-  Conquer: func(input interface{}) interface{} {
-   // 实现解决逻辑
-   return nil
-  },
-  Combine: func(solutions []interface{}) interface{} {
-   // 实现合并逻辑
-   return nil
-  },
- }
- 
- // 动态规划示例
- dynamicProgramming := &DynamicProgramming{
-  StateDefinition: func(input interface{}) string {
-   // 实现状态定义
-   return ""
-  },
-  Transition: func(state string, input interface{}) string {
-   // 实现状态转移
-   return ""
-  },
-  BaseCase: func(input interface{}) interface{} {
-   // 实现基础情况
-   return nil
-  },
- }
- 
- fmt.Printf("分治算法框架: %T\n", divideAndConquer)
- fmt.Printf("动态规划框架: %T\n", dynamicProgramming)
-}
-
-// 辅助函数
-func createSortTestCases(inputs []Input) []TestCase {
- var testCases []TestCase
- 
- for _, input := range inputs {
-  // 创建期望的排序结果
-  data := input.Data().([]int)
-  expected := make([]int, len(data))
-  copy(expected, data)
-  // 这里应该实现排序逻辑来生成期望结果
-  
-  testCase := TestCase{
-   Input:    input,
-   Expected: expected,
-  }
-  testCases = append(testCases, testCase)
- }
- 
- return testCases
-}
-
-// IntArrayInput 整数数组输入
-type IntArrayInput struct {
- data   []int
- target int
-}
-
-func (iai *IntArrayInput) Size() int {
- return len(iai.data)
-}
-
-func (iai *IntArrayInput) Data() interface{} {
- return iai.data
-}
-
-func (iai *IntArrayInput) Validate() bool {
- return len(iai.data) > 0
-}
-```
-
-## 总结
-
-算法分析为软件工程提供了重要的理论基础，能够：
-
-1. **正确性保证**：通过形式化方法验证算法正确性
-2. **性能评估**：提供算法性能的理论分析和实际测量
-3. **优化指导**：识别算法改进的机会和方向
-4. **设计决策**：帮助选择最适合的算法和数据结构
-
-通过Go语言的实现，我们可以将算法分析理论应用到实际的软件工程问题中，提供算法设计和优化的指导。
+1. Cormen, Thomas H., et al. *Introduction to Algorithms*. 3rd ed., MIT Press, 2009.
+2. Sedgewick, Robert, and Kevin Wayne. *Algorithms*. 4th ed., Addison-Wesley, 2011.
+3. Kleinberg, Jon, and Éva Tardos. *Algorithm Design*. Addison-Wesley, 2005. 
