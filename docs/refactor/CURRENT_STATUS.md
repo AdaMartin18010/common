@@ -48,7 +48,7 @@
 
 ## 目录结构
 
-```
+```text
 docs/refactor/
 ├── README.md                           # 项目总览
 ├── CURRENT_STATUS.md                   # 当前状态（本文档）

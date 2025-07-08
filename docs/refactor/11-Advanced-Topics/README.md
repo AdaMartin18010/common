@@ -6,7 +6,7 @@
 
 ## 目录结构
 
-```
+```text
 11-Advanced-Topics/
 ├── README.md                           # 本文件
 ├── 01-Quantum-Computing/              # 量子计算
@@ -90,12 +90,16 @@
 ```
 
 // 量子门操作
+
 ```latex
 U|\psi\rangle = |\psi'\rangle
 ```
 
 // 边缘计算延迟
+
+```latex
 $L_{edge} = \frac{d}{c} + T_{process}$
+
 ```
 
 ### 链接规范

@@ -96,6 +96,18 @@
 - [03-设计模式层](../03-Design-Patterns/README.md)
 - [08-软件工程形式化](../08-Software-Engineering-Formalization/README.md)
 
+## 2. 形式化语义
+
+- 采用范畴论、时态逻辑等理论工具，系统描述工作流的结构与行为。
+- 详见 [01-Workflow-Foundation/formal-semantics.md](./01-Workflow-Foundation/formal-semantics.md)
+
+## 3. 智能编排与未来趋势
+
+- 智能编排：AI驱动的流程自动化、动态优化与自适应。
+- 低代码/无代码：面向业务人员的可视化建模与自动部署。
+- 跨云多租户：支持多云环境下的统一编排与治理。
+- 行业集成：与IoT、区块链、AI等新兴技术深度融合。
+
 ---
 
 **最后更新**: 2024年12月19日

@@ -8,7 +8,9 @@
 
 ### 1.1.1 量子比特定义
 
-量子比特 ```latex
+量子比特
+
+```latex
 |q\rangle
 ``` 是量子计算的基本单位，可以表示为：
 
@@ -279,17 +281,28 @@ func (qsv *QuantumStateVisualizer) BlochSphereCoordinates(qubit *Qubit) (theta, 
 ### 1.7.1 量子叠加原理
 
 **定理 1.1** (量子叠加原理)
-对于任意量子比特 ```latex
+对于任意量子比特
+
+```latex
 |q_1\rangle
 ``` 和 ```latex
 |q_2\rangle
-```，它们的线性组合也是有效的量子态。
+```
+
+，它们的线性组合也是有效的量子态。
 
 **证明**：
-设 ```latex
+设
+
+```latex
 |q_1\rangle = \alpha_1|0\rangle + \beta_1|1\rangle
-``` 和 ```latex
+```
+
+和
+
+```latex
 |q_2\rangle = \alpha_2|0\rangle + \beta_2|1\rangle
+
 ```。
 
 线性组合 ```latex
