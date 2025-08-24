@@ -29,42 +29,15 @@ Go语言在金融科技(FinTech)领域因其高性能、低延迟、强并发特
 ### 交易引擎 (Trading Engine)
 
 ```go
-// 订单类型
-type OrderType string
-
-const (
-    OrderTypeMarket OrderType = "market"
-    OrderTypeLimit  OrderType = "limit"
-    OrderTypeStop   OrderType = "stop"
-)
-
-// 订单方向
-type OrderSide string
-
-const (
-    OrderSideBuy  OrderSide = "buy"
-    OrderSideSell OrderSide = "sell"
-)
-
-// 订单状态
-type OrderStatus string
-
-const (
-    OrderStatusPending   OrderStatus = "pending"
-    OrderStatusFilled    OrderStatus = "filled"
-    OrderStatusCancelled OrderStatus = "cancelled"
-    OrderStatusRejected  OrderStatus = "rejected"
-)
-
 // 订单结构
 type Order struct {
     ID        string      `json:"id"`
     Symbol    string      `json:"symbol"`
-    Side      OrderSide   `json:"side"`
-    Type      OrderType   `json:"type"`
+    Side      string      `json:"side"` // "buy" or "sell"
+    Type      string      `json:"type"` // "market" or "limit"
     Quantity  float64     `json:"quantity"`
     Price     float64     `json:"price"`
-    Status    OrderStatus `json:"status"`
+    Status    string      `json:"status"`
     Timestamp int64       `json:"timestamp"`
     UserID    string      `json:"user_id"`
 }
@@ -74,12 +47,11 @@ type Trade struct {
     ID           string  `json:"id"`
     OrderID      string  `json:"order_id"`
     Symbol       string  `json:"symbol"`
-    Side         OrderSide `json:"side"`
+    Side         string  `json:"side"`
     Quantity     float64 `json:"quantity"`
     Price        float64 `json:"price"`
     Timestamp    int64   `json:"timestamp"`
     Fee          float64 `json:"fee"`
-    CounterOrderID string `json:"counter_order_id"`
 }
 
 // 订单簿
@@ -103,9 +75,9 @@ func (ob *OrderBook) AddOrder(order *Order) error {
     defer ob.mu.Unlock()
     
     switch order.Side {
-    case OrderSideBuy:
+    case "buy":
         ob.addBid(order)
-    case OrderSideSell:
+    case "sell":
         ob.addAsk(order)
     default:
         return fmt.Errorf("invalid order side")
@@ -150,26 +122,6 @@ func (ob *OrderBook) addAsk(order *Order) {
     }
 }
 
-func (ob *OrderBook) GetTopBid() *Order {
-    ob.mu.RLock()
-    defer ob.mu.RUnlock()
-    
-    if len(ob.Bids) == 0 {
-        return nil
-    }
-    return ob.Bids[0]
-}
-
-func (ob *OrderBook) GetTopAsk() *Order {
-    ob.mu.RLock()
-    defer ob.mu.RUnlock()
-    
-    if len(ob.Asks) == 0 {
-        return nil
-    }
-    return ob.Asks[0]
-}
-
 // 交易引擎
 type TradingEngine struct {
     orderBooks map[string]*OrderBook
@@ -206,7 +158,7 @@ func (te *TradingEngine) matchOrder(order *Order) {
     te.mu.Unlock()
     
     // 尝试匹配订单
-    if order.Side == OrderSideBuy {
+    if order.Side == "buy" {
         te.matchBuyOrder(order, orderBook)
     } else {
         te.matchSellOrder(order, orderBook)
@@ -232,12 +184,11 @@ func (te *TradingEngine) matchBuyOrder(buyOrder *Order, orderBook *OrderBook) {
                 ID:           generateTradeID(),
                 OrderID:      buyOrder.ID,
                 Symbol:       buyOrder.Symbol,
-                Side:         OrderSideBuy,
+                Side:         "buy",
                 Quantity:     tradeQuantity,
                 Price:        tradePrice,
                 Timestamp:    time.Now().UnixNano(),
                 Fee:          tradeQuantity * tradePrice * 0.001, // 0.1% 手续费
-                CounterOrderID: askOrder.ID,
             }
             
             te.trades <- trade
@@ -263,56 +214,6 @@ func (te *TradingEngine) matchBuyOrder(buyOrder *Order, orderBook *OrderBook) {
     }
 }
 
-func (te *TradingEngine) matchSellOrder(sellOrder *Order, orderBook *OrderBook) {
-    orderBook.mu.Lock()
-    defer orderBook.mu.Unlock()
-    
-    remainingQuantity := sellOrder.Quantity
-    
-    for i := 0; i < len(orderBook.Bids) && remainingQuantity > 0; i++ {
-        bidOrder := orderBook.Bids[i]
-        
-        if sellOrder.Price <= bidOrder.Price {
-            // 可以成交
-            tradeQuantity := math.Min(remainingQuantity, bidOrder.Quantity)
-            tradePrice := bidOrder.Price
-            
-            // 创建交易记录
-            trade := &Trade{
-                ID:           generateTradeID(),
-                OrderID:      sellOrder.ID,
-                Symbol:       sellOrder.Symbol,
-                Side:         OrderSideSell,
-                Quantity:     tradeQuantity,
-                Price:        tradePrice,
-                Timestamp:    time.Now().UnixNano(),
-                Fee:          tradeQuantity * tradePrice * 0.001, // 0.1% 手续费
-                CounterOrderID: bidOrder.ID,
-            }
-            
-            te.trades <- trade
-            
-            // 更新订单数量
-            remainingQuantity -= tradeQuantity
-            bidOrder.Quantity -= tradeQuantity
-            
-            // 如果买单完全成交，从订单簿中移除
-            if bidOrder.Quantity <= 0 {
-                orderBook.Bids = append(orderBook.Bids[:i], orderBook.Bids[i+1:]...)
-                i--
-            }
-        } else {
-            break
-        }
-    }
-    
-    // 如果卖单还有剩余，添加到订单簿
-    if remainingQuantity > 0 {
-        sellOrder.Quantity = remainingQuantity
-        orderBook.addAsk(sellOrder)
-    }
-}
-
 func (te *TradingEngine) SubmitOrder(order *Order) {
     te.orders <- order
 }
@@ -329,24 +230,13 @@ func generateTradeID() string {
 ### 风险管理引擎 (Risk Management Engine)
 
 ```go
-// 风险指标类型
-type RiskMetricType string
-
-const (
-    RiskMetricVaR     RiskMetricType = "var"     // Value at Risk
-    RiskMetricCVaR    RiskMetricType = "cvar"    // Conditional VaR
-    RiskMetricSharpe  RiskMetricType = "sharpe"  // Sharpe Ratio
-    RiskMetricBeta    RiskMetricType = "beta"    // Beta
-    RiskMetricVolatility RiskMetricType = "volatility" // Volatility
-)
-
 // 风险指标
 type RiskMetric struct {
-    Type      RiskMetricType `json:"type"`
-    Value     float64        `json:"value"`
-    Timestamp int64          `json:"timestamp"`
-    Symbol    string         `json:"symbol"`
-    Period    string         `json:"period"`
+    Type      string  `json:"type"`
+    Value     float64 `json:"value"`
+    Timestamp int64   `json:"timestamp"`
+    Symbol    string  `json:"symbol"`
+    Period    string  `json:"period"`
 }
 
 // 风险限制
@@ -407,47 +297,8 @@ func (rc *RiskCalculator) CalculateVaR(symbol string, confidence float64, period
     varValue := recentReturns[index]
     
     return &RiskMetric{
-        Type:      RiskMetricVaR,
+        Type:      "var",
         Value:     varValue,
-        Timestamp: time.Now().Unix(),
-        Symbol:    symbol,
-        Period:    fmt.Sprintf("%d", period),
-    }
-}
-
-func (rc *RiskCalculator) CalculateVolatility(symbol string, period int) *RiskMetric {
-    rc.mu.RLock()
-    returns := make([]float64, len(rc.returns[symbol]))
-    copy(returns, rc.returns[symbol])
-    rc.mu.RUnlock()
-    
-    if len(returns) < period {
-        return nil
-    }
-    
-    // 取最近的period个收益率
-    recentReturns := returns[len(returns)-period:]
-    
-    // 计算平均值
-    mean := 0.0
-    for _, r := range recentReturns {
-        mean += r
-    }
-    mean /= float64(len(recentReturns))
-    
-    // 计算方差
-    variance := 0.0
-    for _, r := range recentReturns {
-        variance += (r - mean) * (r - mean)
-    }
-    variance /= float64(len(recentReturns))
-    
-    // 计算波动率（标准差）
-    volatility := math.Sqrt(variance)
-    
-    return &RiskMetric{
-        Type:      RiskMetricVolatility,
-        Value:     volatility,
         Timestamp: time.Now().Unix(),
         Symbol:    symbol,
         Period:    fmt.Sprintf("%d", period),
@@ -469,7 +320,6 @@ type RiskAlert struct {
     Message   string    `json:"message"`
     Severity  string    `json:"severity"`
     Timestamp int64     `json:"timestamp"`
-    Metric    *RiskMetric `json:"metric"`
 }
 
 func NewRiskManager() *RiskManager {
@@ -514,7 +364,7 @@ func (rm *RiskManager) UpdateLimit(id string, current float64) {
 func (rm *RiskManager) ProcessTrade(trade *Trade) {
     // 计算收益率（这里简化处理）
     returnValue := 0.0
-    if trade.Side == OrderSideBuy {
+    if trade.Side == "buy" {
         returnValue = 0.01 // 假设买入收益1%
     } else {
         returnValue = -0.005 // 假设卖出收益-0.5%
@@ -524,15 +374,10 @@ func (rm *RiskManager) ProcessTrade(trade *Trade) {
     
     // 计算风险指标
     varMetric := rm.calculator.CalculateVaR(trade.Symbol, 0.95, 30)
-    volMetric := rm.calculator.CalculateVolatility(trade.Symbol, 30)
     
     // 检查风险限制
     if varMetric != nil {
         rm.checkVaRLimit(trade.Symbol, varMetric.Value)
-    }
-    
-    if volMetric != nil {
-        rm.checkVolatilityLimit(trade.Symbol, volMetric.Value)
     }
 }
 
@@ -543,17 +388,6 @@ func (rm *RiskManager) checkVaRLimit(symbol string, varValue float64) {
     for _, limit := range rm.limits {
         if limit.Symbol == symbol && limit.Type == "var" {
             rm.UpdateLimit(limit.ID, varValue)
-        }
-    }
-}
-
-func (rm *RiskManager) checkVolatilityLimit(symbol string, volatility float64) {
-    rm.mu.RLock()
-    defer rm.mu.RUnlock()
-    
-    for _, limit := range rm.limits {
-        if limit.Symbol == symbol && limit.Type == "volatility" {
-            rm.UpdateLimit(limit.ID, volatility)
         }
     }
 }
@@ -570,56 +404,35 @@ func generateAlertID() string {
 ### 支付处理系统 (Payment Processing System)
 
 ```go
-// 支付类型
-type PaymentType string
-
-const (
-    PaymentTypeCard    PaymentType = "card"
-    PaymentTypeBank    PaymentType = "bank"
-    PaymentTypeCrypto  PaymentType = "crypto"
-    PaymentTypeWallet  PaymentType = "wallet"
-)
-
-// 支付状态
-type PaymentStatus string
-
-const (
-    PaymentStatusPending   PaymentStatus = "pending"
-    PaymentStatusProcessing PaymentStatus = "processing"
-    PaymentStatusCompleted PaymentStatus = "completed"
-    PaymentStatusFailed    PaymentStatus = "failed"
-    PaymentStatusCancelled PaymentStatus = "cancelled"
-)
-
 // 支付请求
 type PaymentRequest struct {
-    ID          string      `json:"id"`
-    Amount      float64     `json:"amount"`
-    Currency    string      `json:"currency"`
-    Type        PaymentType `json:"type"`
-    MerchantID  string      `json:"merchant_id"`
-    CustomerID  string      `json:"customer_id"`
-    Description string      `json:"description"`
+    ID          string                 `json:"id"`
+    Amount      float64                `json:"amount"`
+    Currency    string                 `json:"currency"`
+    Type        string                 `json:"type"`
+    MerchantID  string                 `json:"merchant_id"`
+    CustomerID  string                 `json:"customer_id"`
+    Description string                 `json:"description"`
     Metadata    map[string]interface{} `json:"metadata"`
-    Timestamp   int64       `json:"timestamp"`
+    Timestamp   int64                  `json:"timestamp"`
 }
 
 // 支付响应
 type PaymentResponse struct {
-    ID            string        `json:"id"`
-    Status        PaymentStatus `json:"status"`
-    TransactionID string        `json:"transaction_id"`
-    Amount        float64       `json:"amount"`
-    Currency      string        `json:"currency"`
-    Fee           float64       `json:"fee"`
-    Timestamp     int64         `json:"timestamp"`
-    Error         string        `json:"error,omitempty"`
+    ID            string `json:"id"`
+    Status        string `json:"status"`
+    TransactionID string `json:"transaction_id"`
+    Amount        float64 `json:"amount"`
+    Currency      string `json:"currency"`
+    Fee           float64 `json:"fee"`
+    Timestamp     int64   `json:"timestamp"`
+    Error         string `json:"error,omitempty"`
 }
 
 // 支付处理器接口
 type PaymentProcessor interface {
     Process(request *PaymentRequest) (*PaymentResponse, error)
-    GetSupportedTypes() []PaymentType
+    GetSupportedTypes() []string
     GetFee(amount float64, currency string) float64
 }
 
@@ -627,31 +440,30 @@ type PaymentProcessor interface {
 type CardPaymentProcessor struct {
     apiKey     string
     endpoint   string
-    supported  []PaymentType
+    supported  []string
 }
 
 func NewCardPaymentProcessor(apiKey, endpoint string) *CardPaymentProcessor {
     return &CardPaymentProcessor{
         apiKey:    apiKey,
         endpoint:  endpoint,
-        supported: []PaymentType{PaymentTypeCard},
+        supported: []string{"card"},
     }
 }
 
 func (cpp *CardPaymentProcessor) Process(request *PaymentRequest) (*PaymentResponse, error) {
-    // 模拟信用卡支付处理
-    if request.Type != PaymentTypeCard {
+    if request.Type != "card" {
         return nil, fmt.Errorf("unsupported payment type")
     }
     
-    // 模拟网络延迟
+    // 模拟信用卡支付处理
     time.Sleep(100 * time.Millisecond)
     
     // 模拟成功率95%
     if rand.Float64() < 0.95 {
         return &PaymentResponse{
             ID:            request.ID,
-            Status:        PaymentStatusCompleted,
+            Status:        "completed",
             TransactionID: generateTransactionID(),
             Amount:        request.Amount,
             Currency:      request.Currency,
@@ -661,7 +473,7 @@ func (cpp *CardPaymentProcessor) Process(request *PaymentRequest) (*PaymentRespo
     } else {
         return &PaymentResponse{
             ID:        request.ID,
-            Status:    PaymentStatusFailed,
+            Status:    "failed",
             Amount:    request.Amount,
             Currency:  request.Currency,
             Timestamp: time.Now().Unix(),
@@ -670,7 +482,7 @@ func (cpp *CardPaymentProcessor) Process(request *PaymentRequest) (*PaymentRespo
     }
 }
 
-func (cpp *CardPaymentProcessor) GetSupportedTypes() []PaymentType {
+func (cpp *CardPaymentProcessor) GetSupportedTypes() []string {
     return cpp.supported
 }
 
@@ -679,60 +491,9 @@ func (cpp *CardPaymentProcessor) GetFee(amount float64, currency string) float64
     return amount*0.025 + 0.30
 }
 
-// 银行转账处理器
-type BankPaymentProcessor struct {
-    supported []PaymentType
-}
-
-func NewBankPaymentProcessor() *BankPaymentProcessor {
-    return &BankPaymentProcessor{
-        supported: []PaymentType{PaymentTypeBank},
-    }
-}
-
-func (bpp *BankPaymentProcessor) Process(request *PaymentRequest) (*PaymentResponse, error) {
-    if request.Type != PaymentTypeBank {
-        return nil, fmt.Errorf("unsupported payment type")
-    }
-    
-    // 模拟银行转账处理（较慢）
-    time.Sleep(500 * time.Millisecond)
-    
-    // 模拟成功率98%
-    if rand.Float64() < 0.98 {
-        return &PaymentResponse{
-            ID:            request.ID,
-            Status:        PaymentStatusCompleted,
-            TransactionID: generateTransactionID(),
-            Amount:        request.Amount,
-            Currency:      request.Currency,
-            Fee:           bpp.GetFee(request.Amount, request.Currency),
-            Timestamp:     time.Now().Unix(),
-        }, nil
-    } else {
-        return &PaymentResponse{
-            ID:        request.ID,
-            Status:    PaymentStatusFailed,
-            Amount:    request.Amount,
-            Currency:  request.Currency,
-            Timestamp: time.Now().Unix(),
-            Error:     "Bank transfer failed",
-        }, nil
-    }
-}
-
-func (bpp *BankPaymentProcessor) GetSupportedTypes() []PaymentType {
-    return bpp.supported
-}
-
-func (bpp *BankPaymentProcessor) GetFee(amount float64, currency string) float64 {
-    // 固定手续费 $5
-    return 5.0
-}
-
 // 支付网关
 type PaymentGateway struct {
-    processors map[PaymentType]PaymentProcessor
+    processors map[string]PaymentProcessor
     requests   chan *PaymentRequest
     responses  chan *PaymentResponse
     mu         sync.RWMutex
@@ -740,7 +501,7 @@ type PaymentGateway struct {
 
 func NewPaymentGateway() *PaymentGateway {
     return &PaymentGateway{
-        processors: make(map[PaymentType]PaymentProcessor),
+        processors: make(map[string]PaymentProcessor),
         requests:   make(chan *PaymentRequest, 1000),
         responses:  make(chan *PaymentResponse, 1000),
     }
@@ -773,7 +534,7 @@ func (pg *PaymentGateway) handlePayment(request *PaymentRequest) {
     if !exists {
         response := &PaymentResponse{
             ID:        request.ID,
-            Status:    PaymentStatusFailed,
+            Status:    "failed",
             Amount:    request.Amount,
             Currency:  request.Currency,
             Timestamp: time.Now().Unix(),
@@ -787,7 +548,7 @@ func (pg *PaymentGateway) handlePayment(request *PaymentRequest) {
     if err != nil {
         response = &PaymentResponse{
             ID:        request.ID,
-            Status:    PaymentStatusFailed,
+            Status:    "failed",
             Amount:    request.Amount,
             Currency:  request.Currency,
             Timestamp: time.Now().Unix(),
@@ -808,229 +569,6 @@ func (pg *PaymentGateway) GetResponses() <-chan *PaymentResponse {
 
 func generateTransactionID() string {
     return fmt.Sprintf("txn_%d", time.Now().UnixNano())
-}
-```
-
-### 量化交易策略 (Quantitative Trading Strategy)
-
-```go
-// 策略接口
-type TradingStrategy interface {
-    Initialize(config map[string]interface{}) error
-    OnTick(tick *MarketTick) *Signal
-    OnBar(bar *Bar) *Signal
-    GetPosition() *Position
-    GetPerformance() *Performance
-}
-
-// 市场数据
-type MarketTick struct {
-    Symbol    string  `json:"symbol"`
-    Price     float64 `json:"price"`
-    Volume    float64 `json:"volume"`
-    Timestamp int64   `json:"timestamp"`
-}
-
-type Bar struct {
-    Symbol    string  `json:"symbol"`
-    Open      float64 `json:"open"`
-    High      float64 `json:"high"`
-    Low       float64 `json:"low"`
-    Close     float64 `json:"close"`
-    Volume    float64 `json:"volume"`
-    Timestamp int64   `json:"timestamp"`
-}
-
-// 交易信号
-type Signal struct {
-    Symbol    string      `json:"symbol"`
-    Side      OrderSide   `json:"side"`
-    Quantity  float64     `json:"quantity"`
-    Price     float64     `json:"price"`
-    Type      OrderType   `json:"type"`
-    Timestamp int64       `json:"timestamp"`
-    Reason    string      `json:"reason"`
-}
-
-// 持仓信息
-type Position struct {
-    Symbol    string  `json:"symbol"`
-    Quantity  float64 `json:"quantity"`
-    AvgPrice  float64 `json:"avg_price"`
-    PnL       float64 `json:"pnl"`
-    Timestamp int64   `json:"timestamp"`
-}
-
-// 策略性能
-type Performance struct {
-    TotalReturn    float64 `json:"total_return"`
-    SharpeRatio    float64 `json:"sharpe_ratio"`
-    MaxDrawdown    float64 `json:"max_drawdown"`
-    WinRate        float64 `json:"win_rate"`
-    TotalTrades    int     `json:"total_trades"`
-    ProfitableTrades int   `json:"profitable_trades"`
-}
-
-// 移动平均策略
-type MovingAverageStrategy struct {
-    symbol        string
-    shortPeriod   int
-    longPeriod    int
-    position      *Position
-    shortMA       []float64
-    longMA        []float64
-    trades        []*Trade
-    performance   *Performance
-    mu            sync.RWMutex
-}
-
-func NewMovingAverageStrategy(symbol string, shortPeriod, longPeriod int) *MovingAverageStrategy {
-    return &MovingAverageStrategy{
-        symbol:      symbol,
-        shortPeriod: shortPeriod,
-        longPeriod:  longPeriod,
-        position:    &Position{Symbol: symbol},
-        shortMA:     make([]float64, 0),
-        longMA:      make([]float64, 0),
-        trades:      make([]*Trade, 0),
-        performance: &Performance{},
-    }
-}
-
-func (mas *MovingAverageStrategy) Initialize(config map[string]interface{}) error {
-    // 初始化策略参数
-    if shortPeriod, ok := config["short_period"].(int); ok {
-        mas.shortPeriod = shortPeriod
-    }
-    if longPeriod, ok := config["long_period"].(int); ok {
-        mas.longPeriod = longPeriod
-    }
-    return nil
-}
-
-func (mas *MovingAverageStrategy) OnTick(tick *MarketTick) *Signal {
-    // 移动平均策略通常基于K线数据，这里简化处理
-    return nil
-}
-
-func (mas *MovingAverageStrategy) OnBar(bar *Bar) *Signal {
-    mas.mu.Lock()
-    defer mas.mu.Unlock()
-    
-    // 更新移动平均线
-    mas.updateMovingAverages(bar.Close)
-    
-    // 检查交易信号
-    if len(mas.shortMA) >= mas.shortPeriod && len(mas.longMA) >= mas.longPeriod {
-        shortMA := mas.shortMA[len(mas.shortMA)-1]
-        longMA := mas.longMA[len(mas.longMA)-1]
-        
-        // 金叉：短期均线上穿长期均线
-        if shortMA > longMA && mas.position.Quantity <= 0 {
-            return &Signal{
-                Symbol:    mas.symbol,
-                Side:      OrderSideBuy,
-                Quantity:  100.0, // 固定数量
-                Price:     bar.Close,
-                Type:      OrderTypeMarket,
-                Timestamp: bar.Timestamp,
-                Reason:    "Golden Cross",
-            }
-        }
-        
-        // 死叉：短期均线下穿长期均线
-        if shortMA < longMA && mas.position.Quantity > 0 {
-            return &Signal{
-                Symbol:    mas.symbol,
-                Side:      OrderSideSell,
-                Quantity:  mas.position.Quantity,
-                Price:     bar.Close,
-                Type:      OrderTypeMarket,
-                Timestamp: bar.Timestamp,
-                Reason:    "Death Cross",
-            }
-        }
-    }
-    
-    return nil
-}
-
-func (mas *MovingAverageStrategy) updateMovingAverages(price float64) {
-    mas.shortMA = append(mas.shortMA, price)
-    mas.longMA = append(mas.longMA, price)
-    
-    // 保持固定长度
-    if len(mas.shortMA) > mas.shortPeriod {
-        mas.shortMA = mas.shortMA[1:]
-    }
-    if len(mas.longMA) > mas.longPeriod {
-        mas.longMA = mas.longMA[1:]
-    }
-}
-
-func (mas *MovingAverageStrategy) GetPosition() *Position {
-    mas.mu.RLock()
-    defer mas.mu.RUnlock()
-    return mas.position
-}
-
-func (mas *MovingAverageStrategy) GetPerformance() *Performance {
-    mas.mu.RLock()
-    defer mas.mu.RUnlock()
-    return mas.performance
-}
-
-func (mas *MovingAverageStrategy) UpdatePosition(trade *Trade) {
-    mas.mu.Lock()
-    defer mas.mu.Unlock()
-    
-    if trade.Side == OrderSideBuy {
-        // 买入：更新平均价格和数量
-        totalCost := mas.position.Quantity*mas.position.AvgPrice + trade.Quantity*trade.Price
-        mas.position.Quantity += trade.Quantity
-        if mas.position.Quantity > 0 {
-            mas.position.AvgPrice = totalCost / mas.position.Quantity
-        }
-    } else {
-        // 卖出：计算盈亏
-        if mas.position.Quantity > 0 {
-            pnl := (trade.Price - mas.position.AvgPrice) * trade.Quantity
-            mas.position.PnL += pnl
-            mas.position.Quantity -= trade.Quantity
-        }
-    }
-    
-    mas.position.Timestamp = trade.Timestamp
-    mas.trades = append(mas.trades, trade)
-    
-    // 更新性能指标
-    mas.updatePerformance()
-}
-
-func (mas *MovingAverageStrategy) updatePerformance() {
-    if len(mas.trades) == 0 {
-        return
-    }
-    
-    totalPnL := 0.0
-    profitableTrades := 0
-    
-    for _, trade := range mas.trades {
-        if trade.Side == OrderSideSell {
-            totalPnL += trade.Price * trade.Quantity
-            profitableTrades++
-        } else {
-            totalPnL -= trade.Price * trade.Quantity
-        }
-    }
-    
-    mas.performance.TotalReturn = totalPnL
-    mas.performance.TotalTrades = len(mas.trades) / 2 // 买卖配对
-    mas.performance.ProfitableTrades = profitableTrades
-    
-    if mas.performance.TotalTrades > 0 {
-        mas.performance.WinRate = float64(mas.performance.ProfitableTrades) / float64(mas.performance.TotalTrades)
-    }
 }
 ```
 
@@ -1083,57 +621,10 @@ func main() {
         Limit:  -0.05, // 5% VaR限制
     })
     
-    riskManager.AddLimit(&RiskLimit{
-        ID:     "volatility_limit_btc",
-        Type:   "volatility",
-        Symbol: "BTC",
-        Limit:  0.3, // 30%波动率限制
-    })
-    
     // 创建支付网关
     paymentGateway := NewPaymentGateway()
     paymentGateway.RegisterProcessor(NewCardPaymentProcessor("api_key", "https://api.stripe.com"))
-    paymentGateway.RegisterProcessor(NewBankPaymentProcessor())
     paymentGateway.Start()
-    
-    // 创建量化交易策略
-    strategy := NewMovingAverageStrategy("BTC", 10, 30)
-    strategy.Initialize(map[string]interface{}{
-        "short_period": 10,
-        "long_period":  30,
-    })
-    
-    // 模拟市场数据
-    go func() {
-        for i := 0; i < 100; i++ {
-            price := 50000.0 + rand.Float64()*1000.0
-            tick := &MarketTick{
-                Symbol:    "BTC",
-                Price:     price,
-                Volume:    rand.Float64() * 100.0,
-                Timestamp: time.Now().UnixNano(),
-            }
-            
-            // 处理交易信号
-            if signal := strategy.OnTick(tick); signal != nil {
-                order := &Order{
-                    ID:        signal.Symbol + "_" + fmt.Sprintf("%d", i),
-                    Symbol:    signal.Symbol,
-                    Side:      signal.Side,
-                    Type:      signal.Type,
-                    Quantity:  signal.Quantity,
-                    Price:     signal.Price,
-                    Status:    OrderStatusPending,
-                    Timestamp: signal.Timestamp,
-                    UserID:    "strategy_1",
-                }
-                
-                tradingEngine.SubmitOrder(order)
-            }
-            
-            time.Sleep(100 * time.Millisecond)
-        }
-    }()
     
     // 处理交易结果
     go func() {
@@ -1143,9 +634,6 @@ func main() {
             
             // 更新风险管理
             riskManager.ProcessTrade(trade)
-            
-            // 更新策略持仓
-            strategy.UpdatePosition(trade)
         }
     }()
     
@@ -1163,12 +651,27 @@ func main() {
         }
     }()
     
+    // 提交测试订单
+    order := &Order{
+        ID:        "order_1",
+        Symbol:    "BTC",
+        Side:      "buy",
+        Type:      "market",
+        Quantity:  1.0,
+        Price:     50000.0,
+        Status:    "pending",
+        Timestamp: time.Now().UnixNano(),
+        UserID:    "user_1",
+    }
+    
+    tradingEngine.SubmitOrder(order)
+    
     // 提交测试支付
     paymentRequest := &PaymentRequest{
         ID:          "payment_1",
         Amount:      100.0,
         Currency:    "USD",
-        Type:        PaymentTypeCard,
+        Type:        "card",
         MerchantID:  "merchant_1",
         CustomerID:  "customer_1",
         Description: "Test payment",
@@ -1178,12 +681,7 @@ func main() {
     paymentGateway.SubmitPayment(paymentRequest)
     
     // 等待一段时间
-    time.Sleep(10 * time.Second)
-    
-    // 输出策略性能
-    performance := strategy.GetPerformance()
-    fmt.Printf("Strategy performance: Total Return: %.2f, Win Rate: %.2f%%\n", 
-        performance.TotalReturn, performance.WinRate*100)
+    time.Sleep(5 * time.Second)
     
     fmt.Println("FinTech system stopped")
 }
